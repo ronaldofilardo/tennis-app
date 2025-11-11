@@ -53,6 +53,9 @@
       }
     }
   ],
+  "prisma": {
+    "schema": "frontend/prisma/schema.prisma"
+  },
   "routes": [
     { "src": "/health", "dest": "/frontend/api/health.js" },
     { "src": "/matches", "dest": "/frontend/api/matches.js" },
