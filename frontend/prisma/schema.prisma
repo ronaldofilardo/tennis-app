@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Match {
+    id             String   @id @default(cuid())
+    sportType      String
+    format         String
+    nickname       String?
+    apontadorEmail String // Novo campo para identificar o responsável
+    playerP1       String
+    playerP2       String
+    status         String   @default("NOT_STARTED")
+    score          String?
+    winner         String?
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+
+    // Lista de e-mails dos usuários associados à partida
+    playersEmails String[]
+
+    // JSON field para armazenar histórico de sets completos
+    // Estrutura: [{ setNumber: 1, games: { PLAYER_1: 6, PLAYER_2: 4 }, winner: "PLAYER_1" }]
+    completedSets String? // Armazenado como JSON string
+
+    // JSON field para armazenar estado completo da partida em tempo real
+    // Inclui: sets, currentSet, currentSetState, currentGame, server, etc.
+    matchState String? // Estado completo serializado do TennisScoring
+
+    @@map("matches")
+}

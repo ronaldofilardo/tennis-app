@@ -1,0 +1,214 @@
+.dashboard {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.dashboard-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.dashboard-header h2 {
+  margin: 0;
+  color: #e0e0e0;
+}
+
+.new-match-button {
+  background-color: #4CAF50; /* Verde */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.new-match-button:hover {
+  background-color: #45a049;
+}
+
+.match-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.match-card {
+  background-color: #3a3a3a;
+  border-radius: 8px;
+  padding: 1rem;
+  border-left: 5px solid #ccc; /* Cor padrão */
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem 1rem;
+  align-items: center;
+}
+
+.match-card.status-finalizada { border-left-color: #f44336; /* Vermelho */ }
+.match-card.status-em-andamento { border-left-color: #2196F3; /* Azul */ }
+.match-card.status-não-iniciada { border-left-color: #9E9E9E; /* Cinza */ }
+
+.match-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  grid-column: 1 / 3;
+}
+
+.match-card-sport {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.match-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.continue-button, .start-button {
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.continue-button {
+  background-color: #2196F3;
+}
+
+.continue-button:hover {
+  background-color: #1976D2;
+}
+
+.start-button {
+  background-color: #4CAF50;
+}
+
+.start-button:hover {
+  background-color: #45a049;
+}
+
+.stats-button {
+  background-color: #667eea;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.stats-button:hover {
+  background-color: #5a67d8;
+  transform: scale(1.05);
+}
+
+/* Tornar cards clicáveis */
+.match-card {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.match-card:hover {
+  background-color: #444;
+}
+
+.match-card-status {
+  text-align: right;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.match-card-players {
+  grid-column: 1 / 3;
+  color: #c0c0c0;
+}
+
+.match-card-nickname {
+  grid-column: 1 / 2;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #fff;
+  margin-right: 8px;
+}
+
+.match-card-meta-row {
+  grid-column: 1 / 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.match-card-footer {
+  grid-column: 1 / 3;
+  margin-top: 8px;
+  color: #bdbdbd;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.match-card-nickname-footer {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.match-card-format {
+  color: #cccccc;
+  font-size: 0.85rem;
+}
+
+.match-card-lastview {
+  color: #9ca3af;
+  font-size: 0.8rem;
+  margin-top: 6px;
+}
+
+.match-card-score {
+  grid-column: 1 / 3;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.match-card-nickname-line {
+  grid-column: 1 / 3;
+  font-size: 0.95rem;
+  color: #e6e6e6;
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+.match-card-partials {
+  grid-column: 1 / 3;
+  font-size: 0.85rem;
+  color: #aaa;
+  font-style: italic;
+  background: #2a2a2a;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 4px;
+}

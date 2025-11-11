@@ -1,0 +1,266 @@
+[
+  {
+    "id": 1,
+    "Resultado": "Ace",
+    "Golpe": "Saque",
+    "Efeito": "Chapado",
+    "Direcao": "Fechado",
+    "RespostaAdv": "sem resposta"
+  },
+  {
+    "id": 2,
+    "Resultado": "Ace",
+    "Golpe": "Saque",
+    "Efeito": "Chapado",
+    "Direcao": "Aberto",
+    "RespostaAdv": "sem resposta"
+  },
+  {
+    "id": 3,
+    "Resultado": "Ace",
+    "Golpe": "Saque",
+    "Efeito": "Top spin",
+    "Direcao": "Fechado",
+    "RespostaAdv": "sem resposta"
+  },
+  {
+    "id": 4,
+    "Resultado": "Ace",
+    "Golpe": "Saque",
+    "Efeito": "Top spin",
+    "Direcao": "Aberto",
+    "RespostaAdv": "sem resposta"
+  },
+  {
+    "id": 5,
+    "Resultado": "Ace",
+    "Golpe": "Saque",
+    "Efeito": "Cortado",
+    "Direcao": "Fechado",
+    "RespostaAdv": "sem resposta"
+  },
+  {
+    "id": 6,
+    "Resultado": "Ace",
+    "Golpe": "Saque",
+    "Efeito": "Cortado",
+    "Direcao": "Aberto",
+    "RespostaAdv": "sem resposta"
+  },
+  {
+    "id": 7,
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Saque",
+    "Efeito": "Chapado",
+    "Direcao": "Fechado",
+    "RespostaAdv": "Erro devolução"
+  },
+  {
+    "id": 8,
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Saque",
+    "Efeito": "Chapado",
+    "Direcao": "Aberto",
+    "RespostaAdv": "Erro devolução"
+  },
+  {
+    "id": 9,
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Saque",
+    "Efeito": "Chapado",
+    "Direcao": "Corpo",
+    "RespostaAdv": "Erro devolução"
+  },
+  {
+    "id": 10,
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Saque",
+    "Efeito": "Top spin",
+    "Direcao": "Fechado",
+    "RespostaAdv": "Erro devolução"
+  },
+  {
+    "id": 11,
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Saque",
+    "Efeito": "Top spin",
+    "Direcao": "Aberto",
+    "RespostaAdv": "Erro devolução"
+  },
+  {
+    "id": 12,
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Saque",
+    "Efeito": "Top spin",
+    "Direcao": "Corpo",
+    "RespostaAdv": "Erro devolução"
+  },
+  {
+    "id": 13,
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Saque",
+    "Efeito": "Cortado",
+    "Direcao": "Fechado",
+    "RespostaAdv": "Erro devolução"
+  },
+  {
+    "id": 14,
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Saque",
+    "Efeito": "Cortado",
+    "Direcao": "Aberto",
+    "RespostaAdv": "Erro devolução"
+  },
+  {
+    "id": 15,
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Saque",
+    "Efeito": "Cortado",
+    "Direcao": "Corpo",
+    "RespostaAdv": "Erro devolução"
+  },
+  {
+    "id": 16,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Saque",
+    "Efeito": "Chapado",
+    "Direcao": "Fechado",
+    "RespostaAdv": "Erro devolução"
+  },
+  {
+    "id": 17,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Saque",
+    "Efeito": "Chapado",
+    "Direcao": "Aberto",
+    "RespostaAdv": "Erro devolução"
+  },
+  {
+    "id": 18,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Saque",
+    "Efeito": "Chapado",
+    "Direcao": "Corpo",
+    "RespostaAdv": "Erro devolução"
+  },
+  {
+    "id": 19,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Saque",
+    "Efeito": "Top spin",
+    "Direcao": "Fechado",
+    "RespostaAdv": "Erro devolução"
+  },
+  {
+    "id": 20,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Saque",
+    "Efeito": "Top spin",
+    "Direcao": "Aberto",
+    "RespostaAdv": "Erro devolução"
+  },
+  {
+    "id": 21,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Saque",
+    "Efeito": "Top spin",
+    "Direcao": "Corpo",
+    "RespostaAdv": "Erro devolução"
+  },
+  {
+    "id": 22,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Saque",
+    "Efeito": "Cortado",
+    "Direcao": "Fechado",
+    "RespostaAdv": "Erro devolução"
+  },
+  {
+    "id": 23,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Saque",
+    "Efeito": "Cortado",
+    "Direcao": "Aberto",
+    "RespostaAdv": "Erro devolução"
+  },
+  {
+    "id": 24,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Saque",
+    "Efeito": "Cortado",
+    "Direcao": "Corpo",
+    "RespostaAdv": "Erro devolução"
+  },
+  {
+    "id": 25,
+    "Resultado": "1º Saque dentro",
+    "Golpe": "Saque",
+    "Efeito": "Chapado",
+    "Direcao": "Fechado",
+    "RespostaAdv": "Devolução em quadra"
+  },
+  {
+    "id": 26,
+    "Resultado": "1º Saque dentro",
+    "Golpe": "Saque",
+    "Efeito": "Chapado",
+    "Direcao": "Aberto",
+    "RespostaAdv": "Devolução em quadra"
+  },
+  {
+    "id": 27,
+    "Resultado": "1º Saque dentro",
+    "Golpe": "Saque",
+    "Efeito": "Chapado",
+    "Direcao": "Corpo",
+    "RespostaAdv": "Devolução em quadra"
+  },
+  {
+    "id": 28,
+    "Resultado": "1º Saque dentro",
+    "Golpe": "Saque",
+    "Efeito": "Top spin",
+    "Direcao": "Fechado",
+    "RespostaAdv": "Devolução em quadra"
+  },
+  {
+    "id": 29,
+    "Resultado": "1º Saque dentro",
+    "Golpe": "Saque",
+    "Efeito": "Top spin",
+    "Direcao": "Aberto",
+    "RespostaAdv": "Devolução em quadra"
+  },
+  {
+    "id": 30,
+    "Resultado": "1º Saque dentro",
+    "Golpe": "Saque",
+    "Efeito": "Top spin",
+    "Direcao": "Corpo",
+    "RespostaAdv": "Devolução em quadra"
+  },
+  {
+    "id": 31,
+    "Resultado": "1º Saque dentro",
+    "Golpe": "Saque",
+    "Efeito": "Cortado",
+    "Direcao": "Fechado",
+    "RespostaAdv": "Devolução em quadra"
+  },
+  {
+    "id": 32,
+    "Resultado": "1º Saque dentro",
+    "Golpe": "Saque",
+    "Efeito": "Cortado",
+    "Direcao": "Aberto",
+    "RespostaAdv": "Devolução em quadra"
+  },
+  {
+    "id": 33,
+    "Resultado": "1º Saque dentro",
+    "Golpe": "Saque",
+    "Efeito": "Cortado",
+    "Direcao": "Corpo",
+    "RespostaAdv": "Devolução em quadra"
+  }
+]
