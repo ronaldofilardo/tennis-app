@@ -7,6 +7,14 @@
   justify-content: flex-start;
   margin: 0.7rem 0 0.2rem 0;
 }
+
+.quick-actions-row.serve-left {
+  justify-content: flex-start;
+}
+
+.quick-actions-row.serve-right {
+  justify-content: flex-end;
+}
 .quick-action-btn {
   min-width: 70px;
   min-height: 38px;
@@ -585,4 +593,23 @@
   color: #2196F3 !important;
   font-weight: 600;
   text-shadow: 0 0 4px rgba(33, 150, 243, 0.3);
+}
+
+.last-point-feedback {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #2196F3;
+  font-weight: 600;
+  margin: 0.75rem 0;
+  padding: 0.75rem 1rem;
+  background: #e3f2fd;
+  border: 2px solid #2196F3;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+  animation: fade-in 0.5s ease-in;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

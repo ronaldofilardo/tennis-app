@@ -1,7 +1,7 @@
 {
   "version": 2,
   "installCommand": "pnpm install",
-  "buildCommand": "cd frontend && npm run build",
+  "buildCommand": "cd frontend && pnpm run build",
   "outputDirectory": "dist",
   "builds": [
     {
@@ -57,12 +57,12 @@
     "schema": "frontend/prisma/schema.prisma"
   },
   "routes": [
-    { "src": "/health", "dest": "/frontend/api/health.js" },
-    { "src": "/matches", "dest": "/frontend/api/matches.js" },
-    { "src": "/matches/visible", "dest": "/frontend/api/matches/visible.js" },
-    { "src": "/matches/([^/]+)", "dest": "/frontend/api/matches/[id].js" },
-    { "src": "/matches/([^/]+)/state", "dest": "/frontend/api/matches/[id]/state.js" },
-    { "src": "/matches/([^/]+)/stats", "dest": "/frontend/api/matches/[id]/stats.js" },
+    { "src": "/api/health", "dest": "/frontend/api/health.js" },
+    { "src": "/api/matches", "dest": "/frontend/api/matches.js" },
+    { "src": "/api/matches/visible", "dest": "/frontend/api/matches/visible.js" },
+    { "src": "/api/matches/([^/]+)", "dest": "/frontend/api/matches/[id].js" },
+    { "src": "/api/matches/([^/]+)/state", "dest": "/frontend/api/matches/[id]/state.js" },
+    { "src": "/api/matches/([^/]+)/stats", "dest": "/frontend/api/matches/[id]/stats.js" },
     { "src": "/(.*)", "dest": "/dist/$1" }
   ]
 }

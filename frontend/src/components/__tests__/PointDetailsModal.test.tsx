@@ -318,14 +318,14 @@ describe('PointDetailsModal', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Winner' }));
       // Smash mostra apenas Cruzada, Paralela, Centro
       fireEvent.click(screen.getByRole('button', { name: 'Smash - SM' }));
-      fireEvent.click(screen.getByRole('button', { name: mockEfeitos[0] }));
+      fireEvent.click(screen.getByRole('button', { name: 'Chapado' }));
       ['Cruzada', 'Paralela', 'Centro'].forEach(direcao => {
-        expect(screen.getByRole('button', { name: direcao })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: direcao })).toBeDefined();
       });
       // Forehand mostra TODAS as direções
       fireEvent.click(screen.getByRole('button', { name: 'Forehand - FH' }));
       ['Centro', 'Cruzada', 'Inside In', 'Inside Out', 'Paralela'].forEach(direcao => {
-        expect(screen.getByRole('button', { name: direcao })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: direcao })).toBeDefined();
       });
     });
 
@@ -335,45 +335,47 @@ describe('PointDetailsModal', () => {
 
       // Testar forehand
       fireEvent.click(screen.getByRole('button', { name: 'Forehand - FH' }));
-      expect(screen.queryByText('Efeito')).not.toBeInTheDocument();
-      expect(screen.getByText('Direção')).toBeInTheDocument();
+      expect(screen.queryByText('Efeito')).toBeNull();
+      expect(screen.getByText('Direção')).toBeDefined();
       // Todas as direções devem estar habilitadas
       ['Centro', 'Cruzada', 'Inside In', 'Inside Out', 'Paralela'].forEach(direcao => {
-  // Só verifica botões que realmente existem no DOM
-  const btn = screen.queryByRole('button', { name: direcao });
-  if (btn) expect(btn).not.toBeDisabled();
+        const button = screen.getByRole('button', { name: direcao }) as HTMLButtonElement;
+        expect(button.disabled).toBeFalsy();
       });
 
       // Testar backhand
       fireEvent.click(screen.getByRole('button', { name: 'Backhand - BH' }));
-      expect(screen.queryByText('Efeito')).not.toBeInTheDocument();
-      expect(screen.getByText('Direção')).toBeInTheDocument();
+      expect(screen.queryByText('Efeito')).toBeNull();
+      expect(screen.getByText('Direção')).toBeDefined();
       ['Centro', 'Cruzada', 'Inside In', 'Inside Out', 'Paralela'].forEach(direcao => {
-        expect(screen.getByRole('button', { name: direcao })).not.toBeDisabled();
+        const button = screen.getByRole('button', { name: direcao }) as HTMLButtonElement;
+        expect(button.disabled).toBeFalsy();
       });
 
       // Testar swing volley
       fireEvent.click(screen.getByRole('button', { name: 'Swingvolley - FH' }));
       // Para swing volley, a seção de efeito deve ser pulada
-      expect(screen.queryByText('Efeito')).not.toBeInTheDocument();
-      expect(screen.getByText('Direção')).toBeInTheDocument();
+      expect(screen.queryByText('Efeito')).toBeNull();
+      expect(screen.getByText('Direção')).toBeDefined();
 
       // Testar drop volley
       fireEvent.click(screen.getByRole('button', { name: 'Drop volley - FH' }));
-      expect(screen.queryByText('Efeito')).not.toBeInTheDocument();
-      expect(screen.getByText('Direção')).toBeInTheDocument();
+      expect(screen.queryByText('Efeito')).toBeNull();
+      expect(screen.getByText('Direção')).toBeDefined();
       // Para drop volley, apenas Cruzada, Paralela, Centro
       ['Cruzada', 'Paralela', 'Centro'].forEach(direcao => {
-        expect(screen.getByRole('button', { name: direcao })).not.toBeDisabled();
+        const button = screen.getByRole('button', { name: direcao }) as HTMLButtonElement;
+        expect(button.disabled).toBeFalsy();
       });
 
       // Testar drop shot
       fireEvent.click(screen.getByRole('button', { name: 'Drop shot - FH' }));
-      expect(screen.queryByText('Efeito')).not.toBeInTheDocument();
-      expect(screen.getByText('Direção')).toBeInTheDocument();
+      expect(screen.queryByText('Efeito')).toBeNull();
+      expect(screen.getByText('Direção')).toBeDefined();
       // Para drop shot, apenas Cruzada, Paralela, Centro
       ['Cruzada', 'Paralela', 'Centro'].forEach(direcao => {
-        expect(screen.getByRole('button', { name: direcao })).not.toBeDisabled();
+        const button = screen.getByRole('button', { name: direcao }) as HTMLButtonElement;
+        expect(button.disabled).toBeFalsy();
       });
     });
 
@@ -385,7 +387,7 @@ describe('PointDetailsModal', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Smash - SM' }));
 
       // Verificar que seção de efeito aparece
-      expect(screen.getByText('Efeito')).toBeInTheDocument();
+      expect(screen.getByText('Efeito')).toBeDefined();
     });
 
     it('exibe apenas direções básicas para golpes que não permitem inside', () => {
@@ -399,7 +401,8 @@ describe('PointDetailsModal', () => {
       // Verificar que todas as direções estão habilitadas, conforme o comportamento atual do componente
       // Só verifica as direções básicas realmente renderizadas
       ['Centro', 'Cruzada', 'Paralela'].forEach(direcao => {
-        expect(screen.getByRole('button', { name: direcao })).not.toBeDisabled();
+        const button = screen.getByRole('button', { name: direcao }) as HTMLButtonElement;
+        expect(button.disabled).toBeFalsy();
       });
     });
 
@@ -412,7 +415,8 @@ describe('PointDetailsModal', () => {
 
       // Todas as direções devem estar habilitadas
       ['Centro', 'Cruzada', 'Inside In', 'Inside Out', 'Paralela'].forEach(direcao => {
-        expect(screen.getByRole('button', { name: direcao })).not.toBeDisabled();
+        const button = screen.getByRole('button', { name: direcao }) as HTMLButtonElement;
+        expect(button.disabled).toBeFalsy();
       });
     });
 
@@ -555,10 +559,11 @@ describe('PointDetailsModal', () => {
       // Usar forehand que permite todas as direções
       fireEvent.click(screen.getByRole('button', { name: 'Forehand - FH' }));
       // Seção Direção aparece com as opções fixas (forehand pula efeito)
-      expect(screen.getByText('Direção')).toBeInTheDocument();
+      expect(screen.getByText('Direção')).toBeDefined();
       // Para forehand, todas as direções devem estar habilitadas
       ['Centro', 'Cruzada', 'Inside In', 'Inside Out', 'Paralela'].forEach(direcao => {
-        expect(screen.getByRole('button', { name: direcao })).not.toBeDisabled();
+        const button = screen.getByRole('button', { name: direcao }) as HTMLButtonElement;
+        expect(button.disabled).toBeFalsy();
       });
     });
   });

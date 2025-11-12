@@ -8,7 +8,7 @@ function getDeepMatchState(state: any) {
 }
 // frontend/src/pages/ScoreboardV2.tsx (Fluxo de saque final e correto)
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import MatchStatsModal from '../components/MatchStatsModal';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import LoadingIndicator from '../components/LoadingIndicator';
@@ -93,6 +93,21 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void; }> = ({ onEndMatch }) => 
   const [renderKey, setRenderKey] = useState(0);
   const [isStatsOpen, setIsStatsOpen] = useState(false);
   const [statsData, setStatsData] = useState(null);
+  const [lastPointFeedback, setLastPointFeedback] = useState<string | null>(null);
+
+  // Validação para mudanças seguras de serveStep
+  const setServeStepSafe = useCallback((newStep: 'none' | 'second') => {
+    if (newStep === 'second' && serveStep !== 'none') {
+      console.warn('[ScoreboardV2] Tentativa inválida de mudar para segundo saque do estado atual', { current: serveStep, requested: newStep });
+      return;
+    }
+    if (newStep === 'none' && serveStep === 'none') {
+      // Reset redundante, mas permitido
+      console.debug('[ScoreboardV2] Reset de serveStep para none (já estava none)');
+    }
+    setServeStep(newStep);
+  }, [serveStep]);
+
   // Função para buscar estatísticas (mock para testes)
   const fetchStats = async () => {
     // Aqui você pode buscar do backend real, mas para testes retorna mock
@@ -247,10 +262,33 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void; }> = ({ onEndMatch }) => 
       return;
     }
 
-    console.log(`[ScoreboardV2] Adicionando ponto para ${player}`, details);
+    // Validação: Verificar consistência entre serveStep e isFirstServe
+    if (details?.serve?.isFirstServe !== undefined && details.serve.isFirstServe !== (serveStep !== 'second')) {
+      console.warn('[ScoreboardV2] Inconsistência detectada: isFirstServe não corresponde ao serveStep atual', {
+        serveStep,
+        isFirstServe: details.serve.isFirstServe
+      });
+    }
+
+    // Garantir que isFirstServe seja sempre incluído para persistência
+    const pointDetails = details || {
+      serve: { isFirstServe: serveStep !== 'second' },
+      result: { winner: player, type: 'WINNER' },
+      rally: { ballExchanges: 1 }
+    };
+
+    // Se details foi fornecido mas não tem serve, adicionar
+    if (details && !details.serve) {
+      pointDetails.serve = { isFirstServe: serveStep !== 'second' };
+    }
+
+    console.log(`[ScoreboardV2] Adicionando ponto para ${player}`, pointDetails);
     try {
-      const newState = await scoringSystem.addPointWithSync(player, details as PointDetails);
-      setServeStep('none');
+      const serveType = serveStep === 'second' ? '2º saque' : '1º saque';
+      const newState = await scoringSystem.addPointWithSync(player, pointDetails as PointDetails);
+      setLastPointFeedback(`Ponto disputado no ${serveType}`);
+      setTimeout(() => setLastPointFeedback(null), 5000); // Clear after 5 seconds
+      setServeStepSafe('none');
       forceRerender();
 
       // O TennisScoring já sincroniza o estado automaticamente via syncState()
@@ -292,7 +330,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void; }> = ({ onEndMatch }) => 
         rally: { ballExchanges: 1 },
       };
       await scoringSystem.addPointWithSync(opponent, pointDetails as PointDetails);
-      setServeStep('none');
+      setServeStepSafe('none');
       forceRerender();
       console.log(`[ScoreboardV2] Falta dupla registrada, ponto para ${opponent}`);
     } catch (error) {
@@ -309,7 +347,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void; }> = ({ onEndMatch }) => 
     console.log('[ScoreboardV2] Desfazendo último ponto');
     try {
       await scoringSystem.undoLastPointWithSync();
-      setServeStep('none');
+      setServeStepSafe('none');
       forceRerender();
       console.log('[ScoreboardV2] Ponto desfeito com sucesso');
     } catch (error) {
@@ -384,9 +422,14 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void; }> = ({ onEndMatch }) => 
         {state.startedAt && <span>Início: {new Date(state.startedAt).toLocaleTimeString()}</span>}
         {state.startedAt && !state.isFinished && <span>Tempo: {new Date(elapsed * 1000).toISOString().substr(11, 8)}</span>}
       </div>
+      {lastPointFeedback && (
+        <div className="last-point-feedback">
+          {lastPointFeedback}
+        </div>
+      )}
       <div className="score-main">
         <div className="player-section">
-          <div className="player-header"><span className="player-name">{players.p1}</span>{state.server === 'PLAYER_1' && <span className="serve-indicator">🎾</span>}</div>
+          <div className="player-header"><span className="player-name">{players.p1}</span>{state.server === 'PLAYER_1' && <span className="serve-indicator">🎾 {serveStep === 'second' ? '2º' : '1º'}</span>}</div>
           <div className="player-scores">
             <span className="current-score">{state.currentGame?.points?.PLAYER_1 || '0'}</span>
             <span className="sets-count">Sets: {state.sets?.PLAYER_1 || 0}</span>
@@ -395,7 +438,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void; }> = ({ onEndMatch }) => 
         </div>
         <div className="vs-separator">{isTiebreak ? 'TIEBREAK' : 'VS'}</div>
         <div className="player-section">
-          <div className="player-header"><span className="player-name">{players.p2}</span>{state.server === 'PLAYER_2' && <span className="serve-indicator">🎾</span>}</div>
+          <div className="player-header"><span className="player-name">{players.p2}</span>{state.server === 'PLAYER_2' && <span className="serve-indicator">🎾 {serveStep === 'second' ? '2º' : '1º'}</span>}</div>
           <div className="player-scores">
             <span className="current-score">{state.currentGame?.points?.PLAYER_2 || '0'}</span>
             <span className="sets-count">Sets: {state.sets?.PLAYER_2 || 0}</span>
@@ -441,13 +484,13 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void; }> = ({ onEndMatch }) => 
         </div>
       )}
 
-      <div className="quick-actions-row">
+      <div className={`quick-actions-row serve-${state.server === 'PLAYER_1' ? 'left' : 'right'}`}>
         {!state.isFinished && state.server && serveStep === 'none' && (
           <>
             <button className="quick-action-btn" onClick={() => { setIsPointDetailsOpen(true); setPlayerInFocus(state.server); setPreselectedResult(undefined); }}>1º Saque</button>
             <button className="quick-action-btn" onClick={() => { setIsPointDetailsOpen(true); setPlayerInFocus(state.server); setPreselectedResult(undefined); }}>Ace</button>
-            <button className="quick-action-btn" onClick={() => setServeStep('second')}>Out</button>
-            <button className="quick-action-btn" onClick={() => setServeStep('second')}>Net</button>
+            <button className="quick-action-btn" onClick={() => setServeStepSafe('second')}>Out</button>
+             <button className="quick-action-btn" onClick={() => setServeStepSafe('second')}>Net</button>
           </>
         )}
         {!state.isFinished && state.server && serveStep === 'second' && (
