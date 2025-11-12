@@ -47,12 +47,12 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({ isOpen, playerInF
   };
 
   // Opções fixas para garantir que sempre estejam presentes - alinhadas com matriz.txt
-  const golpesFixos = [
-    'Forehand - FH', 'Backhand - BH', 'Voleio Forehand - VFH', 'Voleio Backhand - VBH',
-    'Smash - SM', 'Swingvolley - FH', 'Swingvolley - BH', 'Drop volley - FH', 'Drop volley - BH',
-    'Drop shot - FH', 'Drop shot - BH'
-  ];
-  const efeitosFixos = ['Chapado', 'Top spin', 'Cortado'];
+   const golpesFixos = [
+     'Forehand - FH', 'Backhand - BH', 'Voleio Forehand - VFH', 'Voleio Backhand - VBH',
+     'Smash - SM', 'Swingvolley - FH', 'Swingvolley - BH', 'Drop volley - FH', 'Drop volley - BH',
+     'Drop shot - FH', 'Drop shot - BH'
+   ];
+   const efeitosFixos = ['Chapado', 'Top spin', 'Cortado'];
   const direcoesFixas = ['Centro', 'Cruzada', 'Inside In', 'Inside Out', 'Paralela'];
 
   const resultadosFixos = ['Erro forçado - EF', 'Erro não Forçado - ENF', 'Winner'];
@@ -81,7 +81,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({ isOpen, playerInF
     if (!efeitoAtual || !resultado || !golpe) return [];
 
     // Voleios: apenas Cruzada, Paralela, Centro
-   if (golpe.includes('Voleio') || golpe.includes('Drop volley') || golpe.includes('Drop shot') || golpe === 'Smash - SM') {
+    if (golpe.includes('Voleio') || golpe.includes('Drop volley') || golpe.includes('Drop shot') || golpe === 'Smash - SM') {
       return ['Cruzada', 'Paralela', 'Centro'];
     }
     // Demais golpes: todas as direções

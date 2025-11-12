@@ -14,5 +14,12 @@ export default defineConfig({
       '**/playwright-report/**',
       '**/playwright/**',
     ],
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        maxThreads: 2,
+        minThreads: 1,
+      },
+    },
   },
 })
