@@ -59,6 +59,7 @@ export default async function handler(req, res) {
     clearTimeout(timeout);
     return res.status(405).json({ error: "Método não permitido" });
   } catch (error) {
+    console.error("Erro interno ao criar partida:", error);
     return handleApiError(error, res, timeout, " matches");
   }
 }
