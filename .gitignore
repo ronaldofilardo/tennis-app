@@ -53,3 +53,28 @@ DEPLOY_*.md
 DEPLOY*.md
 DEPLOY*
 
+# Playwright
+playwright-report/
+playwright/.cache/
+frontend/playwright-report/
+frontend/playwright/.cache/
+
+# Vitest
+test-results/
+frontend/test-results/
+coverage/
+frontend/coverage/
+
+# Prisma
+frontend/prisma/dev.db
+frontend/prisma/*.sqlite
+frontend/prisma/.env
+frontend/prisma/migrations/
+
+# Relatórios e resultados de testes
+test_output*.txt
+test_final.txt
+RESULTADO_MELHORADO.md
+CORRECAO_TIEBREAK.md
+UNDO_FEATURE.md
+
