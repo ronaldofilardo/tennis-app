@@ -2,7 +2,7 @@
   "version": 2,
   "installCommand": "pnpm install",
   "buildCommand": "cd frontend && pnpm run build",
-  "outputDirectory": "dist",
+  "outputDirectory": "frontend/dist",
   "builds": [
     {
       "src": "frontend/api/health.js",
@@ -53,9 +53,6 @@
       }
     }
   ],
-  "prisma": {
-    "schema": "frontend/prisma/schema.prisma"
-  },
   "routes": [
     { "src": "/api/health", "dest": "/frontend/api/health.js" },
     { "src": "/api/matches", "dest": "/frontend/api/matches.js" },
@@ -63,6 +60,6 @@
     { "src": "/api/matches/([^/]+)", "dest": "/frontend/api/matches/[id].js" },
     { "src": "/api/matches/([^/]+)/state", "dest": "/frontend/api/matches/[id]/state.js" },
     { "src": "/api/matches/([^/]+)/stats", "dest": "/frontend/api/matches/[id]/stats.js" },
-    { "src": "/(.*)", "dest": "/dist/$1" }
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
