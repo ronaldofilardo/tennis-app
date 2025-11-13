@@ -2,7 +2,7 @@
   "version": 2,
   "installCommand": "pnpm install",
   "buildCommand": "pnpm run build",
-  "outputDirectory": "dist",
+  "outputDirectory": "frontend/dist",
   "builds": [
     {
       "src": "frontend/api/health.js",
