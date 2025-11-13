@@ -1,65 +1,26 @@
 {
   "version": 2,
-  "installCommand": "pnpm install",
-  "buildCommand": "pnpm run build",
-  "outputDirectory": "dist",
   "builds": [
     {
-      "src": "frontend/api/health.js",
-      "use": "@vercel/node",
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
       "config": {
-        "includeFiles": ["frontend/prisma/schema.prisma", "frontend/node_modules/.prisma/**"],
-        "maxLambdaSize": "50mb"
+        "distDir": "frontend/dist"
       }
     },
     {
-      "src": "frontend/api/matches.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["frontend/prisma/schema.prisma", "frontend/node_modules/.prisma/**"],
-        "maxLambdaSize": "50mb"
-      }
-    },
-    {
-      "src": "frontend/api/matches/visible.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["frontend/prisma/schema.prisma", "frontend/node_modules/.prisma/**"],
-        "maxLambdaSize": "50mb"
-      }
-    },
-    {
-      "src": "frontend/api/matches/[id].js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["frontend/prisma/schema.prisma", "frontend/node_modules/.prisma/**"],
-        "maxLambdaSize": "50mb"
-      }
-    },
-    {
-      "src": "frontend/api/matches/[id]/state.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["frontend/prisma/schema.prisma", "frontend/node_modules/.prisma/**"],
-        "maxLambdaSize": "50mb"
-      }
-    },
-    {
-      "src": "frontend/api/matches/[id]/stats.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["frontend/prisma/schema.prisma", "frontend/node_modules/.prisma/**"],
-        "maxLambdaSize": "50mb"
-      }
+      "src": "frontend/api/**/*.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
-    { "src": "/api/health", "dest": "/frontend/api/health.js" },
-    { "src": "/api/matches", "dest": "/frontend/api/matches.js" },
-    { "src": "/api/matches/visible", "dest": "/frontend/api/matches/visible.js" },
-    { "src": "/api/matches/([^/]+)", "dest": "/frontend/api/matches/[id].js" },
-    { "src": "/api/matches/([^/]+)/state", "dest": "/frontend/api/matches/[id]/state.js" },
-    { "src": "/api/matches/([^/]+)/stats", "dest": "/frontend/api/matches/[id]/stats.js" },
-      { "src": "/(.*)", "dest": "/index.html" }
+    {
+      "src": "/api/(.*)",
+      "dest": "/frontend/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/dist/index.html"
+    }
   ]
 }
