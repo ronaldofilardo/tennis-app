@@ -2,7 +2,7 @@
   "version": 2,
   "installCommand": "pnpm install",
   "buildCommand": "pnpm run build",
-  "outputDirectory": "dist",
+  "outputDirectory": "frontend/dist",
   "builds": [
     {
       "src": "frontend/api/health.js",
@@ -60,6 +60,6 @@
     { "src": "/api/matches/([^/]+)", "dest": "/frontend/api/matches/[id].js" },
     { "src": "/api/matches/([^/]+)/state", "dest": "/frontend/api/matches/[id]/state.js" },
     { "src": "/api/matches/([^/]+)/stats", "dest": "/frontend/api/matches/[id]/stats.js" },
-      { "src": "/(.*)", "dest": "/dist/index.html" }
+      { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
