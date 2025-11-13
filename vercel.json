@@ -60,6 +60,6 @@
     { "src": "/api/matches/([^/]+)", "dest": "/frontend/api/matches/[id].js" },
     { "src": "/api/matches/([^/]+)/state", "dest": "/frontend/api/matches/[id]/state.js" },
     { "src": "/api/matches/([^/]+)/stats", "dest": "/frontend/api/matches/[id]/stats.js" },
-    { "src": "/(.*)", "dest": "/index.html" }
+      { "src": "/(.*)", "dest": "/dist/index.html" }
   ]
 }
