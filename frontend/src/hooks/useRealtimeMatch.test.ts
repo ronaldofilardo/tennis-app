@@ -1,16 +1,77 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
 import { useRealtimeMatch } from './useRealtimeMatch';
 import type { RealtimeMatch } from '../types/match';
 
+// Mock do singleton e métodos do RealtimeMatchService
+import * as RealtimeMatchServiceModule from '../services/RealtimeMatchService';
+
+const mockStartWatching = vi.fn((_matchId, onUpdate) => {
+  // Chama o onUpdate imediatamente com um estado fake
+  onUpdate({
+    status: 'IN_PROGRESS',
+    lastUpdate: new Date(),
+    sets: { PLAYER_1: 0, PLAYER_2: 0 },
+    currentSet: 0,
+    currentSetState: { games: { PLAYER_1: 0, PLAYER_2: 0 } },
+    currentGame: { points: { PLAYER_1: '0', PLAYER_2: '0' }, server: 'PLAYER_1', isTiebreak: false },
+    server: 'PLAYER_1',
+    isFinished: false,
+    config: {
+      format: 'BEST_OF_3', setsToWin: 2, gamesPerSet: 6, useAdvantage: true, useTiebreak: true, tiebreakAt: 6, tiebreakPoints: 7
+    }
+  });
+  return Promise.resolve();
+});
+const mockStopWatching = vi.fn();
+const mockUpdateMatchState = vi.fn((_matchId, state) => {
+  if (state.status === 'INVALID') {
+    return Promise.reject(new Error('Estado inválido!'));
+  }
+  return Promise.resolve({
+    ...state,
+    lastUpdate: new Date(),
+    sets: { PLAYER_1: 0, PLAYER_2: 0 },
+    currentSet: 0,
+    currentSetState: { games: { PLAYER_1: 0, PLAYER_2: 0 } },
+    currentGame: { points: { PLAYER_1: '0', PLAYER_2: '0' }, server: 'PLAYER_1', isTiebreak: false },
+    server: 'PLAYER_1',
+    isFinished: false,
+    config: {
+      format: 'BEST_OF_3', setsToWin: 2, gamesPerSet: 6, useAdvantage: true, useTiebreak: true, tiebreakAt: 6, tiebreakPoints: 7
+    }
+  });
+});
+
+beforeEach(() => {
+  vi.spyOn(RealtimeMatchServiceModule.RealtimeMatchService, 'getInstance').mockReturnValue({
+    startWatching: mockStartWatching,
+    stopWatching: mockStopWatching,
+    updateMatchState: mockUpdateMatchState,
+  } as any);
+  // Mock global fetch para evitar qualquer chamada real
+  globalThis.fetch = vi.fn();
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
 describe('useRealtimeMatch', () => {
   const mockMatchId = '123';
-  const mockState: RealtimeMatch = {
-    id: mockMatchId,
+  const mockState: any = {
     status: 'IN_PROGRESS',
-    players: { p1: 'Player 1', p2: 'Player 2' },
-    currentScore: { sets: [], games: [], points: [] },
-    timestamp: new Date().toISOString()
+    lastUpdate: new Date(),
+    sets: { PLAYER_1: 0, PLAYER_2: 0 },
+    currentSet: 0,
+    currentSetState: { games: { PLAYER_1: 0, PLAYER_2: 0 } },
+    currentGame: { points: { PLAYER_1: '0', PLAYER_2: '0' }, server: 'PLAYER_1', isTiebreak: false },
+    server: 'PLAYER_1',
+    isFinished: false,
+    config: {
+      format: 'BEST_OF_3', setsToWin: 2, gamesPerSet: 6, useAdvantage: true, useTiebreak: true, tiebreakAt: 6, tiebreakPoints: 7
+    }
   };
   
   beforeEach(() => {

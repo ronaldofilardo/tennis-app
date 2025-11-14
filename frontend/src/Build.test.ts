@@ -20,9 +20,9 @@ describe('Build do Projeto', () => {
     // Verifica se o script de build está configurado
     const fs = await import('fs/promises');
     const path = await import('path');
-  const packageJsonPath = path.join(process.cwd(), 'frontend', 'package.json');
+  const packageJsonPath = path.join(process.cwd(), '..', 'package.json');
     const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
-    expect(packageJson.scripts.build).toBe('prisma generate && tsc && vite build');
+    expect(packageJson.scripts.build).toBe('pnpm -r build');
   });
 
   // (Removido trecho antigo de require('../../package.json') para evitar confusão em ambientes de sandbox)
@@ -44,16 +44,16 @@ describe('Build do Projeto', () => {
   it('deve verificar dependências do Prisma', async () => {
     const fs = await import('fs/promises');
     const path = await import('path');
-  const packageJsonPath = path.join(process.cwd(), 'frontend', 'package.json');
+  const packageJsonPath = path.join(process.cwd(), 'package.json');
     const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
     expect(packageJson.dependencies).toHaveProperty('@prisma/client');
-    expect(packageJson.dependencies).toHaveProperty('prisma');
+    expect(packageJson.devDependencies).toHaveProperty('prisma');
   });
 
   it('deve verificar dependências do Vite', async () => {
     const fs = await import('fs/promises');
     const path = await import('path');
-  const packageJsonPath = path.join(process.cwd(), 'frontend', 'package.json');
+  const packageJsonPath = path.join(process.cwd(), 'package.json');
     const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
     expect(packageJson.devDependencies).toHaveProperty('vite');
     expect(packageJson.devDependencies).toHaveProperty('@vitejs/plugin-react');

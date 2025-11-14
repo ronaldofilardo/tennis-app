@@ -1,266 +1,1250 @@
 [
   {
     "id": 1,
-    "Resultado": "Ace",
-    "Golpe": "Saque",
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Smash - SM",
     "Efeito": "Chapado",
-    "Direcao": "Fechado",
-    "RespostaAdv": "sem resposta"
+    "Direcao": "Centro",
+    "erro": "Fora"
   },
   {
     "id": 2,
-    "Resultado": "Ace",
-    "Golpe": "Saque",
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Smash - SM",
     "Efeito": "Chapado",
-    "Direcao": "Aberto",
-    "RespostaAdv": "sem resposta"
+    "Direcao": "Centro",
+    "erro": "Rede"
   },
   {
     "id": 3,
-    "Resultado": "Ace",
-    "Golpe": "Saque",
-    "Efeito": "Top spin",
-    "Direcao": "Fechado",
-    "RespostaAdv": "sem resposta"
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Smash - SM",
+    "Efeito": "Cortado",
+    "Direcao": "Centro",
+    "erro": "Fora"
   },
   {
     "id": 4,
-    "Resultado": "Ace",
-    "Golpe": "Saque",
-    "Efeito": "Top spin",
-    "Direcao": "Aberto",
-    "RespostaAdv": "sem resposta"
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Smash - SM",
+    "Efeito": "Cortado",
+    "Direcao": "Centro",
+    "erro": "Rede"
   },
   {
     "id": 5,
-    "Resultado": "Ace",
-    "Golpe": "Saque",
-    "Efeito": "Cortado",
-    "Direcao": "Fechado",
-    "RespostaAdv": "sem resposta"
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Backhand - BH",
+    "Efeito": "Chapado",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
   },
   {
     "id": 6,
-    "Resultado": "Ace",
-    "Golpe": "Saque",
-    "Efeito": "Cortado",
-    "Direcao": "Aberto",
-    "RespostaAdv": "sem resposta"
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Backhand - BH",
+    "Efeito": "Chapado",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
   },
   {
     "id": 7,
     "Resultado": "Erro forçado - EF",
-    "Golpe": "Saque",
+    "Golpe": "Forehand - FH",
     "Efeito": "Chapado",
-    "Direcao": "Fechado",
-    "RespostaAdv": "Erro devolução"
+    "Direcao": "Cruzada",
+    "erro": "Fora"
   },
   {
     "id": 8,
     "Resultado": "Erro forçado - EF",
-    "Golpe": "Saque",
+    "Golpe": "Forehand - FH",
     "Efeito": "Chapado",
-    "Direcao": "Aberto",
-    "RespostaAdv": "Erro devolução"
+    "Direcao": "Cruzada",
+    "erro": "Rede"
   },
   {
     "id": 9,
     "Resultado": "Erro forçado - EF",
-    "Golpe": "Saque",
+    "Golpe": "Smash - SM",
     "Efeito": "Chapado",
-    "Direcao": "Corpo",
-    "RespostaAdv": "Erro devolução"
+    "Direcao": "Cruzada",
+    "erro": "Fora"
   },
   {
     "id": 10,
     "Resultado": "Erro forçado - EF",
-    "Golpe": "Saque",
-    "Efeito": "Top spin",
-    "Direcao": "Fechado",
-    "RespostaAdv": "Erro devolução"
+    "Golpe": "Smash - SM",
+    "Efeito": "Chapado",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
   },
   {
     "id": 11,
     "Resultado": "Erro forçado - EF",
-    "Golpe": "Saque",
-    "Efeito": "Top spin",
-    "Direcao": "Aberto",
-    "RespostaAdv": "Erro devolução"
+    "Golpe": "Backhand - BH",
+    "Efeito": "Cortado",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
   },
   {
     "id": 12,
     "Resultado": "Erro forçado - EF",
-    "Golpe": "Saque",
-    "Efeito": "Top spin",
-    "Direcao": "Corpo",
-    "RespostaAdv": "Erro devolução"
+    "Golpe": "Backhand - BH",
+    "Efeito": "Cortado",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
   },
   {
     "id": 13,
     "Resultado": "Erro forçado - EF",
-    "Golpe": "Saque",
+    "Golpe": "Forehand - FH",
     "Efeito": "Cortado",
-    "Direcao": "Fechado",
-    "RespostaAdv": "Erro devolução"
+    "Direcao": "Cruzada",
+    "erro": "Fora"
   },
   {
     "id": 14,
     "Resultado": "Erro forçado - EF",
-    "Golpe": "Saque",
+    "Golpe": "Forehand - FH",
     "Efeito": "Cortado",
-    "Direcao": "Aberto",
-    "RespostaAdv": "Erro devolução"
+    "Direcao": "Cruzada",
+    "erro": "Rede"
   },
   {
     "id": 15,
     "Resultado": "Erro forçado - EF",
-    "Golpe": "Saque",
+    "Golpe": "Smash - SM",
     "Efeito": "Cortado",
-    "Direcao": "Corpo",
-    "RespostaAdv": "Erro devolução"
+    "Direcao": "Cruzada",
+    "erro": "Fora"
   },
   {
     "id": 16,
-    "Resultado": "Erro não Forçado - ENF",
-    "Golpe": "Saque",
-    "Efeito": "Chapado",
-    "Direcao": "Fechado",
-    "RespostaAdv": "Erro devolução"
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Smash - SM",
+    "Efeito": "Cortado",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
   },
   {
     "id": 17,
-    "Resultado": "Erro não Forçado - ENF",
-    "Golpe": "Saque",
-    "Efeito": "Chapado",
-    "Direcao": "Aberto",
-    "RespostaAdv": "Erro devolução"
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Backhand - BH",
+    "Efeito": "Top spin",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
   },
   {
     "id": 18,
-    "Resultado": "Erro não Forçado - ENF",
-    "Golpe": "Saque",
-    "Efeito": "Chapado",
-    "Direcao": "Corpo",
-    "RespostaAdv": "Erro devolução"
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Backhand - BH",
+    "Efeito": "Top spin",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
   },
   {
     "id": 19,
-    "Resultado": "Erro não Forçado - ENF",
-    "Golpe": "Saque",
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Forehand - FH",
     "Efeito": "Top spin",
-    "Direcao": "Fechado",
-    "RespostaAdv": "Erro devolução"
+    "Direcao": "Cruzada",
+    "erro": "Fora"
   },
   {
     "id": 20,
-    "Resultado": "Erro não Forçado - ENF",
-    "Golpe": "Saque",
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Forehand - FH",
     "Efeito": "Top spin",
-    "Direcao": "Aberto",
-    "RespostaAdv": "Erro devolução"
+    "Direcao": "Cruzada",
+    "erro": "Rede"
   },
   {
     "id": 21,
-    "Resultado": "Erro não Forçado - ENF",
-    "Golpe": "Saque",
-    "Efeito": "Top spin",
-    "Direcao": "Corpo",
-    "RespostaAdv": "Erro devolução"
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Voleio Backhand - VBH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
   },
   {
     "id": 22,
-    "Resultado": "Erro não Forçado - ENF",
-    "Golpe": "Saque",
-    "Efeito": "Cortado",
-    "Direcao": "Fechado",
-    "RespostaAdv": "Erro devolução"
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Voleio Backhand - VBH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
   },
   {
     "id": 23,
-    "Resultado": "Erro não Forçado - ENF",
-    "Golpe": "Saque",
-    "Efeito": "Cortado",
-    "Direcao": "Aberto",
-    "RespostaAdv": "Erro devolução"
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Voleio Forehand - VFH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
   },
   {
     "id": 24,
-    "Resultado": "Erro não Forçado - ENF",
-    "Golpe": "Saque",
-    "Efeito": "Cortado",
-    "Direcao": "Corpo",
-    "RespostaAdv": "Erro devolução"
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Voleio Forehand - VFH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
   },
   {
     "id": 25,
-    "Resultado": "1º Saque dentro",
-    "Golpe": "Saque",
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Backhand - BH",
     "Efeito": "Chapado",
-    "Direcao": "Fechado",
-    "RespostaAdv": "Devolução em quadra"
+    "Direcao": "Paralela",
+    "erro": "Fora"
   },
   {
     "id": 26,
-    "Resultado": "1º Saque dentro",
-    "Golpe": "Saque",
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Backhand - BH",
     "Efeito": "Chapado",
-    "Direcao": "Aberto",
-    "RespostaAdv": "Devolução em quadra"
+    "Direcao": "Paralela",
+    "erro": "Rede"
   },
   {
     "id": 27,
-    "Resultado": "1º Saque dentro",
-    "Golpe": "Saque",
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Forehand - FH",
     "Efeito": "Chapado",
-    "Direcao": "Corpo",
-    "RespostaAdv": "Devolução em quadra"
+    "Direcao": "Paralela",
+    "erro": "Fora"
   },
   {
     "id": 28,
-    "Resultado": "1º Saque dentro",
-    "Golpe": "Saque",
-    "Efeito": "Top spin",
-    "Direcao": "Fechado",
-    "RespostaAdv": "Devolução em quadra"
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Chapado",
+    "Direcao": "Paralela",
+    "erro": "Rede"
   },
   {
     "id": 29,
-    "Resultado": "1º Saque dentro",
-    "Golpe": "Saque",
-    "Efeito": "Top spin",
-    "Direcao": "Aberto",
-    "RespostaAdv": "Devolução em quadra"
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Smash - SM",
+    "Efeito": "Chapado",
+    "Direcao": "Paralela",
+    "erro": "Fora"
   },
   {
     "id": 30,
-    "Resultado": "1º Saque dentro",
-    "Golpe": "Saque",
-    "Efeito": "Top spin",
-    "Direcao": "Corpo",
-    "RespostaAdv": "Devolução em quadra"
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Smash - SM",
+    "Efeito": "Chapado",
+    "Direcao": "Paralela",
+    "erro": "Rede"
   },
   {
     "id": 31,
-    "Resultado": "1º Saque dentro",
-    "Golpe": "Saque",
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Backhand - BH",
     "Efeito": "Cortado",
-    "Direcao": "Fechado",
-    "RespostaAdv": "Devolução em quadra"
+    "Direcao": "Paralela",
+    "erro": "Fora"
   },
   {
     "id": 32,
-    "Resultado": "1º Saque dentro",
-    "Golpe": "Saque",
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Backhand - BH",
     "Efeito": "Cortado",
-    "Direcao": "Aberto",
-    "RespostaAdv": "Devolução em quadra"
+    "Direcao": "Paralela",
+    "erro": "Rede"
   },
   {
     "id": 33,
-    "Resultado": "1º Saque dentro",
-    "Golpe": "Saque",
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Forehand - FH",
     "Efeito": "Cortado",
-    "Direcao": "Corpo",
-    "RespostaAdv": "Devolução em quadra"
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 34,
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Cortado",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 35,
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Smash - SM",
+    "Efeito": "Cortado",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 36,
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Smash - SM",
+    "Efeito": "Cortado",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 37,
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Backhand - BH",
+    "Efeito": "Top spin",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 38,
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Backhand - BH",
+    "Efeito": "Top spin",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 39,
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Top spin",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 40,
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Top spin",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 41,
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Voleio Backhand - VBH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 42,
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Voleio Backhand - VBH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 43,
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Voleio Forehand - VFH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 44,
+    "Resultado": "Erro forçado - EF",
+    "Golpe": "Voleio Forehand - VFH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 45,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Smash - SM",
+    "Efeito": "Chapado",
+    "Direcao": "Centro",
+    "erro": "Fora"
+  },
+  {
+    "id": 46,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Smash - SM",
+    "Efeito": "Chapado",
+    "Direcao": "Centro",
+    "erro": "Rede"
+  },
+  {
+    "id": 47,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Smash - SM",
+    "Efeito": "Cortado",
+    "Direcao": "Centro",
+    "erro": "Fora"
+  },
+  {
+    "id": 48,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Smash - SM",
+    "Efeito": "Cortado",
+    "Direcao": "Centro",
+    "erro": "Rede"
+  },
+  {
+    "id": 49,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Backhand - BH",
+    "Efeito": "Chapado",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
+  },
+  {
+    "id": 50,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Backhand - BH",
+    "Efeito": "Chapado",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
+  },
+  {
+    "id": 51,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Chapado",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
+  },
+  {
+    "id": 52,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Chapado",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
+  },
+  {
+    "id": 53,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Smash - SM",
+    "Efeito": "Chapado",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
+  },
+  {
+    "id": 54,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Smash - SM",
+    "Efeito": "Chapado",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
+  },
+  {
+    "id": 55,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Backhand - BH",
+    "Efeito": "Cortado",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
+  },
+  {
+    "id": 56,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Backhand - BH",
+    "Efeito": "Cortado",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
+  },
+  {
+    "id": 57,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Cortado",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
+  },
+  {
+    "id": 58,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Cortado",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
+  },
+  {
+    "id": 59,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Smash - SM",
+    "Efeito": "Cortado",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
+  },
+  {
+    "id": 60,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Smash - SM",
+    "Efeito": "Cortado",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
+  },
+  {
+    "id": 61,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Backhand - BH",
+    "Efeito": "Top spin",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
+  },
+  {
+    "id": 62,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Backhand - BH",
+    "Efeito": "Top spin",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
+  },
+  {
+    "id": 63,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Top spin",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
+  },
+  {
+    "id": 64,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Top spin",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
+  },
+  {
+    "id": 65,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Drop shot - BH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
+  },
+  {
+    "id": 66,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Drop shot - BH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
+  },
+  {
+    "id": 67,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Drop shot - FH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
+  },
+  {
+    "id": 68,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Drop shot - FH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
+  },
+  {
+    "id": 69,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Drop volley - BH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
+  },
+  {
+    "id": 70,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Drop volley - BH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
+  },
+  {
+    "id": 71,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Drop volley - FH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
+  },
+  {
+    "id": 72,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Drop volley - FH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
+  },
+  {
+    "id": 73,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Swingvolley - BH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
+  },
+  {
+    "id": 74,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Swingvolley - BH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
+  },
+  {
+    "id": 75,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Swingvolley - FH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
+  },
+  {
+    "id": 76,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Swingvolley - FH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
+  },
+  {
+    "id": 77,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Voleio Backhand - VBH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
+  },
+  {
+    "id": 78,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Voleio Backhand - VBH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
+  },
+  {
+    "id": 79,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Voleio Forehand - VFH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": "Fora"
+  },
+  {
+    "id": 80,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Voleio Forehand - VFH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": "Rede"
+  },
+  {
+    "id": 81,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Drop shot - FH",
+    "Efeito": "",
+    "Direcao": "Inside In",
+    "erro": "Fora"
+  },
+  {
+    "id": 82,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Drop shot - FH",
+    "Efeito": "",
+    "Direcao": "Inside In",
+    "erro": "Rede"
+  },
+  {
+    "id": 83,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Swingvolley - FH",
+    "Efeito": "",
+    "Direcao": "Inside In",
+    "erro": "Fora"
+  },
+  {
+    "id": 84,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Swingvolley - FH",
+    "Efeito": "",
+    "Direcao": "Inside In",
+    "erro": "Rede"
+  },
+  {
+    "id": 85,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Drop shot - FH",
+    "Efeito": "",
+    "Direcao": "Inside Out",
+    "erro": "Fora"
+  },
+  {
+    "id": 86,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Drop shot - FH",
+    "Efeito": "",
+    "Direcao": "Inside Out",
+    "erro": "Rede"
+  },
+  {
+    "id": 87,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Swingvolley - FH",
+    "Efeito": "",
+    "Direcao": "Inside Out",
+    "erro": "Fora"
+  },
+  {
+    "id": 88,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Swingvolley - FH",
+    "Efeito": "",
+    "Direcao": "Inside Out",
+    "erro": "Rede"
+  },
+  {
+    "id": 89,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Backhand - BH",
+    "Efeito": "Chapado",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 90,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Backhand - BH",
+    "Efeito": "Chapado",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 91,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Chapado",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 92,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Chapado",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 93,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Smash - SM",
+    "Efeito": "Chapado",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 94,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Smash - SM",
+    "Efeito": "Chapado",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 95,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Backhand - BH",
+    "Efeito": "Cortado",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 96,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Backhand - BH",
+    "Efeito": "Cortado",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 97,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Cortado",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 98,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Cortado",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 99,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Smash - SM",
+    "Efeito": "Cortado",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 100,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Smash - SM",
+    "Efeito": "Cortado",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 101,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Backhand - BH",
+    "Efeito": "Top spin",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 102,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Backhand - BH",
+    "Efeito": "Top spin",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 103,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Top spin",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 104,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Top spin",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 105,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Drop shot - BH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 106,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Drop shot - BH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 107,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Drop shot - FH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 108,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Drop shot - FH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 109,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Drop volley - BH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 110,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Drop volley - BH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 111,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Drop volley - FH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 112,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Drop volley - FH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 113,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Swingvolley - BH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 114,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Swingvolley - BH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 115,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Swingvolley - FH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 116,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Swingvolley - FH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 117,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Voleio Backhand - VBH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 118,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Voleio Backhand - VBH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 119,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Voleio Forehand - VFH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": "Fora"
+  },
+  {
+    "id": 120,
+    "Resultado": "Erro não Forçado - ENF",
+    "Golpe": "Voleio Forehand - VFH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": "Rede"
+  },
+  {
+    "id": 121,
+    "Resultado": "Winner",
+    "Golpe": "Smash - SM",
+    "Efeito": "Chapado",
+    "Direcao": "Centro",
+    "erro": ""
+  },
+  {
+    "id": 122,
+    "Resultado": "Winner",
+    "Golpe": "Smash - SM",
+    "Efeito": "Cortado",
+    "Direcao": "Centro",
+    "erro": ""
+  },
+  {
+    "id": 123,
+    "Resultado": "Winner",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Chapado",
+    "Direcao": "Cruzada",
+    "erro": ""
+  },
+  {
+    "id": 124,
+    "Resultado": "Winner",
+    "Golpe": "Smash - SM",
+    "Efeito": "Chapado",
+    "Direcao": "Cruzada",
+    "erro": ""
+  },
+  {
+    "id": 125,
+    "Resultado": "Winner",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Cortado",
+    "Direcao": "Cruzada",
+    "erro": ""
+  },
+  {
+    "id": 126,
+    "Resultado": "Winner",
+    "Golpe": "Smash - SM",
+    "Efeito": "Cortado",
+    "Direcao": "Cruzada",
+    "erro": ""
+  },
+  {
+    "id": 127,
+    "Resultado": "Winner",
+    "Golpe": "Drop volley - FH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": ""
+  },
+  {
+    "id": 128,
+    "Resultado": "Winner",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Top spin",
+    "Direcao": "Cruzada",
+    "erro": ""
+  },
+  {
+    "id": 129,
+    "Resultado": "Winner",
+    "Golpe": "Drop shot - BH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": ""
+  },
+  {
+    "id": 130,
+    "Resultado": "Winner",
+    "Golpe": "Drop shot - FH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": ""
+  },
+  {
+    "id": 131,
+    "Resultado": "Winner",
+    "Golpe": "Drop volley - BH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": ""
+  },
+  {
+    "id": 132,
+    "Resultado": "Winner",
+    "Golpe": "Swingvolley - BH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": ""
+  },
+  {
+    "id": 133,
+    "Resultado": "Winner",
+    "Golpe": "Swingvolley - FH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": ""
+  },
+  {
+    "id": 134,
+    "Resultado": "Winner",
+    "Golpe": "Voleio Backhand - VBH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": ""
+  },
+  {
+    "id": 135,
+    "Resultado": "Winner",
+    "Golpe": "Voleio Forehand - VFH",
+    "Efeito": "",
+    "Direcao": "Cruzada",
+    "erro": ""
+  },
+  {
+    "id": 136,
+    "Resultado": "Winner",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Chapado",
+    "Direcao": "Inside In",
+    "erro": ""
+  },
+  {
+    "id": 137,
+    "Resultado": "Winner",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Top spin",
+    "Direcao": "Inside In",
+    "erro": ""
+  },
+  {
+    "id": 138,
+    "Resultado": "Winner",
+    "Golpe": "Drop shot - FH",
+    "Efeito": "",
+    "Direcao": "Inside In",
+    "erro": ""
+  },
+  {
+    "id": 139,
+    "Resultado": "Winner",
+    "Golpe": "Swingvolley - FH",
+    "Efeito": "",
+    "Direcao": "Inside In",
+    "erro": ""
+  },
+  {
+    "id": 140,
+    "Resultado": "Winner",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Chapado",
+    "Direcao": "Inside Out",
+    "erro": ""
+  },
+  {
+    "id": 141,
+    "Resultado": "Winner",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Top spin",
+    "Direcao": "Inside Out",
+    "erro": ""
+  },
+  {
+    "id": 142,
+    "Resultado": "Winner",
+    "Golpe": "Drop shot - FH",
+    "Efeito": "",
+    "Direcao": "Inside Out",
+    "erro": ""
+  },
+  {
+    "id": 143,
+    "Resultado": "Winner",
+    "Golpe": "Swingvolley - FH",
+    "Efeito": "",
+    "Direcao": "Inside Out",
+    "erro": ""
+  },
+  {
+    "id": 144,
+    "Resultado": "Winner",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Chapado",
+    "Direcao": "Paralela",
+    "erro": ""
+  },
+  {
+    "id": 145,
+    "Resultado": "Winner",
+    "Golpe": "Smash - SM",
+    "Efeito": "Chapado",
+    "Direcao": "Paralela",
+    "erro": ""
+  },
+  {
+    "id": 146,
+    "Resultado": "Winner",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Cortado",
+    "Direcao": "Paralela",
+    "erro": ""
+  },
+  {
+    "id": 147,
+    "Resultado": "Winner",
+    "Golpe": "Smash - SM",
+    "Efeito": "Cortado",
+    "Direcao": "Paralela",
+    "erro": ""
+  },
+  {
+    "id": 148,
+    "Resultado": "Winner",
+    "Golpe": "Forehand - FH",
+    "Efeito": "Top spin",
+    "Direcao": "Paralela",
+    "erro": ""
+  },
+  {
+    "id": 149,
+    "Resultado": "Winner",
+    "Golpe": "Drop shot - BH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": ""
+  },
+  {
+    "id": 150,
+    "Resultado": "Winner",
+    "Golpe": "Drop shot - FH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": ""
+  },
+  {
+    "id": 151,
+    "Resultado": "Winner",
+    "Golpe": "Drop volley - BH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": ""
+  },
+  {
+    "id": 152,
+    "Resultado": "Winner",
+    "Golpe": "Drop volley - FH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": ""
+  },
+  {
+    "id": 153,
+    "Resultado": "Winner",
+    "Golpe": "Swingvolley - BH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": ""
+  },
+  {
+    "id": 154,
+    "Resultado": "Winner",
+    "Golpe": "Swingvolley - FH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": ""
+  },
+  {
+    "id": 155,
+    "Resultado": "Winner",
+    "Golpe": "Voleio Backhand - VBH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": ""
+  },
+  {
+    "id": 156,
+    "Resultado": "Winner",
+    "Golpe": "Voleio Forehand - VFH",
+    "Efeito": "",
+    "Direcao": "Paralela",
+    "erro": ""
   }
 ]

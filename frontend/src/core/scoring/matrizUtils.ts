@@ -3,23 +3,44 @@ import { matrizData } from '../../data/matrizData';
 import type { MatrizItem } from '../../data/matrizData';
 
 export function getResultados(): string[] {
-  return ['Erro forçado - EF', 'Erro não Forçado - ENF', 'Winner'];
+  return Array.from(new Set(matrizData.map(item => item.Resultado)));
 }
 
 export function getGolpes(resultados: string[]): string[] {
-  return [
-    'Forehand - FH', 'Backhand - BH', 'Voleio Forehand - VFH', 'Voleio Backhand - VBH',
-    'Smash - SM', 'Swingvolley - FH', 'Swingvolley - BH', 'Drop volley - FH', 'Drop volley - BH',
-    'Drop shot - FH', 'Drop shot - BH'
-  ];
+  if (resultados.length === 0) return [];
+  
+  return Array.from(new Set(
+    matrizData
+      .filter(item => resultados.includes(item.Resultado))
+      .map(item => item.Golpe)
+  ));
 }
 
 export function getEfeitos(resultados: string[], golpes: string[]): string[] {
-  return ['Chapado', 'Top spin', 'Cortado'];
+  if (resultados.length === 0 || golpes.length === 0) return [];
+  
+  return Array.from(new Set(
+    matrizData
+      .filter(item => 
+        resultados.includes(item.Resultado) && 
+        golpes.includes(item.Golpe)
+      )
+      .map(item => item.Efeito)
+  ));
 }
 
 export function getDirecoes(resultados: string[], golpes: string[], efeitos: string[]): string[] {
-  return ['Centro', 'Cruzada', 'Inside In', 'Inside Out', 'Paralela'];
+  if (resultados.length === 0 || golpes.length === 0 || efeitos.length === 0) return [];
+  
+  return Array.from(new Set(
+    matrizData
+      .filter(item => 
+        resultados.includes(item.Resultado) && 
+        golpes.includes(item.Golpe) &&
+        efeitos.includes(item.Efeito)
+      )
+      .map(item => item.Direcao)
+  ));
 }
 
 export function getRespostaAdv(resultados: string[], golpes: string[], efeitos: string[], direcoes: string[]): string[] {

@@ -13,6 +13,7 @@ import MatchStatsModal from '../components/MatchStatsModal';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import LoadingIndicator from '../components/LoadingIndicator';
 import PointDetailsModal from '../components/PointDetailsModal';
+import ServerEffectModal from '../components/ServerEffectModal';
 import { TennisScoring } from '../core/scoring/TennisScoring';
 import { TennisConfigFactory } from '../core/scoring/TennisConfigFactory';
 import type { MatchState, TennisFormat, Player, PointDetails } from '../core/scoring/types';
@@ -87,14 +88,13 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void; }> = ({ onEndMatch }) => 
   const [isSetupOpen, setIsSetupOpen] = useState(false);
   const [elapsed, setElapsed] = useState<number>(0);
   const [isPointDetailsOpen, setIsPointDetailsOpen] = useState(false);
+  const [isServerEffectOpen, setIsServerEffectOpen] = useState(false);
   const [playerInFocus, setPlayerInFocus] = useState<Player | null>(null);
   const [serveStep, setServeStep] = useState<'none' | 'second'>('none');
   const [preselectedResult, setPreselectedResult] = useState<string | undefined>();
   const [renderKey, setRenderKey] = useState(0);
   const [isStatsOpen, setIsStatsOpen] = useState(false);
   const [statsData, setStatsData] = useState(null);
-  const [lastPointFeedback, setLastPointFeedback] = useState<string | null>(null);
-
   // Validação para mudanças seguras de serveStep
   const setServeStepSafe = useCallback((newStep: 'none' | 'second') => {
     if (newStep === 'second' && serveStep !== 'none') {
@@ -284,10 +284,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void; }> = ({ onEndMatch }) => 
 
     console.log(`[ScoreboardV2] Adicionando ponto para ${player}`, pointDetails);
     try {
-      const serveType = serveStep === 'second' ? '2º saque' : '1º saque';
       const newState = await scoringSystem.addPointWithSync(player, pointDetails as PointDetails);
-      setLastPointFeedback(`Ponto disputado no ${serveType}`);
-      setTimeout(() => setLastPointFeedback(null), 5000); // Clear after 5 seconds
       setServeStepSafe('none');
       forceRerender();
 
@@ -371,6 +368,28 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void; }> = ({ onEndMatch }) => 
     setPlayerInFocus(null);
   };
 
+  const handleServerEffectConfirm = (effect?: string, direction?: string) => {
+    if (!playerInFocus) return;
+    // ServerEffectModal é usado apenas para Ace, nunca para dupla falta
+    // Dupla falta é tratada por handleFault()
+    const pointDetails: Partial<PointDetails> = {
+      serve: {
+        type: 'ACE',
+        isFirstServe: serveStep !== 'second',
+        serveEffect: effect as 'Chapado' | 'Cortado' | 'TopSpin' | undefined,
+        direction: direction as 'Fechado' | 'Aberto' | undefined,
+      },
+      result: {
+        winner: playerInFocus,
+        type: 'WINNER',
+      },
+      rally: { ballExchanges: 1 },
+    };
+    addPoint(playerInFocus, pointDetails);
+    setIsServerEffectOpen(false);
+    setPlayerInFocus(null);
+  };
+
   if (isLoading) return <LoadingIndicator />;
   if (error) {
     console.error('[ScoreboardV2] Renderizando erro:', error);
@@ -422,11 +441,6 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void; }> = ({ onEndMatch }) => 
         {state.startedAt && <span>Início: {new Date(state.startedAt).toLocaleTimeString()}</span>}
         {state.startedAt && !state.isFinished && <span>Tempo: {new Date(elapsed * 1000).toISOString().substr(11, 8)}</span>}
       </div>
-      {lastPointFeedback && (
-        <div className="last-point-feedback">
-          {lastPointFeedback}
-        </div>
-      )}
       <div className="score-main">
         <div className="player-section">
           <div className="player-header"><span className="player-name">{players.p1}</span>{state.server === 'PLAYER_1' && <span className="serve-indicator">🎾 {serveStep === 'second' ? '2º' : '1º'}</span>}</div>
@@ -487,15 +501,16 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void; }> = ({ onEndMatch }) => 
       <div className={`quick-actions-row serve-${state.server === 'PLAYER_1' ? 'left' : 'right'}`}>
         {!state.isFinished && state.server && serveStep === 'none' && (
           <>
-            <button className="quick-action-btn" onClick={() => { setIsPointDetailsOpen(true); setPlayerInFocus(state.server); setPreselectedResult(undefined); }}>1º Saque</button>
-            <button className="quick-action-btn" onClick={() => { setIsPointDetailsOpen(true); setPlayerInFocus(state.server); setPreselectedResult(undefined); }}>Ace</button>
+            <button className="quick-action-btn serve-info first-serve">1º Saque</button>
+            <button className="quick-action-btn" onClick={() => { setIsServerEffectOpen(true); setPlayerInFocus(state.server); }}>Ace</button>
             <button className="quick-action-btn" onClick={() => setServeStepSafe('second')}>Out</button>
              <button className="quick-action-btn" onClick={() => setServeStepSafe('second')}>Net</button>
           </>
         )}
         {!state.isFinished && state.server && serveStep === 'second' && (
           <>
-            <button className="quick-action-btn" onClick={() => { setIsPointDetailsOpen(true); setPlayerInFocus(state.server); setPreselectedResult(undefined); }}>2º Saque</button>
+            <button className="quick-action-btn serve-info second-serve">2º Saque</button>
+            <button className="quick-action-btn" onClick={() => { setIsServerEffectOpen(true); setPlayerInFocus(state.server); }}>Ace</button>
             <button className="quick-action-btn" onClick={handleFault}>Out</button>
             <button className="quick-action-btn" onClick={handleFault}>Net</button>
           </>
@@ -503,8 +518,8 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void; }> = ({ onEndMatch }) => 
       </div>
 
       <div className="point-buttons">
-        <button className="point-button point-button-p1" onClick={() => addPoint('PLAYER_1')} disabled={state.isFinished || false}>+ Ponto {players.p1}</button>
-        <button className="point-button point-button-p2" onClick={() => addPoint('PLAYER_2')} disabled={state.isFinished || false}>+ Ponto {players.p2}</button>
+        <button className="point-button point-button-p1" onClick={() => { setIsPointDetailsOpen(true); setPlayerInFocus('PLAYER_1'); setPreselectedResult(undefined); }} disabled={state.isFinished || false}>+ Ponto {players.p1}</button>
+        <button className="point-button point-button-p2" onClick={() => { setIsPointDetailsOpen(true); setPlayerInFocus('PLAYER_2'); setPreselectedResult(undefined); }} disabled={state.isFinished || false}>+ Ponto {players.p2}</button>
       </div>
 
       {state.isFinished && (
@@ -520,6 +535,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void; }> = ({ onEndMatch }) => 
       <div className="correction-section">
         <button className="undo-button" onClick={handleUndo} disabled={!scoringSystem?.canUndo() || state.isFinished || false}>↩️ Correção (Undo)</button>
       </div>
+      <ServerEffectModal isOpen={isServerEffectOpen} playerInFocus={playerInFocus || 'PLAYER_1'} onConfirm={handleServerEffectConfirm} onCancel={() => { setIsServerEffectOpen(false); setPlayerInFocus(null); }} />
       <PointDetailsModal isOpen={isPointDetailsOpen} playerInFocus={playerInFocus || 'PLAYER_1'} onConfirm={handlePointDetailsConfirm} onCancel={() => { setIsPointDetailsOpen(false); setPreselectedResult(undefined); }} preselectedResult={preselectedResult} />
     </div>
   );

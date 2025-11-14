@@ -15,6 +15,16 @@ vi.mock('../../components/PointDetailsModal', async () => {
   const mocks = await import('../../__mocks__');
   return { default: mocks.MockPointDetailsModal };
 });
+vi.mock('../../components/ServerEffectModal', () => ({
+  default: ({ isOpen, onConfirm, onCancel }: any) =>
+    isOpen ? (
+      <div data-testid="server-effect-modal">
+        ServerEffectModal
+        <button onClick={() => onConfirm('Chapado', 'Fechado')}>Confirm ServerEffect</button>
+        <button onClick={onCancel}>Cancel ServerEffect</button>
+      </div>
+    ) : null,
+}));
 vi.mock('../../core/scoring/TennisScoring', async () => {
   const mocks = await import('../../__mocks__');
   return { TennisScoring: mocks.MockTennisScoring };
@@ -47,6 +57,9 @@ import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import ScoreboardV2 from '../ScoreboardV2';
 import { __resetMockTennisScoring, mockTennisScoring } from '../../__mocks__';
+import { AuthProvider } from '../../contexts/AuthContext';
+import { MatchesProvider } from '../../contexts/MatchesContext';
+import { NavigationProvider } from '../../contexts/NavigationContext';
 
 
 
@@ -85,7 +98,13 @@ const mockMatchData: MatchData = {
 const renderScoreboard = (props = {}) => {
   return render(
     <BrowserRouter>
-      <ScoreboardV2 onEndMatch={vi.fn()} {...props} />
+      <AuthProvider>
+        <MatchesProvider>
+          <NavigationProvider>
+            <ScoreboardV2 onEndMatch={vi.fn()} {...props} />
+          </NavigationProvider>
+        </MatchesProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 };
@@ -106,49 +125,37 @@ describe('ScoreboardV2 - Ace Button Behavior', () => {
   });
 
   describe('Ace button functionality', () => {
-    it('opens PointDetailsModal when Ace button is clicked', async () => {
+    it('opens ServerEffectModal when Ace button is clicked on first serve', async () => {
       renderScoreboard();
 
       await waitFor(() => {
         expect(screen.getByText('Jogador 1')).toBeInTheDocument();
       });
 
-      const aceButton = screen.getByRole('button', { name: 'Ace' });
+      const aceButton = screen.getAllByRole('button', { name: 'Ace' })[0]; // First serve
       fireEvent.click(aceButton);
 
-      expect(screen.getByTestId('point-details-modal')).toBeInTheDocument();
+      expect(screen.getByTestId('server-effect-modal')).toBeInTheDocument();
     });
 
-    it('sets playerInFocus to current server when Ace button is clicked', async () => {
+    it('opens ServerEffectModal when Ace button is clicked on second serve', async () => {
       renderScoreboard();
 
       await waitFor(() => {
         expect(screen.getByText('Jogador 1')).toBeInTheDocument();
       });
 
-      const aceButton = screen.getByRole('button', { name: 'Ace' });
+      // Go to second serve
+      const outButton = screen.getAllByRole('button', { name: 'Out' })[0];
+      fireEvent.click(outButton);
+
+      const aceButton = screen.getByRole('button', { name: 'Ace' }); // Second serve
       fireEvent.click(aceButton);
 
-      // The modal should be open with player in focus as PLAYER_1 (current server)
-      expect(screen.getByTestId('point-details-modal')).toBeInTheDocument();
+      expect(screen.getByTestId('server-effect-modal')).toBeInTheDocument();
     });
 
-    it('does not preselect any result when Ace button is clicked', async () => {
-      renderScoreboard();
-
-      await waitFor(() => {
-        expect(screen.getByText('Jogador 1')).toBeInTheDocument();
-      });
-
-      const aceButton = screen.getByRole('button', { name: 'Ace' });
-      fireEvent.click(aceButton);
-
-      // Modal should open without preselected result (all result options should be available)
-      const modal = screen.getByTestId('point-details-modal');
-      expect(modal).toBeInTheDocument();
-    });
-
-    it('allows user to select result and confirm point through modal', async () => {
+    it('allows user to confirm point through ServerEffectModal', async () => {
       renderScoreboard();
 
       await waitFor(() => {
@@ -156,28 +163,27 @@ describe('ScoreboardV2 - Ace Button Behavior', () => {
       });
 
       // Click Ace button
-      const aceButton = screen.getByRole('button', { name: 'Ace' });
+      const aceButton = screen.getAllByRole('button', { name: 'Ace' })[0];
       fireEvent.click(aceButton);
 
       // Modal should be open
-      const modal = screen.getByTestId('point-details-modal');
-      expect(modal).toBeInTheDocument();
+      expect(screen.getByTestId('server-effect-modal')).toBeInTheDocument();
 
-      // Click confirm in modal (simulating user selecting Winner)
-      const confirmButton = screen.getByRole('button', { name: 'Confirm' });
+      // Click confirm in modal
+      const confirmButton = screen.getByRole('button', { name: 'Confirm ServerEffect' });
       fireEvent.click(confirmButton);
 
-      // Should call addPointWithSync with correct parameters
+      // Should call addPointWithSync with correct parameters including serveEffect
       await waitFor(() => {
         expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith('PLAYER_1', {
-          serve: { type: 'SERVICE_WINNER', isFirstServe: true },
+          serve: { type: 'ACE', isFirstServe: true, serveEffect: 'Chapado', direction: 'Fechado' },
           result: { winner: 'PLAYER_1', type: 'WINNER' },
           rally: { ballExchanges: 1 }
         });
       });
     });
 
-    it('closes modal after confirming point', async () => {
+    it('closes ServerEffectModal after confirming point', async () => {
       renderScoreboard();
 
       await waitFor(() => {
@@ -185,23 +191,23 @@ describe('ScoreboardV2 - Ace Button Behavior', () => {
       });
 
       // Click Ace button
-      const aceButton = screen.getByRole('button', { name: 'Ace' });
+      const aceButton = screen.getAllByRole('button', { name: 'Ace' })[0];
       fireEvent.click(aceButton);
 
       // Modal should be open
-      expect(screen.getByTestId('point-details-modal')).toBeInTheDocument();
+      expect(screen.getByTestId('server-effect-modal')).toBeInTheDocument();
 
       // Click confirm
-      const confirmButton = screen.getByRole('button', { name: 'Confirm' });
+      const confirmButton = screen.getByRole('button', { name: 'Confirm ServerEffect' });
       fireEvent.click(confirmButton);
 
       // Modal should be closed after confirmation
       await waitFor(() => {
-        expect(screen.queryByTestId('point-details-modal')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('server-effect-modal')).not.toBeInTheDocument();
       });
     });
 
-    it('allows canceling the modal without adding point', async () => {
+    it('allows canceling the ServerEffectModal without adding point', async () => {
       renderScoreboard();
 
       await waitFor(() => {
@@ -209,19 +215,19 @@ describe('ScoreboardV2 - Ace Button Behavior', () => {
       });
 
       // Click Ace button
-      const aceButton = screen.getByRole('button', { name: 'Ace' });
+      const aceButton = screen.getAllByRole('button', { name: 'Ace' })[0];
       fireEvent.click(aceButton);
 
       // Modal should be open
-      expect(screen.getByTestId('point-details-modal')).toBeInTheDocument();
+      expect(screen.getByTestId('server-effect-modal')).toBeInTheDocument();
 
       // Click cancel
-      const cancelButton = screen.getByRole('button', { name: 'Cancel' });
+      const cancelButton = screen.getByRole('button', { name: 'Cancel ServerEffect' });
       fireEvent.click(cancelButton);
 
       // Modal should be closed and no point should be added
       await waitFor(() => {
-        expect(screen.queryByTestId('point-details-modal')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('server-effect-modal')).not.toBeInTheDocument();
         expect(mockTennisScoring.addPointWithSync).not.toHaveBeenCalled();
       });
     });
@@ -253,7 +259,7 @@ describe('ScoreboardV2 - Ace Button Behavior', () => {
       expect(screen.queryByRole('button', { name: 'Ace' })).not.toBeInTheDocument();
     });
 
-    it('hides Ace button when serveStep is second', async () => {
+    it('shows Ace button when serveStep is second', async () => {
       renderScoreboard();
 
       await waitFor(() => {
@@ -264,23 +270,23 @@ describe('ScoreboardV2 - Ace Button Behavior', () => {
       const outButton = screen.getByRole('button', { name: 'Out' });
       fireEvent.click(outButton);
 
-      // Ace button should not be visible in second serve step
-      expect(screen.queryByRole('button', { name: 'Ace' })).not.toBeInTheDocument();
+      // Ace button should be visible in second serve step
+      expect(screen.getByRole('button', { name: 'Ace' })).toBeInTheDocument();
     });
   });
 
   describe('Integration with existing tests', () => {
-    it('maintains existing 1º Saque button behavior', async () => {
+    it('displays serve info buttons without click handlers', async () => {
       renderScoreboard();
 
       await waitFor(() => {
         expect(screen.getByText('Jogador 1')).toBeInTheDocument();
       });
 
+      // 1º Saque button should be present but is informational only
       const firstServeButton = screen.getByRole('button', { name: '1º Saque' });
-      fireEvent.click(firstServeButton);
-
-      expect(screen.getByTestId('point-details-modal')).toBeInTheDocument();
+      expect(firstServeButton).toBeInTheDocument();
+      expect(firstServeButton).toHaveClass('serve-info');
     });
 
     it('maintains existing point buttons functionality', async () => {
@@ -293,11 +299,20 @@ describe('ScoreboardV2 - Ace Button Behavior', () => {
       const pointButton = screen.getByRole('button', { name: /\+ Ponto Jogador 1/ });
       fireEvent.click(pointButton);
 
+      // Modal should open
+      expect(screen.getByTestId('point-details-modal')).toBeInTheDocument();
+
+      // Confirm point in modal
+      const confirmButton = screen.getByRole('button', { name: 'Confirm' });
+      fireEvent.click(confirmButton);
+
+      await waitFor(() => {
         expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith('PLAYER_1', {
-          serve: { isFirstServe: true },
+          serve: { isFirstServe: true, type: 'SERVICE_WINNER' },
           result: { winner: 'PLAYER_1', type: 'WINNER' },
           rally: { ballExchanges: 1 }
         });
+      });
     });
   });
 });
@@ -403,23 +418,30 @@ describe('ScoreboardV2 - Button Alignment Based on Server', () => {
    });
  
    it('registers isFirstServe correctly for points on first serve', async () => {
-     renderScoreboard();
- 
-     await waitFor(() => {
-       expect(screen.getByText('Jogador 1')).toBeInTheDocument();
-     });
- 
-     // Add point via button (should be first serve)
-     const pointButton = screen.getByRole('button', { name: /\+ Ponto Jogador 2/ });
-     fireEvent.click(pointButton);
- 
-     await waitFor(() => {
-       expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith('PLAYER_2', {
-         serve: { isFirstServe: true },
-         result: { winner: 'PLAYER_2', type: 'WINNER' },
-         rally: { ballExchanges: 1 }
-       });
-     });
+    renderScoreboard();
+
+    await waitFor(() => {
+      expect(screen.getByText('Jogador 1')).toBeInTheDocument();
+    });
+
+    // Add point via button (should be first serve)
+    const pointButton = screen.getByRole('button', { name: /\+ Ponto Jogador 2/ });
+    fireEvent.click(pointButton);
+
+    // Confirma o ponto no modal
+    await waitFor(() => {
+      expect(screen.getByTestId('point-details-modal')).toBeInTheDocument();
+    });
+    const confirmBtn = screen.getByRole('button', { name: /Confirm/i });
+    fireEvent.click(confirmBtn);
+
+    await waitFor(() => {
+      expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith('PLAYER_2', {
+        serve: { isFirstServe: true, type: 'SERVICE_WINNER' },
+        result: { winner: 'PLAYER_2', type: 'WINNER' },
+        rally: { ballExchanges: 1 }
+      });
+    });
    });
  
    it('registers isFirstServe correctly for points on second serve', async () => {
@@ -436,14 +458,21 @@ describe('ScoreboardV2 - Button Alignment Based on Server', () => {
      // Add point via button (should be second serve)
      const pointButton = screen.getByRole('button', { name: /\+ Ponto Jogador 2/ });
      fireEvent.click(pointButton);
- 
-     await waitFor(() => {
-       expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith('PLAYER_2', {
-         serve: { isFirstServe: false },
-         result: { winner: 'PLAYER_2', type: 'WINNER' },
-         rally: { ballExchanges: 1 }
-       });
-     });
+
+     // Modal should open
+     expect(screen.getByTestId('point-details-modal')).toBeInTheDocument();
+
+     // Confirm point in modal
+     const confirmButton = screen.getByRole('button', { name: 'Confirm' });
+     fireEvent.click(confirmButton);
+
+      await waitFor(() => {
+        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith('PLAYER_2', {
+          serve: { isFirstServe: false, type: 'SERVICE_WINNER' },
+          result: { winner: 'PLAYER_2', type: 'WINNER' },
+          rally: { ballExchanges: 1 }
+        });
+      });
    });
  
    it('alternates server correctly when returner wins point on first serve', async () => {
@@ -459,12 +488,17 @@ describe('ScoreboardV2 - Button Alignment Based on Server', () => {
      // Returner (PLAYER_2) wins the point
      const pointButton = screen.getByRole('button', { name: /\+ Ponto Jogador 2/ });
      fireEvent.click(pointButton);
- 
+
+     // Modal should open
+     expect(screen.getByTestId('point-details-modal')).toBeInTheDocument();
+
+     // Confirm point in modal
+     const confirmButton = screen.getByRole('button', { name: 'Confirm' });
+     fireEvent.click(confirmButton);
+
      await waitFor(() => {
        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalled();
-     });
- 
-     // After point, server should change to PLAYER_2
+     });     // After point, server should change to PLAYER_2
      mockTennisScoring.getState.mockReturnValue({
        ...mockMatchData.matchState,
        server: 'PLAYER_2'
@@ -480,19 +514,17 @@ describe('ScoreboardV2 - Button Alignment Based on Server', () => {
  
    it('maintains isFirstServe consistency in modal confirmations', async () => {
      renderScoreboard();
- 
+
      await waitFor(() => {
        expect(screen.getByText('Jogador 1')).toBeInTheDocument();
      });
- 
-     // Click 1º Saque button
-     const firstServeButton = screen.getByRole('button', { name: '1º Saque' });
-     fireEvent.click(firstServeButton);
- 
+
+     // Click point button to open modal
+     const pointButton = screen.getByRole('button', { name: /\+ Ponto Jogador 1/ });
+     fireEvent.click(pointButton);
+
      // Modal should open
-     expect(screen.getByTestId('point-details-modal')).toBeInTheDocument();
- 
-     // Confirm point
+     expect(screen.getByTestId('point-details-modal')).toBeInTheDocument();     // Confirm point
      const confirmButton = screen.getByRole('button', { name: 'Confirm' });
      fireEvent.click(confirmButton);
  
@@ -507,23 +539,21 @@ describe('ScoreboardV2 - Button Alignment Based on Server', () => {
  
    it('maintains isFirstServe consistency for second serve modal confirmations', async () => {
      renderScoreboard();
- 
+
      await waitFor(() => {
        expect(screen.getByText('Jogador 1')).toBeInTheDocument();
      });
- 
+
      // Go to second serve
      const outButton = screen.getByRole('button', { name: 'Out' });
      fireEvent.click(outButton);
- 
-     // Click 2º Saque button
-     const secondServeButton = screen.getByRole('button', { name: '2º Saque' });
-     fireEvent.click(secondServeButton);
- 
+
+     // Click point button to open modal
+     const pointButton = screen.getByRole('button', { name: /\+ Ponto Jogador 1/ });
+     fireEvent.click(pointButton);
+
      // Modal should open
-     expect(screen.getByTestId('point-details-modal')).toBeInTheDocument();
- 
-     // Confirm point
+     expect(screen.getByTestId('point-details-modal')).toBeInTheDocument();     // Confirm point
      const confirmButton = screen.getByRole('button', { name: 'Confirm' });
      fireEvent.click(confirmButton);
  
@@ -714,9 +744,16 @@ describe('ScoreboardV2 - Restauração de Estado e Fluxos', () => {
       const pointButton = screen.getByRole('button', { name: /\+ Ponto Jogador 1/ });
       fireEvent.click(pointButton);
 
+      // Modal should open
+      expect(screen.getByTestId('point-details-modal')).toBeInTheDocument();
+
+      // Confirm point in modal
+      const confirmButton = screen.getByRole('button', { name: 'Confirm' });
+      fireEvent.click(confirmButton);
+
       await waitFor(() => {
         expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith('PLAYER_1', {
-          serve: { isFirstServe: true },
+          serve: { isFirstServe: true, type: 'SERVICE_WINNER' },
           result: { winner: 'PLAYER_1', type: 'WINNER' },
           rally: { ballExchanges: 1 }
         });

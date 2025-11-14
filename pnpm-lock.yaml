@@ -51,9 +51,6 @@ importers:
       pg:
         specifier: ^8.16.3
         version: 8.16.3
-      prisma:
-        specifier: ^6.16.3
-        version: 6.19.0(typescript@5.9.3)
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -127,6 +124,9 @@ importers:
       jsdom:
         specifier: ^27.1.0
         version: 27.1.0
+      prisma:
+        specifier: ^6.16.3
+        version: 6.19.0(typescript@5.9.3)
       typescript:
         specifier: ^5.0.2
         version: 5.9.3

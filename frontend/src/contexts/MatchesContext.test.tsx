@@ -229,9 +229,14 @@ describe('MatchesContext', () => {
 
   describe('Hook useMatches', () => {
     it('deve lançar erro quando usado fora do provider', () => {
+      const OutsideProviderComponent = () => {
+        const { matches } = useMatches();
+        return <div>{matches.length}</div>;
+      };
+      
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-      expect(() => render(<TestComponent />)).toThrow(
+      expect(() => render(<OutsideProviderComponent />)).toThrow(
         'useMatches must be used within a MatchesProvider'
       );
 

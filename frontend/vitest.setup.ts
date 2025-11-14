@@ -40,6 +40,8 @@ Object.defineProperty(global, 'localStorage', {
   writable: true,
 });
 
+// jsdom fornece window e document automaticamente
+
 // Mock global para console.warn e console.error para reduzir ruído nos testes
 const originalWarn = console.warn;
 const originalError = console.error;

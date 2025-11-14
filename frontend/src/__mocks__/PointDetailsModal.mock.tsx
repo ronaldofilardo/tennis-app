@@ -11,7 +11,7 @@ export function __resetMockPointDetailsModal() {
   mockState = { gamesP1: 0, gamesP2: 0, finished: false };
 }
 
-export default function MockPointDetailsModal({ isOpen, onConfirm, onCancel }: any) {
+export default function MockPointDetailsModal({ isOpen, onConfirm, onCancel, playerInFocus }: any) {
   if (!isOpen) return null;
 
   const handleConfirm = () => {
@@ -23,7 +23,7 @@ export default function MockPointDetailsModal({ isOpen, onConfirm, onCancel }: a
         mockState.finished = true;
       }
     }
-    onConfirm({ Resultado: 'Winner', Golpe: 'Forehand - FH', Efeito: 'Flat', Direcao: 'Paralela' }, 'PLAYER_1');
+    onConfirm({ Resultado: 'Winner', Golpe: 'Forehand - FH', Efeito: 'Flat', Direcao: 'Paralela', winner: playerInFocus || 'PLAYER_1' }, playerInFocus || 'PLAYER_1');
   };
 
   return (
@@ -32,7 +32,7 @@ export default function MockPointDetailsModal({ isOpen, onConfirm, onCancel }: a
         <div className="modal-header">
           <h3>🎾 Detalhes do Ponto</h3>
           <div className="winner-display">
-            Ponto para: <strong>Jogador 1</strong>
+            Ponto para: <strong>{playerInFocus === 'PLAYER_2' ? 'Jogador 2' : 'Jogador 1'}</strong>
           </div>
         </div>
         <div className="modal-content">
