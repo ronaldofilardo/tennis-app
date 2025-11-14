@@ -122,9 +122,14 @@ describe('NavigationContext', () => {
 
   describe('Hook useNavigation', () => {
     it('deve lançar erro quando usado fora do provider', () => {
+      const OutsideProviderComponent = () => {
+        const navigation = useNavigation();
+        return <div>{navigation.currentPage}</div>;
+      };
+      
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-      expect(() => render(<TestComponent />)).toThrow(
+      expect(() => render(<OutsideProviderComponent />)).toThrow(
         'useNavigation must be used within a NavigationProvider'
       );
 

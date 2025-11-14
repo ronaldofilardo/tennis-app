@@ -3,8 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Player } from '../core/scoring/types';
 import type { MatrizItem } from '../data/matrizData';
-// Removidas importações não utilizadas - modal usa apenas opções hardcoded
-// import { getResultados, getGolpes, getEfeitos, getDirecoes } from '../core/scoring/matrizUtils';
+import { getResultados, getGolpes, getEfeitos, getDirecoes } from '../core/scoring/matrizUtils';
 import './PointDetailsModal.css';
 
 interface PointDetailsModalProps {
@@ -20,8 +19,19 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({ isOpen, playerInF
   const [golpe, setGolpe] = useState<string | undefined>();
   const [efeito, setEfeito] = useState<string | undefined>();
   const [direcao, setDirecao] = useState<string | undefined>();
+  const [erroDetalhe, setErroDetalhe] = useState<string | undefined>();
 
   const pointWinner = playerInFocus;
+
+  // Sempre declare as variáveis derivadas ANTES dos useEffect que as usam
+  const resultadosDisponiveis = getResultados();
+  const golpesDisponiveis = resultado ? getGolpes([resultado]) : [];
+  const efeitosDisponiveis = (resultado && golpe) ? getEfeitos([resultado], [golpe]) : [];
+  // Ajuste: garantir que, se não houver efeito selecionado e houver efeito vazio na matriz, passe [''] para getDirecoes
+  const efeitoParaDirecao = efeito !== undefined ? efeito : (efeitosDisponiveis.length === 1 && (efeitosDisponiveis[0] === '' || efeitosDisponiveis[0] === '(Sem efeito)')) ? '' : undefined;
+  const direcoesDisponiveis = (resultado && golpe && (efeitoParaDirecao !== undefined))
+    ? getDirecoes([resultado], [golpe], [efeitoParaDirecao])
+    : [];
 
   useEffect(() => {
     if (isOpen) {
@@ -29,64 +39,52 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({ isOpen, playerInF
       setGolpe(undefined);
       setEfeito(undefined);
       setDirecao(undefined);
+      setErroDetalhe(undefined);
     }
-  }, [isOpen, preselectedResult]); // Restaurado preselectedResult para garantir que mudanças sejam refletidas
+  }, [isOpen, preselectedResult]);
+
+  // Avanço automático para efeito único ("(Sem efeito)")
+  useEffect(() => {
+    if (
+      golpe && efeitosDisponiveis.length === 1 && (efeitosDisponiveis[0] === '' || efeitosDisponiveis[0] === '(Sem efeito)') && efeito !== (efeitosDisponiveis[0] || '')
+    ) {
+      setEfeito(efeitosDisponiveis[0] || '');
+    }
+  }, [golpe, efeitosDisponiveis, efeito]);
+
+  // Avanço automático para etapa de erro em EF/ENF
+  useEffect(() => {
+    if (
+      resultado && (resultado.startsWith('Erro')) && golpe && (efeito || efeitosDisponiveis.length === 0)
+    ) {
+      if (!erroDetalhe) {
+        setErroDetalhe(''); // pode ser substituído por lógica de seleção automática se necessário
+      }
+    }
+  }, [resultado, golpe, efeito, efeitosDisponiveis, erroDetalhe]);
 
   const handleConfirm = () => {
-    if (!resultado) return;
-
-    const efeitoFinal = devePularEfeito ? (golpe.includes('Voleio') ? '' : 'Cortado') : efeito;
+    // Permite confirmar o ponto mesmo sem todos os detalhes preenchidos
+    // Se não houver resultado ou golpe, usa valores padrão mínimos
+    const finalResultado = resultado || 'Winner';
+    const finalGolpe = golpe || 'Forehand - FH';
+    const finalEfeito = efeito || '';
+    const finalDirecao = direcao || '';
+    const finalErro = erroDetalhe || '';
 
     const item: Partial<MatrizItem> = {
-      Resultado: resultado,
-      Golpe: golpe,
-      Efeito: efeitoFinal,
-      Direcao: direcao
+      Resultado: finalResultado,
+      Golpe: finalGolpe,
+      Efeito: finalEfeito,
+      Direcao: finalDirecao,
+      erro: finalErro
     };
     onConfirm(item, pointWinner);
   };
 
-  // Opções fixas para garantir que sempre estejam presentes - alinhadas com matriz.txt
-   const golpesFixos = [
-     'Forehand - FH', 'Backhand - BH', 'Voleio Forehand - VFH', 'Voleio Backhand - VBH',
-     'Smash - SM', 'Swingvolley - FH', 'Swingvolley - BH', 'Drop volley - FH', 'Drop volley - BH',
-     'Drop shot - FH', 'Drop shot - BH'
-   ];
-   const efeitosFixos = ['Chapado', 'Top spin', 'Cortado'];
-  const direcoesFixas = ['Centro', 'Cruzada', 'Inside In', 'Inside Out', 'Paralela'];
+  // ...existing code...
 
-  const resultadosFixos = ['Erro forçado - EF', 'Erro não Forçado - ENF', 'Winner'];
 
-  // Sempre mostrar as opções fixas de golpes
-  const golpesDisponiveis = golpesFixos;
-
-  // Para alguns golpes, o efeito é fixo (sempre "Cortado" ou "")
-  const devePularEfeito = golpe && (
-    golpe.includes('Forehand') ||
-    golpe.includes('Backhand') ||
-    golpe.includes('Drop volley') ||
-    golpe.includes('Voleio') ||
-    golpe.includes('Swingvolley') ||
-    golpe.includes('Drop shot')
-  );
-
-  // Sempre mostrar as 3 opções fixas de efeitos se não for para pular efeito
-  const efeitosDisponiveis = (golpe && !devePularEfeito) ? efeitosFixos : [];
-
-  // Sempre mostrar as direções fixas conforme o tipo de golpe
-  const direcoesDisponiveis = (() => {
-    if (!efeito && !devePularEfeito) return [];
-    if (devePularEfeito && !golpe) return [];
-    const efeitoAtual = devePularEfeito ? 'Cortado' : efeito;
-    if (!efeitoAtual || !resultado || !golpe) return [];
-
-    // Voleios: apenas Cruzada, Paralela, Centro
-    if (golpe.includes('Voleio') || golpe.includes('Drop volley') || golpe.includes('Drop shot') || golpe === 'Smash - SM') {
-      return ['Cruzada', 'Paralela', 'Centro'];
-    }
-    // Demais golpes: todas as direções
-    return direcoesFixas;
-  })();
 
   if (!isOpen) return null;
 
@@ -103,7 +101,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({ isOpen, playerInF
           <div className="section">
             <h4>Resultado</h4>
             <div className="button-group">
-              {resultadosFixos.map((r) => (
+              {resultadosDisponiveis.map((r) => (
                 <button
                   key={r}
                   className={resultado === r ? 'active' : ''}
@@ -136,18 +134,25 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({ isOpen, playerInF
             </div>
           )}
 
-          {golpe && !devePularEfeito && (
+          {/* Só exibe etapa de efeito se houver mais de uma opção ou se não for só '(Sem efeito)' */}
+          {golpe && efeitosDisponiveis.length > 1 && (
             <div className="section">
               <h4>Efeito</h4>
               <div className="button-group">
                 {efeitosDisponiveis.map((e) => (
-                  <button key={e} className={efeito === e ? 'active' : ''} onClick={() => { setEfeito(e); setDirecao(undefined); }}>{e}</button>
+                  <button 
+                    key={e} 
+                    className={efeito === e ? 'active' : ''} 
+                    onClick={() => { setEfeito(e); setDirecao(undefined); }}
+                  >
+                    {e || '(Sem efeito)'}
+                  </button>
                 ))}
               </div>
             </div>
           )}
 
-          {((efeito && !devePularEfeito) || (golpe && devePularEfeito)) && (
+          {golpe && (efeito || efeitosDisponiveis.length === 0 || (efeitosDisponiveis.length === 1 && (efeitosDisponiveis[0] === '' || efeitosDisponiveis[0] === '(Sem efeito)'))) && direcoesDisponiveis.length > 0 && (
             <div className="section">
               <h4>Direção</h4>
               <div className="button-group">
@@ -157,10 +162,28 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({ isOpen, playerInF
               </div>
             </div>
           )}
+          {/* Etapa de erro para EF/ENF */}
+          {resultado && resultado.startsWith('Erro') && golpe && (efeito || efeitosDisponiveis.length === 0 || (efeitosDisponiveis.length === 1 && (efeitosDisponiveis[0] === '' || efeitosDisponiveis[0] === '(Sem efeito)'))) && (direcao || direcoesDisponiveis.length === 0) && (
+            <div className="section">
+              <h4>Erro</h4>
+              <div className="button-group">
+                {/* Exemplo: opções de erro, pode ser ajustado conforme necessidade */}
+                {['Rede', 'Fora'].map((erro) => (
+                  <button key={erro} className={erroDetalhe === erro ? 'active' : ''} onClick={() => setErroDetalhe(erro)}>{erro}</button>
+                ))}
+              </div>
+            </div>
+          )}
+
+
         </div>
         <div className="modal-actions">
           <button className="cancel-btn" onClick={onCancel}>Cancelar</button>
-          <button className="confirm-btn" onClick={handleConfirm} disabled={!resultado}>
+          <button 
+            className="confirm-btn"
+            onClick={handleConfirm}
+            disabled={false}
+          >
             Confirmar Ponto
           </button>
         </div>

@@ -41,13 +41,16 @@ const defaultProps = {
 
 import { AuthProvider } from '../../contexts/AuthContext';
 import { MatchesProvider } from '../../contexts/MatchesContext';
+import { NavigationProvider } from '../../contexts/NavigationContext';
 
 const renderMatchSetup = (props = {}) => {
   return render(
     <AuthProvider>
       <BrowserRouter>
         <MatchesProvider>
-          <MatchSetup {...defaultProps} {...props} />
+          <NavigationProvider>
+            <MatchSetup {...defaultProps} {...props} />
+          </NavigationProvider>
         </MatchesProvider>
       </BrowserRouter>
     </AuthProvider>

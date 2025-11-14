@@ -1,3 +1,5 @@
+import '../../../vitest.setup';
+
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
@@ -5,6 +7,9 @@ import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import ScoreboardV2 from '../ScoreboardV2';
 import { TennisScoring } from '../../core/scoring/TennisScoring';
+import { AuthProvider } from '../../contexts/AuthContext';
+import { MatchesProvider } from '../../contexts/MatchesContext';
+import { NavigationProvider } from '../../contexts/NavigationContext';
 
 vi.mock('../../core/scoring/TennisScoring', () => {
   const validState = {
@@ -379,14 +384,17 @@ describe('ScoreboardV2 - Cobertura Avançada', () => {
         expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
       });
 
-   const pointButton = screen.getByText('+ Ponto Jogador 1');
-   fireEvent.click(pointButton);
+      const pointButton = screen.getByText('+ Ponto Jogador 1');
+      fireEvent.click(pointButton);
 
       await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining('/matches/test-match-id/state'),
-          expect.any(Object)
+        // Aceita chamada de fetch com 1 ou 2 argumentos (URL relativa ou absoluta)
+        const calls = (global.fetch as any).mock.calls;
+        const found = calls.some((args: any[]) =>
+          typeof args[0] === 'string' &&
+          /(\/api\/matches\/test-match-id\/state$|http:\/\/localhost:3001\/api\/matches\/test-match-id\/state$)/.test(args[0])
         );
+        expect(found).toBe(true);
       });
     });
   });

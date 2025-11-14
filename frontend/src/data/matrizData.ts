@@ -15,7 +15,7 @@ export interface MatrizItem {
   Golpe: string;
   Efeito: string;
   Direcao: string;
-  RespostaAdv?: string;
+  erro?: string;
 }
 
 export const matrizData: MatrizItem[] = matrizDataJson as MatrizItem[];

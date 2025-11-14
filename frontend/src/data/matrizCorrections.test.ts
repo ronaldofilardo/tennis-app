@@ -35,6 +35,7 @@ describe('Correções na Matriz de Dados', () => {
       const direcoesVoleios = [...voleiosVFH, ...voleiosVBH].map(item => item.Direcao);
       expect(direcoesVoleios).not.toContain('Inside Out');
       expect(direcoesVoleios).not.toContain('Inside In');
+      expect(direcoesVoleios).not.toContain('Centro');
     });
   });
 
@@ -46,15 +47,15 @@ describe('Correções na Matriz de Dados', () => {
       item.Golpe === 'Swingvolley - BH'
     );
 
-    it('Swingvolley FH deve ter efeito "Top spin"', () => {
+    it('Swingvolley FH deve ter efeito vazio', () => {
       swingvolleysFH.forEach(item => {
-        expect(item.Efeito).toBe('Top spin');
+        expect(item.Efeito).toBe('');
       });
     });
 
-    it('Swingvolley BH deve ter efeito "Top spin"', () => {
+    it('Swingvolley BH deve ter efeito vazio', () => {
       swingvolleysBH.forEach(item => {
-        expect(item.Efeito).toBe('Top spin');
+        expect(item.Efeito).toBe('');
       });
     });
 

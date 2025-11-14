@@ -190,9 +190,14 @@ describe('AuthContext', () => {
 
   describe('Hook useAuth', () => {
     it('deve lançar erro quando usado fora do provider', () => {
+      const OutsideProviderComponent = () => {
+        const { isAuthenticated } = useAuth();
+        return <div>{isAuthenticated ? 'Sim' : 'Não'}</div>;
+      };
+      
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-      expect(() => render(<TestComponent />)).toThrow(
+      expect(() => render(<OutsideProviderComponent />)).toThrow(
         'useAuth must be used within an AuthProvider'
       );
 

@@ -59,6 +59,25 @@
   color: #fff;
   border-color: #1976D2;
 }
+
+.quick-action-btn.serve-info {
+  cursor: default;
+  pointer-events: none;
+}
+
+.quick-action-btn.first-serve {
+  color: #1976D2;
+  background: #fff;
+  border-color: #90caf9;
+  font-weight: bold;
+}
+
+.quick-action-btn.second-serve {
+  color: #fff;
+  background: #1976D2;
+  border-color: #1976D2;
+  font-weight: bold;
+}
 .highlight-info {
   color: #2196F3;
   font-weight: 600;

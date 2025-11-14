@@ -83,6 +83,8 @@ export interface PointDetails {
   serve?: {
     type: ServeType;
     isFirstServe: boolean;
+    serveEffect?: 'Chapado' | 'Cortado' | 'TopSpin';
+    direction?: 'Fechado' | 'Aberto';
   };
   
   // Resultado do Ponto

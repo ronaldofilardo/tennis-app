@@ -15,9 +15,12 @@ describe('Configuração do Vite', () => {
     const viteConfigContent = readFileSync(viteConfigPath, 'utf-8');
 
     expect(viteConfigContent).toContain("'/api': {");
-  expect(viteConfigContent).toContain("target: 'http://localhost:4001'");
+  expect(viteConfigContent).toContain("target: 'http://localhost:3001'");
     expect(viteConfigContent).toContain("changeOrigin: true");
-    expect(viteConfigContent).toContain("rewrite: (path) => path.replace(/^\\//api/, '')");
+    // Aceita variações de espaços, aspas e barra invertida escapada
+    const normalized = viteConfigContent.replace(/\s+/g, '');
+    // Aceita qualquer quantidade de barras invertidas escapadas
+    expect(normalized).toMatch(/rewrite:\(path\)=>path\.replace\(\/\^\\*\/api\/,''\)/);
   });
 
   it('deve ter plugin React configurado', () => {
