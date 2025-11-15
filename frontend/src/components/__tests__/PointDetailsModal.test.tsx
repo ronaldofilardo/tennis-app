@@ -30,7 +30,9 @@ const mockGolpes = [
   'Drop volley - FH',
   'Drop volley - BH',
   'Drop shot - FH',
-  'Drop shot - BH'
+  'Drop shot - BH',
+  'Devolução SQ FH',
+  'Devolução SQ BH'
 ];
 const mockEfeitos = ['Chapado', 'Top spin', 'Cortado'];
 const mockDirecoes = ['Centro', 'Cruzada', 'Inside In', 'Inside Out', 'Paralela'];

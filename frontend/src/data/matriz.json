@@ -1246,5 +1246,677 @@
     "Efeito": "",
     "Direcao": "Paralela",
     "erro": ""
-  }
+  },
+{
+  "id": 157,
+  "Resultado": "Winner",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Top spin",
+  "Direcao": "Cruzada",
+  "erro": ""
+},
+{
+  "id": 158,
+  "Resultado": "Winner",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Top spin",
+  "Direcao": "Paralela",
+  "erro": ""
+},
+{
+  "id": 159,
+  "Resultado": "Winner",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Cortado",
+  "Direcao": "Cruzada",
+  "erro": ""
+},
+{
+  "id": 160,
+  "Resultado": "Winner",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Cortado",
+  "Direcao": "Paralela",
+  "erro": ""
+},
+{
+  "id": 161,
+  "Resultado": "Winner",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Chapado",
+  "Direcao": "Cruzada",
+  "erro": ""
+},
+{
+  "id": 162,
+  "Resultado": "Winner",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Chapado",
+  "Direcao": "Paralela",
+  "erro": ""
+},
+{
+  "id": 163,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Cortado",
+  "Direcao": "Cruzada",
+  "erro": "rede"
+},
+{
+  "id": 164,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Cortado",
+  "Direcao": "Paralela",
+  "erro": "rede"
+},
+{
+  "id": 165,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Cortado",
+  "Direcao": "Centro",
+  "erro": "rede"
+},
+{
+  "id": 166,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Chapado",
+  "Direcao": "Cruzada",
+  "erro": "rede"
+},
+{
+  "id": 167,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Chapado",
+  "Direcao": "Paralela",
+  "erro": "rede"
+},
+{
+  "id": 168,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Chapado",
+  "Direcao": "Centro",
+  "erro": "rede"
+},
+{
+  "id": 169,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Top spin",
+  "Direcao": "Cruzada",
+  "erro": "rede"
+},
+{
+  "id": 170,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Top spin",
+  "Direcao": "Paralela",
+  "erro": "rede"
+},
+{
+  "id": 171,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Top spin",
+  "Direcao": "Centro",
+  "erro": "rede"
+},
+{
+  "id": 172,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Cortado",
+  "Direcao": "Cruzada",
+  "erro": "rede"
+},
+{
+  "id": 173,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Cortado",
+  "Direcao": "Paralela",
+  "erro": "rede"
+},
+{
+  "id": 174,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Cortado",
+  "Direcao": "Centro",
+  "erro": "rede"
+},
+{
+  "id": 175,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Chapado",
+  "Direcao": "Cruzada",
+  "erro": "rede"
+},
+{
+  "id": 176,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Chapado",
+  "Direcao": "Paralela",
+  "erro": "rede"
+},
+{
+  "id": 177,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Chapado",
+  "Direcao": "Centro",
+  "erro": "rede"
+},
+{
+  "id": 178,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Top spin",
+  "Direcao": "Cruzada",
+  "erro": "rede"
+},
+{
+  "id": 179,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Top spin",
+  "Direcao": "Paralela",
+  "erro": "rede"
+},
+{
+  "id": 180,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Top spin",
+  "Direcao": "Centro",
+  "erro": "rede"
+},
+{
+  "id": 181,
+  "Resultado": "Winner",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Top spin",
+  "Direcao": "Cruzada",
+  "erro": ""
+},
+{
+  "id": 182,
+  "Resultado": "Winner",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Top spin",
+  "Direcao": "Paralela",
+  "erro": ""
+},
+{
+  "id": 183,
+  "Resultado": "Winner",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Cortado",
+  "Direcao": "Cruzada",
+  "erro": ""
+},
+{
+  "id": 184,
+  "Resultado": "Winner",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Cortado",
+  "Direcao": "Paralela",
+  "erro": ""
+},
+{
+  "id": 185,
+  "Resultado": "Winner",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Chapado",
+  "Direcao": "Cruzada",
+  "erro": ""
+},
+{
+  "id": 186,
+  "Resultado": "Winner",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Chapado",
+  "Direcao": "Paralela",
+  "erro": ""
+},
+{
+  "id": 187,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Cortado",
+  "Direcao": "Cruzada",
+  "erro": "rede"
+},
+{
+  "id": 188,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Cortado",
+  "Direcao": "Paralela",
+  "erro": "rede"
+},
+{
+  "id": 189,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Cortado",
+  "Direcao": "Centro",
+  "erro": "rede"
+},
+{
+  "id": 190,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Chapado",
+  "Direcao": "Cruzada",
+  "erro": "rede"
+},
+{
+  "id": 191,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Chapado",
+  "Direcao": "Paralela",
+  "erro": "rede"
+},
+{
+  "id": 192,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Chapado",
+  "Direcao": "Centro",
+  "erro": "rede"
+},
+{
+  "id": 193,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Top spin",
+  "Direcao": "Cruzada",
+  "erro": "rede"
+},
+{
+  "id": 194,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Top spin",
+  "Direcao": "Paralela",
+  "erro": "rede"
+},
+{
+  "id": 195,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Top spin",
+  "Direcao": "Centro",
+  "erro": "rede"
+},
+{
+  "id": 196,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Cortado",
+  "Direcao": "Cruzada",
+  "erro": "rede"
+},
+{
+  "id": 197,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Cortado",
+  "Direcao": "Paralela",
+  "erro": "rede"
+},
+{
+  "id": 198,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Cortado",
+  "Direcao": "Centro",
+  "erro": "rede"
+},
+{
+  "id": 199,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Chapado",
+  "Direcao": "Cruzada",
+  "erro": "rede"
+},
+{
+  "id": 200,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Chapado",
+  "Direcao": "Paralela",
+  "erro": "rede"
+},
+{
+  "id": 201,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Chapado",
+  "Direcao": "Centro",
+  "erro": "rede"
+},
+{
+  "id": 202,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Top spin",
+  "Direcao": "Cruzada",
+  "erro": "rede"
+},
+{
+  "id": 203,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Top spin",
+  "Direcao": "Paralela",
+  "erro": "rede"
+},
+{
+  "id": 204,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Top spin",
+  "Direcao": "Centro",
+  "erro": "rede"
+},
+{
+  "id": 205,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Cortado",
+  "Direcao": "Cruzada",
+  "erro": "fora"
+},
+{
+  "id": 206,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Cortado",
+  "Direcao": "Paralela",
+  "erro": "fora"
+},
+{
+  "id": 207,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Cortado",
+  "Direcao": "Centro",
+  "erro": "fora"
+},
+{
+  "id": 208,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Chapado",
+  "Direcao": "Cruzada",
+  "erro": "fora"
+},
+{
+  "id": 209,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Chapado",
+  "Direcao": "Paralela",
+  "erro": "fora"
+},
+{
+  "id": 210,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Chapado",
+  "Direcao": "Centro",
+  "erro": "fora"
+},
+{
+  "id": 211,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Top spin",
+  "Direcao": "Cruzada",
+  "erro": "fora"
+},
+{
+  "id": 212,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Top spin",
+  "Direcao": "Paralela",
+  "erro": "fora"
+},
+{
+  "id": 213,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Top spin",
+  "Direcao": "Centro",
+  "erro": "fora"
+},
+{
+  "id": 214,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Cortado",
+  "Direcao": "Cruzada",
+  "erro": "fora"
+},
+{
+  "id": 215,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Cortado",
+  "Direcao": "Paralela",
+  "erro": "fora"
+},
+{
+  "id": 216,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Cortado",
+  "Direcao": "Centro",
+  "erro": "fora"
+},
+{
+  "id": 217,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Chapado",
+  "Direcao": "Cruzada",
+  "erro": "fora"
+},
+{
+  "id": 218,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Chapado",
+  "Direcao": "Paralela",
+  "erro": "fora"
+},
+{
+  "id": 219,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Chapado",
+  "Direcao": "Centro",
+  "erro": "fora"
+},
+{
+  "id": 220,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Top spin",
+  "Direcao": "Cruzada",
+  "erro": "fora"
+},
+{
+  "id": 221,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Top spin",
+  "Direcao": "Paralela",
+  "erro": "fora"
+},
+{
+  "id": 222,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ FH",
+  "Efeito": "Top spin",
+  "Direcao": "Centro",
+  "erro": "fora"
+},
+{
+  "id": 223,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Cortado",
+  "Direcao": "Cruzada",
+  "erro": "fora"
+},
+{
+  "id": 224,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Cortado",
+  "Direcao": "Paralela",
+  "erro": "fora"
+},
+{
+  "id": 225,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Cortado",
+  "Direcao": "Centro",
+  "erro": "fora"
+},
+{
+  "id": 226,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Chapado",
+  "Direcao": "Cruzada",
+  "erro": "fora"
+},
+{
+  "id": 227,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Chapado",
+  "Direcao": "Paralela",
+  "erro": "fora"
+},
+{
+  "id": 228,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Chapado",
+  "Direcao": "Centro",
+  "erro": "fora"
+},
+{
+  "id": 229,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Top spin",
+  "Direcao": "Cruzada",
+  "erro": "fora"
+},
+{
+  "id": 230,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Top spin",
+  "Direcao": "Paralela",
+  "erro": "fora"
+},
+{
+  "id": 231,
+  "Resultado": "Erro forçado - EF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Top spin",
+  "Direcao": "Centro",
+  "erro": "fora"
+},
+{
+  "id": 232,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Cortado",
+  "Direcao": "Cruzada",
+  "erro": "fora"
+},
+{
+  "id": 233,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Cortado",
+  "Direcao": "Paralela",
+  "erro": "fora"
+},
+{
+  "id": 234,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Cortado",
+  "Direcao": "Centro",
+  "erro": "fora"
+},
+{
+  "id": 235,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Chapado",
+  "Direcao": "Cruzada",
+  "erro": "fora"
+},
+{
+  "id": 236,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Chapado",
+  "Direcao": "Paralela",
+  "erro": "fora"
+},
+{
+  "id": 237,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Chapado",
+  "Direcao": "Centro",
+  "erro": "fora"
+},
+{
+  "id": 238,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Top spin",
+  "Direcao": "Cruzada",
+  "erro": "fora"
+},
+{
+  "id": 239,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Top spin",
+  "Direcao": "Paralela",
+  "erro": "fora"
+},
+{
+  "id": 240,
+  "Resultado": "Erro não Forçado - ENF",
+  "Golpe": "Devolução SQ BH",
+  "Efeito": "Top spin",
+  "Direcao": "Centro",
+  "erro": "fora"
+}
 ]
