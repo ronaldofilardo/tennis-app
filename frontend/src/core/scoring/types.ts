@@ -86,19 +86,22 @@ export interface PointDetails {
     serveEffect?: 'Chapado' | 'Cortado' | 'TopSpin';
     direction?: 'Fechado' | 'Aberto';
   };
-  
+
   // Resultado do Ponto
   result: {
     winner: Player;
     type: PointResultType;
     finalShot?: ShotType;
   };
-  
+
+  // Jogador que executou o golpe final
+  shotPlayer: Player;
+
   // Duração do Rally (número de trocas)
   rally: {
     ballExchanges: number; // Número de trocas de bola
   };
-  
+
   // Timestamp para análise
   timestamp: number;
 }

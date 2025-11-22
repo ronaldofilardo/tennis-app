@@ -307,11 +307,11 @@ describe('ScoreboardV2 - Ace Button Behavior', () => {
       fireEvent.click(confirmButton);
 
       await waitFor(() => {
-        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith('PLAYER_1', {
+        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith('PLAYER_1', expect.objectContaining({
           serve: { isFirstServe: true, type: 'SERVICE_WINNER' },
           result: { winner: 'PLAYER_1', type: 'WINNER' },
           rally: { ballExchanges: 1 }
-        });
+        }));
       });
     });
   });
@@ -436,11 +436,11 @@ describe('ScoreboardV2 - Button Alignment Based on Server', () => {
     fireEvent.click(confirmBtn);
 
     await waitFor(() => {
-      expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith('PLAYER_2', {
+      expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith('PLAYER_2', expect.objectContaining({
         serve: { isFirstServe: true, type: 'SERVICE_WINNER' },
         result: { winner: 'PLAYER_2', type: 'WINNER' },
         rally: { ballExchanges: 1 }
-      });
+      }));
     });
    });
  
@@ -467,11 +467,11 @@ describe('ScoreboardV2 - Button Alignment Based on Server', () => {
      fireEvent.click(confirmButton);
 
       await waitFor(() => {
-        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith('PLAYER_2', {
+        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith('PLAYER_2', expect.objectContaining({
           serve: { isFirstServe: false, type: 'SERVICE_WINNER' },
           result: { winner: 'PLAYER_2', type: 'WINNER' },
           rally: { ballExchanges: 1 }
-        });
+        }));
       });
    });
  
@@ -529,11 +529,11 @@ describe('ScoreboardV2 - Button Alignment Based on Server', () => {
      fireEvent.click(confirmButton);
  
      await waitFor(() => {
-       expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith('PLAYER_1', {
+       expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith('PLAYER_1', expect.objectContaining({
          serve: { type: 'SERVICE_WINNER', isFirstServe: true },
          result: { winner: 'PLAYER_1', type: 'WINNER' },
          rally: { ballExchanges: 1 }
-       });
+       }));
      });
    });
  
@@ -558,11 +558,11 @@ describe('ScoreboardV2 - Button Alignment Based on Server', () => {
      fireEvent.click(confirmButton);
  
      await waitFor(() => {
-       expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith('PLAYER_1', {
+       expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith('PLAYER_1', expect.objectContaining({
          serve: { type: 'SERVICE_WINNER', isFirstServe: false },
          result: { winner: 'PLAYER_1', type: 'WINNER' },
          rally: { ballExchanges: 1 }
-       });
+       }));
      });
    });
  });
@@ -752,11 +752,11 @@ describe('ScoreboardV2 - Restauração de Estado e Fluxos', () => {
       fireEvent.click(confirmButton);
 
       await waitFor(() => {
-        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith('PLAYER_1', {
+        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith('PLAYER_1', expect.objectContaining({
           serve: { isFirstServe: true, type: 'SERVICE_WINNER' },
           result: { winner: 'PLAYER_1', type: 'WINNER' },
           rally: { ballExchanges: 1 }
-        });
+        }));
       });
 
       // Verificar que alert foi chamado (simulado)

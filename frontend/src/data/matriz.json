@@ -1912,11 +1912,83 @@
   "erro": "fora"
 },
 {
-  "id": 240,
-  "Resultado": "Erro não Forçado - ENF",
-  "Golpe": "Devolução SQ BH",
-  "Efeito": "Top spin",
-  "Direcao": "Centro",
-  "erro": "fora"
-}
+   "id": 240,
+   "Resultado": "Erro não Forçado - ENF",
+   "Golpe": "Devolução SQ BH",
+   "Efeito": "Top spin",
+   "Direcao": "Centro",
+   "erro": "fora"
+ },
+ {
+   "id": 241,
+   "Resultado": "Winner",
+   "Golpe": "Backhand - BH",
+   "Efeito": "Chapado",
+   "Direcao": "Centro",
+   "erro": ""
+ },
+ {
+   "id": 242,
+   "Resultado": "Winner",
+   "Golpe": "Backhand - BH",
+   "Efeito": "Top spin",
+   "Direcao": "Centro",
+   "erro": ""
+ },
+ {
+   "id": 243,
+   "Resultado": "Winner",
+   "Golpe": "Backhand - BH",
+   "Efeito": "Cortado",
+   "Direcao": "Centro",
+   "erro": ""
+ },
+ {
+   "id": 244,
+   "Resultado": "Winner",
+   "Golpe": "Backhand - BH",
+   "Efeito": "Chapado",
+   "Direcao": "Cruzada",
+   "erro": ""
+ },
+ {
+   "id": 245,
+   "Resultado": "Winner",
+   "Golpe": "Backhand - BH",
+   "Efeito": "Chapado",
+   "Direcao": "Paralela",
+   "erro": ""
+ },
+ {
+   "id": 246,
+   "Resultado": "Winner",
+   "Golpe": "Backhand - BH",
+   "Efeito": "Top spin",
+   "Direcao": "Cruzada",
+   "erro": ""
+ },
+ {
+   "id": 247,
+   "Resultado": "Winner",
+   "Golpe": "Backhand - BH",
+   "Efeito": "Top spin",
+   "Direcao": "Paralela",
+   "erro": ""
+ },
+ {
+   "id": 248,
+   "Resultado": "Winner",
+   "Golpe": "Backhand - BH",
+   "Efeito": "Cortado",
+   "Direcao": "Cruzada",
+   "erro": ""
+ },
+ {
+   "id": 249,
+   "Resultado": "Winner",
+   "Golpe": "Backhand - BH",
+   "Efeito": "Cortado",
+   "Direcao": "Paralela",
+   "erro": ""
+ }
 ]

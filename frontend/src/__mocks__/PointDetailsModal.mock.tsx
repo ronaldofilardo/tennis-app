@@ -23,7 +23,13 @@ export default function MockPointDetailsModal({ isOpen, onConfirm, onCancel, pla
         mockState.finished = true;
       }
     }
-    onConfirm({ Resultado: 'Winner', Golpe: 'Forehand - FH', Efeito: 'Flat', Direcao: 'Paralela', winner: playerInFocus || 'PLAYER_1' }, playerInFocus || 'PLAYER_1');
+    onConfirm({ 
+      result: { 
+        winner: playerInFocus || 'PLAYER_1', 
+        type: 'WINNER'
+      }, 
+      rally: { ballExchanges: 1 }
+    }, playerInFocus || 'PLAYER_1');
   };
 
   return (
