@@ -1,18 +1,18 @@
 // frontend/src/components/PointDetailsModal.tsx (Versão Avançada com 4 etapas)
 
-import React, { useState, useEffect } from 'react';
-import type { Player } from '../core/scoring/types';
+import React, { useState, useEffect, useMemo } from 'react';
+import type { Player, PointDetails } from '../core/scoring/types';
 import type { MatrizItem } from '../data/matrizData';
 import { getResultados, getGolpes, getEfeitos, getDirecoes } from '../core/scoring/matrizUtils';
 import './PointDetailsModal.css';
 
 interface PointDetailsModalProps {
-   isOpen: boolean;
-   playerInFocus: Player;
-   onConfirm: (details: Partial<MatrizItem>, winner: Player) => void;
-   onCancel: () => void;
-   preselectedResult?: string;
- }
+  isOpen: boolean;
+  playerInFocus: Player;
+  onConfirm: (details: Partial<PointDetails>, winner: Player) => void;
+  onCancel: () => void;
+  preselectedResult?: string;
+}
 
 const PointDetailsModal: React.FC<PointDetailsModalProps> = ({ isOpen, playerInFocus, onConfirm, onCancel, preselectedResult }) => {
   const [resultado, setResultado] = useState<string | undefined>();
@@ -24,14 +24,14 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({ isOpen, playerInF
   const pointWinner = playerInFocus;
 
   // Sempre declare as variáveis derivadas ANTES dos useEffect que as usam
-  const resultadosDisponiveis = getResultados();
-  const golpesDisponiveis = resultado ? getGolpes([resultado]) : [];
-  const efeitosDisponiveis = (resultado && golpe) ? getEfeitos([resultado], [golpe]) : [];
+  const resultadosDisponiveis = useMemo(() => getResultados(), []);
+  const golpesDisponiveis = useMemo(() => resultado ? getGolpes([resultado]) : [], [resultado]);
+  const efeitosDisponiveis = useMemo(() => (resultado && golpe) ? getEfeitos([resultado], [golpe]) : [], [resultado, golpe]);
   // Ajuste: garantir que, se não houver efeito selecionado e houver efeito vazio na matriz, passe [''] para getDirecoes
-  const efeitoParaDirecao = efeito !== undefined ? efeito : (efeitosDisponiveis.length === 1 && (efeitosDisponiveis[0] === '' || efeitosDisponiveis[0] === '(Sem efeito)')) ? '' : undefined;
-  const direcoesDisponiveis = (resultado && golpe && (efeitoParaDirecao !== undefined))
+  const efeitoParaDirecao = useMemo(() => efeito !== undefined ? efeito : (efeitosDisponiveis.length === 1 && (efeitosDisponiveis[0] === '' || efeitosDisponiveis[0] === '(Sem efeito)')) ? '' : undefined, [efeito, efeitosDisponiveis]);
+  const direcoesDisponiveis = useMemo(() => (resultado && golpe && (efeitoParaDirecao !== undefined))
     ? getDirecoes([resultado], [golpe], [efeitoParaDirecao])
-    : [];
+    : [], [resultado, golpe, efeitoParaDirecao]);
 
   useEffect(() => {
     if (isOpen) {
@@ -72,12 +72,19 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({ isOpen, playerInF
     const finalDirecao = direcao || '';
     const finalErro = erroDetalhe || '';
 
-    const item: Partial<MatrizItem> = {
-      Resultado: finalResultado,
-      Golpe: finalGolpe,
-      Efeito: finalEfeito,
-      Direcao: finalDirecao,
-      erro: finalErro
+    // Determinar quem executou o golpe: para Winner, o vencedor; para erros, o perdedor
+    const opponent: Player = pointWinner === 'PLAYER_1' ? 'PLAYER_2' : 'PLAYER_1';
+    const shotPlayer: Player = finalResultado === 'Winner' ? pointWinner : opponent;
+
+    const item: Partial<PointDetails> = {
+      result: {
+        winner: pointWinner,
+        type: finalResultado === 'Winner' ? 'WINNER' : (finalResultado.includes('não Forçado') ? 'UNFORCED_ERROR' : 'FORCED_ERROR'),
+        finalShot: finalGolpe as any
+      },
+      shotPlayer: shotPlayer,
+      rally: { ballExchanges: 1 },
+      timestamp: Date.now()
     };
     onConfirm(item, pointWinner);
   };
@@ -162,12 +169,12 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({ isOpen, playerInF
               </div>
             </div>
           )}
-          {/* Etapa de erro para EF/ENF */}
-          {resultado && resultado.startsWith('Erro') && golpe && (efeito || efeitosDisponiveis.length === 0 || (efeitosDisponiveis.length === 1 && (efeitosDisponiveis[0] === '' || efeitosDisponiveis[0] === '(Sem efeito)'))) && (direcao || direcoesDisponiveis.length === 0) && (
+          {/* Etapa de erro para EF/ENF e Winner */}
+          {resultado && golpe && (efeito || efeitosDisponiveis.length === 0 || (efeitosDisponiveis.length === 1 && (efeitosDisponiveis[0] === '' || efeitosDisponiveis[0] === '(Sem efeito)'))) && (direcao || direcoesDisponiveis.length === 0) && (
             <div className="section">
               <h4>Erro</h4>
               <div className="button-group">
-                {/* Exemplo: opções de erro, pode ser ajustado conforme necessidade */}
+                {/* Opções de erro */}
                 {['Rede', 'Fora'].map((erro) => (
                   <button key={erro} className={erroDetalhe === erro ? 'active' : ''} onClick={() => setErroDetalhe(erro)}>{erro}</button>
                 ))}

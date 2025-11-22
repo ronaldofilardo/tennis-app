@@ -20,8 +20,13 @@ describe('Build do Projeto', () => {
     // Verifica se o script de build está configurado
     const fs = await import('fs/promises');
     const path = await import('path');
-  const packageJsonPath = path.join(process.cwd(), '..', 'package.json');
-    const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
+    // Garante que sempre busque o package.json da raiz do monorepo
+    let rootDir = process.cwd();
+    if (rootDir.endsWith('frontend')) {
+      rootDir = path.dirname(rootDir);
+    }
+    const rootPackageJsonPath = path.join(rootDir, 'package.json');
+    const packageJson = JSON.parse(await fs.readFile(rootPackageJsonPath, 'utf-8'));
     expect(packageJson.scripts.build).toBe('pnpm -r build');
   });
 

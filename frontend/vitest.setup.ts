@@ -1,10 +1,11 @@
 import { vi } from 'vitest'
 import '@testing-library/jest-dom'
+import { setupGlobalMocks } from './src/__tests__/test-utils'
 
 // Adiciona variável de ambiente DATABASE_URL para testes Prisma
-process.env.DATABASE_URL = process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/testdb';
+process.env.DATABASE_URL = 'postgresql://postgres:123456@localhost:5432/racket_mvp?schema=public&sslmode=disable';
 
-// Mock global de PrismaClient para evitar inicialização real em testes
+// Mock global de PrismaClient ANTES de qualquer importação
 vi.mock('@prisma/client', () => {
   const mockPrismaClient = {
     match: {
@@ -17,38 +18,14 @@ vi.mock('@prisma/client', () => {
     $connect: vi.fn(),
     $disconnect: vi.fn(),
   };
-  
+
   return {
     PrismaClient: vi.fn(() => mockPrismaClient),
   };
 });
 
-// Mock global para fetch
-global.fetch = vi.fn();
-
-// Mock global para localStorage
-const localStorageMock = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
-  length: 0,
-  key: vi.fn(),
-};
-Object.defineProperty(global, 'localStorage', {
-  value: localStorageMock,
-  writable: true,
-});
-
-// jsdom fornece window e document automaticamente
-
-// Mock global para console.warn e console.error para reduzir ruído nos testes
-const originalWarn = console.warn;
-const originalError = console.error;
-console.warn = vi.fn();
-console.error = vi.fn();
-
-// Função utilitária para resetar mocks globais
+// Configura mocks globais
+setupGlobalMocks()// Função utilitária para resetar mocks globais
 (globalThis as any).resetGlobalMocks = () => {
   vi.clearAllMocks();
   console.warn = originalWarn;

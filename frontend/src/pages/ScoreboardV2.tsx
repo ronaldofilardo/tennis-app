@@ -352,18 +352,14 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void; }> = ({ onEndMatch }) => 
     }
   };
 
-  const handlePointDetailsConfirm = (matrizItem: Partial<MatrizItem>, winner: Player) => {
-    if (!matrizItem.Resultado) return;
-    const isAce = matrizItem.Resultado === 'Ace';
-    const pointDetails: Partial<PointDetails> = {
-        serve: { type: isAce ? 'ACE' : 'SERVICE_WINNER', isFirstServe: serveStep !== 'second' },
-        result: {
-            winner: winner,
-            type: matrizItem.Resultado.includes('Winner') ? 'WINNER' : (matrizItem.Resultado.includes('não Forçado') ? 'UNFORCED_ERROR' : 'FORCED_ERROR'),
-        },
-        rally: { ballExchanges: 1 },
+  const handlePointDetailsConfirm = (pointDetails: Partial<PointDetails>, winner: Player) => {
+    // Add serve info if not present
+    const fullDetails: Partial<PointDetails> = {
+      ...pointDetails,
+      serve: pointDetails.serve || { type: 'SERVICE_WINNER', isFirstServe: serveStep !== 'second' },
+      timestamp: pointDetails.timestamp || Date.now()
     };
-    addPoint(winner, pointDetails);
+    addPoint(winner, fullDetails);
     setIsPointDetailsOpen(false);
     setPlayerInFocus(null);
   };

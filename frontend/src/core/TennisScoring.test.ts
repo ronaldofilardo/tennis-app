@@ -1,5 +1,5 @@
-import { TennisScoring } from '../core/scoring/TennisScoring';
-import type { Player, TennisFormat } from '../core/scoring/types';
+import { TennisScoring } from './scoring/TennisScoring';
+import type { Player, TennisFormat } from './scoring/types';
 import { describe, test, expect } from 'vitest';
 
 describe('TennisScoring - Lógica Geral', () => {
@@ -171,6 +171,7 @@ describe('TennisScoring - Métodos utilitários e regras alternativas', () => {
       match.addPoint(PLAYER_1, {
         serve: { type: i === 0 ? 'ACE' : 'SERVICE_WINNER', isFirstServe: true },
         result: { winner: PLAYER_1, type: i === 1 ? 'WINNER' : i === 2 ? 'UNFORCED_ERROR' : 'FORCED_ERROR', finalShot: 'FOREHAND' },
+        shotPlayer: PLAYER_1, // Adicionado shotPlayer
   rally: { ballExchanges: 1 },
         timestamp: Date.now()
       });
@@ -184,6 +185,7 @@ describe('TennisScoring - Métodos utilitários e regras alternativas', () => {
     expect(stats.doubleFaults).toBe(0);
     expect(Array.isArray(match.getPointsHistory())).toBe(true);
     expect(match.getLastPointDetails()).not.toBeNull();
+    expect(match.getLastPointDetails()?.shotPlayer).toBe(PLAYER_1); // Verifica shotPlayer
     match.clearPointsHistory();
     expect(match.getPointsHistory().length).toBe(0);
   });
