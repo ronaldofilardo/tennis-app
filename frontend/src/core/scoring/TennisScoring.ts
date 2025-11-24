@@ -78,7 +78,7 @@ export class TennisScoring {
   }
 
   // Carregar estado existente (para continuar partidas)
-  public loadState(savedState: MatchState): void {
+  public loadState(savedState: MatchState | EnhancedMatchState): void {
     // Se o estado salvo não tem config, usar a config atual
     if (!savedState.config) {
       console.warn('⚠️ Estado salvo não possui configuração, usando configuração atual');
@@ -96,7 +96,14 @@ export class TennisScoring {
       config: this.config, // Sempre usar config atual por segurança
     };
 
-    // Limpar histórico ao carregar um estado salvo
+    // Restaurar histórico de pontos se disponível
+    if ('pointsHistory' in savedState && savedState.pointsHistory) {
+      this.pointsHistory = [...savedState.pointsHistory];
+    } else {
+      this.pointsHistory = []; // Inicializar vazio se não houver histórico
+    }
+
+    // Limpar histórico de undo ao carregar um estado salvo
     this.history = [];
     console.log('✅ Estado restaurado:', this.state);
   }
