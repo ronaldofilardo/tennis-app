@@ -96,8 +96,8 @@ describe('MatchStatsModal', () => {
 
     it('exibe nomes dos jogadores', () => {
       render(<MatchStatsModal {...defaultProps} />);
-      expect(screen.getByText('Jogador 1')).toBeInTheDocument();
-      expect(screen.getByText('Jogador 2')).toBeInTheDocument();
+      expect(screen.getAllByText('Jogador 1').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Jogador 2').length).toBeGreaterThan(0);
       expect(screen.getByText('vs')).toBeInTheDocument();
     });
 
@@ -189,8 +189,8 @@ describe('MatchStatsModal', () => {
       render(<MatchStatsModal {...defaultProps} stats={partialStats} />);
       expect(screen.getByText('Pontos Conquistados')).toBeInTheDocument();
       // Verifica que valores são exibidos corretamente
-      expect(screen.getByText('5')).toBeInTheDocument();
-      expect(screen.getByText('3')).toBeInTheDocument();
+      expect(screen.getAllByText('5').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('3').length).toBeGreaterThan(0);
     });
   });
 
@@ -236,18 +236,18 @@ describe('MatchStatsModal', () => {
     it('exibe estatísticas de pontos conquistados', () => {
       render(<MatchStatsModal {...defaultProps} />);
       expect(screen.getByText('Pontos Conquistados')).toBeInTheDocument();
-      expect(screen.getByText('25')).toBeInTheDocument();
-      expect(screen.getByText('20')).toBeInTheDocument();
+      expect(screen.getAllByText('25').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('20').length).toBeGreaterThan(0);
     });
 
     it('exibe estatísticas de saque', () => {
       render(<MatchStatsModal {...defaultProps} />);
       expect(screen.getByText('Aces')).toBeInTheDocument();
-      expect(screen.getByText('3')).toBeInTheDocument();
-      expect(screen.getByText('1')).toBeInTheDocument();
+      expect(screen.getAllByText('3').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('1').length).toBeGreaterThan(0);
       expect(screen.getByText('Duplas Faltas')).toBeInTheDocument();
-      expect(screen.getByText('2')).toBeInTheDocument();
-      expect(screen.getByText('4')).toBeInTheDocument();
+      expect(screen.getAllByText('2').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('4').length).toBeGreaterThan(0);
     });
 
     it('exibe percentuais formatados corretamente', () => {

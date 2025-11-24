@@ -11,9 +11,9 @@ export function getGolpes(resultados: string[]): string[] {
 
   let filteredData = matrizData.filter(item => resultados.includes(item.Resultado));
 
-  // Regra 3: Para "Erro forçado - EF", remover opções de golpes proibidos
-  if (resultados.includes('Erro forçado - EF')) {
-    const forbiddenShots = ['Swingvolley - BH', 'Swingvolley - FH', 'Drop shot - BH', 'Drop shot - FH'];
+  // Regras 2 e 3: Para erros do sacador ("Erro forçado - EF" e "Erro não Forçado - ENF"), remover opções de golpes proibidos, incluindo devoluções
+  if (resultados.includes('Erro forçado - EF') || resultados.includes('Erro não Forçado - ENF')) {
+    const forbiddenShots = ['Swingvolley - BH', 'Swingvolley - FH', 'Drop shot - BH', 'Drop shot - FH', 'Devolução SQ BH', 'Devolução SQ FH'];
     filteredData = filteredData.filter(item => !forbiddenShots.includes(item.Golpe));
   }
 
@@ -28,9 +28,9 @@ export function getEfeitos(resultados: string[], golpes: string[]): string[] {
     golpes.includes(item.Golpe)
   );
 
-  // Aplicar filtro de EF se necessário
-  if (resultados.includes('Erro forçado - EF')) {
-    const forbiddenShots = ['Swingvolley - BH', 'Swingvolley - FH', 'Drop shot - BH', 'Drop shot - FH'];
+  // Aplicar filtro para erros do sacador se necessário
+  if (resultados.includes('Erro forçado - EF') || resultados.includes('Erro não Forçado - ENF')) {
+    const forbiddenShots = ['Swingvolley - BH', 'Swingvolley - FH', 'Drop shot - BH', 'Drop shot - FH', 'Devolução SQ BH', 'Devolução SQ FH'];
     filteredData = filteredData.filter(item => !forbiddenShots.includes(item.Golpe));
   }
 
@@ -46,9 +46,9 @@ export function getDirecoes(resultados: string[], golpes: string[], efeitos: str
     efeitos.includes(item.Efeito)
   );
 
-  // Aplicar filtro de EF se necessário
-  if (resultados.includes('Erro forçado - EF')) {
-    const forbiddenShots = ['Swingvolley - BH', 'Swingvolley - FH', 'Drop shot - BH', 'Drop shot - FH'];
+  // Aplicar filtro para erros do sacador se necessário
+  if (resultados.includes('Erro forçado - EF') || resultados.includes('Erro não Forçado - ENF')) {
+    const forbiddenShots = ['Swingvolley - BH', 'Swingvolley - FH', 'Drop shot - BH', 'Drop shot - FH', 'Devolução SQ BH', 'Devolução SQ FH'];
     filteredData = filteredData.filter(item => !forbiddenShots.includes(item.Golpe));
   }
 

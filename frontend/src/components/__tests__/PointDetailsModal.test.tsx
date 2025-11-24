@@ -1,5 +1,6 @@
 // Mock do CSS para evitar erros de import
 vi.mock('../PointDetailsModal.css', () => ({}));
+import '@testing-library/jest-dom';
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
@@ -588,17 +589,26 @@ describe('PointDetailsModal', () => {
   });
 
   describe('Seção Erro', () => {
+    it('não exibe seção Erro para Winner', () => {
+      render(<PointDetailsModal {...defaultProps} />);
+      fireEvent.click(screen.getByRole('button', { name: 'Winner' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Smash - SM' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Chapado' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Centro' }));
+      // Para Winner, não deve haver seção Erro
+      expect(screen.queryByText('Erro')).not.toBeInTheDocument();
+    });
+
     it('exibe seção Erro após selecionar "Erro forçado - EF"', () => {
       render(<PointDetailsModal {...defaultProps} />);
       fireEvent.click(screen.getByRole('button', { name: 'Erro forçado - EF' }));
       fireEvent.click(screen.getByRole('button', { name: 'Smash - SM' }));
       fireEvent.click(screen.getByRole('button', { name: 'Chapado' }));
       fireEvent.click(screen.getByRole('button', { name: 'Centro' }));
-      // Não existe mais título 'Erro', mas os botões devem estar presentes
-      expect(screen.getAllByRole('button', { name: 'Erro forçado - EF' }).length).toBeGreaterThan(0);
-      expect(screen.getAllByRole('button', { name: 'Erro não Forçado - ENF' }).length).toBeGreaterThan(0);
-      // Verificar que o modal está funcionando corretamente
-      expect(screen.getByRole('button', { name: 'Confirmar Ponto' })).not.toBeDisabled();
+      // Deve exibir seção Erro para erros
+      expect(screen.getByText('Erro')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Rede' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Fora' })).toBeInTheDocument();
     });
 
     it('exibe seção Erro após selecionar "Erro não Forçado - ENF"', () => {

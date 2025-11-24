@@ -82,12 +82,13 @@ describe('MatchStatsModal', () => {
         playerNames={{ p1: 'Jogador 1', p2: 'Jogador 2' }}
       />
     );
-    expect(screen.getByText(/Jogador 1/)).toBeInTheDocument();
-    expect(screen.getByText(/Jogador 2/)).toBeInTheDocument();
-    expect(screen.getByText('60')).toBeInTheDocument();
-    expect(screen.getByText('40')).toBeInTheDocument();
+    // Agora há múltiplos elementos com o nome dos jogadores
+    expect(screen.getAllByText(/Jogador 1/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Jogador 2/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText('60').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('40').length).toBeGreaterThan(0);
     expect(screen.getByText(/Aces/)).toBeInTheDocument();
-  expect(screen.getByText(/Duplas Faltas/)).toBeInTheDocument();
+    expect(screen.getByText(/Duplas Faltas/)).toBeInTheDocument();
   });
 
   it('deve chamar onClose ao clicar em fechar', () => {

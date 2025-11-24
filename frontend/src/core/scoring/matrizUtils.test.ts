@@ -5,7 +5,18 @@ describe('matrizUtils', () => {
   describe('getGolpes', () => {
     it('should exclude forbidden shots for EF', () => {
       const golpes = getGolpes(['Erro forçado - EF']);
-      const forbidden = ['Swingvolley - BH', 'Swingvolley - FH', 'Drop shot - BH', 'Drop shot - FH'];
+      const forbidden = ['Swingvolley - BH', 'Swingvolley - FH', 'Drop shot - BH', 'Drop shot - FH', 'Devolução SQ BH', 'Devolução SQ FH'];
+      forbidden.forEach(forbiddenGolpe => {
+        expect(golpes).not.toContain(forbiddenGolpe);
+      });
+      // Ensure other shots are included
+      expect(golpes).toContain('Backhand - BH');
+      expect(golpes).toContain('Forehand - FH');
+    });
+
+    it('should exclude forbidden shots for ENF', () => {
+      const golpes = getGolpes(['Erro não Forçado - ENF']);
+      const forbidden = ['Swingvolley - BH', 'Swingvolley - FH', 'Drop shot - BH', 'Drop shot - FH', 'Devolução SQ BH', 'Devolução SQ FH'];
       forbidden.forEach(forbiddenGolpe => {
         expect(golpes).not.toContain(forbiddenGolpe);
       });
@@ -18,6 +29,8 @@ describe('matrizUtils', () => {
       const golpes = getGolpes(['Winner']);
       expect(golpes).toContain('Backhand - BH');
       expect(golpes).toContain('Forehand - FH');
+      expect(golpes).toContain('Devolução SQ BH');
+      expect(golpes).toContain('Devolução SQ FH');
       expect(golpes.length).toBeGreaterThan(0);
     });
   });

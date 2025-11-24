@@ -169,7 +169,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNewMatchClick, onContinueMatch,
                     onClick={async (e) => { e.stopPropagation(); if (!canView) { alert('Você não tem permissão para ver o resultado desta partida.'); return; } await openStatsForMatch(match.id); }}
                     title={canView ? 'Abrir resultado' : 'Acesso restrito'}
                     disabled={!canView || (loadingMatchId !== null && loadingMatchId !== match.id)}
-                  >{loadingMatchId === match.id ? 'Carregando...' : '📊 Abrir Resultado'}</button>
+                  >{loadingMatchId === match.id ? 'Carregando...' : '📊 Abrir Relatório'}</button>
                 </div>
               </div>
 

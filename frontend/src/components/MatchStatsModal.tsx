@@ -85,6 +85,7 @@ const MatchStatsModal: React.FC<MatchStatsModalProps> = ({
         <div className="match-stats-modal" onClick={(e) => e.stopPropagation()}>
           <div className="modal-header">
             <h2>📊 Comparativo de Estatísticas</h2>
+            <button className="print-button" title="Imprimir" onClick={() => window.print()} style={{marginRight: 8}}>🖨️</button>
             <button className="close-button" onClick={onClose}>×</button>
           </div>
           <div style={{ padding: 24 }}>
@@ -94,17 +95,89 @@ const MatchStatsModal: React.FC<MatchStatsModalProps> = ({
       </div>
     );
   }
+
+  // Utilitário para garantir número
+  const ensureNumber = (value: any): number => {
+    return typeof value === 'number' && !isNaN(value) ? value : 0;
+  };
+
+  // Placar visual estilo digital
+  const renderScoreboardSection = () => {
+    // Placar removido conforme solicitado
+    return null;
+  };
+
   const safeStats = {
-    player1: stats.player1 ?? ({} as PlayerStats),
-    player2: stats.player2 ?? ({} as PlayerStats),
-    match: stats.match ?? ({} as MatchStats),
-    totalPoints: stats.totalPoints ?? 0,
+    player1: stats.player1 ? {
+      pointsWon: ensureNumber(stats.player1.pointsWon),
+      totalServes: ensureNumber(stats.player1.totalServes),
+      firstServes: ensureNumber(stats.player1.firstServes),
+      secondServes: ensureNumber(stats.player1.secondServes),
+      firstServeWins: ensureNumber(stats.player1.firstServeWins),
+      secondServeWins: ensureNumber(stats.player1.secondServeWins),
+      aces: ensureNumber(stats.player1.aces),
+      doubleFaults: ensureNumber(stats.player1.doubleFaults),
+      serviceWinners: ensureNumber(stats.player1.serviceWinners),
+      servicePointsWon: ensureNumber(stats.player1.servicePointsWon),
+      returnPointsWon: ensureNumber(stats.player1.returnPointsWon),
+      winners: ensureNumber(stats.player1.winners),
+      unforcedErrors: ensureNumber(stats.player1.unforcedErrors),
+      forcedErrors: ensureNumber(stats.player1.forcedErrors),
+      shortRallies: ensureNumber(stats.player1.shortRallies),
+      longRallies: ensureNumber(stats.player1.longRallies),
+      breakPoints: ensureNumber(stats.player1.breakPoints),
+      breakPointsSaved: ensureNumber(stats.player1.breakPointsSaved),
+      firstServePercentage: ensureNumber(stats.player1.firstServePercentage),
+      firstServeWinPercentage: ensureNumber(stats.player1.firstServeWinPercentage),
+      secondServeWinPercentage: ensureNumber(stats.player1.secondServeWinPercentage),
+      serviceHoldPercentage: ensureNumber(stats.player1.serviceHoldPercentage),
+      breakPointConversion: ensureNumber(stats.player1.breakPointConversion),
+      winnerToErrorRatio: ensureNumber(stats.player1.winnerToErrorRatio),
+      returnWinPercentage: ensureNumber(stats.player1.returnWinPercentage),
+      dominanceRatio: ensureNumber(stats.player1.dominanceRatio),
+    } : ({} as PlayerStats),
+    player2: stats.player2 ? {
+      pointsWon: ensureNumber(stats.player2.pointsWon),
+      totalServes: ensureNumber(stats.player2.totalServes),
+      firstServes: ensureNumber(stats.player2.firstServes),
+      secondServes: ensureNumber(stats.player2.secondServes),
+      firstServeWins: ensureNumber(stats.player2.firstServeWins),
+      secondServeWins: ensureNumber(stats.player2.secondServeWins),
+      aces: ensureNumber(stats.player2.aces),
+      doubleFaults: ensureNumber(stats.player2.doubleFaults),
+      serviceWinners: ensureNumber(stats.player2.serviceWinners),
+      servicePointsWon: ensureNumber(stats.player2.servicePointsWon),
+      returnPointsWon: ensureNumber(stats.player2.returnPointsWon),
+      winners: ensureNumber(stats.player2.winners),
+      unforcedErrors: ensureNumber(stats.player2.unforcedErrors),
+      forcedErrors: ensureNumber(stats.player2.forcedErrors),
+      shortRallies: ensureNumber(stats.player2.shortRallies),
+      longRallies: ensureNumber(stats.player2.longRallies),
+      breakPoints: ensureNumber(stats.player2.breakPoints),
+      breakPointsSaved: ensureNumber(stats.player2.breakPointsSaved),
+      firstServePercentage: ensureNumber(stats.player2.firstServePercentage),
+      firstServeWinPercentage: ensureNumber(stats.player2.firstServeWinPercentage),
+      secondServeWinPercentage: ensureNumber(stats.player2.secondServeWinPercentage),
+      serviceHoldPercentage: ensureNumber(stats.player2.serviceHoldPercentage),
+      breakPointConversion: ensureNumber(stats.player2.breakPointConversion),
+      winnerToErrorRatio: ensureNumber(stats.player2.winnerToErrorRatio),
+      returnWinPercentage: ensureNumber(stats.player2.returnWinPercentage),
+      dominanceRatio: ensureNumber(stats.player2.dominanceRatio),
+    } : ({} as PlayerStats),
+    match: stats.match ? {
+      avgRallyLength: ensureNumber(stats.match.avgRallyLength),
+      longestRally: ensureNumber(stats.match.longestRally),
+      shortestRally: ensureNumber(stats.match.shortestRally),
+      totalRallies: ensureNumber(stats.match.totalRallies),
+    } : ({} as MatchStats),
+    totalPoints: ensureNumber(stats.totalPoints),
     pointsHistory: stats.pointsHistory ?? [],
   };
   const hasDetailedData = safeStats.totalPoints > 0 && safeStats.player1 && safeStats.player2;
 
   const formatStat = (value: number, suffix = '', decimals = 0): string => {
     if (value === 999) return '∞';
+    if (typeof value !== 'number' || isNaN(value)) return `0${suffix}`;
     return `${value.toFixed(decimals)}${suffix}`;
   };
 
@@ -150,10 +223,13 @@ const MatchStatsModal: React.FC<MatchStatsModalProps> = ({
       <div className="match-stats-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>📊 Comparativo de Estatísticas</h2>
+          <button className="print-button" title="Imprimir" onClick={() => window.print()} style={{marginRight: 8}}>🖨️</button>
           <button className="close-button" onClick={onClose}>×</button>
         </div>
 
         <div className="modal-content">
+          {/* Placar visual digital */}
+          {renderScoreboardSection()}
           <div className="match-info">
             {nickname ? <div className="match-nickname">{nickname}</div> : null}
             <div className="players-header">
@@ -184,14 +260,68 @@ const MatchStatsModal: React.FC<MatchStatsModalProps> = ({
             </div>
           ) : (
             <div className="stats-content">
-              {/* Resumo Geral */}
+
+              {/* Estatísticas Detalhadas */}
               <div className="stats-section">
-                <h4>📋 Resumo Geral</h4>
+                <h4>📋 Estatísticas Detalhadas</h4>
                 <div className="comparison-grid">
-                  <StatComparison 
-                    label="Pontos Conquistados" 
-                    p1Value={safeStats.player1.pointsWon ?? 0} 
-                    p2Value={safeStats.player2.pointsWon ?? 0}
+                  {/* 1. % 1º Saque */}
+                  <StatComparison
+                    label="% 1º Saque"
+                    p1Value={safeStats.player1.firstServes > 0 ? (100 * safeStats.player1.firstServes / safeStats.player1.totalServes) : 0}
+                    p2Value={safeStats.player2.firstServes > 0 ? (100 * safeStats.player2.firstServes / safeStats.player2.totalServes) : 0}
+                    isPercentage={true}
+                    decimals={1}
+                  />
+
+                  {/* 2. Total ENF/EF */}
+                  <StatComparison
+                    label="ENF/EF"
+                    p1Value={safeStats.player1.unforcedErrors + safeStats.player1.forcedErrors}
+                    p2Value={safeStats.player2.unforcedErrors + safeStats.player2.forcedErrors}
+                    higherIsBetter={false}
+                  />
+
+                  {/* 3. Dupla Falta (exibe separado, mas soma em ENF) */}
+                  <StatComparison
+                    label="Duplas Faltas"
+                    p1Value={safeStats.player1.doubleFaults}
+                    p2Value={safeStats.player2.doubleFaults}
+                    higherIsBetter={false}
+                  />
+
+                  {/* 4. Pontos ganhos 1º saque */}
+                  <StatComparison
+                    label="Pts 1º Saque"
+                    p1Value={safeStats.player1.firstServeWins}
+                    p2Value={safeStats.player2.firstServeWins}
+                    suffix={safeStats.player1.firstServes > 0 ? ` / ${safeStats.player1.firstServes}` : ''}
+                    decimals={0}
+                  />
+
+                  {/* 5. Pontos ganhos 2º saque */}
+                  <StatComparison
+                    label="Pts 2º Saque"
+                    p1Value={safeStats.player1.secondServeWins}
+                    p2Value={safeStats.player2.secondServeWins}
+                    suffix={safeStats.player1.secondServes > 0 ? ` / ${safeStats.player1.secondServes}` : ''}
+                    decimals={0}
+                  />
+
+                  {/* 6. Total de Winners */}
+                  <StatComparison
+                    label="Winners"
+                    p1Value={safeStats.player1.winners}
+                    p2Value={safeStats.player2.winners}
+                  />
+
+                  {/* 7. AE: total de pontos ganhos / total de pontos jogados */}
+                  <StatComparison
+                    label="Aproveitamento Efetivo (AE)"
+                    p1Value={safeStats.player1.pointsWon}
+                    p2Value={safeStats.player2.pointsWon}
+                    suffix={safeStats.totalPoints > 0 ? ` / ${safeStats.totalPoints}` : ''}
+                    decimals={0}
                   />
                 </div>
               </div>
