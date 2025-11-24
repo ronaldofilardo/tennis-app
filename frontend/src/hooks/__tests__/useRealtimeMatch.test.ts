@@ -19,6 +19,7 @@ describe('useRealtimeMatch', () => {
   let mockStartWatching: any;
   let mockStopWatching: any;
   let mockUpdateMatchState: any;
+  let lastUnmount: (() => void) | null = null;
 
   beforeEach(() => {
     mockStartWatching = vi.fn().mockResolvedValue(undefined);
@@ -32,14 +33,17 @@ describe('useRealtimeMatch', () => {
     };
 
     (RealtimeMatchService.getInstance as any).mockReturnValue(mockService);
+    lastUnmount = null;
   });
 
   afterEach(() => {
     vi.clearAllMocks();
+    if (lastUnmount) lastUnmount();
   });
 
   it('deve inicializar com estado correto', () => {
-    const { result } = renderHook(() => useRealtimeMatch('test-match-id'));
+    const { result, unmount } = renderHook(() => useRealtimeMatch('test-match-id'));
+    lastUnmount = unmount;
 
     expect(result.current.state).toBeNull();
     expect(result.current.isLoading).toBe(true);
@@ -49,11 +53,12 @@ describe('useRealtimeMatch', () => {
   it('deve iniciar monitoramento quando matchId é fornecido', async () => {
     mockStartWatching.mockImplementationOnce((matchId: string, onUpdate: Function) => {
       // Simula chamada imediata do callback
-      setTimeout(() => onUpdate({ status: 'IN_PROGRESS', lastUpdate: new Date() }), 0);
+      onUpdate({ status: 'IN_PROGRESS', lastUpdate: new Date() });
       return Promise.resolve();
     });
 
-    const { result } = renderHook(() => useRealtimeMatch('test-match-id'));
+    const { result, unmount } = renderHook(() => useRealtimeMatch('test-match-id'));
+    lastUnmount = unmount;
 
     await waitFor(() => {
       expect(mockStartWatching).toHaveBeenCalledWith('test-match-id', expect.any(Function));
@@ -61,7 +66,8 @@ describe('useRealtimeMatch', () => {
   });
 
   it('não deve iniciar monitoramento sem matchId', () => {
-    renderHook(() => useRealtimeMatch(''));
+    const { unmount } = renderHook(() => useRealtimeMatch(''));
+    lastUnmount = unmount;
 
     expect(mockStartWatching).not.toHaveBeenCalled();
   });
@@ -75,11 +81,12 @@ describe('useRealtimeMatch', () => {
 
     mockStartWatching.mockImplementationOnce((matchId: string, onUpdate: Function) => {
       // Simula uma atualização imediata
-      setTimeout(() => onUpdate(mockState), 0);
+      onUpdate(mockState);
       return Promise.resolve();
     });
 
-    const { result } = renderHook(() => useRealtimeMatch('test-match-id'));
+    const { result, unmount } = renderHook(() => useRealtimeMatch('test-match-id'));
+    lastUnmount = unmount;
 
     await waitFor(() => {
       expect(result.current.state).toEqual(mockState);
@@ -94,9 +101,10 @@ describe('useRealtimeMatch', () => {
 
     mockStartWatching.mockRejectedValueOnce(mockError);
 
-    const { result } = renderHook(() =>
+    const { result, unmount } = renderHook(() =>
       useRealtimeMatch('test-match-id', { onError: mockOnError })
     );
+    lastUnmount = unmount;
 
     await waitFor(() => {
       expect(result.current.error).toEqual(mockError);
@@ -111,7 +119,8 @@ describe('useRealtimeMatch', () => {
 
     mockUpdateMatchState.mockResolvedValueOnce(updatedState);
 
-    const { result } = renderHook(() => useRealtimeMatch('test-match-id'));
+    const { result, unmount } = renderHook(() => useRealtimeMatch('test-match-id'));
+    lastUnmount = unmount;
 
     await act(async () => {
       await result.current.updateState(newState);
@@ -128,9 +137,10 @@ describe('useRealtimeMatch', () => {
 
     mockUpdateMatchState.mockRejectedValueOnce(mockError);
 
-    const { result } = renderHook(() =>
+    const { result, unmount } = renderHook(() =>
       useRealtimeMatch('test-match-id', { onError: mockOnError })
     );
+    lastUnmount = unmount;
 
     await act(async () => {
       try {
@@ -145,7 +155,8 @@ describe('useRealtimeMatch', () => {
   });
 
   it('não deve atualizar estado sem matchId', async () => {
-    const { result } = renderHook(() => useRealtimeMatch(''));
+    const { result, unmount } = renderHook(() => useRealtimeMatch(''));
+    lastUnmount = unmount;
 
     await act(async () => {
       await result.current.updateState({ status: 'FINISHED' });
@@ -156,16 +167,17 @@ describe('useRealtimeMatch', () => {
 
   it('deve limpar monitoramento ao desmontar', () => {
     const { unmount } = renderHook(() => useRealtimeMatch('test-match-id'));
-
+    lastUnmount = unmount;
     unmount();
 
     expect(mockStopWatching).toHaveBeenCalledWith('test-match-id', expect.any(Function));
   });
 
   it('deve reiniciar monitoramento quando matchId muda', () => {
-    const { rerender } = renderHook(({ matchId }) => useRealtimeMatch(matchId), {
+    const { rerender, unmount } = renderHook(({ matchId }) => useRealtimeMatch(matchId), {
       initialProps: { matchId: 'match-1' }
     });
+    lastUnmount = unmount;
 
     expect(mockStartWatching).toHaveBeenCalledWith('match-1', expect.any(Function));
 

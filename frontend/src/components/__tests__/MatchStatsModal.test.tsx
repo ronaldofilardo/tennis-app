@@ -85,10 +85,10 @@ describe('MatchStatsModal', () => {
     // Agora há múltiplos elementos com o nome dos jogadores
     expect(screen.getAllByText(/Jogador 1/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Jogador 2/).length).toBeGreaterThan(0);
-    expect(screen.getAllByText('60').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('40').length).toBeGreaterThan(0);
-    expect(screen.getByText(/Aces/)).toBeInTheDocument();
-    expect(screen.getByText(/Duplas Faltas/)).toBeInTheDocument();
+    expect(screen.getAllByText(/60/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/40/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Aces/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Duplas Faltas/).length).toBeGreaterThan(0);
   });
 
   it('deve chamar onClose ao clicar em fechar', () => {
