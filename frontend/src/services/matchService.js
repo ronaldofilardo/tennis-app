@@ -542,25 +542,35 @@ export async function getMatchStats(id) {
     if (match.matchState) {
       let matchState;
       try {
-        matchState = typeof match.matchState === "string"
-          ? JSON.parse(match.matchState)
-          : match.matchState;
+        matchState =
+          typeof match.matchState === "string"
+            ? JSON.parse(match.matchState)
+            : match.matchState;
       } catch (parseErr) {
-        console.warn(`[getMatchStats] Erro ao fazer parse do matchState da partida ${id}:`, parseErr);
+        console.warn(
+          `[getMatchStats] Erro ao fazer parse do matchState da partida ${id}:`,
+          parseErr
+        );
         matchState = {};
       }
       if (Array.isArray(matchState.pointsHistory)) {
         pointsHistory = matchState.pointsHistory;
       } else {
         if (matchState.pointsHistory !== undefined) {
-          console.warn(`[getMatchStats] pointsHistory mal formatado para partida ${id}:`, matchState.pointsHistory);
+          console.warn(
+            `[getMatchStats] pointsHistory mal formatado para partida ${id}:`,
+            matchState.pointsHistory
+          );
         }
         pointsHistory = [];
       }
     }
     return calculateMatchStats(pointsHistory);
   } catch (error) {
-    console.warn(`[getMatchStats] Erro inesperado ao calcular estatísticas para partida ${id}:`, error);
+    console.warn(
+      `[getMatchStats] Erro inesperado ao calcular estatísticas para partida ${id}:`,
+      error
+    );
     // Nunca lança erro 500, retorna estatísticas vazias
     return calculateMatchStats([]);
   }
