@@ -232,7 +232,7 @@ describe('Dashboard', () => {
       />
     );
 
-    fireEvent.click(screen.getByText('📊 Abrir Resultado'));
+    fireEvent.click(screen.getByText('📊 Abrir Relatório'));
 
     await waitFor(() => {
       expect(screen.getByTestId('match-stats-modal')).toBeInTheDocument();
@@ -264,7 +264,7 @@ describe('Dashboard', () => {
       />
     );
 
-    fireEvent.click(screen.getByText('📊 Abrir Resultado'));
+    fireEvent.click(screen.getByText('📊 Abrir Relatório'));
 
     expect(screen.getByText('Carregando...')).toBeInTheDocument();
 
@@ -286,7 +286,7 @@ describe('Dashboard', () => {
       />
     );
 
-    fireEvent.click(screen.getByText('📊 Abrir Resultado'));
+    fireEvent.click(screen.getByText('📊 Abrir Relatório'));
 
     await waitFor(() => {
       expect(alertSpy).toHaveBeenCalledWith('Não foi possível carregar as estatísticas.');
@@ -417,7 +417,7 @@ describe('Dashboard', () => {
       />
     );
 
-    fireEvent.click(screen.getByText('📊 Abrir Resultado'));
+    fireEvent.click(screen.getByText('📊 Abrir Relatório'));
 
     await waitFor(() => {
       expect(screen.getByTestId('match-stats-modal')).toBeInTheDocument();

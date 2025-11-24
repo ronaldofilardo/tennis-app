@@ -10,15 +10,13 @@ export function useRealtimeMatch(matchId: string, options: UseRealtimeMatchOptio
   const [state, setState] = useState<RealtimeMatchState | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [isWatching, setIsWatching] = useState(false);
 
   const { onError } = options;
 
   useEffect(() => {
-    if (!matchId || isWatching) return;
+    if (!matchId) return;
 
     console.log(`[useRealtimeMatch] Iniciando monitoramento para partida ${matchId}`);
-    setIsWatching(true);
 
     const service = RealtimeMatchService.getInstance();
 
@@ -43,9 +41,8 @@ export function useRealtimeMatch(matchId: string, options: UseRealtimeMatchOptio
     return () => {
       console.log(`[useRealtimeMatch] Limpando monitoramento para partida ${matchId}`);
       service.stopWatching(matchId, handleUpdate);
-      setIsWatching(false);
     };
-  }, [matchId, onError, isWatching]);
+  }, [matchId, onError]);
 
   const updateState = useCallback(
     async (newState: Partial<RealtimeMatchState>) => {
