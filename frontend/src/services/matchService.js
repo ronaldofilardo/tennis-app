@@ -536,25 +536,32 @@ export async function getMatchStats(id) {
     throw notFoundError;
   }
 
+  // Extrair pointsHistory do matchState com fallback seguro
+  let pointsHistory = [];
   try {
-    // Extrair pointsHistory do matchState
-    let pointsHistory = [];
     if (match.matchState) {
-      const matchState =
-        typeof match.matchState === "string"
+      let matchState;
+      try {
+        matchState = typeof match.matchState === "string"
           ? JSON.parse(match.matchState)
           : match.matchState;
-      pointsHistory = matchState.pointsHistory || [];
+      } catch (parseErr) {
+        console.warn(`[getMatchStats] Erro ao fazer parse do matchState da partida ${id}:`, parseErr);
+        matchState = {};
+      }
+      if (Array.isArray(matchState.pointsHistory)) {
+        pointsHistory = matchState.pointsHistory;
+      } else {
+        if (matchState.pointsHistory !== undefined) {
+          console.warn(`[getMatchStats] pointsHistory mal formatado para partida ${id}:`, matchState.pointsHistory);
+        }
+        pointsHistory = [];
+      }
     }
-    const stats = calculateMatchStats(pointsHistory);
-    return stats;
+    return calculateMatchStats(pointsHistory);
   } catch (error) {
-    console.error(
-      `[getMatchStats] Erro ao calcular estatísticas para partida ${id}:`,
-      error
-    );
-    const calcError = new Error("Erro ao calcular estatísticas da partida");
-    calcError.statusCode = 500;
-    throw calcError;
+    console.warn(`[getMatchStats] Erro inesperado ao calcular estatísticas para partida ${id}:`, error);
+    // Nunca lança erro 500, retorna estatísticas vazias
+    return calculateMatchStats([]);
   }
 }
