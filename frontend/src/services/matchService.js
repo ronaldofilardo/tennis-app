@@ -537,7 +537,16 @@ export async function getMatchStats(id) {
   }
 
   try {
-    const stats = calculateMatchStats(match);
+    // Extrair pointsHistory do matchState
+    let pointsHistory = [];
+    if (match.matchState) {
+      const matchState =
+        typeof match.matchState === "string"
+          ? JSON.parse(match.matchState)
+          : match.matchState;
+      pointsHistory = matchState.pointsHistory || [];
+    }
+    const stats = calculateMatchStats(pointsHistory);
     return stats;
   } catch (error) {
     console.error(

@@ -169,8 +169,8 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({ isOpen, playerInF
               </div>
             </div>
           )}
-          {/* Etapa de erro para EF/ENF e Winner */}
-          {resultado && golpe && (efeito || efeitosDisponiveis.length === 0 || (efeitosDisponiveis.length === 1 && (efeitosDisponiveis[0] === '' || efeitosDisponiveis[0] === '(Sem efeito)'))) && (direcao || direcoesDisponiveis.length === 0) && (
+          {/* Etapa de erro para EF/ENF (não para Winner) */}
+          {resultado && resultado !== 'Winner' && golpe && (efeito || efeitosDisponiveis.length === 0 || (efeitosDisponiveis.length === 1 && (efeitosDisponiveis[0] === '' || efeitosDisponiveis[0] === '(Sem efeito)'))) && (direcao || direcoesDisponiveis.length === 0) && (
             <div className="section">
               <h4>Erro</h4>
               <div className="button-group">
