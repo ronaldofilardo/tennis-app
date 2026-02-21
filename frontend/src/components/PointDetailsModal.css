@@ -1,166 +1,232 @@
-/* Botões de Golpe seguem padrão dos botões de Resultado */
-.golpe-grupo-botoes button {
-  padding: 8px 16px;
-  border: 2px solid #e2e8f0;
-  background: white;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #4a5568;
-  margin-bottom: 4px;
-}
+/* PointDetailsModal.css */
 
-.golpe-grupo-botoes button:hover {
-  border-color: #4299e1;
-  background: #ebf8ff;
-}
-
-.golpe-grupo-botoes button.active {
-  border-color: #4299e1;
-  background: #4299e1;
-  color: white;
-}
-/* Ajuste especial para o grupo de botões de golpes */
-.button-group {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-bottom: 8px;
-}
-.point-details-modal-overlay {
+.point-details-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.75);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.2s ease-out;
+  padding: 16px;
+  overflow-y: auto;
+  animation: pdFadeIn 0.2s ease-out;
+}
+
+@keyframes pdFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .point-details-modal {
   background: white;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 500px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
   display: flex;
   flex-direction: column;
+  margin: auto;
 }
 
-.modal-header {
-  padding: 20px 24px 16px;
+/* ── Header ─────────────────────────────────────────────────── */
+
+.pd-header {
+  padding: 20px 24px 14px;
   border-bottom: 1px solid #e1e5e9;
   text-align: center;
 }
 
-.modal-header h3 {
-  margin: 0 0 8px 0;
+.pd-header h3 {
+  margin: 0 0 4px 0;
   color: #1a365d;
-  font-size: 1.25rem;
+  font-size: 1.2rem;
 }
 
-.winner-display {
-  color: #2d3748;
-  font-size: 0.95rem;
-}
-
-.winner-display strong {
-  color: #4299e1;
-}
-
-.modal-content {
-  padding: 20px 24px;
-  flex-grow: 1;
-}
-
-.section {
-  margin-bottom: 24px;
-}
-
-.section h4 {
-  margin: 0 0 12px 0;
-  color: #2d3748;
-  font-size: 1rem;
+.pd-winner-badge {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 0.82rem;
   font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
-.button-group {
+.pd-winner-badge.sacador {
+  background: #ebf8ff;
+  color: #2b6cb0;
+  border: 1px solid #bee3f8;
+}
+
+.pd-winner-badge.devolvedor {
+  background: #f0fff4;
+  color: #276749;
+  border: 1px solid #9ae6b4;
+}
+
+/* ── Body (scrollable) ───────────────────────────────────────── */
+
+.pd-body {
+  padding: 16px 24px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Section ─────────────────────────────────────────────────── */
+
+.pd-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pd-section-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #718096;
+}
+
+.pd-section.disabled .pd-section-label {
+  color: #cbd5e0;
+}
+
+/* ── Button group ────────────────────────────────────────────── */
+
+.pd-btn-group {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.button-group button {
-  padding: 8px 16px;
+.pd-btn {
+  padding: 8px 14px;
   border: 2px solid #e2e8f0;
   background: white;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.9rem;
+  transition: all 0.15s ease;
+  font-size: 0.88rem;
   font-weight: 500;
   color: #4a5568;
+  line-height: 1.2;
+  user-select: none;
 }
 
-.button-group button:hover {
+.pd-btn:hover:not(:disabled) {
   border-color: #4299e1;
   background: #ebf8ff;
+  color: #2b6cb0;
 }
 
-.button-group button.active {
-  border-color: #4299e1;
-  background: #4299e1;
+.pd-btn.active {
+  border-color: #3182ce;
+  background: #3182ce;
   color: white;
 }
 
-.modal-actions {
-  padding: 16px 24px 24px;
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  border-top: 1px solid #e1e5e9;
-}
-
-.modal-actions button {
-  padding: 10px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.95rem;
-}
-
-.cancel-btn {
-  border: 2px solid #e2e8f0;
-  background: white;
-  color: #4a5568;
-}
-
-.cancel-btn:hover {
-  border-color: #cbd5e0;
+.pd-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
   background: #f7fafc;
 }
 
-.confirm-btn {
-  border: 2px solid #48bb78;
-  background: #48bb78;
-  color: white;
+.pd-section.disabled .pd-btn {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background: #f7fafc;
+  border-color: #e2e8f0;
 }
 
-.confirm-btn:hover {
-  border-color: #38a169;
+/* ── Divider ─────────────────────────────────────────────────── */
+
+.pd-divider {
+  height: 1px;
+  background: #edf2f7;
+  margin: 0 -24px;
+}
+
+/* ── Footer ──────────────────────────────────────────────────── */
+
+.pd-footer {
+  padding: 16px 24px 20px;
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  border-top: 1px solid #e1e5e9;
+}
+
+.pd-footer-row {
+  display: flex;
+  gap: 10px;
+}
+
+.pd-btn-confirm {
+  flex: 1;
+  padding: 12px 16px;
   background: #38a169;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.pd-btn-confirm:disabled {
+  background: #c6f6d5;
+  color: #9ae6b4;
+  cursor: not-allowed;
+}
+
+.pd-btn-confirm:hover:not(:disabled) {
+  background: #2f855a;
+}
+
+.pd-btn-skip {
+  flex: 1;
+  padding: 12px 16px;
+  background: white;
+  color: #718096;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pd-btn-skip:hover {
+  border-color: #a0aec0;
+  color: #4a5568;
+}
+
+.pd-btn-cancel {
+  padding: 10px 16px;
+  background: white;
+  color: #e53e3e;
+  border: 2px solid #fed7d7;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  width: 100%;
+}
+
+.pd-btn-cancel:hover {
+  background: #fff5f5;
+  border-color: #fc8181;
 }

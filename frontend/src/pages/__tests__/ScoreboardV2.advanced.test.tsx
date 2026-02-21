@@ -1,47 +1,47 @@
-import '../../../vitest.setup';
+import "../../../vitest.setup";
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import '@testing-library/jest-dom';
-import ScoreboardV2 from '../ScoreboardV2';
-import { TennisScoring } from '../../core/scoring/TennisScoring';
-import { AuthProvider } from '../../contexts/AuthContext';
-import { MatchesProvider } from '../../contexts/MatchesContext';
-import { NavigationProvider } from '../../contexts/NavigationContext';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
+import "@testing-library/jest-dom";
+import ScoreboardV2 from "../ScoreboardV2";
+import { TennisScoring } from "../../core/scoring/TennisScoring";
+import { AuthProvider } from "../../contexts/AuthContext";
+import { MatchesProvider } from "../../contexts/MatchesContext";
+import { NavigationProvider } from "../../contexts/NavigationContext";
 
-vi.mock('../../core/scoring/TennisScoring', () => {
+vi.mock("../../core/scoring/TennisScoring", () => {
   const validState = {
     sets: { PLAYER_1: 0, PLAYER_2: 0 },
     currentSet: 1,
     currentSetState: { games: { PLAYER_1: 0, PLAYER_2: 0 } },
     currentGame: {
-      points: { PLAYER_1: '0', PLAYER_2: '0' },
-      server: 'PLAYER_1',
+      points: { PLAYER_1: "0", PLAYER_2: "0" },
+      server: "PLAYER_1",
       isTiebreak: false,
-      isMatchTiebreak: false
+      isMatchTiebreak: false,
     },
-    server: 'PLAYER_1',
+    server: "PLAYER_1",
     isFinished: false,
     config: {},
     startedAt: new Date().toISOString(),
     completedSets: [],
-    pointsHistory: []
+    pointsHistory: [],
   };
   class MockTennisScoring {
     addPoint = vi.fn();
     addPointWithSync = vi.fn(() => {
-      global.fetch('/api/matches/test-match-id/state', {});
+      global.fetch("/api/matches/test-match-id/state", {});
       return validState;
     });
     undoLastPointWithSync = vi.fn(() => {
-      global.fetch('/api/matches/test-match-id/state', {});
+      global.fetch("/api/matches/test-match-id/state", {});
       return validState;
     });
     undoLastPoint = vi.fn();
     getState = vi.fn(() => validState);
-    shouldChangeSides = vi.fn(() => ({ shouldChange: false, reason: '' }));
+    shouldChangeSides = vi.fn(() => ({ shouldChange: false, reason: "" }));
     isFinished = vi.fn(() => false);
     enableSync = vi.fn();
     disableSync = vi.fn();
@@ -50,12 +50,12 @@ vi.mock('../../core/scoring/TennisScoring', () => {
     setStartedAt = vi.fn();
     canUndo = vi.fn(() => true);
     canRedo = vi.fn(() => false);
-    getAvailableActions = vi.fn(() => ([
-      { label: '1º Saque', action: 'FIRST_SERVE', enabled: true },
-      { label: '2º Saque', action: 'SECOND_SERVE', enabled: true },
-      { label: '+ Ponto Jogador 1', action: 'POINT_P1', enabled: true },
-      { label: '+ Ponto Jogador 2', action: 'POINT_P2', enabled: true },
-    ]));
+    getAvailableActions = vi.fn(() => [
+      { label: "1º Saque", action: "FIRST_SERVE", enabled: true },
+      { label: "2º Saque", action: "SECOND_SERVE", enabled: true },
+      { label: "+ Ponto Jogador 1", action: "POINT_P1", enabled: true },
+      { label: "+ Ponto Jogador 2", action: "POINT_P2", enabled: true },
+    ]);
     getMatchStats = vi.fn(() => ({
       totalPoints: 10,
       player1: {
@@ -84,8 +84,8 @@ vi.mock('../../core/scoring/TennisScoring', () => {
         breakPointConversion: 50,
         winnerToErrorRatio: 1.5,
         returnWinPercentage: 35,
-        dominanceRatio: 1.2
-      ,},
+        dominanceRatio: 1.2,
+      },
       player2: {
         pointsWon: 15,
         totalServes: 28,
@@ -112,37 +112,36 @@ vi.mock('../../core/scoring/TennisScoring', () => {
         breakPointConversion: 33,
         winnerToErrorRatio: 0.8,
         returnWinPercentage: 40,
-        dominanceRatio: 0.9
-      ,},
+        dominanceRatio: 0.9,
+      },
       match: {
         avgRallyLength: 5,
         longestRally: 12,
         shortestRally: 1,
-        totalRallies: 30
+        totalRallies: 30,
       },
-      pointsHistory: []
+      pointsHistory: [],
     }));
   }
   return {
-    TennisScoring: MockTennisScoring
+    TennisScoring: MockTennisScoring,
   };
 });
 
-vi.mock('../ScoreboardV2.css', () => ({}));
-vi.mock('../../components/LoadingIndicator', () => ({ default: () => null }));
-vi.mock('../../components/PointDetailsModal', () => ({ default: () => null }));
+vi.mock("../ScoreboardV2.css", () => ({}));
+vi.mock("../../components/LoadingIndicator", () => ({ default: () => null }));
 
-import { NavigationProvider } from '../../contexts/NavigationContext';
-import { AuthProvider } from '../../contexts/AuthContext';
-import { MatchesProvider } from '../../contexts/MatchesContext';
-import { useParams } from 'react-router-dom';
+import { NavigationProvider } from "../../contexts/NavigationContext";
+import { AuthProvider } from "../../contexts/AuthContext";
+import { MatchesProvider } from "../../contexts/MatchesContext";
+import { useParams } from "react-router-dom";
 
 // Mock useParams hook
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
   return {
     ...actual,
-    useParams: vi.fn().mockReturnValue({ matchId: 'test-match-id' })
+    useParams: vi.fn().mockReturnValue({ matchId: "test-match-id" }),
   };
 });
 
@@ -150,24 +149,24 @@ vi.mock('react-router-dom', async () => {
 const renderScoreboard = () => {
   const mockEndMatch = vi.fn();
   const mockResponse = {
-    id: 'test-match-id',
-    sportType: 'Tênis',
-    format: 'BEST_OF_3',
-    players: { p1: 'Jogador 1', p2: 'Jogador 2' },
-    status: 'IN_PROGRESS',
+    id: "test-match-id",
+    sportType: "Tênis",
+    format: "BEST_OF_3",
+    players: { p1: "Jogador 1", p2: "Jogador 2" },
+    status: "IN_PROGRESS",
     matchState: {
       sets: { PLAYER_1: 0, PLAYER_2: 0 },
       currentSet: 1,
       currentSetState: { games: { PLAYER_1: 0, PLAYER_2: 0 } },
       currentGame: {
-        points: { PLAYER_1: '0', PLAYER_2: '0' },
-        server: 'PLAYER_1',
-        isTiebreak: false
+        points: { PLAYER_1: "0", PLAYER_2: "0" },
+        server: "PLAYER_1",
+        isTiebreak: false,
       },
-      server: 'PLAYER_1',
+      server: "PLAYER_1",
       isFinished: false,
       config: {},
-      startedAt: new Date().toISOString()
+      startedAt: new Date().toISOString(),
     },
     stats: {
       totalPoints: 10,
@@ -197,7 +196,7 @@ const renderScoreboard = () => {
         breakPointConversion: 0,
         winnerToErrorRatio: 2,
         returnWinPercentage: 20,
-        dominanceRatio: 2
+        dominanceRatio: 2,
       },
       player2: {
         pointsWon: 5,
@@ -225,23 +224,23 @@ const renderScoreboard = () => {
         breakPointConversion: 0,
         winnerToErrorRatio: 0.5,
         returnWinPercentage: 40,
-        dominanceRatio: 1
+        dominanceRatio: 1,
       },
       match: {
         avgRallyLength: 5.5,
         longestRally: 12,
         shortestRally: 1,
-        totalRallies: 10
+        totalRallies: 10,
       },
-      pointsHistory: []
-    }
+      pointsHistory: [],
+    },
   };
 
   global.fetch = vi.fn().mockImplementation(() =>
     Promise.resolve({
       ok: true,
-      json: () => Promise.resolve(mockResponse)
-    })
+      json: () => Promise.resolve(mockResponse),
+    }),
   );
 
   render(
@@ -253,68 +252,77 @@ const renderScoreboard = () => {
           </MatchesProvider>
         </NavigationProvider>
       </AuthProvider>
-    </BrowserRouter>
+    </BrowserRouter>,
   );
 
   return { mockEndMatch, mockResponse };
 };
 
-describe('ScoreboardV2 - Cobertura Avançada', () => {
+describe("ScoreboardV2 - Cobertura Avançada", () => {
   afterEach(() => {
     vi.restoreAllMocks();
     vi.clearAllMocks();
   });
 
-  describe('Manipulação de Segundo Serviço', () => {
-    it('deve permitir marcar segundo serviço', async () => {
+  describe("Manipulação de Segundo Serviço", () => {
+    it("deve permitir marcar segundo serviço", async () => {
       renderScoreboard();
 
       await waitFor(() => {
-        expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
+        expect(
+          screen.queryByTestId("loading-indicator"),
+        ).not.toBeInTheDocument();
       });
 
-  const firstServeBtn = screen.getByText('1º Saque');
-  fireEvent.click(firstServeBtn);
+      const firstServeBtn = screen.getByText("1º Saque");
+      fireEvent.click(firstServeBtn);
 
-  // O fluxo real exige clicar em 'Out' ou 'Net' para aparecer '2º Saque'
-  const outBtn = screen.getByText('Out');
-  fireEvent.click(outBtn);
+      // O fluxo real exige clicar em 'Out' ou 'Net' para aparecer '2º Saque'
+      const outBtn = screen.getByText("Out");
+      fireEvent.click(outBtn);
 
-  const secondServeBtn = screen.getByText('2º Saque');
-  expect(secondServeBtn).toBeInTheDocument();
+      const secondServeBtn = screen.getByText("2º Saque");
+      expect(secondServeBtn).toBeInTheDocument();
 
-  fireEvent.click(secondServeBtn);
+      fireEvent.click(secondServeBtn);
 
-  const pointButtonP1 = screen.getByText('+ Ponto Jogador 1');
-  expect(pointButtonP1).toBeInTheDocument();
+      const pointButtonP1 = screen.getByText("+ Ponto Jogador 1");
+      expect(pointButtonP1).toBeInTheDocument();
     });
   });
 
-  describe('Exibição de Estatísticas', () => {
-    it.skip('deve mostrar modal de estatísticas quando solicitado', async () => {
+  describe("Exibição de Estatísticas", () => {
+    it.skip("deve mostrar modal de estatísticas quando solicitado", async () => {
       renderScoreboard();
 
       await waitFor(() => {
-        expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
+        expect(
+          screen.queryByTestId("loading-indicator"),
+        ).not.toBeInTheDocument();
       });
 
-      const statsButton = screen.getByRole('button', { name: /Estatísticas/i });
+      const statsButton = screen.getByRole("button", { name: /Estatísticas/i });
       fireEvent.click(statsButton);
 
       await waitFor(() => {
-        const statsModal = screen.getByText('📊 Comparativo de Estatísticas');
+        const statsModal = screen.getByText("📊 Comparativo de Estatísticas");
         expect(statsModal).toBeInTheDocument();
       });
     });
   });
 
-  describe('Troca de Lado da Quadra', () => {
-    it('deve indicar troca de lado em games ímpares', async () => {
+  describe("Troca de Lado da Quadra", () => {
+    it("deve indicar troca de lado em games ímpares", async () => {
       const { mockResponse } = renderScoreboard();
-      mockResponse.matchState.currentSetState.games = { PLAYER_1: 2, PLAYER_2: 1 };
+      mockResponse.matchState.currentSetState.games = {
+        PLAYER_1: 2,
+        PLAYER_2: 1,
+      };
 
       await waitFor(() => {
-        expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
+        expect(
+          screen.queryByTestId("loading-indicator"),
+        ).not.toBeInTheDocument();
       });
 
       const changeSidesIndicator = screen.queryByText(/Trocar de Lado/i);
@@ -322,82 +330,91 @@ describe('ScoreboardV2 - Cobertura Avançada', () => {
     });
   });
 
-  describe('Gerenciamento de Erros', () => {
-    it('deve exibir mensagem de erro quando falha ao carregar partida', async () => {
-      global.fetch = vi.fn().mockRejectedValue(new Error('Falha na API'));
+  describe("Gerenciamento de Erros", () => {
+    it("deve exibir mensagem de erro quando falha ao carregar partida", async () => {
+      global.fetch = vi.fn().mockRejectedValue(new Error("Falha na API"));
       renderScoreboard();
 
       await waitFor(() => {
         // O componente pode não renderizar mensagem de erro, então apenas garantir que não quebre
-        expect(screen.getByText('Tênis')).toBeInTheDocument();
+        expect(screen.getByText("Tênis")).toBeInTheDocument();
       });
     });
 
-    it('deve exibir mensagem de erro quando falha ao atualizar ponto', async () => {
+    it("deve exibir mensagem de erro quando falha ao atualizar ponto", async () => {
       const { mockResponse } = renderScoreboard();
 
       await waitFor(() => {
-        expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
+        expect(
+          screen.queryByTestId("loading-indicator"),
+        ).not.toBeInTheDocument();
       });
 
-      global.fetch = vi.fn().mockRejectedValue(new Error('Falha ao atualizar'));
+      global.fetch = vi.fn().mockRejectedValue(new Error("Falha ao atualizar"));
 
-   const pointButton = screen.getByText('+ Ponto Jogador 1');
-   fireEvent.click(pointButton);
+      const pointButton = screen.getByText("+ Ponto Jogador 1");
+      fireEvent.click(pointButton);
 
       await waitFor(() => {
         // O componente pode não renderizar mensagem de erro, então apenas garantir que não quebre
-        expect(screen.getByText('Tênis')).toBeInTheDocument();
+        expect(screen.getByText("Tênis")).toBeInTheDocument();
       });
     });
   });
 
-  describe('Histórico de Pontos', () => {
-    it('deve permitir desfazer último ponto', async () => {
+  describe("Histórico de Pontos", () => {
+    it("deve permitir desfazer último ponto", async () => {
       renderScoreboard();
 
       await waitFor(() => {
-        expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
+        expect(
+          screen.queryByTestId("loading-indicator"),
+        ).not.toBeInTheDocument();
       });
 
-   const pointButton = screen.getByText('+ Ponto Jogador 1');
-   fireEvent.click(pointButton);
+      const pointButton = screen.getByText("+ Ponto Jogador 1");
+      fireEvent.click(pointButton);
 
-  const undoButton = screen.getByRole('button', { name: /Correção \(Undo\)/i });
+      const undoButton = screen.getByRole("button", {
+        name: /Correção \(Undo\)/i,
+      });
       fireEvent.click(undoButton);
 
       // Verifica se a função de atualização foi chamada após desfazer
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
-          '/api/matches/test-match-id/state',
-          expect.any(Object)
+          "/api/matches/test-match-id/state",
+          expect.any(Object),
         );
       });
     });
   });
 
-  describe('Persistência de Estado', () => {
-    it('deve persistir estado após cada ponto', async () => {
+  describe("Persistência de Estado", () => {
+    it("deve persistir estado após cada ponto", async () => {
       const { mockResponse } = renderScoreboard();
 
       await waitFor(() => {
-        expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
+        expect(
+          screen.queryByTestId("loading-indicator"),
+        ).not.toBeInTheDocument();
       });
 
-      const pointButton = screen.getByText('+ Ponto Jogador 1');
+      const pointButton = screen.getByText("+ Ponto Jogador 1");
       fireEvent.click(pointButton);
 
       await waitFor(() => {
         // Aceita chamada de fetch com 1 ou 2 argumentos (URL relativa ou absoluta)
         const calls = (global.fetch as any).mock.calls;
-        const found = calls.some((args: any[]) =>
-          typeof args[0] === 'string' &&
-          /(\/api\/matches\/test-match-id\/state$|http:\/\/localhost:3001\/api\/matches\/test-match-id\/state$)/.test(args[0])
+        const found = calls.some(
+          (args: any[]) =>
+            typeof args[0] === "string" &&
+            /(\/api\/matches\/test-match-id\/state$|http:\/\/localhost:3001\/api\/matches\/test-match-id\/state$)/.test(
+              args[0],
+            ),
         );
         expect(found).toBe(true);
       });
     });
   });
-
-
 });
