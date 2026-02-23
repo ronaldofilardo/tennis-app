@@ -346,6 +346,12 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
       if (details) {
         addPoint(pendingPointPlayer, {
           rallyDetails: details,
+          result: {
+            winner: pendingPointPlayer,
+            type: "WINNER",
+          },
+          serve: { isFirstServe: serveStep !== "second" },
+          rally: { ballExchanges: 1 },
         } as Partial<PointDetails>);
       } else {
         addPoint(pendingPointPlayer);

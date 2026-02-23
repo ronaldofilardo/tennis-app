@@ -139,8 +139,6 @@ export function getValidDirecoes(
 //  drop,lob apenas (2):
 //    sacador|devolucao|erro-forcado
 //    sacador|devolucao|erro-nao-forcado
-//
-//  drop,lob,swingvolley (sem bate-pronto, 3):
 //    devolvedor|devolucao|winner
 //
 //  bate-pronto,drop,lob (sem swingvolley, 3):
@@ -159,8 +157,7 @@ export function getValidGolpeEsp(
   tipo: RallyTipo,
 ): RallyGolpeEsp[] {
   if (situacao === "devolucao") {
-    if (vencedor === "sacador") return ["drop", "lob"];
-    return ["drop", "lob", "swingvolley"];
+    return ["drop", "lob"];
   }
 
   if (tipo !== "winner") {
