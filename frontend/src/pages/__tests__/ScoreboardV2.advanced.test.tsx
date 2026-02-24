@@ -31,11 +31,11 @@ vi.mock("../../core/scoring/TennisScoring", () => {
   };
   class MockTennisScoring {
     addPoint = vi.fn();
-    addPointWithSync = vi.fn(() => {
+    addPoint = vi.fn(() => {
       global.fetch("/api/matches/test-match-id/state", {});
       return validState;
     });
-    undoLastPointWithSync = vi.fn(() => {
+    undoLastPoint = vi.fn(() => {
       global.fetch("/api/matches/test-match-id/state", {});
       return validState;
     });
@@ -418,3 +418,4 @@ describe("ScoreboardV2 - Cobertura Avançada", () => {
     });
   });
 });
+

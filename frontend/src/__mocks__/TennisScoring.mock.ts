@@ -54,9 +54,33 @@ const createAddPointMock = () => vi.fn(async () => {
   return buildSnapshot(mockState);
 });
 
+const createAddPointSyncMock = () => vi.fn((player?: unknown) => {
+  if (!mockState.finished) {
+    const idx = pointOrder.indexOf(mockState.pointP1);
+    if (idx < pointOrder.length - 1) {
+      mockState.pointP1 = pointOrder[idx + 1];
+    } else {
+      mockState.pointP1 = '0';
+      mockState.gamesP1 += 1;
+      if (mockState.gamesP1 >= 1) {
+        mockState.setsP1 += 1;
+        if (mockState.setsP1 >= 1) {
+          mockState.finished = true;
+          mockState.winner = 'PLAYER_1';
+        } else {
+          mockState.gamesP1 = 0;
+        }
+      }
+    }
+  }
+  return buildSnapshot(mockState);
+});
+
 export const mockTennisScoring = {
   getState: vi.fn(() => buildSnapshot(mockState)),
+  addPoint: createAddPointSyncMock(),
   addPointWithSync: createAddPointMock(),
+  undoLastPoint: vi.fn(() => buildSnapshot(mockState)),
   undoLastPointWithSync: vi.fn(),
   canUndo: vi.fn(() => false),
   enableSync: vi.fn(),
@@ -69,7 +93,9 @@ export const mockTennisScoring = {
 export function __resetMockTennisScoring(overrides: Partial<typeof mockTennisScoring> = {}) {
   mockState = { gamesP1: 0, gamesP2: 0, setsP1: 0, setsP2: 0, finished: false, winner: 'PLAYER_1', pointP1: '0' };
   mockTennisScoring.getState = vi.fn(() => buildSnapshot(mockState));
+  mockTennisScoring.addPoint = createAddPointSyncMock();
   mockTennisScoring.addPointWithSync = createAddPointMock();
+  mockTennisScoring.undoLastPoint = vi.fn(() => buildSnapshot(mockState));
   mockTennisScoring.undoLastPointWithSync = vi.fn();
   mockTennisScoring.canUndo = vi.fn(() => false);
   mockTennisScoring.enableSync = vi.fn();

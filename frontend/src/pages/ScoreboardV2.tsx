@@ -8,9 +8,9 @@ function getDeepMatchState(state: any) {
 }
 // frontend/src/pages/ScoreboardV2.tsx (Fluxo de saque final e correto)
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import MatchStatsModal from "../components/MatchStatsModal";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import LoadingIndicator from "../components/LoadingIndicator";
 import ServerEffectModal from "../components/ServerEffectModal";
 import PointDetailsModal from "../components/PointDetailsModal";
@@ -25,12 +25,23 @@ import type {
 } from "../core/scoring/types";
 import { API_URL } from "../config/api";
 import { useMatchSync } from "../hooks/useMatchSync";
+import { useShakeDetection } from "../hooks/useGestures";
+import CourtBackground from "../components/scoreboard/CourtBackground";
+import MatchHeader, {
+  type ViewMode,
+} from "../components/scoreboard/MatchHeader";
+import PlayerCard from "../components/scoreboard/PlayerCard";
+import VSIndicator from "../components/scoreboard/VSIndicator";
+import ContextBadges from "../components/scoreboard/ContextBadges";
+import ActionBar from "../components/scoreboard/ActionBar";
+import "../styles/scoreboard-tokens.css";
 import "./ScoreboardV2.css";
 
 interface MatchData {
   id: string;
   sportType: string;
   format: TennisFormat | string;
+  courtType?: "GRASS" | "CLAY" | "HARD";
   players: { p1: string; p2: string };
   status?: "NOT_STARTED" | "IN_PROGRESS" | "FINISHED";
   matchState?: MatchState;
@@ -85,10 +96,11 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
     console.log("[ScoreboardV2] Finalizando partida e persistindo estado");
 
     // Só persiste se a partida já foi iniciada
-    if (scoringSystem && matchData?.status !== "NOT_STARTED") {
+    const sys = getSystem();
+    if (sys && matchData?.status !== "NOT_STARTED") {
       try {
         console.log("[ScoreboardV2] Sincronizando estado atual");
-        await scoringSystem.syncState();
+        await sys.syncState();
       } catch (e) {
         // Pode exibir um alerta ou logar o erro, mas não impede o fechamento
         console.error("[ScoreboardV2] Erro ao persistir estado ao fechar:", e);
@@ -99,12 +111,12 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
   };
   const { matchId } = useParams<{ matchId: string }>();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [matchData, setMatchData] = useState<MatchData | null>(null);
-  const [scoringSystem, setScoringSystem] = useState<TennisScoring | null>(
-    null,
-  );
+  // useRef em vez de useState: o objeto TennisScoring é mutável — usar useState
+  // faz o React potencialmente sobrescrever a referência em re-renders/StrictMode,
+  // apagando pontos marcados em memória antes do sync.
+  const scoringSystemRef = useRef<TennisScoring | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSetupOpen, setIsSetupOpen] = useState(false);
@@ -119,6 +131,26 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
   const [pendingPointPlayer, setPendingPointPlayer] = useState<Player | null>(
     null,
   );
+  const [viewMode, setViewMode] = useState<ViewMode>("simple");
+  const [showFamilyExplainer, setShowFamilyExplainer] = useState(false);
+  const [contextMenuPlayer, setContextMenuPlayer] = useState<Player | null>(
+    null,
+  );
+  const courtRef = useRef<HTMLDivElement>(null);
+  // Ref para cancelar syncState pendente e evitar race condition de OOO writes
+  const syncTimeoutRef = useRef<number | null>(null);
+
+  // Atalho local para o sistema de pontuação (derivado do ref)
+  const getSystem = () => scoringSystemRef.current;
+  // Shake → undo
+  useShakeDetection({
+    onShake: useCallback(() => {
+      if (window.confirm("Desfazer último ponto?")) {
+        handleUndo();
+      }
+    }, []),
+  });
+
   // Validação para mudanças seguras de serveStep
   const setServeStepSafe = useCallback(
     (newStep: "none" | "second") => {
@@ -163,41 +195,40 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
 
     console.log(`[ScoreboardV2] Iniciando carregamento da partida ${matchId}`);
 
+    // Flag para cancelar atualização de estado caso o efeito seja limpo
+    // (React StrictMode dispara o efeito duas vezes em dev — sem isso, a
+    // segunda chamada sobrescreve o scoringSystem com estado antigo do banco
+    // DEPOIS do usuário já ter marcado pontos, apagando-os.)
+    let cancelled = false;
+
     const fetchMatchData = async () => {
       try {
         let data: MatchData;
-        const initialState = (location.state as any)?.initialState;
 
-        // Se temos estado inicial da navegação, use-o
-        if (initialState) {
-          console.log(
-            `[ScoreboardV2] Usando estado inicial fornecido pela navegação para a partida ${matchId}`,
+        // Sempre busca o estado mais recente do banco
+        console.log(
+          `[ScoreboardV2] Buscando estado atualizado do backend para ${matchId}`,
+        );
+        const response = await fetch(`${API_URL}/matches/${matchId}/state`);
+
+        // Se este efeito já foi cancelado (StrictMode ou matchId mudou), aborta
+        if (cancelled) return;
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(
+            `[ScoreboardV2] Falha ao carregar dados da partida ${matchId}:`,
+            response.status,
+            errorText,
           );
-          // Garante que o formato estará presente no objeto principal
-          data = {
-            ...initialState,
-            format:
-              initialState?.matchState?.config?.format || initialState?.format,
-            matchState: initialState.matchState || initialState.matchState,
-          };
-        } else {
-          console.log(
-            `[ScoreboardV2] Buscando estado do backend para a partida ${matchId}`,
+          throw new Error(
+            `Falha ao carregar dados da partida (status: ${response.status})`,
           );
-          const response = await fetch(`${API_URL}/matches/${matchId}/state`);
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error(
-              `[ScoreboardV2] Falha ao carregar dados da partida ${matchId}:`,
-              response.status,
-              errorText,
-            );
-            throw new Error(
-              `Falha ao carregar dados da partida (status: ${response.status})`,
-            );
-          }
-          data = await response.json();
         }
+        data = await response.json();
+
+        // Verificar novamente após await
+        if (cancelled) return;
 
         // Fallback para garantir que o formato sempre existe
         const format = (data.matchState?.config?.format ||
@@ -236,8 +267,13 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
           setIsSetupOpen(true);
         }
 
-        setScoringSystem(system);
+        // Só instala o sistema se este efeito ainda for o mais recente
+        if (!cancelled) {
+          scoringSystemRef.current = system;
+          forceRerender();
+        }
       } catch (err) {
+        if (cancelled) return; // ignora erros de efeitos cancelados
         console.error(
           `[ScoreboardV2] Erro ao carregar partida ${matchId}:`,
           err,
@@ -246,17 +282,24 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
           err instanceof Error ? err.message : "Ocorreu um erro desconhecido.",
         );
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     };
     fetchMatchData();
-  }, [matchId, location.state]);
+
+    // Cleanup: marca este efeito como cancelado quando o componente desmonta
+    // ou quando matchId muda — impede setScoringSystem stale.
+    return () => {
+      cancelled = true;
+    };
+  }, [matchId]);
 
   useEffect(() => {
     let timer: number | null = null;
-    const state = scoringSystem?.getState();
-    if (state?.startedAt && !state?.isFinished) {
-      const start = new Date(state.startedAt).getTime();
+    const sys = getSystem();
+    const sysState = sys?.getState();
+    if (sysState?.startedAt && !sysState?.isFinished) {
+      const start = new Date(sysState.startedAt).getTime();
       const updateElapsed = () =>
         setElapsed(Math.floor((Date.now() - start) / 1000));
       updateElapsed();
@@ -265,11 +308,8 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
     return () => {
       if (timer) window.clearInterval(timer);
     };
-  }, [
-    scoringSystem,
-    scoringSystem?.getState()?.startedAt,
-    scoringSystem?.getState()?.isFinished,
-  ]);
+    // renderKey garante que este efeito re-avalia após cada ponto
+  }, [renderKey]);
 
   const handleSetupConfirm = async (firstServer: Player) => {
     if (!matchData || !matchId) {
@@ -292,7 +332,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
       const state = system.getState();
       if ("needsSetup" in state) delete state.needsSetup;
       if (!state.startedAt) state.startedAt = new Date().toISOString();
-      setScoringSystem(system);
+      scoringSystemRef.current = system;
       setIsSetupOpen(false);
 
       // Sincronizar estado inicial - o backend inferirá o status automaticamente
@@ -333,8 +373,17 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
     setRenderKey((prev) => prev + 1);
   };
 
-  // Abre o modal de detalhes do ponto ao invés de registrar diretamente
+  // Registra ponto diretamente (sem modal) — toque rápido no card do jogador
   const handlePointButtonClick = (player: Player) => {
+    addPoint(player, {
+      serve: { isFirstServe: serveStep !== "second", type: "SERVICE_WINNER" },
+      result: { winner: player, type: "WINNER" },
+      rally: { ballExchanges: 1 },
+    } as Partial<PointDetails>);
+  };
+
+  // Abre o modal de detalhes do ponto
+  const handlePointDetailsOpen = (player: Player) => {
     setPendingPointPlayer(player);
     setIsPointDetailsOpen(true);
   };
@@ -366,6 +415,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
   };
 
   const addPoint = async (player: Player, details?: Partial<PointDetails>) => {
+    const scoringSystem = getSystem();
     if (!scoringSystem) {
       console.warn(
         "[ScoreboardV2] Tentativa de adicionar ponto sem sistema de pontuação",
@@ -373,22 +423,8 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
       return;
     }
 
-    // Validação: Verificar consistência entre serveStep e isFirstServe
-    if (
-      details?.serve?.isFirstServe !== undefined &&
-      details.serve.isFirstServe !== (serveStep !== "second")
-    ) {
-      console.warn(
-        "[ScoreboardV2] Inconsistência detectada: isFirstServe não corresponde ao serveStep atual",
-        {
-          serveStep,
-          isFirstServe: details.serve.isFirstServe,
-        },
-      );
-    }
-
     // Garantir que isFirstServe seja sempre incluído para persistência
-    const pointDetails = details || {
+    const pointDetails: Partial<PointDetails> = details || {
       serve: { isFirstServe: serveStep !== "second" },
       result: { winner: player, type: "WINNER" },
       rally: { ballExchanges: 1 },
@@ -403,44 +439,54 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
       `[ScoreboardV2] Adicionando ponto para ${player}`,
       pointDetails,
     );
+
+    // 1. Atualizar estado em memória IMEDIATAMENTE (síncrono) — UI nunca trava
+    let newState: ReturnType<typeof scoringSystem.getState>;
     try {
-      const newState = await scoringSystem.addPointWithSync(
-        player,
-        pointDetails as PointDetails,
-      );
-      setServeStepSafe("none");
-      forceRerender();
-
-      // O TennisScoring já sincroniza o estado automaticamente via syncState()
-      // Não precisamos forçar atualização manual aqui
-
-      // Verificar se a partida foi finalizada pelas regras do jogo
-      if (newState.isFinished && newState.winner) {
-        console.log(
-          `[ScoreboardV2] Partida finalizada! Vencedor: ${newState.winner}`,
-        );
-        // Exibir mensagem de vitória
-        const winnerName =
-          newState.winner === "PLAYER_1" ? players.p1 : players.p2;
-        setTimeout(() => {
-          alert(
-            `🏆 PARTIDA FINALIZADA!\n\nVencedor: ${winnerName}\n\nPlacar Final: ${newState.sets.PLAYER_1} sets x ${newState.sets.PLAYER_2} sets`,
-          );
-          // Redirecionar para dashboard após confirmação
-          navigate("/dashboard");
-        }, 500);
-      }
-
-      console.log(`[ScoreboardV2] Ponto adicionado com sucesso para ${player}`);
-    } catch (error) {
+      newState = scoringSystem.addPoint(player, pointDetails as PointDetails);
+    } catch (err) {
       console.error(
-        `[ScoreboardV2] Erro ao adicionar ponto para ${player}:`,
-        error,
+        `[ScoreboardV2] Erro ao computar ponto para ${player}:`,
+        err,
       );
+      return;
     }
+    setServeStepSafe("none");
+    forceRerender(); // UI atualiza independente do resultado do sync
+
+    // 2. Sincronizar com backend — debounced para evitar race condition de
+    // requisições out-of-order que sobrescrevem o estado mais novo com o mais antigo.
+    if (syncTimeoutRef.current) window.clearTimeout(syncTimeoutRef.current);
+    syncTimeoutRef.current = window.setTimeout(() => {
+      const sys = getSystem();
+      sys?.syncState()?.catch((syncErr) => {
+        console.error(
+          `[ScoreboardV2] Falha ao sincronizar ponto — dado pode ser perdido ao recarregar:`,
+          syncErr,
+        );
+      });
+    }, 250);
+
+    // 3. Verificar se a partida foi finalizada
+    if (newState.isFinished && newState.winner) {
+      console.log(
+        `[ScoreboardV2] Partida finalizada! Vencedor: ${newState.winner}`,
+      );
+      const winnerName =
+        newState.winner === "PLAYER_1" ? players.p1 : players.p2;
+      setTimeout(() => {
+        alert(
+          `🏆 PARTIDA FINALIZADA!\n\nVencedor: ${winnerName}\n\nPlacar Final: ${newState.sets.PLAYER_1} sets x ${newState.sets.PLAYER_2} sets`,
+        );
+        navigate("/dashboard");
+      }, 500);
+    }
+
+    console.log(`[ScoreboardV2] Ponto registrado em memória para ${player}`);
   };
 
   const handleFault = async () => {
+    const scoringSystem = getSystem();
     if (!scoringSystem) {
       console.warn(
         "[ScoreboardV2] Tentativa de registrar falta sem sistema de pontuação",
@@ -449,31 +495,18 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
     }
 
     console.log("[ScoreboardV2] Registrando falta dupla");
-    try {
-      const opponent = state.server === "PLAYER_1" ? "PLAYER_2" : "PLAYER_1";
-      const pointDetails: Partial<PointDetails> = {
-        serve: { type: "DOUBLE_FAULT", isFirstServe: false },
-        result: {
-          winner: opponent,
-          type: "FORCED_ERROR",
-        },
-        rally: { ballExchanges: 1 },
-      };
-      await scoringSystem.addPointWithSync(
-        opponent,
-        pointDetails as PointDetails,
-      );
-      setServeStepSafe("none");
-      forceRerender();
-      console.log(
-        `[ScoreboardV2] Falta dupla registrada, ponto para ${opponent}`,
-      );
-    } catch (error) {
-      console.error("[ScoreboardV2] Erro ao registrar falta dupla:", error);
-    }
+    const currentServer = scoringSystem.getState().server;
+    const opponent = currentServer === "PLAYER_1" ? "PLAYER_2" : "PLAYER_1";
+    const pointDetails: Partial<PointDetails> = {
+      serve: { type: "DOUBLE_FAULT", isFirstServe: false },
+      result: { winner: opponent, type: "FORCED_ERROR" },
+      rally: { ballExchanges: 1 },
+    };
+    addPoint(opponent, pointDetails);
   };
 
   const handleUndo = async () => {
+    const scoringSystem = getSystem();
     if (!scoringSystem) {
       console.warn(
         "[ScoreboardV2] Tentativa de desfazer ponto sem sistema de pontuação",
@@ -483,10 +516,20 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
 
     console.log("[ScoreboardV2] Desfazendo último ponto");
     try {
-      await scoringSystem.undoLastPointWithSync();
-      setServeStepSafe("none");
-      forceRerender();
-      console.log("[ScoreboardV2] Ponto desfeito com sucesso");
+      const prevState = scoringSystem.undoLastPoint();
+      if (prevState) {
+        setServeStepSafe("none");
+        forceRerender();
+        // Sincronizar de forma assíncrona
+        if (syncTimeoutRef.current) window.clearTimeout(syncTimeoutRef.current);
+        syncTimeoutRef.current = window.setTimeout(() => {
+          const sys = getSystem();
+          sys?.syncState()?.catch((e) =>
+            console.error("[ScoreboardV2] Erro ao sincronizar undo:", e),
+          );
+        }, 250);
+        console.log("[ScoreboardV2] Ponto desfeito com sucesso");
+      }
     } catch (error) {
       console.error("[ScoreboardV2] Erro ao desfazer ponto:", error);
     }
@@ -542,6 +585,9 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
       </div>
     );
   }
+  // Derivar scoringSystem do ref para uso no render (read-only, imutável aqui)
+  const scoringSystem = scoringSystemRef.current;
+
   if (!scoringSystem) {
     console.error("[ScoreboardV2] scoringSystem está undefined", { matchData });
     return (
@@ -576,17 +622,94 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
     return null;
   }
 
+  // ── Contexto e estados especiais do ponto ──────────────────────────────────
+  const p1Score = state.currentGame?.points?.PLAYER_1 ?? "0";
+  const p2Score = state.currentGame?.points?.PLAYER_2 ?? "0";
+  const p1Games = state.currentSetState?.games?.PLAYER_1 ?? 0;
+  const p2Games = state.currentSetState?.games?.PLAYER_2 ?? 0;
+  const p1Sets = state.sets?.PLAYER_1 ?? 0;
+  const p2Sets = state.sets?.PLAYER_2 ?? 0;
+  const config = (state as any).config;
+  const setsToWin = config?.setsToWin ?? 2;
+  const gamesPerSet = config?.gamesPerSet ?? 6;
+
+  const isDeuce = !isTiebreak && p1Score === "40" && p2Score === "40";
+  const p1HasAdv = p1Score === "AD";
+  const p2HasAdv = p2Score === "AD";
+
+  // game-level "would-win-point" por jogador
+  const p1AtGamePt = isTiebreak
+    ? typeof p1Score === "number" &&
+      p1Score >= 6 &&
+      (p1Score as number) - (p2Score as number) >= 1
+    : (p1Score === "40" && p2Score !== "40") || p1HasAdv;
+  const p2AtGamePt = isTiebreak
+    ? typeof p2Score === "number" &&
+      p2Score >= 6 &&
+      (p2Score as number) - (p1Score as number) >= 1
+    : (p2Score === "40" && p1Score !== "40") || p2HasAdv;
+
+  // set-level: ganhar o game daria o set?
+  const p1AtSetPt = p1AtGamePt && (p1Games + 1 > gamesPerSet || isTiebreak);
+  const p2AtSetPt = p2AtGamePt && (p2Games + 1 > gamesPerSet || isTiebreak);
+
+  // match-level
+  const p1MatchPt = p1AtSetPt && p1Sets + 1 >= setsToWin;
+  const p2MatchPt = p2AtSetPt && p2Sets + 1 >= setsToWin;
+
+  // break point: quem está devolvendo é quem pode ganhar o game
+  const returner = state.server === "PLAYER_1" ? "PLAYER_2" : "PLAYER_1";
+  const isBreakPoint =
+    !isTiebreak && (returner === "PLAYER_1" ? p1AtGamePt : p2AtGamePt);
+
+  // tech stats aproximados (usa pointsHistory se disponível)
+  const pointsHistory: any[] = (scoringSystem as any).pointsHistory ?? [];
+  const computeTechStats = (playerKey: "PLAYER_1" | "PLAYER_2") => {
+    if (!pointsHistory.length)
+      return { firstServePercent: 0, winners: 0, unforced: 0 };
+    const won = pointsHistory.filter((p) => p.result?.winner === playerKey);
+    const served = pointsHistory.filter((p) => p.serve);
+    const first = served.filter((p) => p.serve?.isFirstServe);
+    return {
+      firstServePercent: served.length
+        ? Math.round((first.length / served.length) * 100)
+        : 0,
+      winners: won.filter((p) => p.result?.type === "WINNER").length,
+      unforced: pointsHistory.filter(
+        (p) =>
+          p.result?.winner !== playerKey && p.result?.type === "UNFORCED_ERROR",
+      ).length,
+    };
+  };
+
+  // legenda de evento para modo família / assistir
+  const familyCaption = (() => {
+    if (state.isFinished && state.winner) {
+      return `🏆 ${state.winner === "PLAYER_1" ? players.p1 : players.p2} venceu a partida!`;
+    }
+    if (p1MatchPt) return `🏆 Match Point para ${players.p1}!`;
+    if (p2MatchPt) return `🏆 Match Point para ${players.p2}!`;
+    if (isTiebreak) return `🎾 Tie-break! Quem chegar a 7 pontos vence.`;
+    if (isDeuce)
+      return `⚡ Deuce! Cada jogador precisa de 2 pontos seguidos para vencer.`;
+    if (p1AtSetPt) return `🎯 Set Point para ${players.p1}!`;
+    if (p2AtSetPt) return `🎯 Set Point para ${players.p2}!`;
+    if (isBreakPoint) {
+      const bpPlayer = returner === "PLAYER_1" ? players.p1 : players.p2;
+      return `⚡ Break Point para ${bpPlayer}!`;
+    }
+    return null;
+  })();
+
+  const courtAttr = matchData.courtType ?? "GRASS";
+
   return (
-    <div key={renderKey} className="scoreboard-v2">
-      <div className="scoreboard-header">
-        <h3>{matchData.sportType}</h3>
-        <button onClick={handleEndMatch} className="end-match-button">
-          ✕
-        </button>
-        <button onClick={fetchStats} className="stats-btn">
-          Estatísticas
-        </button>
-      </div>
+    <div
+      className="scoreboard-v2-court"
+      data-render={renderKey}
+      data-court={courtAttr}
+    >
+      {/* Modais que não mudam */}
       <MatchStatsModal
         isOpen={isStatsOpen}
         onClose={() => setIsStatsOpen(false)}
@@ -594,204 +717,6 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         playerNames={players}
         stats={statsData}
       />
-      <div className="match-timestamps">
-        {state.startedAt && (
-          <span>Início: {new Date(state.startedAt).toLocaleTimeString()}</span>
-        )}
-        {state.startedAt && !state.isFinished && (
-          <span>
-            Tempo: {new Date(elapsed * 1000).toISOString().substr(11, 8)}
-          </span>
-        )}
-      </div>
-      <div className="score-main">
-        <div className="player-section">
-          <div className="player-header">
-            <span className="player-name">{players.p1}</span>
-            {state.server === "PLAYER_1" && (
-              <span className="serve-indicator">
-                🎾 {serveStep === "second" ? "2º" : "1º"}
-              </span>
-            )}
-          </div>
-          <div className="player-scores">
-            <span className="current-score">
-              {state.currentGame?.points?.PLAYER_1 || "0"}
-            </span>
-            <span className="sets-count">
-              Sets: {state.sets?.PLAYER_1 || 0}
-            </span>
-            <span className="games-count">
-              Games: {state.currentSetState?.games?.PLAYER_1 || 0}
-            </span>
-          </div>
-        </div>
-        <div className="vs-separator">{isTiebreak ? "TIEBREAK" : "VS"}</div>
-        <div className="player-section">
-          <div className="player-header">
-            <span className="player-name">{players.p2}</span>
-            {state.server === "PLAYER_2" && (
-              <span className="serve-indicator">
-                🎾 {serveStep === "second" ? "2º" : "1º"}
-              </span>
-            )}
-          </div>
-          <div className="player-scores">
-            <span className="current-score">
-              {state.currentGame?.points?.PLAYER_2 || "0"}
-            </span>
-            <span className="sets-count">
-              Sets: {state.sets?.PLAYER_2 || 0}
-            </span>
-            <span className="games-count">
-              Games: {state.currentSetState?.games?.PLAYER_2 || 0}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Parciais dos sets finalizados */}
-      {state.completedSets && state.completedSets.length > 0 && (
-        <div className="sets-partials">
-          Parciais:{" "}
-          {state.completedSets
-            .map((set, index) => {
-              const games = set.games;
-              const g1 = games.PLAYER_1;
-              const g2 = games.PLAYER_2;
-              if (set.tiebreakScore) {
-                const tb1 = set.tiebreakScore.PLAYER_1;
-                const tb2 = set.tiebreakScore.PLAYER_2;
-                if (set.winner === "PLAYER_1") {
-                  return `${g1}/${g2}(${tb1})`;
-                } else {
-                  return `${g2}/${g1}(${tb2})`;
-                }
-              } else {
-                return `${g1}/${g2}`;
-              }
-            })
-            .join(" • ")}
-        </div>
-      )}
-
-      {state.isFinished && state.winner && (
-        <div className="match-finished-banner">
-          <div className="finished-content">
-            <h2>🏆 PARTIDA FINALIZADA!</h2>
-            <div className="winner-announcement">
-              <span className="winner-label">VENCEDOR:</span>
-              <span className="winner-name">
-                {state.winner === "PLAYER_1" ? players.p1 : players.p2}
-              </span>
-            </div>
-            <div className="final-score">
-              <span>
-                Placar Final: {state.sets.PLAYER_1} sets x {state.sets.PLAYER_2}{" "}
-                sets
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div
-        className={`quick-actions-row serve-${state.server === "PLAYER_1" ? "left" : "right"}`}
-      >
-        {!state.isFinished && state.server && serveStep === "none" && (
-          <>
-            <button className="quick-action-btn serve-info first-serve">
-              1º Saque
-            </button>
-            <button
-              className="quick-action-btn"
-              onClick={() => {
-                setIsServerEffectOpen(true);
-                setPlayerInFocus(state.server);
-              }}
-            >
-              Ace
-            </button>
-            <button
-              className="quick-action-btn"
-              onClick={() => setServeStepSafe("second")}
-            >
-              Out
-            </button>
-            <button
-              className="quick-action-btn"
-              onClick={() => setServeStepSafe("second")}
-            >
-              Net
-            </button>
-          </>
-        )}
-        {!state.isFinished && state.server && serveStep === "second" && (
-          <>
-            <button className="quick-action-btn serve-info second-serve">
-              2º Saque
-            </button>
-            <button
-              className="quick-action-btn"
-              onClick={() => {
-                setIsServerEffectOpen(true);
-                setPlayerInFocus(state.server);
-              }}
-            >
-              Ace
-            </button>
-            <button className="quick-action-btn" onClick={handleFault}>
-              Out
-            </button>
-            <button className="quick-action-btn" onClick={handleFault}>
-              Net
-            </button>
-          </>
-        )}
-      </div>
-
-      <div className="point-buttons">
-        <button
-          className="point-button point-button-p1"
-          onClick={() => handlePointButtonClick("PLAYER_1")}
-          disabled={state.isFinished || false}
-        >
-          + Ponto {players.p1}
-        </button>
-        <button
-          className="point-button point-button-p2"
-          onClick={() => handlePointButtonClick("PLAYER_2")}
-          disabled={state.isFinished || false}
-        >
-          + Ponto {players.p2}
-        </button>
-      </div>
-
-      {state.isFinished && (
-        <div className="finished-actions">
-          <button
-            className="finished-action-btn"
-            onClick={() => navigate("/dashboard")}
-          >
-            📊 Ver Estatísticas
-          </button>
-          <button
-            className="finished-action-btn"
-            onClick={() => navigate("/matches/new")}
-          >
-            🎾 Nova Partida
-          </button>
-        </div>
-      )}
-      <div className="correction-section">
-        <button
-          className="undo-button"
-          onClick={handleUndo}
-          disabled={!scoringSystem?.canUndo() || state.isFinished || false}
-        >
-          ↩️ Correção (Undo)
-        </button>
-      </div>
       <ServerEffectModal
         isOpen={isServerEffectOpen}
         playerInFocus={playerInFocus || "PLAYER_1"}
@@ -812,6 +737,241 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         onConfirm={handlePointDetailsConfirm}
         onCancel={handlePointDetailsCancel}
       />
+
+      {/* Header */}
+      <MatchHeader
+        sportType={matchData.sportType}
+        completedSets={state.completedSets ?? []}
+        elapsed={elapsed}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        onBack={handleEndMatch}
+        onMenu={fetchStats}
+      />
+
+      {/* Quadra */}
+      <div className="court-container" ref={courtRef}>
+        <CourtBackground />
+
+        <ContextBadges
+          isTiebreak={isTiebreak}
+          isMatchTiebreak={state.currentGame?.isMatchTiebreak ?? false}
+          isMatchPoint={p1MatchPt || p2MatchPt}
+          isSetPoint={(p1AtSetPt || p2AtSetPt) && !(p1MatchPt || p2MatchPt)}
+          isBreakPoint={isBreakPoint && !(p1AtSetPt || p2AtSetPt)}
+          pointsHistory={pointsHistory}
+          elapsed={elapsed}
+          playerNames={{ PLAYER_1: players.p1, PLAYER_2: players.p2 }}
+          serverName={state.server === "PLAYER_1" ? players.p1 : players.p2}
+        />
+
+        <div className="players-row">
+          <PlayerCard
+            player="PLAYER_1"
+            name={players.p1}
+            score={p1Score}
+            games={p1Games}
+            sets={p1Sets}
+            isServing={state.server === "PLAYER_1"}
+            serveStep={serveStep}
+            isTiebreak={isTiebreak}
+            isMatchPoint={p1MatchPt}
+            isSetPoint={p1AtSetPt && !p1MatchPt}
+            isBreakPoint={isBreakPoint && returner === "PLAYER_1"}
+            isAdvantage={p1HasAdv}
+            isDeuce={isDeuce}
+            viewMode={viewMode}
+            techStats={
+              viewMode === "technical"
+                ? computeTechStats("PLAYER_1")
+                : undefined
+            }
+            disabled={state.isFinished}
+            onPress={() => handlePointButtonClick("PLAYER_1")}
+            onLongPress={() => setContextMenuPlayer("PLAYER_1")}
+            onSwipeUp={() => handlePointButtonClick("PLAYER_1")}
+            onSwipeDown={() => {
+              if (scoringSystem?.canUndo()) handleUndo();
+            }}
+          />
+
+          <VSIndicator
+            isTiebreak={isTiebreak}
+            isMatchTiebreak={state.currentGame?.isMatchTiebreak ?? false}
+            isDeuce={isDeuce}
+            tiebreakChangeAt={6}
+            tiebreakTotalPoints={
+              isTiebreak
+                ? (typeof p1Score === "number" ? p1Score : 0) +
+                  (typeof p2Score === "number" ? p2Score : 0)
+                : 0
+            }
+          />
+
+          <PlayerCard
+            player="PLAYER_2"
+            name={players.p2}
+            score={p2Score}
+            games={p2Games}
+            sets={p2Sets}
+            isServing={state.server === "PLAYER_2"}
+            serveStep={serveStep}
+            isTiebreak={isTiebreak}
+            isMatchPoint={p2MatchPt}
+            isSetPoint={p2AtSetPt && !p2MatchPt}
+            isBreakPoint={isBreakPoint && returner === "PLAYER_2"}
+            isAdvantage={p2HasAdv}
+            isDeuce={isDeuce}
+            viewMode={viewMode}
+            techStats={
+              viewMode === "technical"
+                ? computeTechStats("PLAYER_2")
+                : undefined
+            }
+            disabled={state.isFinished}
+            onPress={() => handlePointButtonClick("PLAYER_2")}
+            onLongPress={() => setContextMenuPlayer("PLAYER_2")}
+            onSwipeUp={() => handlePointButtonClick("PLAYER_2")}
+            onSwipeDown={() => {
+              if (scoringSystem?.canUndo()) handleUndo();
+            }}
+          />
+        </div>
+
+        {/* Legenda modo família / assistir */}
+        {viewMode === "family" && familyCaption && (
+          <div className="family-caption">{familyCaption}</div>
+        )}
+
+        {/* Banner de partida finalizada */}
+        {state.isFinished && state.winner && (
+          <div className="match-finished-banner">
+            <h2>🏆 PARTIDA FINALIZADA!</h2>
+            <p className="winner-label-banner">VENCEDOR:</p>
+            <p className="winner-name">
+              {state.winner === "PLAYER_1" ? players.p1 : players.p2}
+            </p>
+            <p className="final-score">
+              Placar Final: {state.sets.PLAYER_1} sets x {state.sets.PLAYER_2}{" "}
+              sets
+            </p>
+            <div className="finished-actions">
+              <button
+                className="finished-action-btn"
+                onClick={() => navigate("/dashboard")}
+              >
+                📊 Ver Estatísticas
+              </button>
+              <button
+                className="finished-action-btn"
+                onClick={() => navigate("/matches/new")}
+              >
+                🎾 Nova Partida
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Modo Família: botão "O que está acontecendo?" */}
+        {viewMode === "family" && !state.isFinished && (
+          <button
+            className="family-help-btn"
+            onClick={() => setShowFamilyExplainer(true)}
+          >
+            ❓ O que está acontecendo?
+          </button>
+        )}
+      </div>
+
+      {/* ActionBar (saque + undo + stats + quem venceu o ponto) */}
+      <ActionBar
+        canUndo={scoringSystem?.canUndo() ?? false}
+        isFinished={state.isFinished ?? false}
+        serveStep={serveStep}
+        server={state.server ?? "PLAYER_1"}
+        playerNames={{ PLAYER_1: players.p1, PLAYER_2: players.p2 }}
+        onUndo={handleUndo}
+        onAce={() => {
+          setIsServerEffectOpen(true);
+          setPlayerInFocus(state.server);
+        }}
+        onOut={() => setServeStepSafe("second")}
+        onNet={() => setServeStepSafe("second")}
+        onFault={handleFault}
+        onStats={fetchStats}
+        onServerWon={() => handlePointDetailsOpen(state.server ?? "PLAYER_1")}
+        onReturnerWon={() =>
+          handlePointDetailsOpen(
+            (state.server ?? "PLAYER_1") === "PLAYER_1"
+              ? "PLAYER_2"
+              : "PLAYER_1",
+          )
+        }
+      />
+
+      {/* Menu contextual (long-press no card) */}
+      {contextMenuPlayer && (
+        <div
+          className="context-menu-overlay"
+          onClick={() => setContextMenuPlayer(null)}
+        >
+          <div className="context-menu" onClick={(e) => e.stopPropagation()}>
+            <p className="context-menu-title">
+              {contextMenuPlayer === "PLAYER_1" ? players.p1 : players.p2}
+            </p>
+            <button
+              className="context-menu-item"
+              onClick={() => {
+                handlePointButtonClick(contextMenuPlayer);
+                setContextMenuPlayer(null);
+              }}
+            >
+              🎾 Marcar ponto
+            </button>
+            <button
+              className="context-menu-item"
+              onClick={() => {
+                handleUndo();
+                setContextMenuPlayer(null);
+              }}
+              disabled={!scoringSystem?.canUndo()}
+            >
+              ↩ Desfazer ponto
+            </button>
+            <button
+              className="context-menu-item"
+              onClick={() => setContextMenuPlayer(null)}
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Explainer modo família */}
+      {showFamilyExplainer && (
+        <div
+          className="context-menu-overlay"
+          onClick={() => setShowFamilyExplainer(false)}
+        >
+          <div className="context-menu" onClick={(e) => e.stopPropagation()}>
+            <p className="context-menu-title">📖 Como funciona?</p>
+            <p className="family-explainer-text">
+              {isTiebreak
+                ? "Tie-break: quem chegar a 7 pontos primeiro (com 2 de vantagem) vence o set."
+                : isDeuce
+                  ? "Deuce: ambos estão empatados em 40-40. Um jogador precisa de 2 pontos seguidos para vencer o game."
+                  : `Pontuação do game: 0, 15, 30, 40. Quem chegar a 40 e ganhar mais um ponto, vence o game. O primeiro jogador a vencer ${gamesPerSet} games vence o set.`}
+            </p>
+            <button
+              className="context-menu-item"
+              onClick={() => setShowFamilyExplainer(false)}
+            >
+              Entendi!
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

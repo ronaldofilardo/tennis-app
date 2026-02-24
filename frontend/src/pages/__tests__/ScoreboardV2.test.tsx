@@ -170,9 +170,9 @@ describe("ScoreboardV2 - Ace Button Behavior", () => {
       });
       fireEvent.click(confirmButton);
 
-      // Should call addPointWithSync with correct parameters including serveEffect
+      // Should call addPoint with correct parameters including serveEffect
       await waitFor(() => {
-        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith(
+        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
           "PLAYER_1",
           {
             serve: {
@@ -241,7 +241,7 @@ describe("ScoreboardV2 - Ace Button Behavior", () => {
         expect(
           screen.queryByTestId("server-effect-modal"),
         ).not.toBeInTheDocument();
-        expect(mockTennisScoring.addPointWithSync).not.toHaveBeenCalled();
+        expect(mockTennisScoring.addPoint).not.toHaveBeenCalled();
       });
     });
   });
@@ -317,7 +317,7 @@ describe("ScoreboardV2 - Ace Button Behavior", () => {
       fireEvent.click(pointButton);
 
       await waitFor(() => {
-        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith(
+        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
           "PLAYER_1",
           expect.objectContaining({
             serve: { isFirstServe: true, type: "SERVICE_WINNER" },
@@ -447,7 +447,7 @@ describe("ScoreboardV2 - Button Alignment Based on Server", () => {
       fireEvent.click(pointButton);
 
       await waitFor(() => {
-        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith(
+        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
           "PLAYER_2",
           expect.objectContaining({
             serve: { isFirstServe: true, type: "SERVICE_WINNER" },
@@ -476,7 +476,7 @@ describe("ScoreboardV2 - Button Alignment Based on Server", () => {
       fireEvent.click(pointButton);
 
       await waitFor(() => {
-        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith(
+        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
           "PLAYER_2",
           expect.objectContaining({
             serve: { isFirstServe: false, type: "SERVICE_WINNER" },
@@ -504,7 +504,7 @@ describe("ScoreboardV2 - Button Alignment Based on Server", () => {
       fireEvent.click(pointButton);
 
       await waitFor(() => {
-        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalled();
+        expect(mockTennisScoring.addPoint).toHaveBeenCalled();
       }); // After point, server should change to PLAYER_2
       mockTennisScoring.getState.mockReturnValue({
         ...mockMatchData.matchState,
@@ -533,7 +533,7 @@ describe("ScoreboardV2 - Button Alignment Based on Server", () => {
       fireEvent.click(pointButton);
 
       await waitFor(() => {
-        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith(
+        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
           "PLAYER_1",
           expect.objectContaining({
             serve: { type: "SERVICE_WINNER", isFirstServe: true },
@@ -562,7 +562,7 @@ describe("ScoreboardV2 - Button Alignment Based on Server", () => {
       fireEvent.click(pointButton);
 
       await waitFor(() => {
-        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith(
+        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
           "PLAYER_1",
           expect.objectContaining({
             serve: { type: "SERVICE_WINNER", isFirstServe: false },
@@ -784,7 +784,7 @@ describe("ScoreboardV2 - Restauração de Estado e Fluxos", () => {
         winner: "PLAYER_1",
         sets: { PLAYER_1: 2, PLAYER_2: 1 },
       };
-      mockTennisScoring.addPointWithSync.mockResolvedValue(finishedState);
+      mockTennisScoring.addPoint.mockReturnValue(finishedState);
 
       // Adicionar ponto
       const pointButton = screen.getByRole("button", {
@@ -793,7 +793,7 @@ describe("ScoreboardV2 - Restauração de Estado e Fluxos", () => {
       fireEvent.click(pointButton);
 
       await waitFor(() => {
-        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith(
+        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
           "PLAYER_1",
           expect.objectContaining({
             serve: { isFirstServe: true, type: "SERVICE_WINNER" },
@@ -947,3 +947,4 @@ describe("ScoreboardV2 - Restauração de Estado e Fluxos", () => {
     });
   });
 });
+

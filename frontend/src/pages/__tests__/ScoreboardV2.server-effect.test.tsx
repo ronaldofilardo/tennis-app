@@ -228,7 +228,7 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
 
       // Verificar que handleFault foi chamado (dupla falta automática)
       await waitFor(() => {
-        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith(
+        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
           "PLAYER_2",
           {
             serve: { type: "DOUBLE_FAULT", isFirstServe: false },
@@ -261,7 +261,7 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
 
       // Verificar que handleFault foi chamado (dupla falta automática)
       await waitFor(() => {
-        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith(
+        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
           "PLAYER_2",
           {
             serve: { type: "DOUBLE_FAULT", isFirstServe: false },
@@ -292,7 +292,7 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
       });
 
       await waitFor(() => {
-        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith(
+        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
           "PLAYER_1",
           expect.objectContaining({
             serve: {
@@ -335,7 +335,7 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
 
       // Verificar que o ponto foi marcado para o SACADOR (PLAYER_1), não para o adversário
       await waitFor(() => {
-        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith(
+        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
           "PLAYER_1",
           expect.objectContaining({
             serve: {
@@ -372,7 +372,7 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
 
       // Verificar que o ponto foi marcado automaticamente
       await waitFor(() => {
-        expect(mockTennisScoring.addPointWithSync).toHaveBeenCalledWith(
+        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
           "PLAYER_2",
           {
             serve: { type: "DOUBLE_FAULT", isFirstServe: false },
@@ -389,3 +389,4 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
     });
   });
 });
+
