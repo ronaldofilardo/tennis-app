@@ -1,37 +1,39 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { ReactNode } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useAuth } from './AuthContext';
-import { API_URL } from '../config/api';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import type { ReactNode } from "react";
+import { useLocation } from "react-router-dom";
+import { useAuth } from "./AuthContext";
+import { API_URL } from "../config/api";
 
 interface CompletedSet {
   setNumber: number;
   games: { PLAYER_1: number; PLAYER_2: number };
-  winner: 'PLAYER_1' | 'PLAYER_2';
+  winner: "PLAYER_1" | "PLAYER_2";
 }
 
+/**
+ * MatchData representa o contrato completo da API GET /matches/visible.
+ * REGRA: ao adicionar um campo novo no Prisma schema + matchService.getVisibleMatches,
+ * basta adicionar aqui também. O Dashboard usa "match as any" para campos extras,
+ * mas tipificar aqui garante autocompletar e segurança de tipos.
+ */
 interface MatchData {
   id: string;
   sportType: string;
+  sport?: string;
   format?: string;
+  courtType?: "CLAY" | "HARD" | "GRASS" | null;
+  nickname?: string | null;
   players?: { p1: string; p2: string };
   status?: string;
   createdAt?: string;
+  updatedAt?: string;
   score?: string;
-  completedSets?: CompletedSet[];
   winner?: string | null;
-}
-
-interface DashboardMatch {
-  id: string | number;
-  sportType?: string;
-  sport?: string;
-  players?: { p1: string; p2: string } | string;
-  format?: string;
-  status?: string;
-  createdAt?: string;
-  score?: string;
-  completedSets?: Array<{ setNumber: number; games: { PLAYER_1: number; PLAYER_2: number }; winner: string }>;
+  completedSets?: CompletedSet[];
+  matchState?: Record<string, unknown> | null;
+  visibleTo?: string;
+  apontadorEmail?: string;
+  playersEmails?: string[];
 }
 
 interface MatchesContextType {
@@ -48,7 +50,9 @@ interface MatchesProviderProps {
   children: ReactNode;
 }
 
-export const MatchesProvider: React.FC<MatchesProviderProps> = ({ children }) => {
+export const MatchesProvider: React.FC<MatchesProviderProps> = ({
+  children,
+}) => {
   const { isAuthenticated, currentUser } = useAuth();
   const location = useLocation();
 
@@ -67,12 +71,13 @@ export const MatchesProvider: React.FC<MatchesProviderProps> = ({ children }) =>
       const endpoint = `${API_URL}/matches/visible${query}`;
       const res = await fetch(endpoint);
 
-      if (!res.ok) throw new Error('Falha ao carregar partidas');
+      if (!res.ok) throw new Error("Falha ao carregar partidas");
 
       const data = await res.json();
       setMatches(data);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
+      const errorMessage =
+        err instanceof Error ? err.message : "Erro desconhecido";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -80,7 +85,7 @@ export const MatchesProvider: React.FC<MatchesProviderProps> = ({ children }) =>
   };
 
   const addMatch = (newMatch: MatchData) => {
-    setMatches(prev => [newMatch, ...prev]);
+    setMatches((prev) => [newMatch, ...prev]);
   };
 
   const refreshMatches = async () => {
@@ -89,7 +94,7 @@ export const MatchesProvider: React.FC<MatchesProviderProps> = ({ children }) =>
 
   // Carrega partidas quando o dashboard é acessado e usuário está autenticado
   useEffect(() => {
-    if (location.pathname === '/dashboard' && isAuthenticated && currentUser) {
+    if (location.pathname === "/dashboard" && isAuthenticated && currentUser) {
       fetchMatches();
     }
   }, [location.pathname, isAuthenticated, currentUser?.email]); // Adicionada dependência específica
@@ -103,16 +108,14 @@ export const MatchesProvider: React.FC<MatchesProviderProps> = ({ children }) =>
   };
 
   return (
-    <MatchesContext.Provider value={value}>
-      {children}
-    </MatchesContext.Provider>
+    <MatchesContext.Provider value={value}>{children}</MatchesContext.Provider>
   );
 };
 
 export const useMatches = (): MatchesContextType => {
   const context = useContext(MatchesContext);
   if (context === undefined) {
-    throw new Error('useMatches must be used within a MatchesProvider');
+    throw new Error("useMatches must be used within a MatchesProvider");
   }
   return context;
 };

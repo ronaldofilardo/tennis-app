@@ -1,0 +1,100 @@
+/* ============================================================
+   Scoreboard Design Tokens — Tema "Quadra de Tênis" Escuro
+   ============================================================ */
+:root {
+  /* Fundo e superfícies — paleta verde tênis (gramado profissional) */
+  --court-bg: #071912;
+  --court-surface: #0d2b1a;
+  --court-lines: #1a4828;
+  --court-net: #266038;
+
+  /* Jogadores */
+  --player1-color: #3b82f6;
+  --player1-glow: rgba(59, 130, 246, 0.4);
+  --player2-color: #f97316;
+  --player2-glow: rgba(249, 115, 22, 0.4);
+
+  /* Destaques e estados */
+  --accent-gold: #eab308;
+  --accent-gold-glow: rgba(234, 179, 8, 0.5);
+  --alert-red: #ef4444;
+  --alert-red-glow: rgba(239, 68, 68, 0.5);
+  --success-green: #22c55e;
+  --success-green-glow: rgba(34, 197, 94, 0.4);
+  /* Superfície de quadra padrão (grama) */
+  --surface-accent: #22c55e;
+  --surface-accent-dim: rgba(34, 197, 94, 0.15);
+
+  /* Textos */
+  --text-primary: #f8fafc;
+  --text-secondary: #8fb8a4;
+  --text-muted: #4d7a62;
+
+  /* Bordas e sombras */
+  --border-subtle: rgba(100, 220, 140, 0.08);
+  --border-default: rgba(100, 220, 140, 0.18);
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 12px 40px rgba(0, 0, 0, 0.6);
+
+  /* Tipografia */
+  --font-main:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --score-size: clamp(72px, 18vw, 96px);
+  --name-size: clamp(18px, 5vw, 24px);
+  --label-size: 14px;
+  --games-size: clamp(14px, 4vw, 18px);
+
+  /* Raios e espaçamento */
+  --radius-card: 20px;
+  --radius-badge: 12px;
+  --radius-btn: 12px;
+  --gap-court: 1.5rem;
+
+  /* Transições */
+  --transition-fast: 150ms ease;
+  --transition-normal: 300ms ease;
+  --transition-slow: 500ms ease;
+}
+
+/* ============================================================
+   Superfícies de Quadra — Saibro / Dura / Grama
+   Aplicadas via data-court="CLAY" | "HARD" | "GRASS" no wrapper
+   ============================================================ */
+
+/* Grama (padrão — já definido no :root acima) */
+[data-court="GRASS"] {
+  --court-bg: #071912;
+  --court-surface: #0d2b1a;
+  --court-lines: #1a4828;
+  --court-net: #266038;
+  --surface-accent: #22c55e;
+  --surface-accent-dim: rgba(34, 197, 94, 0.15);
+}
+
+/* Saibro — terracota Roland Garros */
+[data-court="CLAY"] {
+  --court-bg: #1a0805;
+  --court-surface: #2e1208;
+  --court-lines: #5c2710;
+  --court-net: #8b3d18;
+  --text-secondary: #c49280;
+  --text-muted: #7a4030;
+  --border-subtle: rgba(220, 120, 80, 0.08);
+  --border-default: rgba(220, 120, 80, 0.2);
+  --surface-accent: #e07040;
+  --surface-accent-dim: rgba(224, 112, 64, 0.15);
+}
+
+/* Dura — azul US Open / Australian Open */
+[data-court="HARD"] {
+  --court-bg: #030f1f;
+  --court-surface: #071e3a;
+  --court-lines: #0d3566;
+  --court-net: #1756a0;
+  --text-secondary: #7aaccf;
+  --text-muted: #3a6080;
+  --border-subtle: rgba(80, 160, 220, 0.08);
+  --border-default: rgba(80, 160, 220, 0.2);
+  --surface-accent: #3b82f6;
+  --surface-accent-dim: rgba(59, 130, 246, 0.15);
+}

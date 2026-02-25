@@ -1,0 +1,121 @@
+import React from "react";
+import "./ActionBar.css";
+
+interface ActionBarProps {
+  canUndo: boolean;
+  isFinished: boolean;
+  serveStep: "none" | "second";
+  server: "PLAYER_1" | "PLAYER_2";
+  playerNames: { PLAYER_1: string; PLAYER_2: string };
+  onUndo: () => void;
+  onAce: () => void;
+  onOut: () => void;
+  onNet: () => void;
+  onFault: () => void;
+  onStats: () => void;
+  onServerWon: () => void;
+  onReturnerWon: () => void;
+  onConfig?: () => void;
+}
+
+const ActionBar: React.FC<ActionBarProps> = ({
+  canUndo,
+  isFinished,
+  serveStep,
+  server,
+  playerNames,
+  onUndo,
+  onAce,
+  onOut,
+  onNet,
+  onFault,
+  onStats,
+  onServerWon,
+  onReturnerWon,
+  onConfig,
+}) => {
+  const isSecondServe = serveStep === "second";
+  const returner: "PLAYER_1" | "PLAYER_2" =
+    server === "PLAYER_1" ? "PLAYER_2" : "PLAYER_1";
+
+  // Os botões de ponto ficam SEMPRE na mesma posição dos cards:
+  // esquerda = PLAYER_1, direita = PLAYER_2 (independente de quem é sacador)
+  const leftPlayer: "PLAYER_1" | "PLAYER_2" = "PLAYER_1";
+  const rightPlayer: "PLAYER_1" | "PLAYER_2" = "PLAYER_2";
+  const leftName = playerNames[leftPlayer];
+  const rightName = playerNames[rightPlayer];
+  const leftIsServer = server === leftPlayer;
+  const rightIsServer = server === rightPlayer;
+
+  return (
+    <div className="action-bar">
+      {/* Linha de saque */}
+      {!isFinished && (
+        <div
+          className={`quick-actions-row serve-${server === "PLAYER_1" ? "left" : "right"}`}
+        >
+          <button
+            className={`serve-step-btn serve-info ${isSecondServe ? "second-serve serve-step-second" : "first-serve serve-step-first"}`}
+            disabled
+          >
+            {isSecondServe ? "2º Saque" : "1º Saque"}
+          </button>
+          <button className="action-quick-btn" onClick={onAce}>
+            Ace
+          </button>
+          <button
+            className="action-quick-btn action-quick-fault"
+            onClick={isSecondServe ? onFault : onOut}
+          >
+            Out
+          </button>
+          <button
+            className="action-quick-btn action-quick-fault"
+            onClick={isSecondServe ? onFault : onNet}
+          >
+            Net
+          </button>
+        </div>
+      )}
+
+      {/* Linha de quem venceu o ponto — sempre PLAYER_1 esquerda, PLAYER_2 direita */}
+      {!isFinished && (
+        <div className="point-winner-row">
+          <button
+            className={`point-winner-btn ${leftIsServer ? "point-winner-server" : "point-winner-returner"}`}
+            onClick={leftIsServer ? onServerWon : onReturnerWon}
+          >
+            {leftIsServer ? "🎾" : "🏓"} {leftName} venceu
+          </button>
+          <button
+            className={`point-winner-btn ${rightIsServer ? "point-winner-server" : "point-winner-returner"}`}
+            onClick={rightIsServer ? onServerWon : onReturnerWon}
+          >
+            {rightIsServer ? "🎾" : "🏓"} {rightName} venceu
+          </button>
+        </div>
+      )}
+
+      {/* Linha de ações gerais */}
+      <div className="main-actions">
+        <button
+          className={`main-action-btn undo-btn ${!canUndo || isFinished ? "main-action-btn-disabled" : ""}`}
+          onClick={onUndo}
+          disabled={!canUndo || isFinished}
+        >
+          ↩ Correção (Undo)
+        </button>
+        <button className="main-action-btn stats-btn" onClick={onStats}>
+          📊 Stats
+        </button>
+        {onConfig && (
+          <button className="main-action-btn config-btn" onClick={onConfig}>
+            ⚙
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ActionBar;

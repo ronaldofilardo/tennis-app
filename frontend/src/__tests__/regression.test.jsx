@@ -11,17 +11,17 @@ import { MatchesProvider } from "../contexts/MatchesContext";
 import { NavigationProvider } from "../contexts/NavigationContext";
 
 // Mock useParams hook para refletir o matchId da URL
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
   return {
     ...actual,
     useParams: vi.fn(() => {
       // Para testes de scoreboard, sempre retorna um matchId válido
-      if (window.location.pathname.includes('/match/')) {
-        return { matchId: 'regression-match-1' };
+      if (window.location.pathname.includes("/match/")) {
+        return { matchId: "regression-match-1" };
       }
       return {};
-    })
+    }),
   };
 });
 
@@ -179,7 +179,8 @@ beforeEach(() => {
       return Promise.resolve({
         ok: true,
         json: () => Promise.resolve({ message: "Estado atualizado" }),
-        text: () => Promise.resolve(JSON.stringify({ message: "Estado atualizado" })),
+        text: () =>
+          Promise.resolve(JSON.stringify({ message: "Estado atualizado" })),
       });
     }
     return Promise.reject(new Error(`URL não mockada: ${url}`));
@@ -199,7 +200,7 @@ const renderWithProviders = (component) => {
           <MatchesProvider>{component}</MatchesProvider>
         </NavigationProvider>
       </AuthProvider>
-    </BrowserRouter>
+    </BrowserRouter>,
   );
 };
 
@@ -209,14 +210,16 @@ describe("Testes de Regressão - Funcionalidades Críticas", () => {
       renderWithProviders(<Dashboard />);
 
       // Verificar se título aparece
-      expect(screen.getByText("Minhas Partidas")).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: /Minhas Partidas/i }),
+      ).toBeInTheDocument();
     });
 
     it("dashboard deve permitir navegar para criação de nova partida", async () => {
       renderWithProviders(<Dashboard />);
 
       // Verificar se botão de criar partida existe
-      const createButton = screen.getByText("Nova Partida");
+      const createButton = screen.getByRole("button", { name: /Nova Partida/ });
       expect(createButton).toBeInTheDocument();
     });
 
@@ -225,12 +228,14 @@ describe("Testes de Regressão - Funcionalidades Críticas", () => {
 
       await waitFor(() => {
         expect(
-          screen.queryByTestId("loading-indicator")
+          screen.queryByTestId("loading-indicator"),
         ).not.toBeInTheDocument();
       });
 
       // Verificar que partidas foram retornadas
-      expect(screen.getByText("Minhas Partidas")).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: /Minhas Partidas/i }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -241,7 +246,7 @@ describe("Testes de Regressão - Funcionalidades Críticas", () => {
       const { MemoryRouter } = await import("react-router-dom");
 
       render(
-        <MemoryRouter initialEntries={['/match/regression-match-1']}>
+        <MemoryRouter initialEntries={["/match/regression-match-1"]}>
           <AuthProvider>
             <NavigationProvider>
               <MatchesProvider>
@@ -249,13 +254,19 @@ describe("Testes de Regressão - Funcionalidades Críticas", () => {
               </MatchesProvider>
             </NavigationProvider>
           </AuthProvider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
 
       // Apenas verificar que não há crash - o componente deve renderizar
-      await waitFor(() => {
-        expect(screen.getByText("Voltar") || screen.getByTestId("loading-indicator")).toBeTruthy();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(
+            screen.getByText("Voltar") ||
+              screen.getByTestId("loading-indicator"),
+          ).toBeTruthy();
+        },
+        { timeout: 3000 },
+      );
     });
   });
 });

@@ -57,13 +57,13 @@ export async function getAllMatches() {
     // Só recalcula se o status parecer inconsistente com o estado
     if (parsedState && status === "NOT_STARTED") {
       const isFinished = Boolean(
-        parsedState.isFinished || parsedState.winner || parsedState.endedAt
+        parsedState.isFinished || parsedState.winner || parsedState.endedAt,
       );
       const inProgressIndicators = Boolean(
         parsedState.startedAt ||
-          parsedState.server ||
-          parsedState.currentGame ||
-          parsedState.currentSetState
+        parsedState.server ||
+        parsedState.currentGame ||
+        parsedState.currentSetState,
       );
       if (isFinished) {
         status = "FINISHED";
@@ -101,8 +101,15 @@ export async function createMatch(matchData, testPrisma) {
     throw new Error(validateAndFormatZodError(validation.error));
   }
 
-  const { sportType, format, players, nickname, visibleTo, apontadorEmail } =
-    validation.data;
+  const {
+    sportType,
+    format,
+    courtType,
+    players,
+    nickname,
+    visibleTo,
+    apontadorEmail,
+  } = validation.data;
 
   // Inclui o email do apontador e dos jogadores em playersEmails, sem duplicidade
   const emailsSet = new Set();
@@ -116,6 +123,7 @@ export async function createMatch(matchData, testPrisma) {
     data: {
       sportType,
       format,
+      courtType: courtType || null,
       nickname: nickname || null,
       apontadorEmail,
       playerP1: players.p1,
@@ -136,8 +144,11 @@ export async function createMatch(matchData, testPrisma) {
     id: newMatch.id,
     sportType: newMatch.sportType,
     format: newMatch.format,
+    courtType: newMatch.courtType || null,
     nickname: newMatch.nickname || null,
     players: { p1: newMatch.playerP1, p2: newMatch.playerP2 },
+    apontadorEmail: newMatch.apontadorEmail,
+    playersEmails: newMatch.playersEmails,
     visibleTo: visibleTo || "both",
     status: newMatch.status,
     score: newMatch.score,
@@ -185,7 +196,7 @@ export async function getMatchById(id) {
   } catch (e) {
     console.warn(
       `[getMatchById] Erro ao fazer parse do matchState da partida ${match.id}:`,
-      e
+      e,
     );
     matchState = {};
   }
@@ -220,7 +231,7 @@ export async function updateMatch(id, updatePayload) {
 
   const payloadValidation = validateAndFormatZodError(
     MatchUpdateSchema,
-    updatePayload
+    updatePayload,
   );
   if (!payloadValidation.success) {
     throw payloadValidation.error;
@@ -233,7 +244,7 @@ export async function updateMatch(id, updatePayload) {
     updateData.winner = payloadValidation.data.winner;
   if (payloadValidation.data.completedSets !== undefined)
     updateData.completedSets = JSON.stringify(
-      payloadValidation.data.completedSets
+      payloadValidation.data.completedSets,
     );
 
   const updatedMatch = await prisma.match.update({
@@ -271,7 +282,7 @@ export async function updateMatchState(id, statePayload, testPrisma) {
   } catch (e) {
     console.error(
       `[updateMatchState] Erro ao fazer parse do matchState para partida ${id}:`,
-      e
+      e,
     );
     // Em caso de payload inválido, não derrubar a API: manter estado vazio
     state = {};
@@ -292,7 +303,7 @@ export async function updateMatchState(id, statePayload, testPrisma) {
   } catch (e) {
     console.warn(
       `[updateMatchState] Erro ao fazer parse do estado atual da partida ${id}:`,
-      e
+      e,
     );
     currentState = {};
   }
@@ -302,13 +313,13 @@ export async function updateMatchState(id, statePayload, testPrisma) {
 
   // Só alterar status se houver mudanças significativas no estado
   const isFinished = Boolean(
-    state?.isFinished || state?.winner || state?.endedAt
+    state?.isFinished || state?.winner || state?.endedAt,
   );
   const inProgressIndicators = Boolean(
     state?.startedAt ||
-      state?.server ||
-      state?.currentGame ||
-      state?.currentSetState
+    state?.server ||
+    state?.currentGame ||
+    state?.currentSetState,
   );
 
   // Lógica de transição de status mais conservadora
@@ -321,7 +332,7 @@ export async function updateMatchState(id, statePayload, testPrisma) {
   // Se já estava IN_PROGRESS ou FINISHED, manter o status atual
 
   console.log(
-    `[updateMatchState] Atualizando partida ${id}: status ${currentMatch?.status} -> ${status}`
+    `[updateMatchState] Atualizando partida ${id}: status ${currentMatch?.status} -> ${status}`,
   );
 
   const updatedMatch = await prismaClient.match.update({
@@ -362,7 +373,7 @@ export async function getMatchState(id) {
   } catch (e) {
     console.warn(
       `[getMatchState] Erro ao fazer parse do matchState da partida ${match.id}:`,
-      e
+      e,
     );
     matchState = {};
   }
@@ -398,6 +409,7 @@ export async function getVisibleMatches(queryParams, testPrisma) {
   }
 
   // Busca todas as partidas primeiro com select otimizado
+  // IMPORTANTE: ao adicionar campos ao schema Prisma, inclua-os aqui também
   let matches = [];
   try {
     matches = await (testPrisma || prisma).match.findMany({
@@ -405,6 +417,8 @@ export async function getVisibleMatches(queryParams, testPrisma) {
         id: true,
         sportType: true,
         format: true,
+        courtType: true,
+        nickname: true,
         playerP1: true,
         playerP2: true,
         status: true,
@@ -412,6 +426,7 @@ export async function getVisibleMatches(queryParams, testPrisma) {
         winner: true,
         completedSets: true,
         createdAt: true,
+        updatedAt: true,
         matchState: true,
         apontadorEmail: true,
         playersEmails: true,
@@ -426,7 +441,7 @@ export async function getVisibleMatches(queryParams, testPrisma) {
   // Aplica filtro de visibilidade (se necessário)
   const { email, role } = queryValidation.data;
   console.log(
-    `[getVisibleMatches] Filtrando ${matches.length} partidas para email: ${email} e role: ${role}`
+    `[getVisibleMatches] Filtrando ${matches.length} partidas para email: ${email} e role: ${role}`,
   );
   const filtered = matches.filter((match) => {
     let matchRole = undefined;
@@ -442,7 +457,7 @@ export async function getVisibleMatches(queryParams, testPrisma) {
     } catch (e) {
       console.warn(
         `[getVisibleMatches] Erro ao fazer parse do matchState da partida ${match.id}:`,
-        e
+        e,
       );
     }
     // Retorna se o e-mail do usuário está em playersEmails OU é o apontador da partida
@@ -468,7 +483,7 @@ export async function getVisibleMatches(queryParams, testPrisma) {
     } catch (e) {
       console.warn(
         `[getVisibleMatches] Erro ao fazer parse do matchState da partida ${match.id}:`,
-        e
+        e,
       );
       parsedState = {};
     }
@@ -478,7 +493,7 @@ export async function getVisibleMatches(queryParams, testPrisma) {
     } catch (e) {
       console.warn(
         `[getVisibleMatches] Erro ao fazer parse do completedSets da partida ${match.id}:`,
-        e
+        e,
       );
       completedSets = [];
     }
@@ -486,16 +501,20 @@ export async function getVisibleMatches(queryParams, testPrisma) {
     // Usa o status salvo no banco, não recalcula
     let status = match.status || "NOT_STARTED";
 
+    // Retorna TODOS os campos do match para evitar que novos campos sejam perdidos
     return {
       id: match.id,
       sportType: match.sportType || "",
       format: match.format || "",
+      courtType: match.courtType || null,
+      nickname: match.nickname || null,
       players: { p1: match.playerP1 || "", p2: match.playerP2 || "" },
       status,
       score: match.score || "",
       winner: match.winner || null,
       completedSets,
       createdAt: match.createdAt ? match.createdAt.toISOString() : undefined,
+      updatedAt: match.updatedAt ? match.updatedAt.toISOString() : undefined,
       matchState: parsedState,
       visibleTo:
         parsedState && parsedState.visibleTo ? parsedState.visibleTo : "both",
@@ -530,7 +549,7 @@ export async function getMatchStats(id) {
 
   if (!match) {
     const notFoundError = new Error(
-      "Partida não encontrada para calcular estatísticas"
+      "Partida não encontrada para calcular estatísticas",
     );
     notFoundError.statusCode = 404;
     throw notFoundError;
@@ -549,7 +568,7 @@ export async function getMatchStats(id) {
       } catch (parseErr) {
         console.warn(
           `[getMatchStats] Erro ao fazer parse do matchState da partida ${id}:`,
-          parseErr
+          parseErr,
         );
         matchState = {};
       }
@@ -559,7 +578,7 @@ export async function getMatchStats(id) {
         if (matchState.pointsHistory !== undefined) {
           console.warn(
             `[getMatchStats] pointsHistory mal formatado para partida ${id}:`,
-            matchState.pointsHistory
+            matchState.pointsHistory,
           );
         }
         pointsHistory = [];
@@ -569,7 +588,7 @@ export async function getMatchStats(id) {
   } catch (error) {
     console.warn(
       `[getMatchStats] Erro inesperado ao calcular estatísticas para partida ${id}:`,
-      error
+      error,
     );
     // Nunca lança erro 500, retorna estatísticas vazias
     return calculateMatchStats([]);

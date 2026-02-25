@@ -1,137 +1,189 @@
-/* ServerEffectModal.css */
+/* ServerEffectModal.css — Design System unificado com PointDetailsModal */
+
+/* ── Overlay ─────────────────────────────────────────────────── */
 
 .server-effect-modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.2s ease-out;
+  padding: 16px;
+  animation: semFadeIn 0.2s ease-out;
+  backdrop-filter: blur(4px);
 }
+
+@keyframes semFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Modal container ─────────────────────────────────────────── */
 
 .server-effect-modal {
-  background: white;
-  border-radius: 12px;
-  width: 90%;
+  background: var(--court-surface, #1e293b);
+  border: 1px solid var(--border-default, rgba(255, 255, 255, 0.15));
+  border-top: 3px solid var(--surface-accent, #22c55e);
+  border-radius: var(--radius-card, 20px);
+  width: 100%;
   max-width: 400px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    var(--shadow-card, 0 8px 32px rgba(0, 0, 0, 0.4)),
+    0 0 32px var(--surface-accent-dim, rgba(34, 197, 94, 0.12));
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  font-family: var(--font-main, "Inter", sans-serif);
+  color: var(--text-primary, #f8fafc);
 }
 
+/* ── Header ─────────────────────────────────────────────────── */
+
 .modal-header {
-  padding: 20px 24px 16px;
-  border-bottom: 1px solid #e1e5e9;
+  padding: 20px 24px 14px;
+  border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
   text-align: center;
+  background: var(--surface-accent-dim, rgba(34, 197, 94, 0.06));
 }
 
 .modal-header h3 {
   margin: 0 0 8px 0;
-  color: #1a365d;
-  font-size: 1.25rem;
+  color: var(--text-primary, #f8fafc);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .winner-display {
-  color: #2d3748;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #94a3b8);
 }
 
 .winner-display strong {
-  color: #4299e1;
+  color: var(--surface-accent, #22c55e);
+  font-weight: 700;
 }
+
+/* ── Body ────────────────────────────────────────────────────── */
 
 .modal-content {
-  padding: 20px 24px;
-  flex-grow: 1;
+  padding: 18px 20px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
+/* ── Section ─────────────────────────────────────────────────── */
+
 .section {
-  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .section h4 {
-  margin: 0 0 12px 0;
-  color: #2d3748;
-  font-size: 1rem;
-  font-weight: 600;
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted, #64748b);
 }
+
+/* ── Button group ─────────────────────────────────────────────── */
 
 .button-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 7px;
 }
 
 .button-group button {
-  padding: 8px 16px;
-  border: 2px solid #e2e8f0;
-  background: white;
-  border-radius: 8px;
+  padding: 8px 14px;
+  border: 1.5px solid var(--border-default, rgba(255, 255, 255, 0.15));
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-btn, 12px);
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #4a5568;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary, #94a3b8);
+  font-family: var(--font-main, "Inter", sans-serif);
+  user-select: none;
 }
 
 .button-group button:hover {
-  border-color: #4299e1;
-  background: #ebf8ff;
+  border-color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text-primary, #f8fafc);
 }
 
 .button-group button.active {
-  border-color: #4299e1;
-  background: #4299e1;
-  color: white;
+  border-color: var(--surface-accent, #22c55e);
+  background: var(--surface-accent-dim, rgba(34, 197, 94, 0.15));
+  color: var(--surface-accent, #22c55e);
+  box-shadow: 0 0 12px var(--surface-accent-dim, rgba(34, 197, 94, 0.2));
 }
+
+/* ── Footer / Actions ────────────────────────────────────────── */
 
 .modal-actions {
-  padding: 16px 24px 24px;
+  padding: 14px 20px 18px;
   display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  border-top: 1px solid #e1e5e9;
-}
-
-.modal-actions button {
-  padding: 10px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.95rem;
-}
-
-.cancel-btn {
-  border: 2px solid #e2e8f0;
-  background: white;
-  color: #4a5568;
-}
-
-.cancel-btn:hover {
-  border-color: #cbd5e0;
-  background: #f7fafc;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  background: rgba(0, 0, 0, 0.15);
 }
 
 .confirm-btn {
-  border: 2px solid #48bb78;
-  background: #48bb78;
-  color: white;
+  padding: 13px 16px;
+  background: var(--surface-accent, #22c55e);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-btn, 12px);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    box-shadow 150ms ease;
+  font-family: var(--font-main, "Inter", sans-serif);
+  letter-spacing: 0.01em;
 }
 
 .confirm-btn:hover {
-  border-color: #38a169;
-  background: #38a169;
+  background: color-mix(in srgb, var(--surface-accent, #22c55e) 80%, #000);
+  box-shadow: 0 0 16px var(--surface-accent-dim, rgba(34, 197, 94, 0.4));
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.cancel-btn {
+  padding: 11px 16px;
+  background: transparent;
+  color: var(--alert-red, #ef4444);
+  border: 1.5px solid rgba(239, 68, 68, 0.35);
+  border-radius: var(--radius-btn, 12px);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease;
+  font-family: var(--font-main, "Inter", sans-serif);
+}
+
+.cancel-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.6);
 }

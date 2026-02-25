@@ -1,0 +1,14 @@
+.court-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: var(--radius-card);
+  z-index: 0;
+}
+
+.court-lines-svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

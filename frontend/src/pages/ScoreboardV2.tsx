@@ -26,6 +26,7 @@ import type {
 import { API_URL } from "../config/api";
 import { useMatchSync } from "../hooks/useMatchSync";
 import { useShakeDetection } from "../hooks/useGestures";
+import { resolvePlayerName } from "../data/players";
 import CourtBackground from "../components/scoreboard/CourtBackground";
 import MatchHeader, {
   type ViewMode,
@@ -524,9 +525,11 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         if (syncTimeoutRef.current) window.clearTimeout(syncTimeoutRef.current);
         syncTimeoutRef.current = window.setTimeout(() => {
           const sys = getSystem();
-          sys?.syncState()?.catch((e) =>
-            console.error("[ScoreboardV2] Erro ao sincronizar undo:", e),
-          );
+          sys
+            ?.syncState()
+            ?.catch((e) =>
+              console.error("[ScoreboardV2] Erro ao sincronizar undo:", e),
+            );
         }, 250);
         console.log("[ScoreboardV2] Ponto desfeito com sucesso");
       }
@@ -598,7 +601,11 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
   }
 
   const state = scoringSystem.getState();
-  const players = matchData.players;
+  // Resolve e-mails/ids para nomes amigáveis de exibição
+  const players = {
+    p1: resolvePlayerName(matchData.players.p1),
+    p2: resolvePlayerName(matchData.players.p2),
+  };
   const isTiebreak = state.currentGame?.isTiebreak || false;
 
   if (isSetupOpen) {
