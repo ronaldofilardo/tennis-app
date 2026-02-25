@@ -142,16 +142,19 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
       : [];
 
   // Efeito: apenas quando requerido pelo arquivo (ex: voleio/smash não tem efeito)
-  const efeitoOpts = needsEfeito && !!sel.golpe ? getValidEfeitos() : [];
+  const efeitoOpts =
+    needsEfeito && !!sel.golpe
+      ? getValidEfeitos(vencedor, sel.situacao, sel.tipo)
+      : [];
   // Direção fica pronta após efeito (se requerido) ou após golpe (se efeito não requerido)
   const direcaoReady = needsEfeito ? !!sel.efeito : !!sel.golpe;
   const direcaoOpts =
     direcaoReady && sel.situacao && sel.tipo
-      ? getValidDirecoes(vencedor, sel.situacao, sel.tipo)
+      ? getValidDirecoes(vencedor, sel.situacao, sel.tipo, sel.efeito)
       : [];
   const golpeEspOpts =
     !!sel.direcao && sel.situacao && sel.tipo
-      ? getValidGolpeEsp(vencedor, sel.situacao, sel.tipo)
+      ? getValidGolpeEsp(vencedor, sel.situacao, sel.tipo, sel.efeito)
       : [];
 
   const isComplete =

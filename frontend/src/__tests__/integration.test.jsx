@@ -9,11 +9,11 @@ import { MatchesProvider } from "../contexts/MatchesContext";
 import { NavigationProvider } from "../contexts/NavigationContext";
 
 // Mock useParams hook
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
   return {
     ...actual,
-    useParams: vi.fn().mockReturnValue({ matchId: 'test-match' })
+    useParams: vi.fn().mockReturnValue({ matchId: "test-match" }),
   };
 });
 
@@ -76,13 +76,15 @@ const renderWithProviders = (component) => {
           <MatchesProvider>{component}</MatchesProvider>
         </NavigationProvider>
       </AuthProvider>
-    </BrowserRouter>
+    </BrowserRouter>,
   );
 };
 
 describe("Testes de Integração - Básicos", () => {
   it("deve renderizar Dashboard com sucesso", () => {
     renderWithProviders(<Dashboard />);
-    expect(screen.getByText("Minhas Partidas")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /Minhas Partidas/i }),
+    ).toBeInTheDocument();
   });
 });

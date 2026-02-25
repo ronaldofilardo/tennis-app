@@ -1,10 +1,9 @@
 // pointFlowRules.ts
 // Fonte de verdade derivada estritamente do arquivo fluxotosystem.txt.
 // PREMISSA: nenhuma possibilidade omitida, nenhuma criada fora do arquivo.
-// 3522 registros validados (UTF-16 LE) — arquivo atualizado.
-// Mudancas v2: tipo usa hifens (erro-forcado, erro-nao-forcado);
-//              efeito e' vazio em sacador|passada|erro-* e sacador|rede|winner.
-// Estrutura: id|vencedor|situacao|tipo|subtipo1|subtipo2|golpe|efeito|direcao|golpe_esp
+// 2413 registros validados (UTF-16 LE) — arquivo atualizado.
+// Mudancas v5: devolvedor|rede|winner -> 3 direcoes (VBH/VFH/Smash nao tem inside-in/out).
+// Estrutura: vencedor|situacao|tipo|subtipo1|subtipo2|golpe|efeito|direcao|golpe_esp
 
 import type {
   RallyVencedor,
@@ -57,17 +56,15 @@ export function requiresSubtipo1(
 
 // Efeito (topspin/slice/flat)
 // NAO requerido em:
-//   sacador|passada|erro-forcado ou erro-nao-forcado — golpes de voleio/smash sem efeito
-//   sacador|rede|winner                              — golpes de voleio/smash sem efeito
+//   *qualquer*|passada|erro-* — golpes de voleio/smash sem efeito (sacador e devolvedor)
+//   *qualquer*|rede|winner    — golpes de voleio/smash sem efeito (sacador e devolvedor)
 export function requiresEfeito(
   vencedor: RallyVencedor,
   situacao: RallySituacao,
   tipo: RallyTipo,
 ): boolean {
-  if (vencedor === "sacador") {
-    if (situacao === "passada" && tipo !== "winner") return false;
-    if (situacao === "rede" && tipo === "winner") return false;
-  }
+  if (situacao === "passada" && tipo !== "winner") return false;
+  if (situacao === "rede" && tipo === "winner") return false;
   return true;
 }
 
@@ -114,59 +111,79 @@ export function getValidGolpes(
   return ["BH", "FH"]; // fundo | devolucao
 }
 
-// Efeitos validos (idem em todos os 4026 registros)
-export function getValidEfeitos(): RallyEfeito[] {
+// Efeitos validos por contexto.
+// sacador|fundo|winner -> topspin, flat (sem slice, conforme fluxotosystem.txt)
+// todos os outros      -> topspin, slice, flat
+export function getValidEfeitos(
+  vencedor?: RallyVencedor,
+  situacao?: RallySituacao,
+  tipo?: RallyTipo,
+): RallyEfeito[] {
+  if (vencedor === "sacador" && situacao === "fundo" && tipo === "winner") {
+    return ["topspin", "flat"];
+  }
   return ["topspin", "slice", "flat"];
 }
 
 // Direcoes validas
-// sacador|passada|erro -> cruzada, paralela, centro (sem inside)
-// todos os outros      -> cruzada, paralela, centro, inside-in, inside-out
+// REGRA UNIVERSAL: efeito=slice -> sempre 3 direcoes (sem inside-in/out)
+// passada|erro (qualquer vencedor)   -> cruzada, paralela, centro (sem inside)
+// devolvedor|rede|winner             -> cruzada, paralela, centro (VBH/VFH/Smash sem inside)
+// todos os outros sem slice           -> cruzada, paralela, centro, inside-in, inside-out
 export function getValidDirecoes(
   vencedor: RallyVencedor,
   situacao: RallySituacao,
   tipo: RallyTipo,
+  efeito?: RallyEfeito | "",
 ): RallyDirecao[] {
-  if (vencedor === "sacador" && situacao === "passada" && tipo !== "winner") {
+  if (efeito === "slice") {
+    return ["cruzada", "paralela", "centro"];
+  }
+  if (situacao === "passada" && tipo !== "winner") {
+    return ["cruzada", "paralela", "centro"];
+  }
+  if (vencedor === "devolvedor" && situacao === "rede" && tipo === "winner") {
     return ["cruzada", "paralela", "centro"];
   }
   return ["cruzada", "paralela", "centro", "inside-in", "inside-out"];
 }
 
 // Golpes especiais validos
-// Regras exatas do arquivo (3522 registros):
+// REGRA UNIVERSAL: efeito=slice -> sempre [drop, lob] (sem bate-pronto/swingvolley)
 //
-//  drop,lob apenas (2):
-//    sacador|devolucao|erro-forcado
-//    sacador|devolucao|erro-nao-forcado
-//    devolvedor|devolucao|winner
-//
-//  bate-pronto,drop,lob (sem swingvolley, 3):
-//    *qualquer*|rede|erro-forcado   (sacador com sub1+sub2, devolvedor com sub2)
-//    *qualquer*|rede|erro-nao-forcado
-//    devolvedor|fundo|erro-forcado ou erro-nao-forcado
-//
-//  bate-pronto,drop,lob,swingvolley (todos, 4): todos os outros
-//    winner em passada/rede/fundo (qualquer vencedor)
-//    sacador|passada|erro-* (golpes de voleio/smash)
+// Com efeito != slice, regras por contexto do arquivo (2413 registros):
+//  drop,lob apenas:
+//    devolucao (qualquer)
 //    sacador|fundo|erro-*
-//    devolvedor|passada|erro-*
+//
+//  bate-pronto,drop,lob (sem swingvolley):
+//    *qualquer*|rede|erro-*
+//
+//  bate-pronto,drop,lob,swingvolley (todos):
+//    todos os winners fora de devolucao
+//    passada|erro (qualquer vencedor)
+//    devolvedor|fundo|erro-*
 export function getValidGolpeEsp(
   vencedor: RallyVencedor,
   situacao: RallySituacao,
   tipo: RallyTipo,
+  efeito?: RallyEfeito | "",
 ): RallyGolpeEsp[] {
+  // Regra universal: slice -> drop e lob apenas
+  if (efeito === "slice") {
+    return ["drop", "lob"];
+  }
+
   if (situacao === "devolucao") {
     return ["drop", "lob"];
   }
 
   if (tipo !== "winner") {
-    // rede: qualquer vencedor, qualquer erro -> bate-pronto,drop,lob
+    // rede + erro (qualquer vencedor) -> bate-pronto, drop, lob
     if (situacao === "rede") return ["bate-pronto", "drop", "lob"];
-    // fundo devolvedor: erro -> bate-pronto,drop,lob
-    if (situacao === "fundo" && vencedor === "devolvedor")
-      return ["bate-pronto", "drop", "lob"];
-    // fundo sacador / passada sacador / passada devolvedor: erro -> todos 4
+    // sacador|fundo|erro -> drop, lob (sem bate-pronto/swingvolley)
+    if (situacao === "fundo" && vencedor === "sacador") return ["drop", "lob"];
+    // devolvedor|fundo|erro e passada|erro (ambos) -> todos 4
   }
 
   return ["bate-pronto", "drop", "lob", "swingvolley"];

@@ -83,7 +83,7 @@
 }
 
 .start-match-button {
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   padding: 12px 24px;
@@ -96,4 +96,89 @@
 
 .start-match-button:hover {
   background-color: #45a049;
+}
+
+/* ── Seletor de Tipo de Quadra ─────────────────────────────── */
+
+.court-type-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.court-type-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  background: #1e1e1e;
+  border: 2px solid #444;
+  border-radius: 12px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    transform 0.1s;
+  color: #aaa;
+  font-family: inherit;
+}
+
+.court-type-btn:hover {
+  background: #2a2a2a;
+  transform: translateY(-2px);
+}
+
+.court-type-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.court-type-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.court-type-note {
+  font-size: 0.7rem;
+  color: #888;
+  letter-spacing: 0.03em;
+}
+
+/* Ativo — Saibro */
+.court-type-btn.clay.active {
+  border-color: #c2622a;
+  background: rgba(194, 98, 42, 0.18);
+  color: #e8936a;
+}
+.court-type-btn.clay.active .court-type-name {
+  color: #e8936a;
+}
+.court-type-btn.clay.active .court-type-note {
+  color: #c2622a;
+}
+
+/* Ativo — Dura */
+.court-type-btn.hard.active {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.18);
+}
+.court-type-btn.hard.active .court-type-name {
+  color: #93c5fd;
+}
+.court-type-btn.hard.active .court-type-note {
+  color: #3b82f6;
+}
+
+/* Ativo — Grama */
+.court-type-btn.grass.active {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.18);
+}
+.court-type-btn.grass.active .court-type-name {
+  color: #86efac;
+}
+.court-type-btn.grass.active .court-type-note {
+  color: #22c55e;
 }

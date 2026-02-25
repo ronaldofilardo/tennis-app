@@ -172,19 +172,16 @@ describe("ScoreboardV2 - Ace Button Behavior", () => {
 
       // Should call addPoint with correct parameters including serveEffect
       await waitFor(() => {
-        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
-          "PLAYER_1",
-          {
-            serve: {
-              type: "ACE",
-              isFirstServe: true,
-              serveEffect: "Chapado",
-              direction: "Fechado",
-            },
-            result: { winner: "PLAYER_1", type: "WINNER" },
-            rally: { ballExchanges: 1 },
+        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith("PLAYER_1", {
+          serve: {
+            type: "ACE",
+            isFirstServe: true,
+            serveEffect: "Chapado",
+            direction: "Fechado",
           },
-        );
+          result: { winner: "PLAYER_1", type: "WINNER" },
+          rally: { ballExchanges: 1 },
+        });
       });
     });
 
@@ -947,4 +944,3 @@ describe("ScoreboardV2 - Restauração de Estado e Fluxos", () => {
     });
   });
 });
-

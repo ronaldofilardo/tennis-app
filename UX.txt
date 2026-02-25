@@ -1,0 +1,1025 @@
+﻿## Proposta de UX: Tela de Marcação de Pontos
+
+### Princípios Mantidos:
+- ✅ Modal de detalhes do ponto **inalterado em funcionalidade**
+- ✅ Mecanismo de marcação de pontos **preservado**
+- ✅ Escolha de tipo de jogo **mantida**
+- ✅ Lógica de negócio **intacta**
+
+### Melhorias Focadas em UX:
+
+---
+
+### 1. **Layout da Tela Principal de Placar**
+
+**Problema atual**: "Cru" - provavelmente apenas números sem contexto visual
+
+**Proposta - Modo "Quadra" (Visual Tennis Court)**:
+
+```
+┌─────────────────────────────────────────┐
+│  [← Voltar]      PLACAR        [≡ Menu] │
+├─────────────────────────────────────────┤
+│                                         │
+│     SET 1          SET 2       (TIE)    │
+│    [ 6-4 ]        [ 5-7 ]      [7-6]    │
+│                                         │
+│  ┌─────────────────────────────────┐   │
+│  │                                 │   │
+│  │      ┌─────────┐                │   │
+│  │      │  JOÃO   │ ← Saque        │   │
+│  │      │   40    │   ●            │   │
+│  │      │  (5)    │                │   │
+│  │      └─────────┘                │   │
+│  │                                 │   │
+│  │         VS                      │   │
+│  │                                 │   │
+│  │      ┌─────────┐                │   │
+│  │      │  PEDRO  │                │   │
+│  │      │   30    │                │   │
+│  │      │  (7)    │                │   │
+│  │      └─────────┘                │   │
+│  │                                 │   │
+│  └─────────────────────────────────┘   │
+│                                         │
+│  [TROCAR LADO]  [UNDO ↩]  [CONFIG ⚙]   │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+**Melhorias UX:**
+- **Visual de quadra**: Fundo com linhas de tênis sutis (verde/azul escuro)
+- **Cards flutuantes**: Jogadores representados como "posições" na quadra
+- **Indicador de saque**: Bola animada piscando no lado correto
+- **Sets anteriores**: Mini placar horizontal no topo (contexto da partida)
+- **Games entre parênteses**: (5) e (7) mostram games do set atual
+
+---
+
+### 2. **Estados Visuais dos Cards de Jogador**
+
+**Interação Principal (Preservada)**:
+- **Toque no card** = Marca ponto → Abre modal de detalhes
+
+**Estados Visuais**:
+
+| Estado | Visual | Feedback |
+|--------|--------|----------|
+| **Default** | Card com cor do jogador (Azul/Laranja), sombra suave | Base |
+| **Saque** | Borda pulsante amarela + ícone de bola | "É a vez de sacar" |
+| **Vantagem** | Card levemente maior, brilho sutil | "Está ganhando" |
+| **Match Point** | Borda vermelha pulsante, ícone de troféu | "Ponto decisivo!" |
+| **Toque registrado** | Animação de "press" (escala 0.95) + vibração | Confirmação tátil |
+
+---
+
+### 3. **Barra de Progresso do Game**
+
+Adicionar entre os cards:
+
+```
+JOÃO                    PEDRO
+ 40                      30
+  ↓                      ↓
+[████████████░░░░░░░░]  [████████░░░░░░░░░░]
+   3 Break Points           1 Break Point
+```
+
+**UX**: Barras horizontais mostram "vantagem" no game (tipo vida de videogame), com indicadores de break points abaixo.
+
+---
+
+### 4. **Modos de Visualização (Toggle Rápido)**
+
+**Segmented Control no topo**:
+
+```
+[ 👁 Simples | 📊 Técnico | 👨‍👩‍👧 Família ]
+```
+
+| Modo | Para quem | O que muda na UI |
+|------|-----------|------------------|
+| **Simples** | Pais/familiares | Apenas nomes e pontos grandes, cores distintas |
+| **Técnico** | Treinadores/jogadores | Mostra estatísticas rápidas (% 1º saque, winners) |
+| **Família** | Acompanhantes | Fotos dos jogadores, cores vibrantes, emojis |
+
+**Modo Técnico - Overlay sutil**:
+```
+┌─────────┐         ┌─────────┐
+│  JOÃO   │         │  PEDRO  │
+│   40    │         │   30    │
+│         │         │         │
+│ 1º: 68% │         │ 1º: 72% │
+│ W: 12   │         │ W: 8    │
+│ UE: 5   │         │ UE: 8   │
+└─────────┘         └─────────┘
+```
+
+---
+
+### 5. **Navegação por Gestos (Sem modificar lógica)**
+
+| Gesto | Ação | Feedback |
+|-------|------|----------|
+| **Toque simples** no card | Marca ponto (abre modal) | Animação de press + vibração curta |
+| **Swipe para cima** no card | Marca ponto rápido (sem modal) | Som de "plim" + animação |
+| **Swipe para baixo** no card | Undo último ponto | Animação de rewind |
+| **Shake do celular** | Undo global | Alerta de confirmação |
+| **Pinch** na tela | Zoom no histórico do set | Transição suave |
+| **Long press** no card | Menu contextual | Haptic feedback |
+
+---
+
+### 6. **Indicadores de Contexto (Badges Flutuantes)**
+
+Elementos visuais que aparecem **sobre** a tela sem interferir na marcação:
+
+```
+┌─────────────────────────────────┐
+│  🎾 Tie-break!              2m  │
+│  ┌─────────┐    ┌─────────┐    │
+│  │  JOÃO   │ vs │  PEDRO  │    │
+│  │   6     │    │   5     │    │
+│  │ (2 pts) │    │ (1 pt)  │    │
+│  └─────────┘    └─────────┘    │
+│                                 │
+│  💡 Dica: Pedro fraco no BH     │
+│     nos últimos 3 pontos        │
+│                                 │
+└─────────────────────────────────┘
+```
+
+**Contextos automáticos**:
+- 🎾 Tie-break ativo
+- 🏆 Match point / Set point / Break point
+- 📊 Estatística em tempo real ("3 winners seguidos!")
+- ⏱️ Tempo de partida
+- 🌡️ Condições (se integrado com API)
+
+---
+
+### 7. **Transições e Micro-interações**
+
+**Ao marcar ponto (fluxo existente preservado)**:
+
+```
+1. Toque no card JOÃO
+   ↓ (150ms)
+2. Card "afunda" (scale 0.95) + Vibração 50ms
+   ↓ (100ms)
+3. Modal de detalhes desliza de baixo (preservado)
+   ↓ (usuário preenche - fluxo existente)
+4. Ao confirmar: Modal fecha + Número sobe com "bounce"
+   ↓
+5. Se mudou de game: Cards trocam de lado (animação de "virada")
+```
+
+**Animação de "Virada"** (mudança de lado):
+- Cards dos jogadores deslizam horizontalmente cruzando a tela
+- Efeito de "page flip" 3D sutil
+- Indicador de saque muda de lado automaticamente
+
+---
+
+### 8. **Tema Visual Escuro (Otimizado para Quadra)**
+
+**Paleta de cores**:
+- **Fundo**: `#0f172a` (Azul escuro profundo) - reduz reflexo
+- **Quadra**: `#1e293b` com linhas `#334155` (sutil)
+- **Jogador 1**: `#3b82f6` (Azul vibrante)
+- **Jogador 2**: `#f97316` (Laranja vibrante)
+- **Destaque**: `#eab308` (Amarelo ouro)
+- **Alerta**: `#ef4444` (Vermelho)
+
+**Tipografia**:
+- Pontos: **Inter Bold** 96px (legível à distância)
+- Nomes: **Inter Medium** 24px
+- Labels: **Inter Regular** 14px
+
+---
+
+### 9. **Estados Especiais de Game**
+
+**Deuce (40-40)**:
+```
+┌─────────┐         ┌─────────┐
+│  JOÃO   │   ⚡    │  PEDRO  │
+│  ADV    │  ←→   │   40    │
+└─────────┘         └─────────┘
+```
+- Ícone de "raio" entre os cards
+- Animação de pulsação nos dois cards
+
+**Tie-break**:
+- Placar muda para números (0-7)
+- Indicador de "mudança de lado" a cada 6 pontos
+- Destaque especial no topo
+
+---
+
+### 10. **Acessibilidade para Familiares**
+
+**Modo "Assistir"** (para pais que não entendem de tênis):
+- Legendas explicativas: "João ganhou o game!" / "Agora é tie-break!"
+- Cores mais vibrantes e distintas
+- Botão de "O que está acontecendo?" com explicação em linguagem simples
+- Ícones grandes para ações comuns (pausar, desfazer, chamar juiz)
+
+---
+
+## Implementação Sugerida (Componentes React)
+
+```typescript
+// Estrutura de componentes sugerida (preservando lógica existente)
+
+<ScoreboardScreen>
+  <MatchHeader sets={match.sets} currentSet={currentSet} />
+  
+  <CourtContainer>
+    <PlayerCard 
+      player={player1}
+      isServing={server === 'PLAYER_1'}
+      score={currentGame.player1Score}
+      games={currentSet.games.player1}
+      onPress={() => handlePoint('PLAYER_1')} // Chama modal existente
+      mode={viewMode} // 'simple' | 'technical' | 'family'
+    />
+    
+    <VSIndicator />
+    
+    <PlayerCard 
+      player={player2}
+      isServing={server === 'PLAYER_2'}
+      score={currentGame.player2Score}
+      games={currentSet.games.player2}
+      onPress={() => handlePoint('PLAYER_2')}
+      mode={viewMode}
+    />
+  </CourtContainer>
+  
+  <ContextBadges /> // Break points, match points, etc.
+  <ActionBar /> // Undo, Config, Switch sides
+  
+  {/* Modal existente - inalterado */}
+  <PointDetailsModal 
+    visible={modalVisible}
+    onConfirm={savePointDetails} // Fluxo existente
+  />
+</ScoreboardScreen>
+```
+
+---
+
+## Checklist de Implementação
+
+- [ ] Criar fundo com visual de quadra (SVG/CSS)
+- [ ] Animar cards de jogador (entrada, press, serve indicator)
+- [ ] Implementar toggle de modos de visualização
+- [ ] Adicionar badges de contexto flutuantes
+- [ ] Configurar gestos (swipe, shake, long-press)
+- [ ] Implementar animação de "virada" entre games
+- [ ] Ajustar tipografia para legibilidade em luz solar
+- [ ] Testar contraste em modo escuro
+- [ ] Adicionar feedbacks táteis (vibração)
+- [ ] Preservar integração com modal de detalhes existente
+
+---
+
+## Resumo das Melhorias
+
+| Aspecto | Antes (Cru) | Depois (Proposta) |
+|---------|-------------|-------------------|
+| **Visual** | Números em tela branca | Quadra imersiva, cards flutuantes |
+| **Contexto** | Apenas pontos atuais | Histórico de sets, estatísticas, dicas |
+| **Interação** | Toque básico | Gestos ricos, feedbacks táteis |
+| **Acessibilidade** | Único modo | 3 modos (Simples/Técnico/Família) |
+| **Feedback** | Nenhum | Animações, vibração, sons sutis |
+| **Estados especiais** | Apenas texto | Ícones, animações, destaques visuais |
+
+
+
+
+## 1. Design Tokens (design-tokens.json)
+
+```json
+{
+  "colors": {
+    "background": {
+      "primary": "#0f172a",
+      "court": "#1e293b",
+      "courtLines": "#334155",
+      "card": "#1e293b",
+      "cardPressed": "#0f172a"
+    },
+    "players": {
+      "player1": {
+        "primary": "#3b82f6",
+        "glow": "rgba(59, 130, 246, 0.3)",
+        "gradient": ["#3b82f6", "#2563eb"]
+      },
+      "player2": {
+        "primary": "#f97316", 
+        "glow": "rgba(249, 115, 22, 0.3)",
+        "gradient": ["#f97316", "#ea580c"]
+      }
+    },
+    "semantic": {
+      "serving": "#eab308",
+      "advantage": "#22c55e",
+      "matchPoint": "#ef4444",
+      "neutral": "#64748b",
+      "textPrimary": "#f8fafc",
+      "textSecondary": "#94a3b8"
+    }
+  },
+  "typography": {
+    "score": {
+      "font": "Inter",
+      "size": "96px",
+      "weight": "800",
+      "lineHeight": "1"
+    },
+    "name": {
+      "font": "Inter",
+      "size": "24px", 
+      "weight": "600"
+    },
+    "label": {
+      "font": "Inter",
+      "size": "14px",
+      "weight": "500"
+    },
+    "stats": {
+      "font": "Inter",
+      "size": "12px",
+      "weight": "400"
+    }
+  },
+  "spacing": {
+    "xs": "4px",
+    "sm": "8px",
+    "md": "16px",
+    "lg": "24px",
+    "xl": "32px",
+    "xxl": "48px"
+  },
+  "borderRadius": {
+    "card": "24px",
+    "button": "12px",
+    "badge": "20px"
+  },
+  "shadows": {
+    "card": "0 8px 32px rgba(0, 0, 0, 0.4)",
+    "cardHover": "0 12px 48px rgba(0, 0, 0, 0.5)",
+    "glowBlue": "0 0 40px rgba(59, 130, 246, 0.4)",
+    "glowOrange": "0 0 40px rgba(249, 115, 22, 0.4)"
+  },
+  "animation": {
+    "durations": {
+      "fast": "150ms",
+      "normal": "300ms",
+      "slow": "500ms"
+    },
+    "easing": {
+      "bounce": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+      "smooth": "cubic-bezier(0.4, 0, 0.2, 1)",
+      "sharp": "cubic-bezier(0.4, 0, 0.6, 1)"
+    }
+  }
+}
+```
+
+---
+
+## 2. Especificações de Animação (animations.spec.md)
+
+### Animação 1: Press do Card (Marcando Ponto)
+
+```css
+/* Estado inicial */
+.player-card {
+  transform: scale(1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Estado :active (pressionado) */
+.player-card:active {
+  transform: scale(0.95);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Feedback tátil (React Native / Web Vibration API) */
+navigator.vibrate(50); // 50ms ao toque
+```
+
+### Animação 2: Indicador de Saque (Pulsante)
+
+```css
+@keyframes servePulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.7);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(234, 179, 8, 0);
+    transform: scale(1.05);
+  }
+}
+
+.serving-indicator {
+  animation: servePulse 2s infinite;
+  border: 3px solid #eab308;
+}
+```
+
+### Animação 3: Transição de Game (Virada)
+
+```css
+/* Jogador 1 saindo, Jogador 2 entrando */
+@keyframes switchSideExit {
+  0% { transform: translateX(0) rotateY(0); opacity: 1; }
+  100% { transform: translateX(-100%) rotateY(-15deg); opacity: 0; }
+}
+
+@keyframes switchSideEnter {
+  0% { transform: translateX(100%) rotateY(15deg); opacity: 0; }
+  100% { transform: translateX(0) rotateY(0); opacity: 1; }
+}
+
+.switch-animation {
+  perspective: 1000px;
+  duration: 500ms;
+  easing: cubic-bezier(0.4, 0, 0.2, 1);
+}
+```
+
+### Animação 4: Atualização de Placar (Bounce)
+
+```css
+@keyframes scoreBounce {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.3); }
+  60% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+.score-update {
+  animation: scoreBounce 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  color: #22c55e; /* Flash verde temporário */
+}
+```
+
+### Animação 5: Match Point Alert
+
+```css
+@keyframes matchPointPulse {
+  0%, 100% {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
+  }
+  50% {
+    border-color: #fca5a5;
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
+  }
+}
+
+.match-point {
+  animation: matchPointPulse 1s infinite;
+  border: 4px solid #ef4444;
+}
+```
+
+---
+
+## 3. Mapa de Gestos (gestures.map.md)
+
+```typescript
+// Configuração de gestos para a tela
+const gestureConfig = {
+  // Principal: Marcar ponto (abre modal existente)
+  onCardTap: {
+    action: 'OPEN_POINT_MODAL',
+    player: 'PLAYER_1' | 'PLAYER_2',
+    haptic: 'LIGHT',
+    animation: 'PRESS_AND_RELEASE',
+    preventDefault: false // Deixa o modal existente trabalhar
+  },
+
+  // Rápido: Marcar sem modal (para pontos "normais")
+  onCardSwipeUp: {
+    action: 'QUICK_POINT',
+    player: 'PLAYER_1' | 'PLAYER_2',
+    threshold: -50, // pixels verticais
+    velocity: 0.3,
+    haptic: 'MEDIUM',
+    animation: 'SLIDE_UP_AND_BOUNCE',
+    bypassModal: true // Salva ponto direto com dados default
+  },
+
+  // Undo: Desfazer último ponto
+  onCardSwipeDown: {
+    action: 'UNDO_LAST_POINT',
+    threshold: 50,
+    velocity: 0.3,
+    haptic: 'ERROR', // Padrão de erro/alerta
+    animation: 'REWIND',
+    confirmation: false // Undo imediato, sem confirmação
+  },
+
+  // Global: Shake para undo
+  onShake: {
+    action: 'UNDO_LAST_POINT',
+    threshold: 15, // aceleração m/s²
+    timeout: 1000, // ms entre shakes
+    haptic: 'HEAVY',
+    confirmation: true // Alerta "Desfazer último ponto?"
+  },
+
+  // Menu contextual
+  onCardLongPress: {
+    action: 'CONTEXT_MENU',
+    duration: 500, // ms
+    haptic: 'SUCCESS',
+    options: [
+      'Marcar Ace',
+      'Marcar Dupla Falta', 
+      'Editar último ponto',
+      'Pausar partida'
+    ]
+  },
+
+  // Zoom no histórico
+  onPinch: {
+    action: 'TOGGLE_SET_HISTORY',
+    scale: 1.5,
+    origin: 'center'
+  }
+};
+```
+
+---
+
+## 4. Estrutura de Componentes React (component-structure.tsx)
+
+```typescript
+// ==========================================
+// TIPOS E INTERFACES (preservar existentes)
+// ==========================================
+
+interface PlayerCardProps {
+  player: {
+    id: 'PLAYER_1' | 'PLAYER_2';
+    name: string;
+    avatar?: string;
+    color: 'blue' | 'orange';
+  };
+  score: number | string; // 0, 15, 30, 40, 'AD', 'DEUCE'
+  games: number;
+  sets: number[];
+  isServing: boolean;
+  isAdvantage?: boolean;
+  isMatchPoint?: boolean;
+  viewMode: 'simple' | 'technical' | 'family';
+  onPress: () => void;
+  stats?: {
+    firstServePercentage: number;
+    winners: number;
+    unforcedErrors: number;
+  };
+}
+
+// ==========================================
+// COMPONENTE PRINCIPAL: ScoreboardScreen
+// ==========================================
+
+const ScoreboardScreen: React.FC = () => {
+  const [viewMode, setViewMode] = useState<'simple' | 'technical' | 'family'>('simple');
+  const [showHistory, setShowHistory] = useState(false);
+  
+  // Hook de gestos (preserva chamadas ao modal existente)
+  const gestures = useScoreboardGestures({
+    onPointScored: handlePointScored, // Chama modal existente
+    onQuickPoint: handleQuickPoint,
+    onUndo: handleUndo
+  });
+
+  return (
+    <Container background="court">
+      <MatchHeader 
+        sets={match.sets}
+        currentSet={currentSet}
+        matchTime={elapsedTime}
+      />
+      
+      <CourtContainer>
+        <PlayerCard
+          {...player1Config}
+          viewMode={viewMode}
+          onPress={() => handlePointScored('PLAYER_1')} // Modal existente
+        />
+        
+        <VSIndicator 
+          isTiebreak={currentGame.isTiebreak}
+          isDeuce={currentGame.isDeuce}
+        />
+        
+        <PlayerCard
+          {...player2Config}
+          viewMode={viewMode}
+          onPress={() => handlePointScored('PLAYER_2')}
+        />
+        
+        {/* Badges flutuantes de contexto */}
+        <ContextOverlay>
+          {isMatchPoint && <MatchPointBadge player={leadingPlayer} />}
+          {isBreakPoint && <BreakPointBadge />}
+          {isTiebreak && <TiebreakIndicator score={tiebreakScore} />}
+        </ContextOverlay>
+      </CourtContainer>
+      
+      <ActionBar>
+        <UndoButton onPress={handleUndo} disabled={!canUndo} />
+        <SwitchSidesButton onPress={handleSwitchSides} />
+        <ViewModeToggle value={viewMode} onChange={setViewMode} />
+        <SettingsButton />
+      </ActionBar>
+      
+      {/* MODAL EXISTENTE - INALTERADO */}
+      <PointDetailsModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onConfirm={savePointWithDetails} // Fluxo existente
+      />
+    </Container>
+  );
+};
+
+// ==========================================
+// COMPONENTE: PlayerCard (O MAIS CRÍTICO)
+// ==========================================
+
+const PlayerCard: React.FC<PlayerCardProps> = ({
+  player,
+  score,
+  games,
+  isServing,
+  isMatchPoint,
+  viewMode,
+  onPress,
+  stats
+}) => {
+  const [isPressed, setIsPressed] = useState(false);
+  
+  const cardVariants = {
+    idle: { scale: 1, boxShadow: '0 8px 32px rgba(0,0,0,0.4)' },
+    pressed: { scale: 0.95, boxShadow: '0 4px 16px rgba(0,0,0,0.3)' },
+    serving: { 
+      borderColor: '#eab308',
+      boxShadow: '0 0 40px rgba(234, 179, 8, 0.3)'
+    },
+    matchPoint: {
+      borderColor: '#ef4444',
+      animation: 'matchPointPulse 1s infinite'
+    }
+  };
+
+  return (
+    <motion.div
+      className={`player-card player-${player.color}`}
+      variants={cardVariants}
+      animate={[
+        isPressed ? 'pressed' : 'idle',
+        isServing ? 'serving' : '',
+        isMatchPoint ? 'matchPoint' : ''
+      ].filter(Boolean)}
+      transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
+      onTapStart={() => {
+        setIsPressed(true);
+        Haptics.impactLight(); // Feedback imediato
+      }}
+      onTap={() => {
+        setIsPressed(false);
+        onPress(); // Chama modal existente
+      }}
+      onTapCancel={() => setIsPressed(false)}
+      whileHover={{ scale: 1.02 }}
+    >
+      {/* Indicador de saque */}
+      {isServing && <ServeIndicator />}
+      
+      {/* Avatar/Foto (modo família) */}
+      {viewMode === 'family' && player.avatar && (
+        <Avatar src={player.avatar} size="large" />
+      )}
+      
+      {/* Nome do jogador */}
+      <PlayerName>{player.name}</PlayerName>
+      
+      {/* Placar principal */}
+      <ScoreDisplay 
+        value={score} 
+        animate={scoreChanged}
+      />
+      
+      {/* Games do set atual */}
+      <GamesDisplay>({games})</GamesDisplay>
+      
+      {/* Stats (modo técnico) */}
+      {viewMode === 'technical' && stats && (
+        <StatsOverlay>
+          <Stat label="1º Saque" value={`${stats.firstServePercentage}%`} />
+          <Stat label="Winners" value={stats.winners} />
+          <Stat label="Erros" value={stats.unforcedErrors} />
+        </StatsOverlay>
+      )}
+      
+      {/* Barra de momentum (visual) */}
+      <MomentumBar player={player.id} recentPoints={last5Points} />
+    </motion.div>
+  );
+};
+```
+
+---
+
+## 5. CSS/Styled Components Completo (styles.ts)
+
+```typescript
+// styled-components ou CSS Modules
+import styled, { keyframes } from 'styled-components';
+
+// Animações
+const servePulse = keyframes`
+  0%, 100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.7); }
+  50% { box-shadow: 0 0 0 12px rgba(234, 179, 8, 0); }
+`;
+
+const matchPointPulse = keyframes`
+  0%, 100% { border-color: #ef4444; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+  50% { border-color: #fca5a5; box-shadow: 0 0 30px rgba(239, 68, 68, 0.3); }
+`;
+
+const scoreBounce = keyframes`
+  0% { transform: scale(1); }
+  40% { transform: scale(1.3); }
+  60% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+`;
+
+// Container principal
+export const CourtContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: 
+    linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  
+  /* Linhas da quadra (sutis) */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(90deg, transparent 49%, #334155 49%, #334155 51%, transparent 51%),
+      linear-gradient(0deg, transparent 39%, #334155 39%, #334155 41%, transparent 41%),
+      linear-gradient(0deg, transparent 59%, #334155 59%, #334155 61%, transparent 61%);
+    opacity: 0.3;
+    pointer-events: none;
+  }
+`;
+
+// Card do jogador
+export const PlayerCard = styled(motion.div)<{ 
+  color: 'blue' | 'orange';
+  isServing: boolean;
+  isMatchPoint: boolean;
+}>`
+  position: relative;
+  width: 80%;
+  max-width: 320px;
+  padding: 32px 24px;
+  border-radius: 24px;
+  background: ${props => props.color === 'blue' 
+    ? 'linear-gradient(135deg, #1e293b 0%, #1e3a8a 100%)'
+    : 'linear-gradient(135deg, #1e293b 0%, #7c2d12 100%)'
+  };
+  border: 4px solid transparent;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  
+  ${props => props.isServing && css`
+    border-color: #eab308;
+    animation: ${servePulse} 2s infinite;
+  `}
+  
+  ${props => props.isMatchPoint && css`
+    border-color: #ef4444;
+    animation: ${matchPointPulse} 1s infinite;
+  `}
+  
+  /* Glow sutil da cor do jogador */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 26px;
+    background: ${props => props.color === 'blue'
+      ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.3), transparent)'
+      : 'linear-gradient(135deg, rgba(249, 115, 22, 0.3), transparent)'
+    };
+    z-index: -1;
+    filter: blur(20px);
+  }
+`;
+
+// Display do placar
+export const ScoreDisplay = styled.div<{ animate?: boolean }>`
+  font-family: 'Inter', sans-serif;
+  font-size: 96px;
+  font-weight: 800;
+  color: #f8fafc;
+  text-align: center;
+  line-height: 1;
+  margin: 16px 0;
+  font-variant-numeric: tabular-nums;
+  
+  ${props => props.animate && css`
+    animation: ${scoreBounce} 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  `}
+`;
+
+// Indicador de saque
+export const ServeIndicator = styled.div`
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 32px;
+  height: 32px;
+  background: #eab308;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  
+  &::before {
+    content: '🎾';
+  }
+`;
+
+// Badges flutuantes
+export const ContextBadge = styled.div<{ type: 'match' | 'break' | 'set' | 'tiebreak' }>`
+  position: absolute;
+  top: ${props => props.type === 'match' ? '20%' : '50%'};
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 24px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: ${props => {
+    switch(props.type) {
+      case 'match': return '#ef4444';
+      case 'break': return '#f97316';
+      case 'set': return '#22c55e';
+      case 'tiebreak': return '#8b5cf6';
+    }
+  }};
+  color: white;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  animation: ${matchPointPulse} 2s infinite;
+  z-index: 100;
+`;
+```
+
+---
+
+## 6. Fluxo de Estados (state-machine.md)
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    ESTADOS DA TELA                      │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  [IDLE] ──toque──▶ [CARD_PRESSED] ──soltar──▶ [MODAL] │
+│     │                    │                      (existente)
+│     │                    └──long press──▶ [CONTEXT_MENU]
+│     │
+│     ├──swipe up──▶ [QUICK_POINT] ──▶ [BOUNCE_ANIM]
+│     │
+│     ├──swipe down──▶ [UNDO_CONFIRM] ──▶ [UNDO] / [CANCEL]
+│     │
+│     ├──shake──▶ [UNDO_GLOBAL_CONFIRM]
+│     │
+│     └──pinch──▶ [HISTORY_EXPANDED]
+│                                                         │
+│  Transições automáticas:                                │
+│  - Game ganho ──▶ [SWITCH_SIDES_ANIM] ──▶ [IDLE]        │
+│  - Set ganho ──▶ [SET_SUMMARY] ──▶ [IDLE]              │
+│  - Match ganho ──▶ [MATCH_SUMMARY] ──▶ [END_SCREEN]     │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 7. Checklist de Implementação para o Agente (implementation-checklist.md)
+
+### Fase 1: Fundação Visual
+- [ ] Configurar tema escuro global (`#0f172a` base)
+- [ ] Criar componente `CourtContainer` com linhas sutis
+- [ ] Implementar `PlayerCard` com gradientes azul/laranja
+- [ ] Adicionar sombras e glows conforme tokens
+
+### Fase 2: Interações Básicas
+- [ ] Implementar `:active` states com scale 0.95
+- [ ] Adicionar feedback tátil (vibration API)
+- [ ] Garantir que `onPress` chame o modal **existente**
+- [ ] Testar áreas de toque mínimas (48x48dp)
+
+### Fase 3: Indicadores Dinâmicos
+- [ ] Animação de saque pulsante (border amarelo)
+- [ ] Lógica de alternância de saque (preservar existente)
+- [ ] Badge de match point (border vermelho pulsante)
+- [ ] Detectar estados: Deuce, Advantage, Tiebreak
+
+### Fase 4: Modos de Visualização
+- [ ] Criar toggle Simples/Técnico/Família
+- [ ] Modo Simples: Apenas nome + placar grande
+- [ ] Modo Técnico: Stats overlay (1º saque, winners, erros)
+- [ ] Modo Família: Fotos, cores vibrantes, emojis
+
+### Fase 5: Gestos Avançados
+- [ ] Swipe up: Quick point (bypass modal opcional)
+- [ ] Swipe down: Undo com animação de rewind
+- [ ] Shake: Undo global com confirmação
+- [ ] Long press: Menu contextual
+
+### Fase 6: Animações de Transição
+- [ ] Animação de "virada" entre games (cards cruzando)
+- [ ] Bounce do número ao atualizar placar
+- [ ] Transição suave para modal existente
+- [ ] Animação de entrada dos cards (fade + slide up)
+
+### Fase 7: Contexto e Feedback
+- [ ] Badges flutuantes (Match Point, Break Point)
+- [ ] Barra de momentum visual
+- [ ] Timeline de sets no topo
+- [ ] Dicas contextuais ("3 winners seguidos!")
+
+### Fase 8: Polimento
+- [ ] Testar em luz solar (contraste máximo)
+- [ ] Verificar performance (60fps nas animações)
+- [ ] Acessibilidade (screen readers, font sizes)
+- [ ] Teste em múltiplos tamanhos de tela
+
+---
+
+## 8. Arquivo de Configuração Unificado (racket-ui-config.json)
+
+```json
+{
+  "project": "RacketScore UI Enhancement",
+  "constraints": {
+    "preserveLogic": true,
+    "modalUnchanged": true,
+    "scoringSystem": "existing",
+    "dataStructure": "preserve"
+  },
+  "priorities": [
+    "Visual polish and animations",
+    "Touch feedback and haptics", 
+    "Contextual awareness (match states)",
+    "Multiple view modes",
+    "Gesture-based interactions"
+  ],
+  "dependencies": {
+    "required": ["framer-motion", "styled-components", "react-use-gesture"],
+    "optional": ["react-spring", "use-sound"]
+  },
+  "testingScenarios": [
+    "Match with multiple deuces",
+    "Tie-break with side changes",
+    "Match point scenario",
+    "Undo/redo flow",
+    "Mode switching mid-match"
+  ]
+}
+```
+
+---
+
+## Resumo para o Agente Codificador
+
+> **Objetivo**: Transformar a tela "crua" atual em uma experiência imersiva de quadra de tênis, mantendo 100% da lógica existente (modal de detalhes, sistema de pontuação, etc.).
+
+> **Foco**: Animações fluidas, feedback tátil, estados visuais ricos (saque, match point), e três modos de visualização para diferentes públicos.
+
+> **Não modificar**: O modal de detalhes do ponto, o fluxo de salvamento de pontos, a lógica de tie-breaks, ou qualquer estrutura de dados existente.
+
+Quer que eu gere mais algum arquivo específico, como um storybook de componentes ou testes visuais automatizados?

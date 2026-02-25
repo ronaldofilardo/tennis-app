@@ -1,0 +1,176 @@
+.action-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  background: rgba(15, 23, 42, 0.95);
+  border-top: 1px solid var(--court-lines);
+  position: relative;
+  z-index: 10;
+}
+
+/* ── Linha de saque ────────────────────── */
+.quick-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.serve-left {
+  justify-content: flex-start;
+}
+.serve-right {
+  justify-content: flex-end;
+}
+
+.serve-step-btn {
+  pointer-events: none;
+  border-radius: 20px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: none;
+  letter-spacing: 0.3px;
+}
+
+.serve-step-first {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--player1-color);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+}
+
+.serve-step-second {
+  background: var(--player2-color);
+  color: #fff;
+}
+
+.action-quick-btn {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  border-radius: var(--radius-btn);
+  padding: 0.35rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.action-quick-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--text-primary);
+}
+
+.action-quick-fault {
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+.action-quick-fault:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+}
+
+/* ── Quem venceu o ponto ──────────────── */
+.point-winner-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.point-winner-btn {
+  flex: 1;
+  padding: 0.55rem 0.5rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all var(--transition-fast);
+  text-align: center;
+  letter-spacing: 0.2px;
+}
+
+.point-winner-server {
+  background: rgba(59, 130, 246, 0.18);
+  color: var(--player1-color, #60a5fa);
+  border-color: rgba(59, 130, 246, 0.45);
+}
+
+.point-winner-server:hover,
+.point-winner-server:active {
+  background: rgba(59, 130, 246, 0.32);
+  border-color: var(--player1-color, #60a5fa);
+  transform: scale(1.02);
+}
+
+.point-winner-returner {
+  background: rgba(249, 115, 22, 0.18);
+  color: var(--player2-color, #fb923c);
+  border-color: rgba(249, 115, 22, 0.45);
+}
+
+.point-winner-returner:hover,
+.point-winner-returner:active {
+  background: rgba(249, 115, 22, 0.32);
+  border-color: var(--player2-color, #fb923c);
+  transform: scale(1.02);
+}
+
+/* ── Ações gerais ──────────────────────── */
+.main-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.main-action-btn {
+  flex: 1;
+  padding: 0.6rem 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  border: 1px solid var(--border-default);
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.undo-btn {
+  background: rgba(249, 115, 22, 0.12);
+  color: var(--player2-color);
+  border-color: rgba(249, 115, 22, 0.3);
+}
+
+.undo-btn:hover:not(:disabled) {
+  background: rgba(249, 115, 22, 0.22);
+}
+
+.stats-btn {
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--player1-color);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.stats-btn:hover {
+  background: rgba(59, 130, 246, 0.22);
+}
+
+.config-btn {
+  flex: 0 0 auto;
+  padding: 0.6rem 0.8rem;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-muted);
+  border-color: var(--border-subtle);
+}
+
+.config-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text-secondary);
+}
+
+.main-action-btn-disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}

@@ -15,6 +15,7 @@ model Match {
     sportType      String
     format         String
     nickname       String?
+    courtType      String? // Tipo de quadra: CLAY, HARD, GRASS
     apontadorEmail String // Novo campo para identificar o responsável
     playerP1       String
     playerP2       String

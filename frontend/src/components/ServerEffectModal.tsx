@@ -1,8 +1,8 @@
 // frontend/src/components/ServerEffectModal.tsx
 
-import React, { useState, useEffect } from 'react';
-import type { Player } from '../core/scoring/types';
-import './ServerEffectModal.css';
+import React, { useState, useEffect } from "react";
+import type { Player } from "../core/scoring/types";
+import "./ServerEffectModal.css";
 
 interface ServerEffectModalProps {
   isOpen: boolean;
@@ -11,7 +11,12 @@ interface ServerEffectModalProps {
   onCancel: () => void;
 }
 
-const ServerEffectModal: React.FC<ServerEffectModalProps> = ({ isOpen, playerInFocus, onConfirm, onCancel }) => {
+const ServerEffectModal: React.FC<ServerEffectModalProps> = ({
+  isOpen,
+  playerInFocus,
+  onConfirm,
+  onCancel,
+}) => {
   const [efeito, setEfeito] = useState<string | undefined>();
   const [direcao, setDirecao] = useState<string | undefined>();
 
@@ -26,18 +31,25 @@ const ServerEffectModal: React.FC<ServerEffectModalProps> = ({ isOpen, playerInF
     onConfirm(efeito, direcao);
   };
 
-  const efeitosFixos = ['Chapado', 'Top spin', 'Cortado'];
-  const direcoesFixas = ['Fechado', 'Aberto'];
+  const efeitosFixos = ["Chapado", "Top spin", "Cortado"];
+  const direcoesFixas = ["Fechado", "Aberto"];
 
   if (!isOpen) return null;
 
   return (
     <div className="server-effect-modal-overlay" onClick={onCancel}>
-      <div className="server-effect-modal" data-testid="server-effect-modal" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="server-effect-modal"
+        data-testid="server-effect-modal"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="modal-header">
           <h3>🎾 Efeito do Saque</h3>
           <div className="winner-display">
-            Ponto para: <strong>{playerInFocus === 'PLAYER_1' ? 'Jogador 1' : 'Jogador 2'}</strong>
+            Ponto para:{" "}
+            <strong>
+              {playerInFocus === "PLAYER_1" ? "Jogador 1" : "Jogador 2"}
+            </strong>
           </div>
         </div>
         <div className="modal-content">
@@ -47,7 +59,7 @@ const ServerEffectModal: React.FC<ServerEffectModalProps> = ({ isOpen, playerInF
               {efeitosFixos.map((e) => (
                 <button
                   key={e}
-                  className={efeito === e ? 'active' : ''}
+                  className={efeito === e ? "active" : ""}
                   onClick={() => setEfeito(e)}
                 >
                   {e}
@@ -62,7 +74,7 @@ const ServerEffectModal: React.FC<ServerEffectModalProps> = ({ isOpen, playerInF
               {direcoesFixas.map((d) => (
                 <button
                   key={d}
-                  className={direcao === d ? 'active' : ''}
+                  className={direcao === d ? "active" : ""}
                   onClick={() => setDirecao(d)}
                 >
                   {d}
@@ -72,9 +84,19 @@ const ServerEffectModal: React.FC<ServerEffectModalProps> = ({ isOpen, playerInF
           </div>
         </div>
         <div className="modal-actions">
-          <button className="cancel-btn" onClick={onCancel} aria-label="Cancel ServerEffect">Cancelar</button>
-          <button className="confirm-btn" onClick={handleConfirm} aria-label="Confirm ServerEffect">
+          <button
+            className="confirm-btn"
+            onClick={handleConfirm}
+            aria-label="Confirm ServerEffect"
+          >
             Confirmar Ponto
+          </button>
+          <button
+            className="cancel-btn"
+            onClick={onCancel}
+            aria-label="Cancel ServerEffect"
+          >
+            Cancelar
           </button>
         </div>
       </div>

@@ -17,7 +17,7 @@ try {
 } catch (importError) {
   console.warn(
     "[validationSchemas] Import direto falhou, tentando globalThis:",
-    importError.message
+    importError.message,
   );
   try {
     // Fallback para globalThis (ambiente serverless)
@@ -29,7 +29,7 @@ try {
   } catch (globalError) {
     console.error(
       "[validationSchemas] Zod não pôde ser carregado:",
-      globalError.message
+      globalError.message,
     );
     // Cria um stub mínimo para evitar crashes
     z = {
@@ -37,7 +37,7 @@ try {
         strict: () => ({
           parse: (data) => {
             console.warn(
-              "[validationSchemas] Usando stub Zod - validação desabilitada"
+              "[validationSchemas] Usando stub Zod - validação desabilitada",
             );
             return data;
           },
@@ -98,6 +98,7 @@ export const MatchCreateSchema = z.object({
   format: z
     .string({ required_error: "O campo format é obrigatório." })
     .min(1, "O campo format não pode ser vazio."),
+  courtType: z.string().optional().nullable(), // CLAY | HARD | GRASS
   players: z.object(
     {
       p1: z
@@ -107,7 +108,7 @@ export const MatchCreateSchema = z.object({
         .string({ required_error: "O jogador p2 é obrigatório." })
         .min(1, "O nome do jogador p2 não pode ser vazio."),
     },
-    { required_error: "O objeto players é obrigatório." }
+    { required_error: "O objeto players é obrigatório." },
   ),
   nickname: z.string().optional().nullable(),
   visibleTo: z.string().optional().nullable(),
@@ -129,7 +130,7 @@ export const MatchUpdateSchema = z
 export const MatchStateUpdateSchema = {
   parse: (data) => {
     console.warn(
-      "[MatchStateUpdateSchema] Usando parse stub - validação desabilitada"
+      "[MatchStateUpdateSchema] Usando parse stub - validação desabilitada",
     );
     return data;
   },
@@ -180,7 +181,7 @@ export function validateAndFormatZodError(error) {
       .map(
         (e) =>
           (Array.isArray(e.path) ? e.path.join(".") : e.path) +
-          (e.message ? ": " + e.message : "")
+          (e.message ? ": " + e.message : ""),
       )
       .join("\n");
   }
