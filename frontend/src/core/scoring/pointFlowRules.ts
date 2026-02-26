@@ -76,19 +76,24 @@ export function getValidSubtipo1(): RallySubtipo1[] {
 }
 
 // Subtipo2 (Out / Net)
-// REGRA: winner → nunca; sacador|passada → só se golpe=VBH ou VFH (Smash não tem sub2)
-// Quando golpe não informado (fluxo golpe-first antes de selecionar golpe) → false provisório
+// REGRA: winner → nunca
+// sacador|passada|Smash → sem sub2 (fluxotosystem.txt: subtipo2 vazio)
+// devolvedor|passada|Smash → tem sub2 Out/Net (fluxotosystem.txt: subtipo2 Out|Net)
+// passada|VBH|VFH (ambos vencedores) → tem sub2
+// Quando golpe não informado → false provisório
 export function requiresSubtipo2(
-  _vencedor: RallyVencedor,
+  vencedor: RallyVencedor,
   situacao: RallySituacao,
   tipo: RallyTipo,
   golpe?: RallyGolpe,
 ): boolean {
   if (tipo === "winner") return false;
   if (situacao === "passada") {
-    // Para passada (sacador e devolvedor): VBH/VFH têm Out/Net; Smash não tem sub2
     if (!golpe) return false;
-    return golpe === "VBH" || golpe === "VFH";
+    if (golpe === "VBH" || golpe === "VFH") return true;
+    // devolvedor|passada|Smash: tem sub2 Out/Net (fluxotosystem.txt linhas 706-711)
+    if (golpe === "Smash" && vencedor === "devolvedor") return true;
+    return false;
   }
   return true;
 }
@@ -152,7 +157,7 @@ export function getValidDirecoes(
   if (situacao === "rede" && tipo === "winner") {
     return ["cruzada", "paralela", "centro"];
   }
-  return ["cruzada", "paralela", "centro", "inside-in", "inside-out"];
+  return ["cruzada", "paralela", "centro", "inside-out", "inside-in"];
 }
 
 // Golpes especiais validos — regra derivada do fluxotosystem.txt por golpe+efeito:
