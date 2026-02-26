@@ -126,7 +126,7 @@ describe("requiresSubtipo2", () => {
       false,
     );
   });
-  it("devolvedor|passada|erro com VFH/VBH → true; Smash → false", () => {
+  it("devolvedor|passada|erro com VFH/VBH → true; Smash → true (fluxotosystem.txt: Out/Net)", () => {
     expect(
       requiresSubtipo2("devolvedor", "passada", "erro-forcado", "VFH"),
     ).toBe(true);
@@ -136,9 +136,10 @@ describe("requiresSubtipo2", () => {
     expect(
       requiresSubtipo2("devolvedor", "passada", "erro-nao-forcado", "VFH"),
     ).toBe(true);
+    // devolvedor|passada|Smash tem sub2 Out/Net (fluxotosystem.txt linhas 706-711)
     expect(
       requiresSubtipo2("devolvedor", "passada", "erro-nao-forcado", "Smash"),
-    ).toBe(false);
+    ).toBe(true);
   });
   it("sacador|rede|erro → true", () => {
     expect(requiresSubtipo2("sacador", "rede", "erro-forcado")).toBe(true);
