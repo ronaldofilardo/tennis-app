@@ -156,5 +156,5 @@ export interface RallyDetails {
   golpe: RallyGolpe;
   efeito?: RallyEfeito; // undefined quando o arquivo não exige efeito (ex: sacador|passada|erro-*, sacador|rede|winner)
   direcao: RallyDirecao;
-  golpe_esp: RallyGolpeEsp;
+  golpe_esp?: RallyGolpeEsp; // undefined quando efeito=flat ou golpe=Smash (arquivo não tem golpe_esp nesses casos)
 }
