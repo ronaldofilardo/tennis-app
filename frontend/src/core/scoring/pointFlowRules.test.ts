@@ -118,13 +118,27 @@ describe("requiresSubtipo2", () => {
       false,
     );
   });
-  it("devolvedor|passada|erro → true", () => {
+  it("devolvedor|passada|erro sem golpe → false (golpe precisa ser informado primeiro)", () => {
     expect(requiresSubtipo2("devolvedor", "passada", "erro-forcado")).toBe(
-      true,
+      false,
     );
     expect(requiresSubtipo2("devolvedor", "passada", "erro-nao-forcado")).toBe(
-      true,
+      false,
     );
+  });
+  it("devolvedor|passada|erro com VFH/VBH → true; Smash → false", () => {
+    expect(
+      requiresSubtipo2("devolvedor", "passada", "erro-forcado", "VFH"),
+    ).toBe(true);
+    expect(
+      requiresSubtipo2("devolvedor", "passada", "erro-forcado", "VBH"),
+    ).toBe(true);
+    expect(
+      requiresSubtipo2("devolvedor", "passada", "erro-nao-forcado", "VFH"),
+    ).toBe(true);
+    expect(
+      requiresSubtipo2("devolvedor", "passada", "erro-nao-forcado", "Smash"),
+    ).toBe(false);
   });
   it("sacador|rede|erro → true", () => {
     expect(requiresSubtipo2("sacador", "rede", "erro-forcado")).toBe(true);
@@ -181,23 +195,12 @@ describe("requiresEfeito", () => {
 // getValidEfeitos
 // ────────────────────────────────────────────────────────────────
 describe("getValidEfeitos", () => {
-  it("sem contexto → retorna flat, slice, topspin", () => {
+  it("sempre retorna topspin, slice, flat (todos os contextos)", () => {
     expect(sorted(getValidEfeitos())).toEqual(sorted(ALL3_EF));
   });
-  it("sacador|fundo|winner → topspin, flat (sem slice)", () => {
-    expect(sorted(getValidEfeitos("sacador", "fundo", "winner"))).toEqual(
-      sorted(["flat", "topspin"]),
-    );
-  });
-  it("sacador|rede|erro-forcado → flat, slice, topspin (todos)", () => {
-    expect(sorted(getValidEfeitos("sacador", "rede", "erro-forcado"))).toEqual(
-      sorted(ALL3_EF),
-    );
-  });
-  it("devolvedor|fundo|winner → flat, slice, topspin (todos)", () => {
-    expect(sorted(getValidEfeitos("devolvedor", "fundo", "winner"))).toEqual(
-      sorted(ALL3_EF),
-    );
+  it("sacador|fundo|winner → topspin, slice, flat (slice válido conforme fluxotosystem.txt)", () => {
+    // O arquivo tem sacador|fundo|winner com slice (incorrectâmente removido na versão anterior)
+    expect(sorted(getValidEfeitos())).toEqual(sorted(ALL3_EF));
   });
 });
 
@@ -270,10 +273,10 @@ describe("getValidGolpes", () => {
       sorted(getValidGolpes("devolvedor", "passada", "erro-forcado")),
     ).toEqual(["VBH", "VFH"]);
   });
-  it("devolvedor|passada|erro-nao-forcado → VBH,VFH", () => {
+  it("devolvedor|passada|erro-nao-forcado → VBH,VFH,Smash (conforme fluxotosystem.txt)", () => {
     expect(
       sorted(getValidGolpes("devolvedor", "passada", "erro-nao-forcado")),
-    ).toEqual(["VBH", "VFH"]);
+    ).toEqual(["Smash", "VBH", "VFH"]);
   });
   it("devolvedor|rede|winner → VBH,VFH,Smash", () => {
     expect(sorted(getValidGolpes("devolvedor", "rede", "winner"))).toEqual([
@@ -324,9 +327,9 @@ describe("getValidDirecoes", () => {
       sorted(ALL5_DIRS),
     );
   });
-  it("sacador|rede|winner → 5 direções", () => {
+  it("sacador|rede|winner → 3 direções (VBH/VFH/Smash sem inside-in/out)", () => {
     expect(sorted(getValidDirecoes("sacador", "rede", "winner"))).toEqual(
-      sorted(ALL5_DIRS),
+      sorted(ONLY3_DIRS),
     );
   });
   it("sacador|rede|erro-forcado → 5 direções", () => {
@@ -359,136 +362,68 @@ describe("getValidDirecoes", () => {
       sorted(ONLY3_DIRS),
     );
   });
-  it("sacador|rede|winner → 5 direções (BH/FH com inside)", () => {
-    expect(sorted(getValidDirecoes("sacador", "rede", "winner"))).toEqual(
-      sorted(ALL5_DIRS),
-    );
-  });
 });
 
 // ────────────────────────────────────────────────────────────────
-// getValidGolpeEsp — regras críticas do arquivo
+// getValidGolpeEsp — nova assinatura: (golpe, efeito)
+// Regra derivada diretamente do fluxotosystem.txt por golpe+efeito:
+//   Smash ou golpe ausente   → []
+//   VBH/VFH (sem efeito)     → [lob, drop, bate-pronto, swingvolley]
+//   flat                     → []
+//   topspin                  → [lob, bate-pronto]
+//   slice                    → [lob, drop]
 // ────────────────────────────────────────────────────────────────
 describe("getValidGolpeEsp", () => {
-  // sacador|devolucao|erro-* → apenas drop,lob
-  it("sacador|devolucao|erro-forcado → drop,lob", () => {
-    expect(
-      sorted(getValidGolpeEsp("sacador", "devolucao", "erro-forcado")),
-    ).toEqual(sorted(DEVOLV_SACADOR_ESP));
-  });
-  it("sacador|devolucao|erro-nao-forcado → drop,lob", () => {
-    expect(
-      sorted(getValidGolpeEsp("sacador", "devolucao", "erro-nao-forcado")),
-    ).toEqual(sorted(DEVOLV_SACADOR_ESP));
+  it("golpe ausente → []", () => {
+    expect(getValidGolpeEsp(undefined, undefined)).toEqual([]);
   });
 
-  // devolvedor|devolucao|winner → drop,lob (sem swingvolley)
-  it("devolvedor|devolucao|winner → drop,lob", () => {
-    expect(
-      sorted(getValidGolpeEsp("devolvedor", "devolucao", "winner")),
-    ).toEqual(sorted(DEVOLV_DEVOLV_ESP));
+  it("Smash → [] (sem golpe_esp)", () => {
+    expect(getValidGolpeEsp("Smash", undefined)).toEqual([]);
   });
 
-  // rede + qualquer erro (sacador e devolvedor) → bate-pronto,drop,lob (sem swingvolley)
-  it("sacador|rede|erro-forcado → bate-pronto,drop,lob (sem swingvolley)", () => {
-    expect(sorted(getValidGolpeEsp("sacador", "rede", "erro-forcado"))).toEqual(
-      sorted(NO_SW_ESP),
-    );
-  });
-  it("sacador|rede|erro-nao-forcado → bate-pronto,drop,lob", () => {
-    expect(
-      sorted(getValidGolpeEsp("sacador", "rede", "erro-nao-forcado")),
-    ).toEqual(sorted(NO_SW_ESP));
-  });
-  it("devolvedor|rede|erro-forcado → bate-pronto,drop,lob", () => {
-    expect(
-      sorted(getValidGolpeEsp("devolvedor", "rede", "erro-forcado")),
-    ).toEqual(sorted(NO_SW_ESP));
-  });
-  it("devolvedor|rede|erro-nao-forcado → bate-pronto,drop,lob", () => {
-    expect(
-      sorted(getValidGolpeEsp("devolvedor", "rede", "erro-nao-forcado")),
-    ).toEqual(sorted(NO_SW_ESP));
-  });
-
-  // devolvedor|fundo|erro → todos 4 (conforme fluxotosystem.txt atualizado)
-  it("devolvedor|fundo|erro-forcado → todos 4", () => {
-    expect(
-      sorted(getValidGolpeEsp("devolvedor", "fundo", "erro-forcado")),
-    ).toEqual(sorted(ALL4_ESP));
-  });
-  it("devolvedor|fundo|erro-nao-forcado → todos 4", () => {
-    expect(
-      sorted(getValidGolpeEsp("devolvedor", "fundo", "erro-nao-forcado")),
-    ).toEqual(sorted(ALL4_ESP));
-  });
-
-  // Todos os 4 (bate-pronto,drop,lob,swingvolley)
-  it("sacador|passada|winner → todos 4", () => {
-    expect(sorted(getValidGolpeEsp("sacador", "passada", "winner"))).toEqual(
-      sorted(ALL4_ESP),
-    );
-  });
-  it("sacador|passada|erro-forcado → todos 4 (golpe especial para smash/voleio)", () => {
-    expect(
-      sorted(getValidGolpeEsp("sacador", "passada", "erro-forcado")),
-    ).toEqual(sorted(ALL4_ESP));
-  });
-  it("sacador|passada|erro-nao-forcado → todos 4", () => {
-    expect(
-      sorted(getValidGolpeEsp("sacador", "passada", "erro-nao-forcado")),
-    ).toEqual(sorted(ALL4_ESP));
-  });
-  it("sacador|rede|winner → todos 4", () => {
-    expect(sorted(getValidGolpeEsp("sacador", "rede", "winner"))).toEqual(
-      sorted(ALL4_ESP),
-    );
-  });
-  it("sacador|fundo|winner → todos 4", () => {
-    expect(sorted(getValidGolpeEsp("sacador", "fundo", "winner"))).toEqual(
-      sorted(ALL4_ESP),
-    );
-  });
-  // sacador|fundo|erro → drop, lob (conforme fluxotosystem.txt atualizado)
-  it("sacador|fundo|erro-forcado → drop, lob", () => {
-    expect(
-      sorted(getValidGolpeEsp("sacador", "fundo", "erro-forcado")),
-    ).toEqual(sorted(["drop", "lob"]));
-  });
-  it("sacador|fundo|erro-nao-forcado → drop, lob", () => {
-    expect(
-      sorted(getValidGolpeEsp("sacador", "fundo", "erro-nao-forcado")),
-    ).toEqual(sorted(["drop", "lob"]));
-  });
-  it("devolvedor|passada|winner → todos 4", () => {
-    expect(sorted(getValidGolpeEsp("devolvedor", "passada", "winner"))).toEqual(
-      sorted(ALL4_ESP),
-    );
-  });
-  it("devolvedor|passada|erro-forcado → todos 4", () => {
-    expect(
-      sorted(getValidGolpeEsp("devolvedor", "passada", "erro-forcado")),
-    ).toEqual(sorted(ALL4_ESP));
-  });
-  it("devolvedor|passada|erro-nao-forcado → todos 4", () => {
-    expect(
-      sorted(getValidGolpeEsp("devolvedor", "passada", "erro-nao-forcado")),
-    ).toEqual(sorted(ALL4_ESP));
-  });
-  it("devolvedor|rede|winner → todos 4", () => {
-    expect(sorted(getValidGolpeEsp("devolvedor", "rede", "winner"))).toEqual(
-      sorted(ALL4_ESP),
-    );
-  });
-  it("devolvedor|fundo|winner → todos 4", () => {
-    expect(sorted(getValidGolpeEsp("devolvedor", "fundo", "winner"))).toEqual(
+  it("VBH sem efeito → todos 4 (voleio)", () => {
+    expect(sorted(getValidGolpeEsp("VBH", undefined))).toEqual(
       sorted(ALL4_ESP),
     );
   });
 
-  // rede winner nunca é 3 (apenas erros são 3)
-  it("sacador|rede|winner NÃO deve ser 3 itens", () => {
-    expect(getValidGolpeEsp("sacador", "rede", "winner")).toHaveLength(4);
+  it("VFH sem efeito → todos 4 (voleio)", () => {
+    expect(sorted(getValidGolpeEsp("VFH", undefined))).toEqual(
+      sorted(ALL4_ESP),
+    );
+  });
+
+  it("BH + flat → [] (flat não tem golpe_esp)", () => {
+    expect(getValidGolpeEsp("BH", "flat")).toEqual([]);
+  });
+
+  it("FH + flat → []", () => {
+    expect(getValidGolpeEsp("FH", "flat")).toEqual([]);
+  });
+
+  it("BH + topspin → [lob, bate-pronto]", () => {
+    expect(sorted(getValidGolpeEsp("BH", "topspin"))).toEqual(
+      sorted(["lob", "bate-pronto"]),
+    );
+  });
+
+  it("FH + topspin → [lob, bate-pronto]", () => {
+    expect(sorted(getValidGolpeEsp("FH", "topspin"))).toEqual(
+      sorted(["lob", "bate-pronto"]),
+    );
+  });
+
+  it("BH + slice → [lob, drop]", () => {
+    expect(sorted(getValidGolpeEsp("BH", "slice"))).toEqual(
+      sorted(["lob", "drop"]),
+    );
+  });
+
+  it("FH + slice → [lob, drop]", () => {
+    expect(sorted(getValidGolpeEsp("FH", "slice"))).toEqual(
+      sorted(["lob", "drop"]),
+    );
   });
 });
 
@@ -537,44 +472,36 @@ describe("regra universal slice — getValidDirecoes", () => {
 });
 
 describe("regra universal slice — getValidGolpeEsp", () => {
-  it.each([
-    ["sacador", "rede", "erro-forcado"],
-    ["sacador", "rede", "erro-nao-forcado"],
-    ["sacador", "fundo", "erro-forcado"],
-    ["sacador", "fundo", "erro-nao-forcado"],
-    ["sacador", "devolucao", "erro-forcado"],
-    ["sacador", "devolucao", "erro-nao-forcado"],
-    ["sacador", "passada", "winner"],
-    ["devolvedor", "rede", "erro-forcado"],
-    ["devolvedor", "rede", "erro-nao-forcado"],
-    ["devolvedor", "fundo", "erro-forcado"],
-    ["devolvedor", "fundo", "erro-nao-forcado"],
-    ["devolvedor", "fundo", "winner"],
-    ["devolvedor", "passada", "winner"],
-    ["devolvedor", "devolucao", "winner"],
-  ] as const)('"slice" sempre retorna [drop,lob] em %s|%s|%s', (v, s, t) => {
-    expect(sorted(getValidGolpeEsp(v, s, t, "slice"))).toEqual(
-      sorted(["drop", "lob"]),
+  it.each([["BH"], ["FH"]] as const)(
+    "slice sempre retorna [drop,lob] para golpe %s",
+    (golpe) => {
+      expect(sorted(getValidGolpeEsp(golpe, "slice"))).toEqual(
+        sorted(["drop", "lob"]),
+      );
+    },
+  );
+
+  it("topspin sempre retorna [lob, bate-pronto] para qualquer golpe de fundo", () => {
+    expect(sorted(getValidGolpeEsp("BH", "topspin"))).toEqual(
+      sorted(["lob", "bate-pronto"]),
+    );
+    expect(sorted(getValidGolpeEsp("FH", "topspin"))).toEqual(
+      sorted(["lob", "bate-pronto"]),
     );
   });
 
-  it("topspin em rede|erro não altera regra contextual (bate-pronto,drop,lob)", () => {
-    expect(
-      sorted(getValidGolpeEsp("sacador", "rede", "erro-forcado", "topspin")),
-    ).toEqual(sorted(NO_SW_ESP));
+  it("flat sempre retorna [] para qualquer golpe de fundo", () => {
+    expect(getValidGolpeEsp("BH", "flat")).toEqual([]);
+    expect(getValidGolpeEsp("FH", "flat")).toEqual([]);
   });
 
-  it("flat em passada|winner retorna todos 4", () => {
-    expect(
-      sorted(getValidGolpeEsp("devolvedor", "passada", "winner", "flat")),
-    ).toEqual(sorted(ALL4_ESP));
+  it("Smash sempre retorna [] independente do efeito", () => {
+    expect(getValidGolpeEsp("Smash", undefined)).toEqual([]);
   });
 
-  it("topspin em devolvedor|fundo|erro retorna todos 4", () => {
-    expect(
-      sorted(
-        getValidGolpeEsp("devolvedor", "fundo", "erro-forcado", "topspin"),
-      ),
-    ).toEqual(sorted(ALL4_ESP));
+  it("VBH sem efeito retorna todos 4 (voleio)", () => {
+    expect(sorted(getValidGolpeEsp("VBH", undefined))).toEqual(
+      sorted(ALL4_ESP),
+    );
   });
 });

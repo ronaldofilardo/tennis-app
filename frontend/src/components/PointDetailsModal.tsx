@@ -108,76 +108,84 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
     playerWinner === currentServer ? "sacador" : "devolvedor";
   const winnerName = playerNames[playerWinner];
 
-  // Opcoes de cada campo derivadas das selecoes anteriores
+  // Nova ordem para ERROS: situação → resultado → golpe → (sub1?) → (sub2/onde errou?) → ...
+  // Para WINNER: winner nunca tem sub1/sub2, logo golpe fica na posição 3 também (inalterado)
+
+  // Opções de cada campo derivadas das seleções anteriores
   const situacaoOpts = getValidSituacoes();
   const tipoOpts = sel.situacao ? getValidTipos(vencedor, sel.situacao) : [];
 
-  const needsSub1 =
-    sel.situacao && sel.tipo
-      ? requiresSubtipo1(vencedor, sel.situacao, sel.tipo)
-      : false;
-  const needsSub2 =
-    sel.situacao && sel.tipo
-      ? requiresSubtipo2(vencedor, sel.situacao, sel.tipo)
-      : false;
-  const needsEfeito =
-    sel.situacao && sel.tipo
-      ? requiresEfeito(vencedor, sel.situacao, sel.tipo)
-      : true;
-
-  // Sub1 desbloqueado apos tipo
-  const sub1Opts = needsSub1 ? getValidSubtipo1() : [];
-  // Sub2 desbloqueado apos sub1 (se necessario) ou apos tipo
-  const sub2Ready = needsSub1 ? !!sel.sub1 : !!sel.tipo;
-  const sub2Opts = needsSub2 && sub2Ready ? getValidSubtipo2() : [];
-
-  // Subtipo completo: tudo necessario foi preenchido?
-  const subtipoComplete =
-    (!needsSub1 || !!sel.sub1) && (!needsSub2 || !!sel.sub2);
-
-  const golpeReady = !!sel.tipo && subtipoComplete;
+  // Golpe: disponível assim que o resultado for selecionado (erros e winner)
+  const golpeReady = !!sel.tipo;
   const golpeOpts =
     golpeReady && sel.situacao && sel.tipo
       ? getValidGolpes(vencedor, sel.situacao, sel.tipo)
       : [];
 
-  // Efeito: apenas quando requerido pelo arquivo (ex: voleio/smash não tem efeito)
-  const efeitoOpts =
-    needsEfeito && !!sel.golpe
-      ? getValidEfeitos(vencedor, sel.situacao, sel.tipo)
-      : [];
-  // Direção fica pronta após efeito (se requerido) ou após golpe (se efeito não requerido)
-  const direcaoReady = needsEfeito ? !!sel.efeito : !!sel.golpe;
+  // Sub1/Sub2: aparecem DEPOIS do golpe (apenas em casos de erro)
+  const needsSub1 =
+    sel.situacao && sel.tipo
+      ? requiresSubtipo1(vencedor, sel.situacao, sel.tipo)
+      : false;
+  // requiresSubtipo2 recebe golpe para decidir sub2 em passada (VBH/VFH sim, Smash não)
+  const needsSub2 =
+    sel.situacao && sel.tipo
+      ? requiresSubtipo2(vencedor, sel.situacao, sel.tipo, sel.golpe)
+      : false;
+
+  const sub1Ready = !!sel.golpe;
+  const sub1Opts = needsSub1 && sub1Ready ? getValidSubtipo1() : [];
+  const sub2Ready = needsSub1 ? !!sel.sub1 : sub1Ready;
+  const sub2Opts = needsSub2 && sub2Ready ? getValidSubtipo2() : [];
+
+  const subtipoComplete =
+    (!needsSub1 || !!sel.sub1) && (!needsSub2 || !!sel.sub2);
+
+  // Efeito: após golpe + sub1/sub2 completos
+  const needsEfeito =
+    sel.situacao && sel.tipo
+      ? requiresEfeito(vencedor, sel.situacao, sel.tipo)
+      : false;
+  const efeitoReady = !!sel.golpe && subtipoComplete;
+  const efeitoOpts = needsEfeito && efeitoReady ? getValidEfeitos() : [];
+
+  // Direção: após efeito (se necessário) ou após golpe+subtipo completos
+  const direcaoReady =
+    !!sel.golpe && subtipoComplete && (!needsEfeito || !!sel.efeito);
   const direcaoOpts =
     direcaoReady && sel.situacao && sel.tipo
       ? getValidDirecoes(vencedor, sel.situacao, sel.tipo, sel.efeito)
       : [];
-  const golpeEspOpts =
-    !!sel.direcao && sel.situacao && sel.tipo
-      ? getValidGolpeEsp(vencedor, sel.situacao, sel.tipo, sel.efeito)
-      : [];
 
-  const isComplete =
-    !!sel.situacao &&
-    !!sel.tipo &&
-    subtipoComplete &&
-    !!sel.golpe &&
-    (!needsEfeito || !!sel.efeito) &&
-    !!sel.direcao &&
-    !!sel.golpe_esp;
+  // Golpe especial: depende somente de golpe + efeito
+  const golpeEspOpts = getValidGolpeEsp(sel.golpe, sel.efeito);
 
-  // Atualiza selecao em cascata (campos posteriores sao resetados)
+  // Confirmar fica disponível assim que 'golpe' for selecionado (registro parcial permitido)
+  const isComplete = !!sel.golpe;
+
+  // Cascata de reset: campos posteriores são limpos ao mudar campo anterior
+  // Nova ordem para erros: situação → resultado → golpe → sub1 → sub2 → efeito → direção
   function update<K extends keyof Sel>(field: K, value: Sel[K]) {
     setSel((prev) => {
       if (field === "situacao") return { situacao: value as RallySituacao };
       if (field === "tipo")
         return { situacao: prev.situacao, tipo: value as RallyTipo };
+      if (field === "golpe")
+        // Golpe vem antes de sub1/sub2 para erros; reseta tudo que vem depois
+        return {
+          ...prev,
+          golpe: value as RallyGolpe,
+          sub1: undefined,
+          sub2: undefined,
+          efeito: undefined,
+          direcao: undefined,
+          golpe_esp: undefined,
+        };
       if (field === "sub1")
         return {
           ...prev,
           sub1: value as RallySubtipo1,
           sub2: undefined,
-          golpe: undefined,
           efeito: undefined,
           direcao: undefined,
           golpe_esp: undefined,
@@ -186,15 +194,6 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
         return {
           ...prev,
           sub2: value as RallySubtipo2,
-          golpe: undefined,
-          efeito: undefined,
-          direcao: undefined,
-          golpe_esp: undefined,
-        };
-      if (field === "golpe")
-        return {
-          ...prev,
-          golpe: value as RallyGolpe,
           efeito: undefined,
           direcao: undefined,
           golpe_esp: undefined,
@@ -218,17 +217,17 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
 
   function handleConfirm() {
     if (!isComplete) return;
-    const details: RallyDetails = {
+    const details = {
       vencedor,
       situacao: sel.situacao!,
       tipo: sel.tipo!,
       golpe: sel.golpe!,
-      efeito: sel.efeito!,
       direcao: sel.direcao!,
-      golpe_esp: sel.golpe_esp!,
+      ...(sel.efeito ? { efeito: sel.efeito } : {}),
+      ...(sel.golpe_esp ? { golpe_esp: sel.golpe_esp } : {}),
       ...(sel.sub1 ? { subtipo1: sel.sub1 } : {}),
       ...(sel.sub2 ? { subtipo2: sel.sub2 } : {}),
-    };
+    } as import("../core/scoring/types").RallyDetails;
     onConfirm(details);
   }
 
@@ -253,7 +252,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
 
         {/* Body */}
         <div className="pd-body">
-          {/* 1. Situacao */}
+          {/* 1. Situacao — sempre */}
           <div className="pd-section">
             <div className="pd-section-label">
               {stepNum++}. Situação do Ponto
@@ -267,7 +266,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
             />
           </div>
 
-          {/* 2. Tipo */}
+          {/* 2. Tipo — sempre */}
           <div className={`pd-section${!sel.situacao ? " disabled" : ""}`}>
             <div className="pd-section-label">{stepNum++}. Resultado</div>
             <BtnGroup
@@ -279,9 +278,21 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
             />
           </div>
 
-          {/* 3. Subtipo1 - somente sacador|rede|erro */}
+          {/* 3. Golpe — logo após resultado (erros E winner) */}
+          <div className={`pd-section${!golpeReady ? " disabled" : ""}`}>
+            <div className="pd-section-label">{stepNum++}. Golpe</div>
+            <BtnGroup
+              options={golpeOpts}
+              labels={GOLPE_LABELS}
+              selected={sel.golpe}
+              disabled={!golpeReady}
+              onSelect={(v) => update("golpe", v)}
+            />
+          </div>
+
+          {/* 4. Tipo de Erro (Rede) — sacador|rede|erro, após golpe */}
           {needsSub1 && (
-            <div className={`pd-section${!sel.tipo ? " disabled" : ""}`}>
+            <div className={`pd-section${!sub1Ready ? " disabled" : ""}`}>
               <div className="pd-section-label">
                 {stepNum++}. Tipo de Erro (Rede)
               </div>
@@ -289,13 +300,13 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
                 options={sub1Opts}
                 labels={SUBTIPO1_LABELS}
                 selected={sel.sub1}
-                disabled={!sel.tipo}
+                disabled={!sub1Ready}
                 onSelect={(v) => update("sub1", v)}
               />
             </div>
           )}
 
-          {/* Subtipo2 - Out/Net - maioria dos erros */}
+          {/* 4/5. Onde Errou? — Out/Net — apenas erros com VBH/VFH, após golpe */}
           {needsSub2 && (
             <div className={`pd-section${!sub2Ready ? " disabled" : ""}`}>
               <div className="pd-section-label">{stepNum++}. Onde Errou?</div>
@@ -309,33 +320,21 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
             </div>
           )}
 
-          {/* Golpe */}
-          <div className={`pd-section${!golpeReady ? " disabled" : ""}`}>
-            <div className="pd-section-label">{stepNum++}. Golpe</div>
-            <BtnGroup
-              options={golpeOpts}
-              labels={GOLPE_LABELS}
-              selected={sel.golpe}
-              disabled={!golpeReady}
-              onSelect={(v) => update("golpe", v)}
-            />
-          </div>
-
-          {/* Efeito - apenas quando requerido (ex: não aparece para voleio/smash) */}
+          {/* Efeito — apenas quando requerido */}
           {needsEfeito && (
-            <div className={`pd-section${!sel.golpe ? " disabled" : ""}`}>
+            <div className={`pd-section${!efeitoReady ? " disabled" : ""}`}>
               <div className="pd-section-label">{stepNum++}. Efeito</div>
               <BtnGroup
                 options={efeitoOpts}
                 labels={EFEITO_LABELS}
                 selected={sel.efeito}
-                disabled={!sel.golpe}
+                disabled={!efeitoReady}
                 onSelect={(v) => update("efeito", v)}
               />
             </div>
           )}
 
-          {/* Direcao */}
+          {/* Direção */}
           <div className={`pd-section${!direcaoReady ? " disabled" : ""}`}>
             <div className="pd-section-label">{stepNum++}. Direção</div>
             <BtnGroup
@@ -347,17 +346,21 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
             />
           </div>
 
-          {/* Golpe Especial */}
-          <div className={`pd-section${!sel.direcao ? " disabled" : ""}`}>
-            <div className="pd-section-label">{stepNum++}. Golpe Especial</div>
-            <BtnGroup
-              options={golpeEspOpts}
-              labels={GOLPE_ESP_LABELS}
-              selected={sel.golpe_esp}
-              disabled={!sel.direcao}
-              onSelect={(v) => update("golpe_esp", v)}
-            />
-          </div>
+          {/* Golpe Especial — omitido quando efeito=flat ou golpe=Smash (arquivo sem opções) */}
+          {golpeEspOpts.length > 0 && (
+            <div className={`pd-section${!sel.direcao ? " disabled" : ""}`}>
+              <div className="pd-section-label">
+                {stepNum++}. Golpe Especial
+              </div>
+              <BtnGroup
+                options={golpeEspOpts}
+                labels={GOLPE_ESP_LABELS}
+                selected={sel.golpe_esp}
+                disabled={!sel.direcao}
+                onSelect={(v) => update("golpe_esp", v)}
+              />
+            </div>
+          )}
         </div>
 
         {/* Footer */}
@@ -370,13 +373,6 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
               type="button"
             >
               Confirmar Ponto
-            </button>
-            <button
-              className="pd-btn-skip"
-              onClick={() => onConfirm(undefined)}
-              type="button"
-            >
-              Pular
             </button>
           </div>
           <button className="pd-btn-cancel" onClick={onCancel} type="button">
