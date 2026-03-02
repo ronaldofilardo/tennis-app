@@ -4,8 +4,8 @@
 //
 // Proteção: Authorization: Bearer CRON_SECRET
 
-import { checkAndSuspendExpiredSubscriptions } from "../src/services/subscriptionService.js";
-import { sendJson } from "./_lib/authMiddleware.js";
+import { checkAndSuspendExpiredSubscriptions } from "../../src/services/subscriptionService.js";
+import { sendJson } from "../_lib/authMiddleware.js";
 
 function validateCronAuth(req) {
   const cronSecret = process.env.CRON_SECRET;

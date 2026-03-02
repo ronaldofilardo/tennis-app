@@ -20,13 +20,13 @@ import {
   addClubMember,
   getClubMembers,
   hashPassword,
-} from "../src/services/authService.js";
+} from "../../src/services/authService.js";
 import {
   getSubscriptionWithUsage,
   createOrUpdateSubscription,
   getClubInvoices,
-} from "../src/services/subscriptionService.js";
-import prisma from "./_lib/prisma.js";
+} from "../../src/services/subscriptionService.js";
+import prisma from "../_lib/prisma.js";
 import {
   handleCors,
   requireAuth,
@@ -34,11 +34,11 @@ import {
   requireRole,
   sendJson,
   methodNotAllowed,
-} from "./_lib/authMiddleware.js";
+} from "../_lib/authMiddleware.js";
 import {
   requireActiveSubscription,
   requireAthleteQuota,
-} from "./_lib/subscriptionMiddleware.js";
+} from "../_lib/subscriptionMiddleware.js";
 
 const MAX_IMPORT_ROWS = 500;
 const PLAN_LIMITS = { FREE: 30, BASIC: 100, PRO: 500, ENTERPRISE: 9999 };

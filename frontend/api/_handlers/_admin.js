@@ -4,13 +4,13 @@
 //   GET /api/admin/stats  → estatísticas globais da plataforma
 //   GET /api/admin/users  → lista todos os usuários
 
-import prisma from "./_lib/prisma.js";
+import prisma from "../_lib/prisma.js";
 import {
   handleCors,
   requireRole,
   sendJson,
   methodNotAllowed,
-} from "./_lib/authMiddleware.js";
+} from "../_lib/authMiddleware.js";
 
 function getSection(url) {
   const parts = url.pathname.split("/").filter(Boolean);

@@ -1,6 +1,6 @@
 // frontend/src/hooks/useMatchSync.ts
 import { useState, useEffect, useCallback } from 'react';
-import { API_URL } from '../config/api';
+import httpClient from '../config/httpClient';
 
 interface MatchSyncOptions {
   interval?: number;
@@ -18,19 +18,13 @@ export function useMatchSync(matchId: string, options: MatchSyncOptions = {}) {
   const syncState = useCallback(async (state: any) => {
     try {
       setIsLoading(true);
-      const response = await fetch(`${API_URL}/matches/${matchId}/state`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(state),
-      });
+      const response = await httpClient.patch(`/matches/${matchId}/state`, state);
 
       if (!response.ok) {
         throw new Error('Falha ao sincronizar estado');
       }
 
-      const data = await response.json();
+      const data = response.data;
       setLastSync(new Date());
       return data;
     } catch (err: any) {
@@ -45,13 +39,13 @@ export function useMatchSync(matchId: string, options: MatchSyncOptions = {}) {
   const getState = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`${API_URL}/matches/${matchId}/state`);
-      
+      const response = await httpClient.get(`/matches/${matchId}/state`);
+
       if (!response.ok) {
         throw new Error('Falha ao buscar estado');
       }
 
-      const data = await response.json();
+      const data = response.data;
       onStateChange?.(data);
       setLastSync(new Date());
       return data;

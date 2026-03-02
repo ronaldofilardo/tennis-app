@@ -2,12 +2,12 @@
 // Router consolidado — todas as rotas /api/webhooks/*
 //   POST /api/webhooks/asaas → Webhook para eventos de pagamento Asaas
 
-import prisma from "./_lib/prisma.js";
-import { corsHeaders, sendJson } from "./_lib/authMiddleware.js";
+import prisma from "../_lib/prisma.js";
+import { corsHeaders, sendJson } from "../_lib/authMiddleware.js";
 import {
   suspendClubMembers,
   reactivateClubMembers,
-} from "../src/services/subscriptionService.js";
+} from "../../src/services/subscriptionService.js";
 
 const SUPPORTED_EVENTS = [
   "PAYMENT_CONFIRMED",

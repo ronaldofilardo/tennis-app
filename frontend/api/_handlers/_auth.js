@@ -9,8 +9,8 @@ import {
   registerUser,
   switchClub,
   verifyToken,
-} from "../src/services/authService.js";
-import { handleCors, sendJson } from "./_lib/authMiddleware.js";
+} from "../../src/services/authService.js";
+import { handleCors, sendJson } from "../_lib/authMiddleware.js";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

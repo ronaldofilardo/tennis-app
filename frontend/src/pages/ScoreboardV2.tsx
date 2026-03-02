@@ -23,7 +23,6 @@ import type {
   PointDetails,
   RallyDetails,
 } from "../core/scoring/types";
-import { API_URL } from "../config/api";
 import httpClient from "../config/httpClient";
 import { useMatchSync } from "../hooks/useMatchSync";
 import { useShakeDetection } from "../hooks/useGestures";

@@ -20,20 +20,20 @@ import {
   updateMatchState,
   getMatchStats,
   getVisibleMatches,
-} from "../src/services/matchService.js";
+} from "../../src/services/matchService.js";
 import {
   requestScorer,
   respondScorerRequest,
-} from "../src/services/authService.js";
+} from "../../src/services/authService.js";
 import {
   handleCors,
   requireAuth,
   extractContext,
   sendJson,
   methodNotAllowed,
-} from "./_lib/authMiddleware.js";
-import { validateMatchApiResponse } from "../src/schemas/contracts.js";
-import { requireActiveSubscription } from "./_lib/subscriptionMiddleware.js";
+} from "../_lib/authMiddleware.js";
+import { validateMatchApiResponse } from "../../src/schemas/contracts.js";
+import { requireActiveSubscription } from "../_lib/subscriptionMiddleware.js";
 
 function parsePath(url) {
   const parts = url.pathname.split("/").filter(Boolean);
