@@ -46,8 +46,8 @@ const PLAN_LIMITS = { FREE: 30, BASIC: 100, PRO: 500, ENTERPRISE: 9999 };
 function parsePath(url) {
   const parts = url.pathname.split("/").filter(Boolean);
   // parts: [api, clubs, ?seg, ?sub, ?sub2]
-  const seg = parts[2] || null;  // clubId | 'join' | 'invite'
-  const sub = parts[3] || null;  // 'members' | 'settings' | etc.
+  const seg = parts[2] || null; // clubId | 'join' | 'invite'
+  const sub = parts[3] || null; // 'members' | 'settings' | etc.
   const sub2 = parts[4] || null; // 'import'
   return { seg, sub, sub2 };
 }
@@ -72,23 +72,37 @@ export default async function handler(req, res) {
         where: { inviteCode },
         select: { id: true, name: true, slug: true, allowedEmailDomains: true },
       });
-      if (!club) return sendJson(res, 404, { error: "Código de convite inválido." });
+      if (!club)
+        return sendJson(res, 404, { error: "Código de convite inválido." });
 
       const existing = await prisma.clubMembership.findUnique({
         where: { userId_clubId: { userId: ctx.userId, clubId: club.id } },
       });
       if (existing) {
-        if (existing.status === "ACTIVE") return sendJson(res, 409, { error: "Você já é membro deste clube." });
-        await prisma.clubMembership.update({ where: { id: existing.id }, data: { status: "ACTIVE" } });
-        return sendJson(res, 200, { success: true, message: `Bem-vindo de volta ao ${club.name}!`, clubId: club.id });
+        if (existing.status === "ACTIVE")
+          return sendJson(res, 409, { error: "Você já é membro deste clube." });
+        await prisma.clubMembership.update({
+          where: { id: existing.id },
+          data: { status: "ACTIVE" },
+        });
+        return sendJson(res, 200, {
+          success: true,
+          message: `Bem-vindo de volta ao ${club.name}!`,
+          clubId: club.id,
+        });
       }
 
       if (club.allowedEmailDomains) {
-        const domains = club.allowedEmailDomains.split(",").map((d) => d.trim().toLowerCase()).filter(Boolean);
+        const domains = club.allowedEmailDomains
+          .split(",")
+          .map((d) => d.trim().toLowerCase())
+          .filter(Boolean);
         if (domains.length > 0) {
           const userDomain = ctx.email?.split("@")[1]?.toLowerCase();
           if (!domains.includes(userDomain)) {
-            return sendJson(res, 403, { error: `Este clube aceita apenas e-mails dos domínios: ${domains.join(", ")}` });
+            return sendJson(res, 403, {
+              error: `Este clube aceita apenas e-mails dos domínios: ${domains.join(", ")}`,
+            });
           }
         }
       }
@@ -100,9 +114,19 @@ export default async function handler(req, res) {
       if (!quotaCheck) return;
 
       await prisma.clubMembership.create({
-        data: { userId: ctx.userId, clubId: club.id, role: "ATHLETE", status: "ACTIVE" },
+        data: {
+          userId: ctx.userId,
+          clubId: club.id,
+          role: "ATHLETE",
+          status: "ACTIVE",
+        },
       });
-      return sendJson(res, 201, { success: true, message: `Bem-vindo ao ${club.name}!`, clubId: club.id, club: { id: club.id, name: club.name, slug: club.slug } });
+      return sendJson(res, 201, {
+        success: true,
+        message: `Bem-vindo ao ${club.name}!`,
+        clubId: club.id,
+        club: { id: club.id, name: club.name, slug: club.slug },
+      });
     } catch (err) {
       console.error("[clubs/join]", err);
       return sendJson(res, 500, { error: "Erro interno." });
@@ -117,14 +141,25 @@ export default async function handler(req, res) {
       const club = await prisma.club.findFirst({
         where: { inviteCode: code },
         select: {
-          id: true, name: true, slug: true, logoUrl: true, appName: true,
+          id: true,
+          name: true,
+          slug: true,
+          logoUrl: true,
+          appName: true,
           _count: { select: { members: { where: { status: "ACTIVE" } } } },
         },
       });
-      if (!club) return sendJson(res, 404, { error: "Código de convite inválido ou expirado." });
+      if (!club)
+        return sendJson(res, 404, {
+          error: "Código de convite inválido ou expirado.",
+        });
       return sendJson(res, 200, {
-        id: club.id, name: club.name, slug: club.slug,
-        logoUrl: club.logoUrl, appName: club.appName, memberCount: club._count.members,
+        id: club.id,
+        name: club.name,
+        slug: club.slug,
+        logoUrl: club.logoUrl,
+        appName: club.appName,
+        memberCount: club._count.members,
       });
     } catch (err) {
       console.error("[clubs/invite]", err);
@@ -145,15 +180,27 @@ export default async function handler(req, res) {
       if (!subCheck) return;
 
       const { athletes } = req.body || {};
-      if (!Array.isArray(athletes) || athletes.length === 0) return sendJson(res, 400, { error: "athletes array is required" });
-      if (athletes.length > MAX_IMPORT_ROWS) return sendJson(res, 400, { error: `Maximum ${MAX_IMPORT_ROWS} athletes per import.` });
+      if (!Array.isArray(athletes) || athletes.length === 0)
+        return sendJson(res, 400, { error: "athletes array is required" });
+      if (athletes.length > MAX_IMPORT_ROWS)
+        return sendJson(res, 400, {
+          error: `Maximum ${MAX_IMPORT_ROWS} athletes per import.`,
+        });
 
-      const currentCount = await prisma.clubMembership.count({ where: { clubId, status: "ACTIVE" } });
+      const currentCount = await prisma.clubMembership.count({
+        where: { clubId, status: "ACTIVE" },
+      });
       const sub_ = await prisma.subscription.findUnique({ where: { clubId } });
-      const club_ = await prisma.club.findUnique({ where: { id: clubId }, select: { planType: true } });
+      const club_ = await prisma.club.findUnique({
+        where: { id: clubId },
+        select: { planType: true },
+      });
       const planType = sub_?.planType || club_?.planType || "FREE";
       const remaining = (PLAN_LIMITS[planType] || 30) - currentCount;
-      if (athletes.length > remaining) return sendJson(res, 400, { error: `Quota insuficiente. Restam ${remaining} vagas.` });
+      if (athletes.length > remaining)
+        return sendJson(res, 400, {
+          error: `Quota insuficiente. Restam ${remaining} vagas.`,
+        });
 
       const results = { created: 0, skipped: 0, errors: [] };
       for (let i = 0; i < athletes.length; i++) {
@@ -162,18 +209,41 @@ export default async function handler(req, res) {
           const name = (row.name || "").trim();
           const email = (row.email || "").trim().toLowerCase();
           const cpf = (row.cpf || "").replace(/\D/g, "").trim() || null;
-          if (!name || !email) { results.errors.push({ row: i + 1, error: "Nome e e-mail são obrigatórios" }); results.skipped++; continue; }
-          if (cpf && cpf.length !== 11) { results.errors.push({ row: i + 1, name, error: `CPF inválido: ${cpf}` }); results.skipped++; continue; }
+          if (!name || !email) {
+            results.errors.push({
+              row: i + 1,
+              error: "Nome e e-mail são obrigatórios",
+            });
+            results.skipped++;
+            continue;
+          }
+          if (cpf && cpf.length !== 11) {
+            results.errors.push({
+              row: i + 1,
+              name,
+              error: `CPF inválido: ${cpf}`,
+            });
+            results.skipped++;
+            continue;
+          }
 
           let user = await prisma.user.findUnique({ where: { email } });
           if (!user) {
-            const passwordHash = await hashPassword(cpf ? cpf.substring(0, 6) : "123456");
-            user = await prisma.user.create({ data: { email, name, passwordHash, isActive: true } });
+            const passwordHash = await hashPassword(
+              cpf ? cpf.substring(0, 6) : "123456",
+            );
+            user = await prisma.user.create({
+              data: { email, name, passwordHash, isActive: true },
+            });
           }
 
-          let profile = await prisma.athleteProfile.findUnique({ where: { userId: user.id } });
+          let profile = await prisma.athleteProfile.findUnique({
+            where: { userId: user.id },
+          });
           const fields = {
-            name, cpf: cpf || undefined, gender: (row.gender || "").toUpperCase() || undefined,
+            name,
+            cpf: cpf || undefined,
+            gender: (row.gender || "").toUpperCase() || undefined,
             birthDate: row.birthDate ? new Date(row.birthDate) : undefined,
             category: (row.category || "").trim() || undefined,
             entity: (row.entity || "").trim() || undefined,
@@ -183,28 +253,59 @@ export default async function handler(req, res) {
             motherCpf: (row.motherCpf || "").replace(/\D/g, "") || undefined,
           };
           if (profile) {
-            await prisma.athleteProfile.update({ where: { id: profile.id }, data: { ...fields, clubId: profile.clubId || clubId } });
+            await prisma.athleteProfile.update({
+              where: { id: profile.id },
+              data: { ...fields, clubId: profile.clubId || clubId },
+            });
           } else {
-            await prisma.athleteProfile.create({ data: { userId: user.id, ...fields, clubId, isPublic: true } });
+            await prisma.athleteProfile.create({
+              data: { userId: user.id, ...fields, clubId, isPublic: true },
+            });
           }
 
-          const existing = await prisma.clubMembership.findFirst({ where: { userId: user.id, clubId } });
+          const existing = await prisma.clubMembership.findFirst({
+            where: { userId: user.id, clubId },
+          });
           if (!existing) {
-            await prisma.clubMembership.create({ data: { userId: user.id, clubId, role: "ATHLETE", status: "ACTIVE", invitedByUserId: ctx.userId } });
+            await prisma.clubMembership.create({
+              data: {
+                userId: user.id,
+                clubId,
+                role: "ATHLETE",
+                status: "ACTIVE",
+                invitedByUserId: ctx.userId,
+              },
+            });
           }
           results.created++;
         } catch (err) {
-          results.errors.push({ row: i + 1, name: row.name, error: err.code === "P2002" ? "CPF ou e-mail duplicado" : err.message });
+          results.errors.push({
+            row: i + 1,
+            name: row.name,
+            error:
+              err.code === "P2002" ? "CPF ou e-mail duplicado" : err.message,
+          });
           results.skipped++;
         }
       }
-      return sendJson(res, 200, { message: `Importação concluída: ${results.created} criados, ${results.skipped} ignorados.`, ...results });
+      return sendJson(res, 200, {
+        message: `Importação concluída: ${results.created} criados, ${results.skipped} ignorados.`,
+        ...results,
+      });
     }
 
     // ── /api/clubs/:clubId/members ─────────────────────────────────────────────
     if (sub === "members") {
       if (req.method === "GET") {
-        const ctx = requireClubAccess(req, res, clubId, "GESTOR", "CLUB_STAFF", "COACH", "ADMIN");
+        const ctx = requireClubAccess(
+          req,
+          res,
+          clubId,
+          "GESTOR",
+          "CLUB_STAFF",
+          "COACH",
+          "ADMIN",
+        );
         if (!ctx) return;
         const members = await getClubMembers(clubId, ctx.userId);
         return sendJson(res, 200, { members });
@@ -221,7 +322,12 @@ export default async function handler(req, res) {
         }
         const { userId } = req.body || {};
         if (!userId) return sendJson(res, 400, { error: "userId is required" });
-        const result = await addClubMember({ clubId, userId, role: memberRole, invitedByUserId: ctx.userId });
+        const result = await addClubMember({
+          clubId,
+          userId,
+          role: memberRole,
+          invitedByUserId: ctx.userId,
+        });
         return sendJson(res, 201, result);
       }
       return methodNotAllowed(res, ["GET", "POST"]);
@@ -231,32 +337,83 @@ export default async function handler(req, res) {
     if (sub === "settings") {
       const ctx = requireAuth(req, res);
       if (!ctx) return;
-      if (ctx.role !== "GESTOR" && ctx.role !== "ADMIN") return sendJson(res, 403, { error: "Apenas gestores podem gerenciar configurações." });
-      if (ctx.clubId && ctx.clubId !== clubId && ctx.role !== "ADMIN") return sendJson(res, 403, { error: "Sem permissão para este clube." });
+      if (ctx.role !== "GESTOR" && ctx.role !== "ADMIN")
+        return sendJson(res, 403, {
+          error: "Apenas gestores podem gerenciar configurações.",
+        });
+      if (ctx.clubId && ctx.clubId !== clubId && ctx.role !== "ADMIN")
+        return sendJson(res, 403, { error: "Sem permissão para este clube." });
 
       if (req.method === "GET") {
         const club = await prisma.club.findUnique({
           where: { id: clubId },
-          select: { id: true, name: true, slug: true, appName: true, logoUrl: true, inviteCode: true, allowedEmailDomains: true, defaultVisibility: true, defaultScoreMode: true, termsText: true, termsPdfUrl: true, themeConfig: true },
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            appName: true,
+            logoUrl: true,
+            inviteCode: true,
+            allowedEmailDomains: true,
+            defaultVisibility: true,
+            defaultScoreMode: true,
+            termsText: true,
+            termsPdfUrl: true,
+            themeConfig: true,
+          },
         });
-        if (!club) return sendJson(res, 404, { error: "Clube não encontrado." });
-        return sendJson(res, 200, { appName: club.appName || "", logoUrl: club.logoUrl || "", inviteCode: club.inviteCode || "", allowedEmailDomains: club.allowedEmailDomains || "", defaultVisibility: club.defaultVisibility || "CLUB", defaultScoreMode: club.defaultScoreMode || "MANUAL", termsText: club.termsText || "", termsPdfUrl: club.termsPdfUrl || "", themeConfig: club.themeConfig || null });
+        if (!club)
+          return sendJson(res, 404, { error: "Clube não encontrado." });
+        return sendJson(res, 200, {
+          appName: club.appName || "",
+          logoUrl: club.logoUrl || "",
+          inviteCode: club.inviteCode || "",
+          allowedEmailDomains: club.allowedEmailDomains || "",
+          defaultVisibility: club.defaultVisibility || "CLUB",
+          defaultScoreMode: club.defaultScoreMode || "MANUAL",
+          termsText: club.termsText || "",
+          termsPdfUrl: club.termsPdfUrl || "",
+          themeConfig: club.themeConfig || null,
+        });
       }
       if (req.method === "PATCH") {
-        const { appName, logoUrl, allowedEmailDomains, defaultVisibility, defaultScoreMode, termsText, termsPdfUrl, themeConfig } = req.body || {};
+        const {
+          appName,
+          logoUrl,
+          allowedEmailDomains,
+          defaultVisibility,
+          defaultScoreMode,
+          termsText,
+          termsPdfUrl,
+          themeConfig,
+        } = req.body || {};
         const updateData = {};
         if (appName !== undefined) updateData.appName = appName;
         if (logoUrl !== undefined) updateData.logoUrl = logoUrl;
-        if (allowedEmailDomains !== undefined) updateData.allowedEmailDomains = allowedEmailDomains;
+        if (allowedEmailDomains !== undefined)
+          updateData.allowedEmailDomains = allowedEmailDomains;
         if (defaultVisibility !== undefined) {
-          if (!["PUBLIC", "CLUB", "PLAYERS_ONLY"].includes(defaultVisibility)) return sendJson(res, 400, { error: "Visibilidade inválida." });
+          if (!["PUBLIC", "CLUB", "PLAYERS_ONLY"].includes(defaultVisibility))
+            return sendJson(res, 400, { error: "Visibilidade inválida." });
           updateData.defaultVisibility = defaultVisibility;
         }
-        if (defaultScoreMode !== undefined) updateData.defaultScoreMode = defaultScoreMode;
+        if (defaultScoreMode !== undefined)
+          updateData.defaultScoreMode = defaultScoreMode;
         if (termsText !== undefined) updateData.termsText = termsText;
         if (termsPdfUrl !== undefined) updateData.termsPdfUrl = termsPdfUrl;
         if (themeConfig !== undefined) updateData.themeConfig = themeConfig;
-        const updated = await prisma.club.update({ where: { id: clubId }, data: updateData, select: { id: true, name: true, slug: true, appName: true, logoUrl: true, themeConfig: true } });
+        const updated = await prisma.club.update({
+          where: { id: clubId },
+          data: updateData,
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            appName: true,
+            logoUrl: true,
+            themeConfig: true,
+          },
+        });
         return sendJson(res, 200, { success: true, club: updated });
       }
       return sendJson(res, 405, { error: "Method not allowed" });
@@ -267,21 +424,75 @@ export default async function handler(req, res) {
       if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
       const ctx = requireClubAccess(req, res, clubId, "GESTOR", "ADMIN");
       if (!ctx) return;
-      const [totalMembers, matchesByStatus, tournamentsByStatus, recentMatches, recentMembers] = await Promise.all([
+      const [
+        totalMembers,
+        matchesByStatus,
+        tournamentsByStatus,
+        recentMatches,
+        recentMembers,
+      ] = await Promise.all([
         prisma.clubMembership.count({ where: { clubId, status: "ACTIVE" } }),
-        prisma.match.groupBy({ by: ["status"], where: { clubId }, _count: { id: true } }),
-        prisma.tournament.groupBy({ by: ["status"], where: { clubId }, _count: { id: true } }),
-        prisma.match.findMany({ where: { clubId }, orderBy: { createdAt: "desc" }, take: 5, select: { id: true, playerP1: true, playerP2: true, status: true, score: true, format: true, createdAt: true, visibility: true } }),
-        prisma.clubMembership.findMany({ where: { clubId, role: { not: "ADMIN" }, userId: { not: ctx.userId } }, orderBy: { joinedAt: "desc" }, take: 5, include: { user: { select: { id: true, email: true, name: true } } } }),
+        prisma.match.groupBy({
+          by: ["status"],
+          where: { clubId },
+          _count: { id: true },
+        }),
+        prisma.tournament.groupBy({
+          by: ["status"],
+          where: { clubId },
+          _count: { id: true },
+        }),
+        prisma.match.findMany({
+          where: { clubId },
+          orderBy: { createdAt: "desc" },
+          take: 5,
+          select: {
+            id: true,
+            playerP1: true,
+            playerP2: true,
+            status: true,
+            score: true,
+            format: true,
+            createdAt: true,
+            visibility: true,
+          },
+        }),
+        prisma.clubMembership.findMany({
+          where: {
+            clubId,
+            role: { not: "ADMIN" },
+            userId: { not: ctx.userId },
+          },
+          orderBy: { joinedAt: "desc" },
+          take: 5,
+          include: { user: { select: { id: true, email: true, name: true } } },
+        }),
       ]);
       return sendJson(res, 200, {
         totalMembers,
         totalMatches: matchesByStatus.reduce((s, g) => s + g._count.id, 0),
-        matchesByStatus: matchesByStatus.map((g) => ({ status: g.status, count: g._count.id })),
-        totalTournaments: tournamentsByStatus.reduce((s, g) => s + g._count.id, 0),
-        tournamentsByStatus: tournamentsByStatus.map((g) => ({ status: g.status, count: g._count.id })),
+        matchesByStatus: matchesByStatus.map((g) => ({
+          status: g.status,
+          count: g._count.id,
+        })),
+        totalTournaments: tournamentsByStatus.reduce(
+          (s, g) => s + g._count.id,
+          0,
+        ),
+        tournamentsByStatus: tournamentsByStatus.map((g) => ({
+          status: g.status,
+          count: g._count.id,
+        })),
         recentMatches,
-        recentMembers: recentMembers.map((m) => ({ id: m.id, userId: m.userId, name: m.user.name, email: m.user.email, role: m.role, status: m.status, joinedAt: m.joinedAt })),
+        recentMembers: recentMembers.map((m) => ({
+          id: m.id,
+          userId: m.userId,
+          name: m.user.name,
+          email: m.user.email,
+          role: m.role,
+          status: m.status,
+          joinedAt: m.joinedAt,
+        })),
       });
     }
 
@@ -298,11 +509,30 @@ export default async function handler(req, res) {
         const ctx = requireClubAccess(req, res, clubId, "GESTOR", "ADMIN");
         if (!ctx) return;
         const { planType, billingCycle } = req.body || {};
-        if (!planType || !["FREE", "PREMIUM", "ENTERPRISE"].includes(planType)) return sendJson(res, 400, { error: "planType must be FREE, PREMIUM, or ENTERPRISE" });
-        if (billingCycle && !["MONTHLY", "QUARTERLY", "YEARLY"].includes(billingCycle)) return sendJson(res, 400, { error: "billingCycle must be MONTHLY, QUARTERLY, or YEARLY" });
-        if (ctx.role !== "ADMIN" && planType === "FREE") return sendJson(res, 403, { error: "Only platform admin can downgrade to FREE plan" });
-        const subscription = await createOrUpdateSubscription({ clubId, planType, billingCycle: billingCycle || "MONTHLY" });
-        return sendJson(res, 200, { message: `Plan updated to ${planType}`, subscription });
+        if (!planType || !["FREE", "PREMIUM", "ENTERPRISE"].includes(planType))
+          return sendJson(res, 400, {
+            error: "planType must be FREE, PREMIUM, or ENTERPRISE",
+          });
+        if (
+          billingCycle &&
+          !["MONTHLY", "QUARTERLY", "YEARLY"].includes(billingCycle)
+        )
+          return sendJson(res, 400, {
+            error: "billingCycle must be MONTHLY, QUARTERLY, or YEARLY",
+          });
+        if (ctx.role !== "ADMIN" && planType === "FREE")
+          return sendJson(res, 403, {
+            error: "Only platform admin can downgrade to FREE plan",
+          });
+        const subscription = await createOrUpdateSubscription({
+          clubId,
+          planType,
+          billingCycle: billingCycle || "MONTHLY",
+        });
+        return sendJson(res, 200, {
+          message: `Plan updated to ${planType}`,
+          subscription,
+        });
       }
       return methodNotAllowed(res, ["GET", "PATCH"]);
     }
@@ -312,12 +542,30 @@ export default async function handler(req, res) {
       if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
       const club = await prisma.club.findFirst({
         where: { OR: [{ slug: clubId.toLowerCase() }, { id: clubId }] },
-        select: { id: true, name: true, slug: true, logoUrl: true, themeConfig: true },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          logoUrl: true,
+          themeConfig: true,
+        },
       });
       if (!club) return sendJson(res, 404, { error: "Club not found" });
-      const themeConfig = typeof club.themeConfig === "string" ? JSON.parse(club.themeConfig) : club.themeConfig;
+      const themeConfig =
+        typeof club.themeConfig === "string"
+          ? JSON.parse(club.themeConfig)
+          : club.themeConfig;
       res.setHeader("Cache-Control", "public, max-age=3600, s-maxage=3600");
-      return sendJson(res, 200, { theme: { name: club.name, logoUrl: club.logoUrl || null, colors: themeConfig?.colors || {}, fontFamily: themeConfig?.fontFamily || null, defaultCourtType: themeConfig?.defaultCourtType || null }, clubId: club.id });
+      return sendJson(res, 200, {
+        theme: {
+          name: club.name,
+          logoUrl: club.logoUrl || null,
+          colors: themeConfig?.colors || {},
+          fontFamily: themeConfig?.fontFamily || null,
+          defaultCourtType: themeConfig?.defaultCourtType || null,
+        },
+        clubId: club.id,
+      });
     }
 
     // ── /api/clubs/:clubId/invoices ────────────────────────────────────────────
@@ -328,7 +576,10 @@ export default async function handler(req, res) {
       const limit = parseInt(url.searchParams.get("limit") || "20", 10);
       const offset = parseInt(url.searchParams.get("offset") || "0", 10);
       const invoices = await getClubInvoices(clubId, { limit, offset });
-      return sendJson(res, 200, { invoices, pagination: { limit, offset, total: invoices.length } });
+      return sendJson(res, 200, {
+        invoices,
+        pagination: { limit, offset, total: invoices.length },
+      });
     }
   }
 
@@ -340,10 +591,29 @@ export default async function handler(req, res) {
     try {
       const memberships = await prisma.clubMembership.findMany({
         where: { userId: ctx.userId },
-        include: { club: { select: { id: true, name: true, slug: true, logoUrl: true, planType: true, createdAt: true } } },
+        include: {
+          club: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              logoUrl: true,
+              planType: true,
+              createdAt: true,
+            },
+          },
+        },
         orderBy: { joinedAt: "asc" },
       });
-      return sendJson(res, 200, memberships.map((m) => ({ ...m.club, role: m.role, joinedAt: m.joinedAt })));
+      return sendJson(
+        res,
+        200,
+        memberships.map((m) => ({
+          ...m.club,
+          role: m.role,
+          joinedAt: m.joinedAt,
+        })),
+      );
     } catch (err) {
       console.error("[clubs GET]", err);
       return sendJson(res, 500, { error: "Internal server error" });
@@ -353,10 +623,22 @@ export default async function handler(req, res) {
   if (req.method === "POST") {
     try {
       const { name, slug } = req.body || {};
-      if (!name || !slug) return sendJson(res, 400, { error: "name and slug are required" });
-      const normalizedSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
-      if (normalizedSlug.length < 3) return sendJson(res, 400, { error: "slug must be at least 3 characters" });
-      const club = await createClub({ name, slug: normalizedSlug, userId: ctx.userId });
+      if (!name || !slug)
+        return sendJson(res, 400, { error: "name and slug are required" });
+      const normalizedSlug = slug
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "");
+      if (normalizedSlug.length < 3)
+        return sendJson(res, 400, {
+          error: "slug must be at least 3 characters",
+        });
+      const club = await createClub({
+        name,
+        slug: normalizedSlug,
+        userId: ctx.userId,
+      });
       return sendJson(res, 201, club);
     } catch (err) {
       console.error("[clubs POST]", err);

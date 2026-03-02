@@ -10,9 +10,14 @@ import {
 } from "../src/services/subscriptionService.js";
 
 const SUPPORTED_EVENTS = [
-  "PAYMENT_CONFIRMED", "PAYMENT_RECEIVED", "PAYMENT_OVERDUE",
-  "PAYMENT_DELETED", "PAYMENT_REFUNDED", "PAYMENT_RESTORED",
-  "SUBSCRIPTION_DELETED", "SUBSCRIPTION_UPDATED",
+  "PAYMENT_CONFIRMED",
+  "PAYMENT_RECEIVED",
+  "PAYMENT_OVERDUE",
+  "PAYMENT_DELETED",
+  "PAYMENT_REFUNDED",
+  "PAYMENT_RESTORED",
+  "SUBSCRIPTION_DELETED",
+  "SUBSCRIPTION_UPDATED",
 ];
 
 function validateWebhookAuth(req) {
@@ -57,20 +62,30 @@ export default async function handler(req, res) {
     switch (event) {
       case "PAYMENT_CONFIRMED":
       case "PAYMENT_RECEIVED":
-        console.log(`[webhooks] STUB: Would activate subscription for payment ${payment?.id}`);
+        console.log(
+          `[webhooks] STUB: Would activate subscription for payment ${payment?.id}`,
+        );
         break;
       case "PAYMENT_OVERDUE":
-        console.log(`[webhooks] STUB: Would mark subscription PAST_DUE for payment ${payment?.id}`);
+        console.log(
+          `[webhooks] STUB: Would mark subscription PAST_DUE for payment ${payment?.id}`,
+        );
         break;
       case "PAYMENT_DELETED":
       case "PAYMENT_REFUNDED":
-        console.log(`[webhooks] STUB: Would update invoice for payment ${payment?.id}`);
+        console.log(
+          `[webhooks] STUB: Would update invoice for payment ${payment?.id}`,
+        );
         break;
       case "SUBSCRIPTION_DELETED":
-        console.log(`[webhooks] STUB: Would cancel subscription ${asaasSub?.id}`);
+        console.log(
+          `[webhooks] STUB: Would cancel subscription ${asaasSub?.id}`,
+        );
         break;
       case "SUBSCRIPTION_UPDATED":
-        console.log(`[webhooks] STUB: Would update subscription ${asaasSub?.id}`);
+        console.log(
+          `[webhooks] STUB: Would update subscription ${asaasSub?.id}`,
+        );
         break;
       default:
         break;
