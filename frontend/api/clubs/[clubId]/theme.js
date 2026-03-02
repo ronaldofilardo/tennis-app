@@ -1,5 +1,6 @@
-// frontend/api/clubs/[slug]/theme.js
-// Endpoint: GET /api/clubs/:slug/theme — Retorna tema White-Label do clube (Fase 4)
+// frontend/api/clubs/[clubId]/theme.js
+// Endpoint: GET /api/clubs/:clubId/theme — Retorna tema White-Label do clube (Fase 4)
+// Aceita tanto o slug quanto o ID do clube como identificador
 
 import prisma from "../../_lib/prisma.js";
 
@@ -18,14 +19,20 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { slug } = req.query;
+    const { clubId } = req.query;
 
-    if (!slug || typeof slug !== "string") {
-      return res.status(400).json({ error: "Club slug is required" });
+    if (!clubId || typeof clubId !== "string") {
+      return res.status(400).json({ error: "Club identifier is required" });
     }
 
-    const club = await prisma.club.findUnique({
-      where: { slug: slug.toLowerCase() },
+    // Tenta encontrar pelo slug primeiro; se não, tenta pelo id
+    const club = await prisma.club.findFirst({
+      where: {
+        OR: [
+          { slug: clubId.toLowerCase() },
+          { id: clubId },
+        ],
+      },
       select: {
         id: true,
         name: true,
