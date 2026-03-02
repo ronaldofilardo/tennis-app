@@ -24,6 +24,7 @@ import type {
   RallyDetails,
 } from "../core/scoring/types";
 import { API_URL } from "../config/api";
+import httpClient from "../config/httpClient";
 import { useMatchSync } from "../hooks/useMatchSync";
 import { useShakeDetection } from "../hooks/useGestures";
 import { resolvePlayerName } from "../data/players";
@@ -215,23 +216,22 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         console.log(
           `[ScoreboardV2] Buscando estado atualizado do backend para ${matchId}`,
         );
-        const response = await fetch(`${API_URL}/matches/${matchId}/state`);
+        const response = await httpClient.get(`/matches/${matchId}/state`);
 
         // Se este efeito já foi cancelado (StrictMode ou matchId mudou), aborta
         if (cancelled) return;
 
         if (!response.ok) {
-          const errorText = await response.text();
           console.error(
             `[ScoreboardV2] Falha ao carregar dados da partida ${matchId}:`,
             response.status,
-            errorText,
+            response.data,
           );
           throw new Error(
             `Falha ao carregar dados da partida (status: ${response.status})`,
           );
         }
-        data = await response.json();
+        data = response.data as MatchData;
 
         // Verificar novamente após await
         if (cancelled) return;
@@ -344,20 +344,17 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
       // Sincronizar estado inicial - o backend inferirá o status automaticamente
       console.log(`[ScoreboardV2] Iniciando sincronização inicial`);
       try {
-        const response = await fetch(`${API_URL}/matches/${matchId}/state`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ matchState: state }),
+        const response = await httpClient.patch(`/matches/${matchId}/state`, {
+          matchState: state,
         });
 
         if (!response.ok) {
-          const errorText = await response.text();
           throw new Error(
-            `Falha na sincronização: ${response.status} - ${errorText}`,
+            `Falha na sincronização: ${response.status} - ${JSON.stringify(response.data)}`,
           );
         }
 
-        const result = await response.json();
+        const result = response.data;
         console.log(`[ScoreboardV2] Setup confirmado com sucesso:`, result);
       } catch (syncError) {
         console.error(
