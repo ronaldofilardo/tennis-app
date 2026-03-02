@@ -56,11 +56,13 @@ export default async function handler(req, res) {
     if (isVisible) {
       if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
       const ctx = extractContext(req);
-      const queryParams = Object.fromEntries(url.searchParams.entries());
+      const rawParams = Object.fromEntries(url.searchParams.entries());
+      // Remove 'path' injetado pelo catch-all do Vercel e normaliza para o schema
+      // VisibleMatchesQuerySchema aceita apenas { email?, role? }
+      const { path: _p, clubId: _c, userRole: _u, ...cleanParams } = rawParams;
       const result = await getVisibleMatches({
-        ...queryParams,
-        clubId: ctx?.clubId ?? null,
-        userRole: ctx?.role ?? null,
+        email: cleanParams.email,
+        role: cleanParams.role ?? ctx?.role ?? undefined,
       });
       return sendJson(res, 200, result);
     }
