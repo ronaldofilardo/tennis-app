@@ -1,7 +1,27 @@
-// frontend/api/matches.js - Serverless Function para Matches
-// SEGURO: Usa authMiddleware para autenticação e isolamento por clubId
+// frontend/api/matches.js
+// Router consolidado — todas as rotas /api/matches/*
+//   GET    /api/matches                    → lista partidas do clube
+//   POST   /api/matches                    → cria partida
+//   GET    /api/matches/visible            → partidas visíveis (auth opcional)
+//   GET    /api/matches/:id                → detalhe da partida
+//   PATCH  /api/matches/:id                → atualiza partida
+//   GET    /api/matches/:id/state          → estado da partida
+//   PATCH  /api/matches/:id/state          → atualiza estado
+//   GET    /api/matches/:id/stats          → estatísticas
+//   POST   /api/matches/:id/scorer         → solicita marcador
+//   PATCH  /api/matches/:id/scorer         → responde solicitação de marcador
 
-import { getAllMatches, createMatch } from "../src/services/matchService.js";
+import {
+  getAllMatches,
+  createMatch,
+  getMatchById,
+  updateMatch,
+  getMatchState,
+  updateMatchState,
+  getMatchStats,
+  getVisibleMatches,
+} from "../src/services/matchService.js";
+import { requestScorer, respondScorerRequest } from "../src/services/authService.js";
 import {
   handleCors,
   requireAuth,
@@ -9,69 +29,145 @@ import {
   sendJson,
   methodNotAllowed,
 } from "./_lib/authMiddleware.js";
-import {
-  validateMatchApiResponse,
-  VersionedMatchApiResponseSchema,
-} from "../src/schemas/contracts.js";
+import { validateMatchApiResponse } from "../src/schemas/contracts.js";
 import { requireActiveSubscription } from "./_lib/subscriptionMiddleware.js";
+
+function parsePath(url) {
+  const parts = url.pathname.split("/").filter(Boolean);
+  // parts: [api, matches, ?id|visible, ?sub]
+  const seg = parts[2] || null;
+  const sub = parts[3] || null;
+  const isVisible = seg === "visible";
+  const id = !isVisible ? seg : null;
+  return { id, sub, isVisible };
+}
 
 export default async function handler(req, res) {
   try {
     if (handleCors(req, res)) return;
 
+    const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+    const { id, sub, isVisible } = parsePath(url);
+
+    // ─── GET /api/matches/visible ────────────────────────────────────────────
+    if (isVisible) {
+      if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
+      const ctx = extractContext(req);
+      const queryParams = Object.fromEntries(url.searchParams.entries());
+      const result = await getVisibleMatches({
+        ...queryParams,
+        clubId: ctx?.clubId ?? null,
+        userRole: ctx?.role ?? null,
+      });
+      return sendJson(res, 200, result);
+    }
+
+    // ─── /api/matches/:id/state ──────────────────────────────────────────────
+    if (id && sub === "state") {
+      const ctx = requireAuth(req, res);
+      if (!ctx) return;
+      if (ctx.role !== "ADMIN") {
+        const match = await getMatchById(id);
+        if (match?.clubId && match.clubId !== ctx.clubId && match.visibility !== "PUBLIC") {
+          return sendJson(res, 403, { error: "Access denied to this match" });
+        }
+      }
+      if (req.method === "GET") return sendJson(res, 200, await getMatchState(id));
+      if (req.method === "PATCH") return sendJson(res, 200, await updateMatchState(id, req.body));
+      return methodNotAllowed(res, ["GET", "PATCH"]);
+    }
+
+    // ─── GET /api/matches/:id/stats ──────────────────────────────────────────
+    if (id && sub === "stats") {
+      const ctx = requireAuth(req, res);
+      if (!ctx) return;
+      if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
+      if (ctx.role !== "ADMIN") {
+        const match = await getMatchById(id);
+        if (match?.clubId && match.clubId !== ctx.clubId && match.visibility !== "PUBLIC") {
+          return sendJson(res, 403, { error: "Access denied to this match" });
+        }
+      }
+      return sendJson(res, 200, await getMatchStats(id));
+    }
+
+    // ─── /api/matches/:id/scorer ─────────────────────────────────────────────
+    if (id && sub === "scorer") {
+      const ctx = requireAuth(req, res);
+      if (!ctx) return;
+      if (req.method === "POST") {
+        const { scorerId } = req.body || {};
+        if (!scorerId) return sendJson(res, 400, { error: "scorerId is required" });
+        const result = await requestScorer({ matchId: id, scorerId, createdByUserId: ctx.userId });
+        return sendJson(res, 200, result);
+      }
+      if (req.method === "PATCH") {
+        const { status } = req.body || {};
+        if (!["ACCEPTED", "DECLINED"].includes(status)) {
+          return sendJson(res, 400, { error: "status must be ACCEPTED or DECLINED" });
+        }
+        const result = await respondScorerRequest({ matchId: id, scorerId: ctx.userId, status });
+        return sendJson(res, 200, result);
+      }
+      return methodNotAllowed(res, ["POST", "PATCH"]);
+    }
+
+    // ─── /api/matches/:id ────────────────────────────────────────────────────
+    if (id) {
+      const ctx = requireAuth(req, res);
+      if (!ctx) return;
+      if (req.method === "GET") {
+        const match = await getMatchById(id);
+        if (match && ctx.role !== "ADMIN") {
+          if (match.clubId && match.clubId !== ctx.clubId && match.visibility !== "PUBLIC") {
+            return sendJson(res, 403, { error: "Access denied to this match" });
+          }
+        }
+        return sendJson(res, 200, match);
+      }
+      if (req.method === "PATCH") {
+        const existing = await getMatchById(id);
+        if (existing && ctx.role !== "ADMIN") {
+          if (existing.clubId && existing.clubId !== ctx.clubId) {
+            return sendJson(res, 403, { error: "Access denied to this match" });
+          }
+        }
+        return sendJson(res, 200, await updateMatch(id, req.body));
+      }
+      return methodNotAllowed(res, ["GET", "PATCH"]);
+    }
+
+    // ─── /api/matches (root) ─────────────────────────────────────────────────
     const ctx = requireAuth(req, res);
     if (!ctx) return;
 
     if (req.method === "GET") {
-      // Filtra partidas pelo clube do usuário autenticado
-      // ADMIN vê todas; outros vêem apenas do seu clube + partidas PUBLIC
       const result = await getAllMatches(ctx.clubId, ctx.role);
-
-      // Validar e adicionar versão aos matches
-      const validatedMatches = result.map((match) => {
+      const validated = result.map((match) => {
         const validation = validateMatchApiResponse(match);
         if (!validation.success) {
-          throw new Error(
-            `Contrato de API violado: ${validation.error.message}`,
-          );
+          throw new Error(`Contrato de API violado: ${validation.error.message}`);
         }
         return { ...match, contractVersion: "1.0.0" };
       });
-
-      return sendJson(res, 200, validatedMatches);
+      return sendJson(res, 200, validated);
     }
 
     if (req.method === "POST") {
-      // Verificar subscription ativa antes de criar partida
       const subCheck = await requireActiveSubscription(req, res, ctx);
-      if (!subCheck) return; // 402 já enviado
-
-      // Injeta clubId do contexto no body da partida
-      const matchData = {
-        ...req.body,
-        clubId: ctx.clubId,
-        createdByUserId: ctx.userId,
-      };
-
+      if (!subCheck) return;
+      const matchData = { ...req.body, clubId: ctx.clubId, createdByUserId: ctx.userId };
       const result = await createMatch(matchData);
-
-      // Validar resposta
       const validation = validateMatchApiResponse(result);
       if (!validation.success) {
-        throw new Error(
-          `Contrato de API violado na criação: ${validation.error.message}`,
-        );
+        throw new Error(`Contrato de API violado na criação: ${validation.error.message}`);
       }
-
-      const versionedResult = { ...result, contractVersion: "1.0.0" };
-      return sendJson(res, 201, versionedResult);
+      return sendJson(res, 201, { ...result, contractVersion: "1.0.0" });
     }
 
     return methodNotAllowed(res, ["GET", "POST"]);
   } catch (error) {
     console.error("Erro interno em matches:", error);
-    return sendJson(res, 500, {
-      error: error.message || "Internal server error",
-    });
+    return sendJson(res, 500, { error: error.message || "Internal server error" });
   }
 }
