@@ -19,10 +19,10 @@
     { "src": "frontend/api/health.js", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/api/auth/login", "dest": "/frontend/api/auth.js" },
-    { "src": "/api/auth/register", "dest": "/frontend/api/auth.js" },
-    { "src": "/api/auth/switch-club", "dest": "/frontend/api/auth.js" },
-    { "src": "/api/auth", "dest": "/frontend/api/auth.js" },
+    { "src": "/api/auth/login", "dest": "/api/auth" },
+    { "src": "/api/auth/register", "dest": "/api/auth" },
+    { "src": "/api/auth/switch-club", "dest": "/api/auth" },
+    { "src": "/api/auth", "dest": "/api/auth" },
 
     { "src": "/api/matches/visible", "dest": "/frontend/api/matches.js" },
     { "src": "/api/matches/([^/]+)/state", "dest": "/frontend/api/matches.js" },
