@@ -1,6 +1,19 @@
 {
-  "buildCommand": "cd frontend && pnpm run build",
-  "outputDirectory": "frontend/dist",
-  "installCommand": "pnpm install",
-  "framework": null
+  "version": 2,
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "frontend/dist" }
+    },
+    { "src": "api/auth/[[...path]].js", "use": "@vercel/node" },
+    { "src": "api/matches/[[...path]].js", "use": "@vercel/node" },
+    { "src": "api/clubs/[[...path]].js", "use": "@vercel/node" },
+    { "src": "api/athletes/[[...path]].js", "use": "@vercel/node" },
+    { "src": "api/tournaments/[[...path]].js", "use": "@vercel/node" },
+    { "src": "api/admin/[[...path]].js", "use": "@vercel/node" },
+    { "src": "api/webhooks/[[...path]].js", "use": "@vercel/node" },
+    { "src": "api/cron/[[...path]].js", "use": "@vercel/node" },
+    { "src": "api/health.js", "use": "@vercel/node" }
+  ]
 }
