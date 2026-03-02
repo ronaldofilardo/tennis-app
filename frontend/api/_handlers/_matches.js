@@ -206,8 +206,12 @@ export default async function handler(req, res) {
     return methodNotAllowed(res, ["GET", "POST"]);
   } catch (error) {
     console.error("Erro interno em matches:", error);
-    return sendJson(res, 500, {
-      error: error.message || "Internal server error",
-    });
+    const msg =
+      error instanceof Error
+        ? error.message
+        : error != null
+          ? String(error)
+          : "Internal server error";
+    return sendJson(res, 500, { error: msg });
   }
 }

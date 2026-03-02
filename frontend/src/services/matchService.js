@@ -196,9 +196,9 @@ export async function createMatch(matchData, testPrisma) {
 
 export async function getMatchById(id) {
   // Validar ID da partida
-  const idValidation = validateAndFormatZodError(MatchIdSchema, id);
+  const idValidation = MatchIdSchema.safeParse(id);
   if (!idValidation.success) {
-    throw idValidation.error;
+    throw new Error(validateAndFormatZodError(idValidation.error));
   }
 
   const match = await prisma.match.findUnique({
@@ -261,17 +261,14 @@ export async function getMatchById(id) {
 
 export async function updateMatch(id, updatePayload) {
   // Validar ID e payload
-  const idValidation = validateAndFormatZodError(MatchIdSchema, id);
+  const idValidation = MatchIdSchema.safeParse(id);
   if (!idValidation.success) {
-    throw idValidation.error;
+    throw new Error(validateAndFormatZodError(idValidation.error));
   }
 
-  const payloadValidation = validateAndFormatZodError(
-    MatchUpdateSchema,
-    updatePayload,
-  );
+  const payloadValidation = MatchUpdateSchema.safeParse(updatePayload);
   if (!payloadValidation.success) {
-    throw payloadValidation.error;
+    throw new Error(validateAndFormatZodError(payloadValidation.error));
   }
 
   const updateData = {};
@@ -590,9 +587,9 @@ export async function getVisibleMatches(queryParams, testPrisma) {
 }
 export async function getMatchStats(id) {
   // Validar ID da partida
-  const idValidation = validateAndFormatZodError(MatchIdSchema, id);
+  const idValidation = MatchIdSchema.safeParse(id);
   if (!idValidation.success) {
-    throw idValidation.error;
+    throw new Error(validateAndFormatZodError(idValidation.error));
   }
 
   const match = await prisma.match.findUnique({
