@@ -1,42 +1,102 @@
 import "../../../vitest.setup";
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import axios from "axios";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
-// import axios from 'axios';
 import MatchSetup from "../MatchSetup";
 
 // Mock do CSS
 vi.mock("../MatchSetup.css", () => ({}));
 
-// Mock axios para usar fetch global
-vi.mock("axios", () => ({
-  default: {
+// vi.hoisted garante inicialização antes do hoisting do vi.mock
+const { mockHttpClient, mockToastError } = vi.hoisted(() => ({
+  mockHttpClient: {
     post: vi.fn(),
     get: vi.fn(),
-    put: vi.fn(),
-    delete: vi.fn(),
+    setAuthConfig: vi.fn(),
+    setTenantConfig: vi.fn(),
+    onUnauthorized: vi.fn(),
   },
-  post: vi.fn(),
-  get: vi.fn(),
-  put: vi.fn(),
-  delete: vi.fn(),
+  mockToastError: vi.fn(),
+}));
+
+// Mock do httpClient (usado por MatchSetup e AuthProvider)
+vi.mock("../../config/httpClient", () => ({ default: mockHttpClient }));
+
+// Mock do themeProvider (necessário para AuthProvider)
+vi.mock("../../config/themeProvider", () => ({
+  loadClubTheme: vi.fn().mockResolvedValue({}),
+  applyClubTheme: vi.fn(),
+  resetTheme: vi.fn(),
+}));
+
+// Mock do logger
+vi.mock("../../services/logger", () => ({
+  createLogger: () => ({
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
+  }),
+  logger: {
+    createModuleLogger: () => ({
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
+    }),
+    setGlobalContext: vi.fn(),
+    clearGlobalContext: vi.fn(),
+  },
+}));
+
+// Mock do Toast
+vi.mock("../../components/Toast", () => ({
+  useToast: () => ({
+    showToast: vi.fn(),
+    success: vi.fn(),
+    error: mockToastError,
+    warning: vi.fn(),
+    info: vi.fn(),
+    dismiss: vi.fn(),
+    dismissAll: vi.fn(),
+  }),
+  ToastProvider: ({ children }: any) => children,
+}));
+
+// Mock do AthleteSearchInput — simula seleção via onChange para facilitar testes
+vi.mock("../../components/AthleteSearchInput", () => ({
+  default: ({ id, label, placeholder, onSelect }: any) => (
+    <div>
+      <label htmlFor={id}>{label}</label>
+      <input
+        id={id}
+        placeholder={placeholder}
+        aria-label={label}
+        onChange={(e) =>
+          onSelect(
+            e.target.value
+              ? {
+                  id: `guest_${e.target.value}`,
+                  name: e.target.value,
+                  email: "",
+                }
+              : null,
+          )
+        }
+      />
+    </div>
+  ),
 }));
 
 // Mock do alert global
 const mockAlert = vi.fn();
 vi.stubGlobal("alert", mockAlert);
 
-const mockPlayers = [
-  { id: "1", name: "Jogador 1", email: "j1@test.com" },
-  { id: "2", name: "Jogador 2", email: "j2@test.com" },
-];
-
 const defaultProps = {
   onMatchCreated: vi.fn(),
   onBackToDashboard: vi.fn(),
-  players: mockPlayers,
+  players: [],
 };
 
 import { AuthProvider } from "../../contexts/AuthContext";
@@ -57,19 +117,21 @@ const renderMatchSetup = (props = {}) => {
   );
 };
 
+const mockMatchResponse = {
+  data: {
+    id: "test-match-id",
+    sportType: "TENNIS",
+    format: "BEST_OF_3",
+    players: { p1: "Jogador 1", p2: "Jogador 2" },
+    status: "NOT_STARTED",
+  },
+};
+
 describe("MatchSetup - Match Creation Flow", () => {
   beforeEach(() => {
     (global as any).resetGlobalMocks();
-    (axios.post as any).mockReset && (axios.post as any).mockReset();
-    (axios.post as any).mockResolvedValue({
-      data: {
-        id: "test-match-id",
-        sportType: "TENNIS",
-        format: "BEST_OF_3",
-        players: { p1: "Jogador 1", p2: "Jogador 2" },
-        status: "NOT_STARTED",
-      },
-    });
+    mockHttpClient.post.mockReset();
+    mockHttpClient.post.mockResolvedValue(mockMatchResponse);
   });
 
   describe("Match creation and navigation", () => {
@@ -77,12 +139,12 @@ describe("MatchSetup - Match Creation Flow", () => {
       const mockOnMatchCreated = vi.fn();
       renderMatchSetup({ onMatchCreated: mockOnMatchCreated });
 
-      // Fill required fields
-      const player1Select = screen.getByTestId("player1-input");
-      const player2Select = screen.getByTestId("player2-input");
+      // Preenche os campos usando o AthleteSearchInput mockado
+      const [player1Input, player2Input] =
+        screen.getAllByPlaceholderText("Buscar atleta...");
 
-      fireEvent.change(player1Select, { target: { value: "j1@test.com" } });
-      fireEvent.change(player2Select, { target: { value: "j2@test.com" } });
+      fireEvent.change(player1Input, { target: { value: "Jogador 1" } });
+      fireEvent.change(player2Input, { target: { value: "Jogador 2" } });
 
       // Submit form
       const submitButton = screen.getByRole("button", {
@@ -92,41 +154,35 @@ describe("MatchSetup - Match Creation Flow", () => {
 
       // Wait for API call
       await waitFor(() => {
-        expect(axios.post as any).toHaveBeenCalledWith(
-          expect.stringContaining("/matches"),
+        expect(mockHttpClient.post).toHaveBeenCalledWith(
+          "/matches",
           expect.objectContaining({
             sportType: "TENNIS",
             format: "BEST_OF_3",
-            players: { p1: "j1@test.com", p2: "j2@test.com" },
+            players: { p1: "Jogador 1", p2: "Jogador 2" },
             nickname: null,
-            visibleTo: "both",
+            visibility: "PLAYERS_ONLY",
           }),
         );
       });
 
       // Verify onMatchCreated was called with match data
-      expect(mockOnMatchCreated).toHaveBeenCalledWith({
-        id: "test-match-id",
-        sportType: "TENNIS",
-        format: "BEST_OF_3",
-        players: { p1: "Jogador 1", p2: "Jogador 2" },
-        status: "NOT_STARTED",
-      });
+      expect(mockOnMatchCreated).toHaveBeenCalledWith(mockMatchResponse.data);
 
       // Verify no alert was shown
       expect(mockAlert).not.toHaveBeenCalled();
     });
 
     it("handles API errors gracefully", async () => {
-      (axios.post as any).mockRejectedValue(new Error("API Error"));
+      mockHttpClient.post.mockRejectedValue(new Error("API Error"));
       renderMatchSetup();
 
-      // Fill required fields
-      const player1Select = screen.getByTestId("player1-input");
-      const player2Select = screen.getByTestId("player2-input");
+      // Preenche os campos usando o AthleteSearchInput mockado
+      const [player1Input2, player2Input2] =
+        screen.getAllByPlaceholderText("Buscar atleta...");
 
-      fireEvent.change(player1Select, { target: { value: "j1@test.com" } });
-      fireEvent.change(player2Select, { target: { value: "j2@test.com" } });
+      fireEvent.change(player1Input2, { target: { value: "Jogador 1" } });
+      fireEvent.change(player2Input2, { target: { value: "Jogador 2" } });
 
       // Submit form
       const submitButton = screen.getByRole("button", {
@@ -136,8 +192,9 @@ describe("MatchSetup - Match Creation Flow", () => {
 
       // Wait for error handling
       await waitFor(() => {
-        expect(mockAlert).toHaveBeenCalledWith(
+        expect(mockToastError).toHaveBeenCalledWith(
           "Falha ao criar a partida. Verifique o console do navegador e do backend.",
+          expect.anything(),
         );
       });
     });
@@ -157,7 +214,7 @@ describe("MatchSetup - Match Creation Flow", () => {
           screen.getByText("Os nomes dos jogadores são obrigatórios."),
         ).toBeInTheDocument();
       });
-      expect(global.fetch).not.toHaveBeenCalled();
+      expect(mockHttpClient.post).not.toHaveBeenCalled();
     });
   });
 
@@ -180,11 +237,10 @@ describe("MatchSetup - Match Creation Flow", () => {
     it("allows form submission when both players are selected", async () => {
       renderMatchSetup();
 
-      const player1Select = screen.getByTestId("player1-input");
-      const player2Select = screen.getByTestId("player2-input");
+      const [p1, p2] = screen.getAllByPlaceholderText("Buscar atleta...");
 
-      fireEvent.change(player1Select, { target: { value: "j1@test.com" } });
-      fireEvent.change(player2Select, { target: { value: "j2@test.com" } });
+      fireEvent.change(p1, { target: { value: "Jogador 1" } });
+      fireEvent.change(p2, { target: { value: "Jogador 2" } });
 
       const submitButton = screen.getByRole("button", {
         name: "Iniciar Partida",
@@ -192,7 +248,7 @@ describe("MatchSetup - Match Creation Flow", () => {
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(axios.post as any).toHaveBeenCalled();
+        expect(mockHttpClient.post).toHaveBeenCalled();
       });
     });
   });

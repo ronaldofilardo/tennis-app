@@ -1,0 +1,172 @@
+/* ════════════════════════════════════════════════════════════
+   LIVE MATCHES CAROUSEL — Horizontal scroll, sticky top
+   ════════════════════════════════════════════════════════════ */
+
+.live-section {
+  margin-bottom: 16px;
+}
+
+.live-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.live-section-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--clr-live, #f43f5e);
+  animation: pulse-live 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse-live {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.7);
+  }
+}
+
+.live-section-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--clr-live, #f43f5e);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.live-section-count {
+  font-size: 0.68rem;
+  color: var(--clr-text-muted, #6b7280);
+  font-weight: 600;
+}
+
+/* Horizontal scrollable container */
+.live-carousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0 0 8px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.live-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+/* Individual live card — compact */
+.live-card {
+  flex-shrink: 0;
+  width: 260px;
+  scroll-snap-align: start;
+  background: var(--clr-surface, #181d27);
+  border: 1px solid rgba(244, 63, 94, 0.25);
+  border-radius: 12px;
+  padding: 12px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.live-card:active {
+  transform: scale(0.97);
+}
+
+/* Accent glow top border */
+.live-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--clr-live, #f43f5e);
+  box-shadow: 0 0 12px var(--clr-live, #f43f5e);
+}
+
+.live-card-players {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.live-card-player-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--clr-text, #e8eaf0);
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.live-card-vs {
+  font-size: 0.65rem;
+  color: var(--clr-text-muted, #6b7280);
+  font-weight: 600;
+}
+
+.live-card-score {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  align-items: baseline;
+}
+
+.live-card-score-set {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--clr-text, #e8eaf0);
+}
+
+.live-card-score-game {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--clr-text-dim, #9ca3af);
+}
+
+.live-card-score-sep {
+  font-size: 0.7rem;
+  color: var(--clr-text-muted, #6b7280);
+}
+
+.live-card-partials {
+  margin-top: 6px;
+  font-size: 0.65rem;
+  color: var(--clr-text-muted, #6b7280);
+  text-align: center;
+  letter-spacing: 0.03em;
+}
+
+/* Tiebreak indicator */
+.live-card-tiebreak {
+  display: inline-block;
+  font-size: 0.55rem;
+  font-weight: 700;
+  background: rgba(234, 179, 8, 0.2);
+  color: #fde047;
+  border: 1px solid rgba(234, 179, 8, 0.35);
+  padding: 1px 6px;
+  border-radius: 10px;
+  margin-left: 6px;
+}
+
+/* When there's only 1 live match, take full width */
+.live-carousel--single .live-card {
+  width: 100%;
+}

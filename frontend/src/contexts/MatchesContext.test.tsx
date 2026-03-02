@@ -1,8 +1,40 @@
-import React from 'react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import { MatchesProvider, useMatches } from './MatchesContext';
-import { AuthProvider } from './AuthContext';
+import React from "react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, waitFor } from "@testing-library/react";
+import { MatchesProvider, useMatches } from "./MatchesContext";
+import { AuthProvider } from "./AuthContext";
+
+// vi.hoisted para inicializar mockHttpClient antes do hoisting do vi.mock
+const { mockHttpClient } = vi.hoisted(() => ({
+  mockHttpClient: {
+    post: vi.fn(),
+    get: vi.fn(),
+    setAuthConfig: vi.fn(),
+    setTenantConfig: vi.fn(),
+    onUnauthorized: vi.fn(),
+  },
+}));
+
+vi.mock("../config/httpClient", () => ({ default: mockHttpClient }));
+
+vi.mock("../config/themeProvider", () => ({
+  loadClubTheme: vi.fn().mockResolvedValue({}),
+  applyClubTheme: vi.fn(),
+  resetTheme: vi.fn(),
+}));
+
+vi.mock("../services/logger", () => ({
+  logger: {
+    createModuleLogger: () => ({
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
+    }),
+    setGlobalContext: vi.fn(),
+    clearGlobalContext: vi.fn(),
+  },
+}));
 
 // Mock do fetch
 globalThis.fetch = vi.fn();
@@ -14,14 +46,14 @@ const localStorageMock = {
   removeItem: vi.fn(),
   clear: vi.fn(),
 };
-Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock
+Object.defineProperty(window, "localStorage", {
+  value: localStorageMock,
 });
 
 // Mock do useLocation
 const mockUseLocation = vi.fn();
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
   return {
     ...actual,
     useLocation: () => mockUseLocation(),
@@ -29,8 +61,8 @@ vi.mock('react-router-dom', async () => {
 });
 
 // Mock do API_URL
-vi.mock('../config/api', () => ({
-  API_URL: 'http://localhost:3001'
+vi.mock("../config/api", () => ({
+  API_URL: "http://localhost:3001",
 }));
 
 // Componente de teste para usar o hook
@@ -40,9 +72,13 @@ const TestComponent: React.FC = () => {
   return (
     <div>
       <div data-testid="matches-count">{matches.length}</div>
-      <div data-testid="loading">{loading ? 'loading' : 'not-loading'}</div>
-      <div data-testid="error">{error || 'no-error'}</div>
-      <button onClick={() => addMatch({ id: 'test-match', sportType: 'Tennis' })}>Add Match</button>
+      <div data-testid="loading">{loading ? "loading" : "not-loading"}</div>
+      <div data-testid="error">{error || "no-error"}</div>
+      <button
+        onClick={() => addMatch({ id: "test-match", sportType: "Tennis" })}
+      >
+        Add Match
+      </button>
       <button onClick={refreshMatches}>Refresh</button>
       <div data-testid="matches-data">{JSON.stringify(matches)}</div>
     </div>
@@ -51,22 +87,29 @@ const TestComponent: React.FC = () => {
 
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <AuthProvider>
-    <MatchesProvider>
-      {children}
-    </MatchesProvider>
+    <MatchesProvider>{children}</MatchesProvider>
   </AuthProvider>
 );
 
-describe('MatchesContext', () => {
+describe("MatchesContext", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorageMock.getItem.mockReturnValue(null);
-    mockUseLocation.mockReturnValue({ pathname: '/dashboard' });
+    mockUseLocation.mockReturnValue({ pathname: "/dashboard" });
 
-    // Mock do usuário autenticado
+    // Mock do usuário autenticado com formato novo (AuthUser completo)
     localStorageMock.getItem.mockImplementation((key: string) => {
-      if (key === 'racket_auth') return 'true';
-      if (key === 'racket_user') return JSON.stringify({ role: 'annotator', email: 'test@test.com' });
+      if (key === "racket_token") return "test-token";
+      if (key === "racket_user")
+        return JSON.stringify({
+          id: "user-001",
+          email: "test@test.com",
+          name: "Test User",
+          role: "annotator",
+          clubs: [],
+          activeClubId: null,
+          activeRole: "annotator",
+        });
       return null;
     });
 
@@ -74,170 +117,176 @@ describe('MatchesContext', () => {
     (globalThis.fetch as any).mockResolvedValue({
       ok: true,
       json: async () => [
-        { id: 'match1', sportType: 'Tennis' },
-        { id: 'match2', sportType: 'Tennis' }
-      ]
+        { id: "match1", sportType: "Tennis" },
+        { id: "match2", sportType: "Tennis" },
+      ],
     });
   });
 
-  describe('Estado inicial', () => {
-    it('deve começar com lista vazia', () => {
+  describe("Estado inicial", () => {
+    it("deve começar com lista vazia", () => {
       render(
         <TestWrapper>
           <TestComponent />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
-      expect(screen.getByTestId('matches-count')).toHaveTextContent('0');
-      expect(screen.getByTestId('loading')).toHaveTextContent('loading');
-      expect(screen.getByTestId('error')).toHaveTextContent('no-error');
+      expect(screen.getByTestId("matches-count")).toHaveTextContent("0");
+      expect(screen.getByTestId("loading")).toHaveTextContent("loading");
+      expect(screen.getByTestId("error")).toHaveTextContent("no-error");
     });
   });
 
-  describe('Carregamento automático', () => {
-    it('deve carregar matches automaticamente quando dashboard é acessado', async () => {
+  describe("Carregamento automático", () => {
+    it("deve carregar matches automaticamente quando dashboard é acessado", async () => {
       render(
         <TestWrapper>
           <TestComponent />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       await waitFor(() => {
-        expect(screen.getByTestId('matches-count')).toHaveTextContent('2');
+        expect(screen.getByTestId("matches-count")).toHaveTextContent("2");
       });
 
       expect(globalThis.fetch).toHaveBeenCalledWith(
-        'http://localhost:3001/matches/visible?email=test%40test.com&role=annotator'
+        "http://localhost:3001/matches/visible?email=test%40test.com&role=annotator",
       );
     });
 
-    it('não deve carregar matches se usuário não estiver autenticado', () => {
+    it("não deve carregar matches se usuário não estiver autenticado", () => {
       localStorageMock.getItem.mockReturnValue(null);
 
       render(
         <TestWrapper>
           <TestComponent />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(globalThis.fetch).not.toHaveBeenCalled();
     });
 
-    it('não deve carregar matches se não estiver na rota dashboard', () => {
-      mockUseLocation.mockReturnValue({ pathname: '/login' });
+    it("não deve carregar matches se não estiver na rota dashboard", () => {
+      mockUseLocation.mockReturnValue({ pathname: "/login" });
 
       render(
         <TestWrapper>
           <TestComponent />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(globalThis.fetch).not.toHaveBeenCalled();
     });
   });
 
-  describe('Adicionar match', () => {
-    it('deve adicionar match à lista', async () => {
+  describe("Adicionar match", () => {
+    it("deve adicionar match à lista", async () => {
       render(
         <TestWrapper>
           <TestComponent />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Aguardar carregamento inicial
       await waitFor(() => {
-        expect(screen.getByTestId('matches-count')).toHaveTextContent('2');
+        expect(screen.getByTestId("matches-count")).toHaveTextContent("2");
       });
 
       // Adicionar novo match
-      screen.getByText('Add Match').click();
+      screen.getByText("Add Match").click();
 
       await waitFor(() => {
-        expect(screen.getByTestId('matches-count')).toHaveTextContent('3');
+        expect(screen.getByTestId("matches-count")).toHaveTextContent("3");
       });
 
-      const matchesData = JSON.parse(screen.getByTestId('matches-data').textContent || '[]');
+      const matchesData = JSON.parse(
+        screen.getByTestId("matches-data").textContent || "[]",
+      );
       expect(matchesData).toHaveLength(3);
-      expect(matchesData[2]).toEqual({ id: 'match2', sportType: 'Tennis' });
+      expect(matchesData[2]).toEqual({ id: "match2", sportType: "Tennis" });
     });
   });
 
-  describe('Refresh matches', () => {
-    it('deve recarregar lista de matches', async () => {
+  describe("Refresh matches", () => {
+    it("deve recarregar lista de matches", async () => {
       render(
         <TestWrapper>
           <TestComponent />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Aguardar carregamento inicial
       await waitFor(() => {
-        expect(screen.getByTestId('matches-count')).toHaveTextContent('2');
+        expect(screen.getByTestId("matches-count")).toHaveTextContent("2");
       });
 
       // Modificar mock para retornar dados diferentes
       (globalThis.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => [
-          { id: 'match3', sportType: 'Tennis' },
-          { id: 'match4', sportType: 'Tennis' },
-          { id: 'match5', sportType: 'Tennis' }
-        ]
+          { id: "match3", sportType: "Tennis" },
+          { id: "match4", sportType: "Tennis" },
+          { id: "match5", sportType: "Tennis" },
+        ],
       });
 
       // Chamar refresh
-      screen.getByText('Refresh').click();
+      screen.getByText("Refresh").click();
 
       await waitFor(() => {
-        expect(screen.getByTestId('matches-count')).toHaveTextContent('3');
+        expect(screen.getByTestId("matches-count")).toHaveTextContent("3");
       });
     });
   });
 
-  describe('Tratamento de erros', () => {
-    it('deve tratar erro na API', async () => {
-      (globalThis.fetch as any).mockRejectedValueOnce(new Error('API Error'));
+  describe("Tratamento de erros", () => {
+    it("deve tratar erro na API", async () => {
+      (globalThis.fetch as any).mockRejectedValueOnce(new Error("API Error"));
 
       render(
         <TestWrapper>
           <TestComponent />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       await waitFor(() => {
-        expect(screen.getByTestId('error')).toHaveTextContent('API Error');
+        expect(screen.getByTestId("error")).toHaveTextContent("API Error");
       });
     });
 
-    it('deve tratar resposta não-ok da API', async () => {
+    it("deve tratar resposta não-ok da API", async () => {
       (globalThis.fetch as any).mockResolvedValueOnce({
         ok: false,
-        status: 500
+        status: 500,
       });
 
       render(
         <TestWrapper>
           <TestComponent />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       await waitFor(() => {
-        expect(screen.getByTestId('error')).toHaveTextContent('Falha ao carregar partidas');
+        expect(screen.getByTestId("error")).toHaveTextContent(
+          "Falha ao carregar partidas",
+        );
       });
     });
   });
 
-  describe('Hook useMatches', () => {
-    it('deve lançar erro quando usado fora do provider', () => {
+  describe("Hook useMatches", () => {
+    it("deve lançar erro quando usado fora do provider", () => {
       const OutsideProviderComponent = () => {
         const { matches } = useMatches();
         return <div>{matches.length}</div>;
       };
-      
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
 
       expect(() => render(<OutsideProviderComponent />)).toThrow(
-        'useMatches must be used within a MatchesProvider'
+        "useMatches must be used within a MatchesProvider",
       );
 
       consoleSpy.mockRestore();

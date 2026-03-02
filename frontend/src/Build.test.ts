@@ -57,7 +57,12 @@ describe("Build do Projeto", () => {
   it("deve verificar dependências do Prisma", async () => {
     const fs = await import("fs/promises");
     const path = await import("path");
-    const packageJsonPath = path.join(process.cwd(), "package.json");
+    // Busca sempre o frontend/package.json independente do cwd
+    let rootDir = process.cwd();
+    if (rootDir.endsWith("frontend")) {
+      rootDir = path.dirname(rootDir);
+    }
+    const packageJsonPath = path.join(rootDir, "frontend", "package.json");
     const packageJson = JSON.parse(await fs.readFile(packageJsonPath, "utf-8"));
     expect(packageJson.dependencies).toHaveProperty("@prisma/client");
     expect(packageJson.devDependencies).toHaveProperty("prisma");
@@ -66,7 +71,12 @@ describe("Build do Projeto", () => {
   it("deve verificar dependências do Vite", async () => {
     const fs = await import("fs/promises");
     const path = await import("path");
-    const packageJsonPath = path.join(process.cwd(), "package.json");
+    // Busca sempre o frontend/package.json independente do cwd
+    let rootDir = process.cwd();
+    if (rootDir.endsWith("frontend")) {
+      rootDir = path.dirname(rootDir);
+    }
+    const packageJsonPath = path.join(rootDir, "frontend", "package.json");
     const packageJson = JSON.parse(await fs.readFile(packageJsonPath, "utf-8"));
     expect(packageJson.devDependencies).toHaveProperty("vite");
     expect(packageJson.devDependencies).toHaveProperty("@vitejs/plugin-react");

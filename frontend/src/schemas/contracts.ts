@@ -1,100 +1,149 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // Tipos base
-const PlayerSchema = z.enum(['PLAYER_1', 'PLAYER_2']);
-const GamePointSchema = z.union([z.enum(['0', '15', '30', '40', 'AD']), z.number()]);
+const PlayerSchema = z.enum(["PLAYER_1", "PLAYER_2"]);
+const GamePointSchema = z.union([
+  z.enum(["0", "15", "30", "40", "AD"]),
+  z.number(),
+]);
 const TennisFormatSchema = z.enum([
-  'BEST_OF_3',
-  'BEST_OF_5',
-  'SINGLE_SET',
-  'PRO_SET',
-  'MATCH_TIEBREAK',
-  'SHORT_SET',
-  'NO_AD',
-  'FAST4',
-  'BEST_OF_3_MATCH_TB',
-  'SHORT_SET_NO_AD',
-  'NO_LET_TENNIS'
+  "BEST_OF_3",
+  "BEST_OF_5",
+  "SINGLE_SET",
+  "PRO_SET",
+  "MATCH_TIEBREAK",
+  "SHORT_SET",
+  "NO_AD",
+  "FAST4",
+  "BEST_OF_3_MATCH_TB",
+  "SHORT_SET_NO_AD",
+  "NO_LET_TENNIS",
 ]);
 
 // Schema para TennisConfig (mais flexível para testes)
-export const TennisConfigSchema = z.object({
-  format: TennisFormatSchema,
-  setsToWin: z.number().int().positive().optional(),
-  gamesPerSet: z.number().int().positive().optional(),
-  useAdvantage: z.boolean().optional(),
-  useTiebreak: z.boolean().optional(),
-  tiebreakAt: z.number().int().nonnegative().optional(),
-  tiebreakPoints: z.number().int().positive().optional(),
-  useNoAd: z.boolean().optional(),
-  useAlternateTiebreakSides: z.boolean().optional(),
-  useNoLet: z.boolean().optional(),
-}).catchall(z.unknown()); // Permite campos extras
+export const TennisConfigSchema = z
+  .object({
+    format: TennisFormatSchema,
+    setsToWin: z.number().int().positive().optional(),
+    gamesPerSet: z.number().int().positive().optional(),
+    useAdvantage: z.boolean().optional(),
+    useTiebreak: z.boolean().optional(),
+    tiebreakAt: z.number().int().nonnegative().optional(),
+    tiebreakPoints: z.number().int().positive().optional(),
+    useNoAd: z.boolean().optional(),
+    useAlternateTiebreakSides: z.boolean().optional(),
+    useNoLet: z.boolean().optional(),
+  })
+  .catchall(z.unknown()); // Permite campos extras
 
 // Schema para GameState (mais flexível)
-export const GameStateSchema = z.object({
-  points: z.record(PlayerSchema, GamePointSchema),
-  server: PlayerSchema,
-  isTiebreak: z.boolean(),
-  isMatchTiebreak: z.boolean().optional(),
-  winner: PlayerSchema.optional(),
-  isNoAdDecidingPoint: z.boolean().optional(),
-}).catchall(z.unknown()); // Permite campos extras
+export const GameStateSchema = z
+  .object({
+    points: z.record(PlayerSchema, GamePointSchema),
+    server: PlayerSchema,
+    isTiebreak: z.boolean(),
+    isMatchTiebreak: z.boolean().optional(),
+    winner: PlayerSchema.optional(),
+    isNoAdDecidingPoint: z.boolean().optional(),
+  })
+  .catchall(z.unknown()); // Permite campos extras
 
 // Schema para SetState
 export const SetStateSchema = z.object({
   games: z.record(PlayerSchema, z.number().int().nonnegative()),
-  tiebreakScore: z.record(PlayerSchema, z.number().int().nonnegative()).optional(),
+  tiebreakScore: z
+    .record(PlayerSchema, z.number().int().nonnegative())
+    .optional(),
   winner: PlayerSchema.optional(),
 });
 
 // Schema para MatchState (mais flexível)
-export const MatchStateSchema = z.object({
-  sets: z.record(PlayerSchema, z.number().int().nonnegative()),
-  currentSet: z.number().int().positive(),
-  currentSetState: SetStateSchema,
-  currentGame: GameStateSchema,
-  server: PlayerSchema,
-  winner: PlayerSchema.optional(),
-  isFinished: z.boolean(),
-  config: TennisConfigSchema,
-  completedSets: z.array(z.object({
-    setNumber: z.number().int().positive(),
-    games: z.record(PlayerSchema, z.number().int().nonnegative()),
-    winner: PlayerSchema,
-    tiebreakScore: z.record(PlayerSchema, z.number().int().nonnegative()).optional(),
-  })).optional(),
-  startedAt: z.string().optional(),
-  endedAt: z.string().optional(),
-  durationSeconds: z.number().int().nonnegative().optional(),
-  viewLog: z.array(z.object({
-    viewedAt: z.string(),
+export const MatchStateSchema = z
+  .object({
+    sets: z.record(PlayerSchema, z.number().int().nonnegative()),
+    currentSet: z.number().int().positive(),
+    currentSetState: SetStateSchema,
+    currentGame: GameStateSchema,
+    server: PlayerSchema,
+    winner: PlayerSchema.optional(),
+    isFinished: z.boolean(),
+    config: TennisConfigSchema,
+    completedSets: z
+      .array(
+        z.object({
+          setNumber: z.number().int().positive(),
+          games: z.record(PlayerSchema, z.number().int().nonnegative()),
+          winner: PlayerSchema,
+          tiebreakScore: z
+            .record(PlayerSchema, z.number().int().nonnegative())
+            .optional(),
+        }),
+      )
+      .optional(),
     startedAt: z.string().optional(),
     endedAt: z.string().optional(),
     durationSeconds: z.number().int().nonnegative().optional(),
-  }).catchall(z.unknown())).optional(),
-}).catchall(z.unknown()); // Permite campos extras
+    viewLog: z
+      .array(
+        z
+          .object({
+            viewedAt: z.string(),
+            startedAt: z.string().optional(),
+            endedAt: z.string().optional(),
+            durationSeconds: z.number().int().nonnegative().optional(),
+          })
+          .catchall(z.unknown()),
+      )
+      .optional(),
+  })
+  .catchall(z.unknown()); // Permite campos extras
 
 // Schema para PointDetails (mais flexível)
-const ServeTypeSchema = z.enum(['ACE', 'FAULT_FIRST', 'DOUBLE_FAULT', 'SERVICE_WINNER']);
-const PointResultTypeSchema = z.enum(['WINNER', 'UNFORCED_ERROR', 'FORCED_ERROR']);
-const ShotTypeSchema = z.enum(['FOREHAND', 'BACKHAND', 'VOLLEY', 'SMASH', 'SLICE', 'DROP_SHOT', 'LOB', 'PASSING_SHOT']);
+const ServeTypeSchema = z.enum([
+  "ACE",
+  "FAULT_FIRST",
+  "DOUBLE_FAULT",
+  "SERVICE_WINNER",
+]);
+const PointResultTypeSchema = z.enum([
+  "WINNER",
+  "UNFORCED_ERROR",
+  "FORCED_ERROR",
+]);
+const ShotTypeSchema = z.enum([
+  "FOREHAND",
+  "BACKHAND",
+  "VOLLEY",
+  "SMASH",
+  "SLICE",
+  "DROP_SHOT",
+  "LOB",
+  "PASSING_SHOT",
+]);
 
-export const PointDetailsSchema = z.object({
-  serve: z.object({
-    type: ServeTypeSchema,
-    isFirstServe: z.boolean(),
-  }).optional(),
-  result: z.object({
-    winner: PlayerSchema,
-    type: PointResultTypeSchema,
-    finalShot: ShotTypeSchema.optional(),
-  }).catchall(z.unknown()), // Permite campos extras
-  rally: z.object({
-    ballExchanges: z.number().int().nonnegative(),
-  }).optional(), // Opcional para validação básica
-  timestamp: z.number(),
-}).catchall(z.unknown()); // Permite campos extras
+export const PointDetailsSchema = z
+  .object({
+    serve: z
+      .object({
+        type: ServeTypeSchema,
+        isFirstServe: z.boolean(),
+      })
+      .optional(),
+    result: z
+      .object({
+        winner: PlayerSchema,
+        type: PointResultTypeSchema,
+        finalShot: ShotTypeSchema.optional(),
+      })
+      .catchall(z.unknown()), // Permite campos extras
+    rally: z
+      .object({
+        ballExchanges: z.number().int().nonnegative(),
+      })
+      .optional(), // Opcional para validação básica
+    timestamp: z.number(),
+  })
+  .catchall(z.unknown()); // Permite campos extras
 
 // Schema para PlayerStats
 export const PlayerStatsSchema = z.object({
@@ -135,17 +184,24 @@ export const MatchStatsSchema = z.object({
 });
 
 // Schema para API Responses (mais flexível)
-export const MatchApiResponseSchema = z.object({
-  id: z.string(),
-  sportType: z.string(),
-  format: z.string(), // Mais flexível que enum
-  players: z.object({
-    p1: z.string(),
-    p2: z.string(),
-  }),
-  status: z.string(), // Mais flexível que enum
-  matchState: MatchStateSchema.optional(),
-}).catchall(z.unknown()); // Permite campos extras
+// AREA 1 & 2: Campos extensíveis para White Label / Multi-tenancy
+export const MatchApiResponseSchema = z
+  .object({
+    id: z.string(),
+    sportType: z.string(),
+    format: z.string(), // Mais flexível que enum
+    players: z.object({
+      p1: z.string(),
+      p2: z.string(),
+    }),
+    status: z.string(), // Mais flexível que enum
+    matchState: MatchStateSchema.optional(),
+    // Campos para multi-tenancy — opcionais hoje, obrigatórios no futuro
+    club_id: z.string().optional().nullable(),
+    metadata: z.record(z.unknown()).optional().nullable(),
+    tags: z.array(z.string()).optional().nullable(),
+  })
+  .catchall(z.unknown()); // Permite campos extras
 
 // Funções de validação
 export function validateMatchState(data: unknown) {
@@ -169,7 +225,7 @@ export function validateMatchApiResponse(data: unknown) {
 }
 
 // Versão do contrato (para versionamento)
-export const CONTRACT_VERSION = '1.0.0';
+export const CONTRACT_VERSION = "1.0.0";
 
 // Schema com versionamento
 export const VersionedMatchStateSchema = MatchStateSchema.extend({

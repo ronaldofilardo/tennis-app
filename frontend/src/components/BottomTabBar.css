@@ -1,0 +1,98 @@
+/* ════════════════════════════════════════════════════════════
+   BOTTOM TAB BAR — Mobile Navigation
+   Fixed bottom, thumb-zone, iOS-safe-area aware
+   ════════════════════════════════════════════════════════════ */
+
+.bottom-tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  background: var(--clr-surface, #181d27);
+  border-top: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+  /* iOS safe area */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  height: 56px;
+}
+
+.bottom-tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--clr-text-muted, #6b7280);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 6px 0;
+  position: relative;
+  transition: color 0.2s;
+  /* touch target: full flex area, min 44px */
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bottom-tab-item:active {
+  opacity: 0.7;
+}
+
+.bottom-tab-item--active {
+  color: var(--clr-accent, #22c55e);
+}
+
+.bottom-tab-icon {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.bottom-tab-label {
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Active indicator dot */
+.bottom-tab-item--active::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--clr-accent, #22c55e);
+}
+
+/* Badge de notificação */
+.bottom-tab-badge {
+  position: absolute;
+  top: 4px;
+  right: calc(50% - 16px);
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  background: var(--clr-live, #f43f5e);
+  color: #fff;
+  font-size: 0.55rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+/* Hide on large screens — only show on mobile/tablet */
+@media (min-width: 1024px) {
+  .bottom-tab-bar {
+    display: none;
+  }
+}

@@ -85,11 +85,11 @@ const MatchStatsModal: React.FC<MatchStatsModalProps> = ({
         <div className="match-stats-modal" onClick={(e) => e.stopPropagation()}>
           <div className="modal-header">
             <h2>📊 Comparativo de Estatísticas</h2>
-            <button className="print-button" title="Imprimir" onClick={() => window.print()} style={{marginRight: 8}}>🖨️</button>
+            <button className="print-button" title="Imprimir" onClick={() => window.print()}>🖨️</button>
             <button className="close-button" onClick={onClose}>×</button>
           </div>
-          <div style={{ padding: 24 }}>
-            <p>Carregando estatísticas...</p>
+          <div className="modal-content">
+            <p className="loading-message">Carregando estatísticas...</p>
           </div>
         </div>
       </div>
@@ -223,7 +223,7 @@ const MatchStatsModal: React.FC<MatchStatsModalProps> = ({
       <div className="match-stats-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>📊 Comparativo de Estatísticas</h2>
-          <button className="print-button" title="Imprimir" onClick={() => window.print()} style={{marginRight: 8}}>🖨️</button>
+          <button className="print-button" title="Imprimir" onClick={() => window.print()}>🖨️</button>
           <button className="close-button" onClick={onClose}>×</button>
         </div>
 

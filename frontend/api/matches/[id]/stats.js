@@ -1,44 +1,43 @@
 // frontend/api/matches/[id]/stats.js - Serverless Function para Estatísticas da Partida
+// SEGURO: Usa authMiddleware para autenticação
 
-import { getMatchStats } from "../../../src/services/matchService.js";
+import { getMatchStats, getMatchById } from "../../../src/services/matchService.js";
 import {
-  corsHeaders,
-  createTimeoutHandler,
   handleCors,
-  handleApiError,
-} from "../../../src/services/businessLogic.js";
+  requireAuth,
+  sendJson,
+  methodNotAllowed,
+} from "../../_lib/authMiddleware.js";
 
 export default async function handler(req, res) {
-  const timeout = createTimeoutHandler(res);
-
   try {
-    handleCors(res);
-    if (req.method === "OPTIONS") {
-      clearTimeout(timeout);
-      return res.status(200).end();
-    }
+    if (handleCors(req, res)) return;
+
+    const ctx = requireAuth(req, res);
+    if (!ctx) return;
 
     if (req.method !== "GET") {
-      clearTimeout(timeout);
-      return res.status(405).json({ error: "Método não permitido" });
+      return methodNotAllowed(res, ["GET"]);
     }
 
     const { id } = req.query;
 
     if (!id) {
-      clearTimeout(timeout);
-      return res.status(400).json({ error: "ID da partida é obrigatório" });
+      return sendJson(res, 400, { error: "ID da partida é obrigatório" });
+    }
+
+    // Verificar isolamento do clube
+    if (ctx.role !== "ADMIN") {
+      const match = await getMatchById(id);
+      if (match?.clubId && match.clubId !== ctx.clubId && match.visibility !== "PUBLIC") {
+        return sendJson(res, 403, { error: "Access denied to this match" });
+      }
     }
 
     const stats = await getMatchStats(id);
-    clearTimeout(timeout);
-    return res.json(stats);
+    return sendJson(res, 200, stats);
   } catch (error) {
-    return handleApiError(
-      error,
-      res,
-      timeout,
-      ` matches/${req.query?.id || "unknown"}/stats`
-    );
+    console.error(`Erro em matches/${req.query?.id || "unknown"}/stats:`, error);
+    return sendJson(res, 500, { error: error.message || "Internal server error" });
   }
 }

@@ -8,6 +8,20 @@ import { AuthProvider } from "../contexts/AuthContext";
 import { MatchesProvider } from "../contexts/MatchesContext";
 import { NavigationProvider } from "../contexts/NavigationContext";
 
+// Mock do Toast para evitar erro de ToastProvider em testes unitários
+vi.mock("../components/Toast", () => ({
+  useToast: () => ({
+    showToast: vi.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+    dismiss: vi.fn(),
+    dismissAll: vi.fn(),
+  }),
+  ToastProvider: ({ children }) => children,
+}));
+
 // Mock useParams hook
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");

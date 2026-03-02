@@ -1,0 +1,177 @@
+/* ════════════════════════════════════════════════════════════
+   ATHLETE HEADER — Compact profile + KPIs
+   Mobile-first, collapsible
+   ════════════════════════════════════════════════════════════ */
+
+.athlete-header {
+  margin-bottom: 12px;
+}
+
+.athlete-header-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.athlete-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--clr-surface-2, #1e2535);
+  border: 2px solid var(--clr-accent, #22c55e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: var(--clr-text, #e8eaf0);
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+.athlete-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.athlete-name {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--clr-text, #e8eaf0);
+  margin: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.athlete-subtitle {
+  font-size: 0.72rem;
+  color: var(--clr-text-muted, #6b7280);
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* Quick stats row inline */
+.athlete-quick-stats {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.athlete-quick-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.athlete-quick-stat-value {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--clr-text, #e8eaf0);
+  line-height: 1;
+}
+
+.athlete-quick-stat-value--win {
+  color: var(--clr-accent, #22c55e);
+}
+
+.athlete-quick-stat-value--loss {
+  color: var(--clr-live, #f43f5e);
+}
+
+.athlete-quick-stat-label {
+  font-size: 0.55rem;
+  color: var(--clr-text-muted, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+/* Expand chevron */
+.athlete-expand-icon {
+  font-size: 0.8rem;
+  color: var(--clr-text-muted, #6b7280);
+  transition: transform 0.25s;
+  flex-shrink: 0;
+}
+
+.athlete-expand-icon--open {
+  transform: rotate(180deg);
+}
+
+/* ── Expanded Details ─────────────────────────────────────── */
+
+.athlete-details {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition:
+    max-height 0.3s ease,
+    opacity 0.25s ease;
+}
+
+.athlete-details--open {
+  max-height: 300px;
+  opacity: 1;
+}
+
+.athlete-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 8px 0 12px;
+}
+
+.athlete-kpi-card {
+  background: var(--clr-surface, #181d27);
+  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  border-radius: 10px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.athlete-kpi-value {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--clr-text, #e8eaf0);
+  line-height: 1;
+}
+
+.athlete-kpi-label {
+  font-size: 0.58rem;
+  color: var(--clr-text-muted, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.athlete-kpi-trend {
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.athlete-kpi-trend--up {
+  color: var(--clr-accent, #22c55e);
+}
+
+.athlete-kpi-trend--down {
+  color: var(--clr-live, #f43f5e);
+}
+
+/* Small screens: 2x2 grid */
+@media (max-width: 360px) {
+  .athlete-kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

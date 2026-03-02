@@ -1,53 +1,52 @@
 // frontend/api/matches/[id]/state.js - Serverless Function para Estado da Partida
+// SEGURO: Usa authMiddleware para autenticação
 
 import {
   getMatchState,
   updateMatchState,
+  getMatchById,
 } from "../../../src/services/matchService.js";
 import {
-  corsHeaders,
-  createTimeoutHandler,
   handleCors,
-  handleApiError,
-} from "../../../src/services/businessLogic.js";
+  requireAuth,
+  sendJson,
+  methodNotAllowed,
+} from "../../_lib/authMiddleware.js";
 
 export default async function handler(req, res) {
-  const timeout = createTimeoutHandler(res);
-
   try {
-    handleCors(res);
-    if (req.method === "OPTIONS") {
-      clearTimeout(timeout);
-      return res.status(200).end();
-    }
+    if (handleCors(req, res)) return;
+
+    const ctx = requireAuth(req, res);
+    if (!ctx) return;
 
     const { id } = req.query;
 
     if (!id) {
-      clearTimeout(timeout);
-      return res.status(400).json({ error: "ID da partida é obrigatório" });
+      return sendJson(res, 400, { error: "ID da partida é obrigatório" });
+    }
+
+    // Verificar isolamento do clube
+    if (ctx.role !== "ADMIN") {
+      const match = await getMatchById(id);
+      if (match?.clubId && match.clubId !== ctx.clubId && match.visibility !== "PUBLIC") {
+        return sendJson(res, 403, { error: "Access denied to this match" });
+      }
     }
 
     if (req.method === "GET") {
       const state = await getMatchState(id);
-      clearTimeout(timeout);
-      return res.json(state);
+      return sendJson(res, 200, state);
     }
 
     if (req.method === "PATCH") {
       const result = await updateMatchState(id, req.body);
-      clearTimeout(timeout);
-      return res.json(result);
+      return sendJson(res, 200, result);
     }
 
-    clearTimeout(timeout);
-    return res.status(405).json({ error: "Método não permitido" });
+    return methodNotAllowed(res, ["GET", "PATCH"]);
   } catch (error) {
-    return handleApiError(
-      error,
-      res,
-      timeout,
-      ` matches/${req.query?.id || "unknown"}/state`
-    );
+    console.error(`Erro em matches/${req.query?.id || "unknown"}/state:`, error);
+    return sendJson(res, 500, { error: error.message || "Internal server error" });
   }
 }

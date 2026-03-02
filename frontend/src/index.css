@@ -1,14 +1,41 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: var(
+    --font-main,
+    Inter,
+    system-ui,
+    Avenir,
+    Helvetica,
+    Arial,
+    sans-serif
+  );
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #071912;
+  color: var(--text-primary, rgba(255, 255, 255, 0.87));
+  background-color: var(--court-bg, #071912);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Escala fluida — substitui zoom: 0.65 para responsividade em iframes/white-label */
+  font-size: clamp(9px, 1.2vw, 16px);
+
+  /* ── App-level design tokens (dark sport theme) ────── */
+  --clr-bg: #0f1117;
+  --clr-surface: #181d27;
+  --clr-surface-2: #1e2535;
+  --clr-border: rgba(255, 255, 255, 0.07);
+  --clr-text: #e8eaf0;
+  --clr-text-muted: #6b7280;
+  --clr-text-dim: #9ca3af;
+  --clr-accent: #22c55e;
+  --clr-live: #f43f5e;
+  --clr-blue: #3b82f6;
+  --clr-yellow: #eab308;
+  --clr-clay: #c4623a;
+  --clr-hard: #3b82f6;
+  --clr-grass: #16a34a;
 }
 body {
   margin: 0;
@@ -17,5 +44,5 @@ body {
   padding-top: 4rem;
   min-width: 320px;
   min-height: 100vh;
-  zoom: 0.65;
+  /* zoom removido — usar font-size fluido + rem em vez de zoom fixo */
 }

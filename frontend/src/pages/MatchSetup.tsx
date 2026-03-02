@@ -1,8 +1,11 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { API_URL } from "../config/api";
+import httpClient from "../config/httpClient";
 import "./MatchSetup.css";
 import { useAuth } from "../contexts/AuthContext";
+import { useToast } from "../components/Toast";
+import { createLogger } from "../services/logger";
+import AthleteSearchInput from "../components/AthleteSearchInput";
+import type { AthleteResult } from "../components/AthleteSearchInput";
 
 // Interface para as props, incluindo a função para voltar ao Dashboard
 interface CreatedMatchData {
@@ -18,22 +21,33 @@ interface CreatedMatchData {
 interface MatchSetupProps {
   onMatchCreated: (matchData: CreatedMatchData) => void;
   onBackToDashboard: () => void;
-  players?: Array<{ id: string; name: string; email?: string }>; // accept PlayerMock shape
 }
+
+const log = createLogger("MatchSetup");
 
 const MatchSetup: React.FC<MatchSetupProps> = ({
   onBackToDashboard,
   onMatchCreated,
-  players,
 }) => {
   const { currentUser } = useAuth();
+  const toast = useToast();
   const [sport, setSport] = useState("TENNIS");
   const [format, setFormat] = useState("BEST_OF_3");
   const [courtType, setCourtType] = useState<"GRASS" | "CLAY" | "HARD">("HARD");
   const [nickname, setNickname] = useState("");
   const [player1, setPlayer1] = useState("");
   const [player2, setPlayer2] = useState("");
-  const [visibleTo, setVisibleTo] = useState<"both" | string>("both");
+  const [selectedAthlete1, setSelectedAthlete1] =
+    useState<AthleteResult | null>(null);
+  const [selectedAthlete2, setSelectedAthlete2] =
+    useState<AthleteResult | null>(null);
+  const [visibility, setVisibility] = useState<
+    "PUBLIC" | "CLUB" | "PLAYERS_ONLY"
+  >("PLAYERS_ONLY");
+  const [selectedScorer, setSelectedScorer] = useState<AthleteResult | null>(
+    null,
+  );
+  const [visibleTo, setVisibleTo] = useState<"both" | string>("both"); // Legado
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -51,23 +65,35 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
 
       setError(null);
 
-      const response = await axios.post(`${API_URL}/matches`, {
+      const response = await httpClient.post<CreatedMatchData>("/matches", {
         sportType: sport,
         format: format,
         courtType: sport === "TENNIS" ? courtType : undefined,
         players: { p1: player1 || "Jogador 1", p2: player2 || "Jogador 2" },
         nickname: nickname || null,
-        visibleTo: visibleToValue || "both",
+        visibility: visibility || "PLAYERS_ONLY",
+        scorerId: selectedScorer?.id || null,
+        visibleTo: visibleToValue || "both", // Legado
         apontadorEmail: currentUser?.email || "",
+        // Novos campos multi-tenancy
+        player1Id: selectedAthlete1?.id?.startsWith("guest_")
+          ? undefined
+          : selectedAthlete1?.id,
+        player2Id: selectedAthlete2?.id?.startsWith("guest_")
+          ? undefined
+          : selectedAthlete2?.id,
       });
 
-      // eslint-disable-next-line no-console
-      console.log("axios.post retornou:", response.data);
-      onMatchCreated(response.data as CreatedMatchData); // Navega para o placar com os dados da nova partida
+      log.info("Partida criada com sucesso", {
+        id: response.data.id,
+      });
+      onMatchCreated(response.data); // Navega para o placar com os dados da nova partida
     } catch (error) {
-      console.error("Erro ao criar a partida:", error);
-      alert(
+      log.error("Erro ao criar a partida", error);
+      // AREA 4: Substituído alert() nativo por Toast (themeable para White Label)
+      toast.error(
         "Falha ao criar a partida. Verifique o console do navegador e do backend.",
+        "Erro ao criar partida",
       );
     }
   };
@@ -137,57 +163,29 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
         <div className="form-group">
           <label>Jogadores</label>
           <div className="player-inputs">
-            {players && players.length > 0 ? (
-              <>
-                <select
-                  value={player1}
-                  onChange={(e) => setPlayer1(e.target.value)}
-                  data-testid="player1-input"
-                >
-                  <option value="">Selecione Jogador 1</option>
-                  {players.map(
-                    (p: { id: string; name: string; email?: string }) => (
-                      <option key={p.id} value={p.email || p.id}>
-                        {p.name}
-                      </option>
-                    ),
-                  )}
-                </select>
-                <span>vs</span>
-                <select
-                  value={player2}
-                  onChange={(e) => setPlayer2(e.target.value)}
-                  data-testid="player2-input"
-                >
-                  <option value="">Selecione Jogador 2</option>
-                  {players.map(
-                    (p: { id: string; name: string; email?: string }) => (
-                      <option key={p.id} value={p.email || p.id}>
-                        {p.name}
-                      </option>
-                    ),
-                  )}
-                </select>
-              </>
-            ) : (
-              <>
-                <input
-                  type="text"
-                  placeholder="Jogador 1 (ou Dupla 1)"
-                  value={player1}
-                  onChange={(e) => setPlayer1(e.target.value)}
-                  data-testid="player1-input"
-                />
-                <span>vs</span>
-                <input
-                  type="text"
-                  placeholder="Jogador 2 (ou Dupla 2)"
-                  value={player2}
-                  onChange={(e) => setPlayer2(e.target.value)}
-                  data-testid="player2-input"
-                />
-              </>
-            )}
+            <AthleteSearchInput
+              id="player1-search"
+              label="Jogador 1"
+              placeholder="Buscar atleta..."
+              value={selectedAthlete1}
+              onSelect={(a) => {
+                setSelectedAthlete1(a);
+                setPlayer1(a?.name || "");
+              }}
+              allowGuest
+            />
+            <span>vs</span>
+            <AthleteSearchInput
+              id="player2-search"
+              label="Jogador 2"
+              placeholder="Buscar atleta..."
+              value={selectedAthlete2}
+              onSelect={(a) => {
+                setSelectedAthlete2(a);
+                setPlayer2(a?.name || "");
+              }}
+              allowGuest
+            />
           </div>
         </div>
 
@@ -248,25 +246,54 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
           />
         </div>
 
+        <div className="form-group">
+          <label>Visibilidade da partida</label>
+          <select
+            value={visibility}
+            onChange={(e) =>
+              setVisibility(
+                e.target.value as "PUBLIC" | "CLUB" | "PLAYERS_ONLY",
+              )
+            }
+          >
+            <option value="PUBLIC">🌐 Pública (todos podem ver)</option>
+            <option value="CLUB">🏢 Clube (apenas membros do clube)</option>
+            <option value="PLAYERS_ONLY">🔒 Apenas Jogadores</option>
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label>Marcador Comunitário (opcional)</label>
+          <p style={{ fontSize: "0.85rem", color: "#666", margin: "4px 0" }}>
+            Selecione uma pessoa para marcar os pontos da partida
+          </p>
+          <AthleteSearchInput
+            id="scorer-search"
+            label="Procurar Marcador"
+            placeholder="Buscar atleta ou usuário..."
+            value={selectedScorer}
+            onSelect={(a) => {
+              // Validar que o scorer não é um dos jogadores
+              if (
+                a?.id === selectedAthlete1?.id ||
+                a?.id === selectedAthlete2?.id
+              ) {
+                toast.warning(
+                  "O marcador não pode ser um dos jogadores da partida.",
+                  "Seleção inválida",
+                );
+                return;
+              }
+              setSelectedScorer(a);
+            }}
+            allowGuest
+          />
+        </div>
+
         <div className="form-actions">
-          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-            <label style={{ fontSize: 12 }}>Visível para</label>
-            <select
-              value={visibleTo}
-              onChange={(e) => setVisibleTo(e.target.value)}
-            >
-              <option value="both">Ambos</option>
-              <option value={player1} disabled={!player1}>
-                Jogador 1
-              </option>
-              <option value={player2} disabled={!player2}>
-                Jogador 2
-              </option>
-            </select>
-            <button type="submit" className="start-match-button">
-              Iniciar Partida
-            </button>
-          </div>
+          <button type="submit" className="start-match-button">
+            Iniciar Partida
+          </button>
         </div>
       </form>
     </div>

@@ -2,39 +2,426 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
+// ============================================================
+// ENUMS — Fonte única de verdade para roles, status e tipos
+// ============================================================
+
+enum UserRole {
+  ADMIN
+  GESTOR
+  CLUB_STAFF
+  COACH
+  ATHLETE
+  SPECTATOR
+}
+
+enum MembershipStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+}
+
+enum MatchStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  FINISHED
+}
+
+enum MatchVisibility {
+  PUBLIC
+  CLUB
+  PLAYERS_ONLY
+}
+
+enum ScorerStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+enum TournamentStatus {
+  DRAFT
+  REGISTRATION
+  IN_PROGRESS
+  FINISHED
+  CANCELLED
+}
+
+enum TournamentFormat {
+  SINGLE_ELIMINATION
+  DOUBLE_ELIMINATION
+  ROUND_ROBIN
+  GROUP_STAGE
+}
+
+enum TournamentEntryStatus {
+  REGISTERED
+  CONFIRMED
+  WITHDRAWN
+  ELIMINATED
+  CHAMPION
+}
+
+enum OrganizerRole {
+  ORGANIZER
+  HEAD_REFEREE
+}
+
+enum PlanType {
+  FREE
+  PREMIUM
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+}
+
+enum BillingCycle {
+  MONTHLY
+  QUARTERLY
+  YEARLY
+}
+
+enum InvoiceStatus {
+  PENDING
+  CONFIRMED
+  OVERDUE
+  REFUNDED
+}
+
+// ============================================================
+// FASE 1: Identidade e Multi-tenancy
+// ============================================================
+
+/// Clube (Tenant principal). Cada clube isola seus dados.
+model Club {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique // ex: "clube-harmonia" → tenis.clubeharmonia.com
+  logoUrl     String?
+  themeConfig String? // JSON com cores, fontes, etc (ClubTheme)
+  planType    PlanType @default(FREE)
+
+  // === White-Label & Onboarding ===
+  appName             String? // Nome customizado do app (ex: "Tênis Club X")
+  inviteCode          String? @unique // Código de convite único (6 chars)
+  allowedEmailDomains String? // JSON array de domínios permitidos (ex: ["@clube.com"])
+  customDomain        String? @unique // Domínio customizado (ex: "tenis.clube.com.br")
+  defaultVisibility   String  @default("CLUB") // Visibilidade padrão de partidas
+  defaultScoreMode    String  @default("technical") // Modo padrão: "family" ou "technical"
+  termsText           String? // Termos e políticas do clube
+  termsPdfUrl         String? // URL do PDF de termos
+  billingModel        String  @default("B2B") // "B2B" = clube paga, "B2C" = atleta paga
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships  ClubMembership[]
+  matches      Match[]
+  tournaments  Tournament[]
+  subscription Subscription?
+  invoices     Invoice[]
+
+  @@map("clubs")
+}
+
+// ============================================================
+// Subscription & Billing (SaaS)
+// ============================================================
+
+/// Assinatura do clube — controla acesso à plataforma.
+model Subscription {
+  id                  String             @id @default(cuid())
+  clubId              String             @unique
+  planType            PlanType           @default(FREE)
+  status              SubscriptionStatus @default(ACTIVE)
+  billingCycle        BillingCycle       @default(MONTHLY)
+  maxAthletes         Int                @default(10) // FREE=10, PREMIUM=50, ENTERPRISE=999999
+  currentPeriodStart  DateTime           @default(now())
+  currentPeriodEnd    DateTime
+  // Integração Asaas (preparado para futura integração)
+  asaasCustomerId     String?
+  asaasSubscriptionId String?
+  canceledAt          DateTime?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  club     Club      @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  invoices Invoice[]
+
+  @@index([status])
+  @@map("subscriptions")
+}
+
+/// Faturas geradas por assinatura.
+model Invoice {
+  id                 String        @id @default(cuid())
+  subscriptionId     String
+  clubId             String
+  asaasPaymentId     String?       @unique // ID de pagamento no Asaas
+  amount             Decimal       @db.Decimal(10, 2)
+  currency           String        @default("BRL")
+  status             InvoiceStatus @default(PENDING)
+  billingPeriodStart DateTime
+  billingPeriodEnd   DateTime
+  paidAt             DateTime?
+  invoiceUrl         String? // URL para download de boleto/NF
+  createdAt          DateTime      @default(now())
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  club         Club         @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@index([clubId])
+  @@index([subscriptionId])
+  @@map("invoices")
+}
+
+/// Usuário autenticado (identidade global). Um User pode pertencer a N clubes.
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  avatarUrl    String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  memberships    ClubMembership[]
+  athleteProfile AthleteProfile?
+  createdMatches Match[]               @relation("MatchCreator")
+  scoredMatches  Match[]               @relation("MatchScorer")
+  tournaments    TournamentOrganizer[]
+
+  @@map("users")
+}
+
+/// Vínculo User ↔ Club com role específica dentro do clube.
+model ClubMembership {
+  id     String   @id @default(cuid())
+  userId String
+  clubId String
+  role   UserRole @default(ATHLETE)
+
+  invitedByUserId String? // User que convidou este membro
+  status          MembershipStatus @default(ACTIVE)
+
+  // === LGPD / Compliance ===
+  guardianEmail         String? // Email do responsável (menores de 18)
+  guardianConsentAt     DateTime? // Data do consentimento do responsável
+  dataExportRequestedAt DateTime? // Data da solicitação de exportação LGPD
+  deletionRequestedAt   DateTime? // Data da solicitação de exclusão LGPD
+
+  // === Billing B2C (atleta paga) ===
+  asaasPaymentId String? @unique // ID de pagamento individual no Asaas
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  joinedAt DateTime @default(now())
+
+  @@unique([userId, clubId])
+  @@index([clubId])
+  @@map("club_memberships")
+}
+
+// ============================================================
+// FASE 2: Base Central de Atletas
+// ============================================================
+
+/// Perfil público de atleta. Dados completos visíveis apenas para o clube "dono".
+/// Outros clubes veem somente nome + clube de origem.
+model AthleteProfile {
+  id        String    @id @default(cuid())
+  userId    String?   @unique // null = atleta convidado / sem conta
+  name      String
+  nickname  String?
+  birthDate DateTime?
+  phone     String?
+  ranking   Int?
+  category  String? // ex: "SUB-18", "ADULTO", "SENIOR"
+  gender    String? // MALE, FEMALE, OTHER
+  clubId    String? // clube que cadastrou (visão completa)
+  isPublic  Boolean   @default(true) // se aparece em busca global
+
+  // Campos extras para importação em massa
+  cpf       String?   @unique
+  entity    String?   // entidade esportiva
+  fatherName String?
+  fatherCpf  String?
+  motherName String?
+  motherCpf  String?
+
+  // Documentos (upload futuro — campos desativados por enquanto)
+  docRgUrl            String?
+  docMedicalCertUrl   String? // atestado médico
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user              User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  matchesAsP1       Match[]           @relation("MatchPlayer1")
+  matchesAsP2       Match[]           @relation("MatchPlayer2")
+  tournamentEntries TournamentEntry[]
+
+  @@index([name])
+  @@index([clubId])
+  @@index([cpf])
+  @@map("athlete_profiles")
+}
+
+// ============================================================
+// FASE 3: Torneios e Competições
+// ============================================================
+
+/// Torneio criado por um clube.
+model Tournament {
+  id               String           @id @default(cuid())
+  clubId           String
+  name             String
+  description      String?
+  startDate        DateTime?
+  endDate          DateTime?
+  format           TournamentFormat @default(SINGLE_ELIMINATION)
+  sportType        String           @default("TENNIS")
+  courtType        String? // CLAY, HARD, GRASS
+  status           TournamentStatus @default(DRAFT)
+  maxPlayers       Int?
+  rules            String? // JSON com regras específicas (matchFormat, setsToWin, etc)
+  registrationType String           @default("INVITE_ONLY") // OPEN, INVITE_ONLY, CLUB_ONLY
+  isInternal       Boolean          @default(false) // true = torneio de treino (COACH)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  club       Club                  @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  categories TournamentCategory[]
+  entries    TournamentEntry[]
+  matches    Match[]               @relation("TournamentMatches")
+  organizers TournamentOrganizer[]
+
+  @@index([clubId])
+  @@index([status])
+  @@map("tournaments")
+}
+
+/// Categoria dentro de um torneio (ex: Masculino Sub-18, Feminino Adulto).
+model TournamentCategory {
+  id           String  @id @default(cuid())
+  tournamentId String
+  name         String // ex: "Masculino Adulto", "Feminino Sub-18"
+  gender       String? // MALE, FEMALE, MIXED
+  ageGroup     String? // SUB-14, SUB-18, ADULT, SENIOR
+  maxPlayers   Int?
+  bracketType  String  @default("SINGLE_ELIMINATION")
+
+  tournament Tournament        @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  entries    TournamentEntry[]
+  matches    Match[]           @relation("CategoryMatches")
+
+  @@unique([tournamentId, name])
+  @@map("tournament_categories")
+}
+
+/// Inscrição de um atleta em uma categoria de torneio.
+model TournamentEntry {
+  id           String                @id @default(cuid())
+  tournamentId String
+  categoryId   String?
+  athleteId    String
+  seed         Int? // Cabeça de chave (1, 2, 3...)
+  status       TournamentEntryStatus @default(REGISTERED)
+
+  tournament Tournament          @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  category   TournamentCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  athlete    AthleteProfile      @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([tournamentId, categoryId, athleteId])
+  @@index([tournamentId])
+  @@map("tournament_entries")
+}
+
+/// Organizadores de torneio (relação N:N entre User e Tournament).
+model TournamentOrganizer {
+  id           String        @id @default(cuid())
+  userId       String
+  tournamentId String
+  role         OrganizerRole @default(ORGANIZER)
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tournamentId])
+  @@map("tournament_organizers")
+}
+
+// ============================================================
+// Match (expandido com referências a Club, Athletes e Tournament)
+// ============================================================
+
 model Match {
-    id             String   @id @default(cuid())
-    sportType      String
-    format         String
-    nickname       String?
-    courtType      String? // Tipo de quadra: CLAY, HARD, GRASS
-    apontadorEmail String // Novo campo para identificar o responsável
-    playerP1       String
-    playerP2       String
-    status         String   @default("NOT_STARTED")
-    score          String?
-    winner         String?
-    createdAt      DateTime @default(now())
-    updatedAt      DateTime @updatedAt
+  id        String  @id @default(cuid())
+  sportType String
+  format    String
+  nickname  String?
+  courtType String?
 
-    // Lista de e-mails dos usuários associados à partida
-    playersEmails String[]
+  // === Migração: campos legados mantidos para retrocompatibilidade ===
+  apontadorEmail String? // legado → substituído por scorerId (marcador comunitário)
+  playerP1       String // legado → nome string
+  playerP2       String // legado → nome string
+  playersEmails  String[]
 
-    // JSON field para armazenar histórico de sets completos
-    // Estrutura: [{ setNumber: 1, games: { PLAYER_1: 6, PLAYER_2: 4 }, winner: "PLAYER_1" }]
-    completedSets String? // Armazenado como JSON string
+  // === Novos campos de identidade ===
+  createdByUserId String? // User que criou a partida
+  clubId          String? // Clube dono (null = partida pública/avulsa)
+  player1Id       String? // AthleteProfile do jogador 1
+  player2Id       String? // AthleteProfile do jogador 2
+  tournamentId    String? // Torneio vinculado (null = partida avulsa)
+  categoryId      String? // Categoria do torneio
+  roundNumber     Int? // Rodada no torneio (1 = final, 2 = semifinal, etc)
+  bracketPosition Int? // Posição no chaveamento
 
-    // JSON field para armazenar estado completo da partida em tempo real
-    // Inclui: sets, currentSet, currentSetState, currentGame, server, etc.
-    matchState String? // Estado completo serializado do TennisScoring
+  // === Visibilidade e Marcador Comunitário ===
+  visibility   MatchVisibility @default(PLAYERS_ONLY)
+  scorerId     String? // User que marca pontos (marcador comunitário)
+  scorerStatus ScorerStatus?
 
-    @@map("matches")
+  status    MatchStatus @default(NOT_STARTED)
+  score     String?
+  winner    String?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  completedSets String? // JSON string
+  matchState    String? // JSON string — estado completo do TennisScoring
+
+  // === Relações ===
+  createdBy  User?               @relation("MatchCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  scorer     User?               @relation("MatchScorer", fields: [scorerId], references: [id], onDelete: SetNull)
+  club       Club?               @relation(fields: [clubId], references: [id], onDelete: SetNull)
+  player1    AthleteProfile?     @relation("MatchPlayer1", fields: [player1Id], references: [id], onDelete: SetNull)
+  player2    AthleteProfile?     @relation("MatchPlayer2", fields: [player2Id], references: [id], onDelete: SetNull)
+  tournament Tournament?         @relation("TournamentMatches", fields: [tournamentId], references: [id], onDelete: SetNull)
+  category   TournamentCategory? @relation("CategoryMatches", fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([clubId])
+  @@index([status])
+  @@index([tournamentId])
+  @@index([createdByUserId])
+  @@index([scorerId])
+  @@map("matches")
 }

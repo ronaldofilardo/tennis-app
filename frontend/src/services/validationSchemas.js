@@ -111,10 +111,23 @@ export const MatchCreateSchema = z.object({
     { required_error: "O objeto players é obrigatório." },
   ),
   nickname: z.string().optional().nullable(),
-  visibleTo: z.string().optional().nullable(),
-  apontadorEmail: z.string().email({
-    message: "O e-mail do apontador é obrigatório e deve ser válido.",
-  }),
+  visibility: z
+    .enum(["PUBLIC", "CLUB", "PLAYERS_ONLY"])
+    .default("PLAYERS_ONLY"),
+  scorerId: z.string().optional().nullable(), // ID do marcador comunitário
+  apontadorEmail: z.string().email().optional().nullable(), // Legado — agora opcional
+  visibleTo: z.string().optional().nullable(), // Legado
+  club_id: z.string().optional().nullable(),
+  metadata: z.record(z.unknown()).optional().nullable(),
+  tags: z.array(z.string()).optional().nullable(),
+  _meta: z
+    .object({
+      payloadVersion: z.string().optional(),
+      clientTimestamp: z.string().optional(),
+      clubId: z.string().nullable().optional(),
+    })
+    .optional()
+    .nullable(),
 });
 
 // Esquema para atualização de partida
@@ -126,19 +139,16 @@ export const MatchUpdateSchema = z
   })
   .strict();
 
-// Esquema para atualização de estado da partida - versão simplificada para evitar problemas
-export const MatchStateUpdateSchema = {
-  parse: (data) => {
-    console.warn(
-      "[MatchStateUpdateSchema] Usando parse stub - validação desabilitada",
-    );
-    return data;
-  },
-  safeParse: (data) => ({
-    success: true,
-    data: data,
-  }),
-};
+// Esquema para atualização de estado da partida — validação real restaurada
+// Aceita matchState como objeto ou string JSON contendo as chaves essenciais do TennisScoring
+export const MatchStateUpdateSchema = z
+  .object({
+    matchState: z.union([
+      z.string().min(1, "matchState string não pode ser vazio"),
+      z.object({}).passthrough(), // aceita qualquer objeto (o estado JSON é complexo e variável)
+    ]),
+  })
+  .strict();
 
 // Esquema para parâmetros de query de matches visíveis
 export const VisibleMatchesQuerySchema = z

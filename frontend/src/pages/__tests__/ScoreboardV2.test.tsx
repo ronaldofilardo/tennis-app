@@ -5,6 +5,20 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 const navigateMock = vi.fn();
 
 vi.mock("../ScoreboardV2.css", () => ({}));
+
+// Mock do Toast para evitar erro de ToastProvider em testes unitários
+vi.mock("../../components/Toast", () => ({
+  useToast: () => ({
+    showToast: vi.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+    dismiss: vi.fn(),
+    dismissAll: vi.fn(),
+  }),
+  ToastProvider: ({ children }: any) => children,
+}));
 vi.mock("../../components/LoadingIndicator", async () => {
   const mocks = await import("../../__mocks__");
   return { default: mocks.MockLoadingIndicator };

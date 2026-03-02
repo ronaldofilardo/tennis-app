@@ -157,8 +157,14 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
       ? getValidDirecoes(vencedor, sel.situacao, sel.tipo, sel.efeito)
       : [];
 
-  // Golpe especial: depende somente de golpe + efeito
-  const golpeEspOpts = getValidGolpeEsp(sel.golpe, sel.efeito);
+  // Golpe especial: depende de golpe + efeito + contexto (vencedor, situacao, tipo)
+  const golpeEspOpts = getValidGolpeEsp(
+    sel.golpe,
+    sel.efeito,
+    vencedor,
+    sel.situacao,
+    sel.tipo,
+  );
 
   // Confirmar fica disponível assim que 'golpe' for selecionado (registro parcial permitido)
   const isComplete = !!sel.golpe;
