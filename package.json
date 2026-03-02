@@ -23,6 +23,8 @@
     "vitest": "^4.0.7"
   },
   "dependencies": {
-    "cross-env": "^10.1.0"
+    "cross-env": "^10.1.0",
+    "@prisma/client": "^6.16.3",
+    "prisma": "^6.16.3"
   }
 }
