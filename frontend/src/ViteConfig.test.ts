@@ -4,17 +4,17 @@ import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+// Sempre aponta para frontend/vite.config.ts independente do cwd
+const viteConfigPath = join(__dirname, "../vite.config.ts");
 
 describe("Configuração do Vite", () => {
   it("deve ter host configurado para 0.0.0.0", () => {
-    const viteConfigPath = join(process.cwd(), "vite.config.ts");
     const viteConfigContent = readFileSync(viteConfigPath, "utf-8");
 
     expect(viteConfigContent).toContain("host: '0.0.0.0'");
   });
 
   it("deve ter proxy configurado para /api", () => {
-    const viteConfigPath = join(process.cwd(), "vite.config.ts");
     const viteConfigContent = readFileSync(viteConfigPath, "utf-8");
 
     expect(viteConfigContent).toContain("'/api': {");
@@ -29,7 +29,6 @@ describe("Configuração do Vite", () => {
   });
 
   it("deve ter plugin React configurado", () => {
-    const viteConfigPath = join(process.cwd(), "vite.config.ts");
     const viteConfigContent = readFileSync(viteConfigPath, "utf-8");
 
     expect(viteConfigContent).toContain("react()");
@@ -37,7 +36,6 @@ describe("Configuração do Vite", () => {
   });
 
   it("deve exportar configuração válida", () => {
-    const viteConfigPath = join(process.cwd(), "vite.config.ts");
     const viteConfigContent = readFileSync(viteConfigPath, "utf-8");
 
     expect(viteConfigContent).toContain("export default defineConfig");

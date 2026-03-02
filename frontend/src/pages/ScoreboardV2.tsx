@@ -27,6 +27,8 @@ import { API_URL } from "../config/api";
 import { useMatchSync } from "../hooks/useMatchSync";
 import { useShakeDetection } from "../hooks/useGestures";
 import { resolvePlayerName } from "../data/players";
+import { useToast } from "../components/Toast";
+import { createLogger } from "../services/logger";
 import CourtBackground from "../components/scoreboard/CourtBackground";
 import MatchHeader, {
   type ViewMode,
@@ -92,6 +94,9 @@ const SetupModal: React.FC<{
 };
 
 const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
+  // AREA 4 & 7: Toast e Logger com contexto de módulo
+  const toast = useToast();
+  const scoreLog = createLogger("ScoreboardV2");
   // Função para persistir o estado antes de fechar
   const handleEndMatch = async () => {
     console.log("[ScoreboardV2] Finalizando partida e persistindo estado");
@@ -470,14 +475,14 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
 
     // 3. Verificar se a partida foi finalizada
     if (newState.isFinished && newState.winner) {
-      console.log(
-        `[ScoreboardV2] Partida finalizada! Vencedor: ${newState.winner}`,
-      );
+      scoreLog.info(`Partida finalizada! Vencedor: ${newState.winner}`);
       const winnerName =
         newState.winner === "PLAYER_1" ? players.p1 : players.p2;
       setTimeout(() => {
-        alert(
-          `🏆 PARTIDA FINALIZADA!\n\nVencedor: ${winnerName}\n\nPlacar Final: ${newState.sets.PLAYER_1} sets x ${newState.sets.PLAYER_2} sets`,
+        // AREA 4: Substituído alert() nativo por Toast (themeable para White Label)
+        toast.success(
+          `Vencedor: ${winnerName} | Placar: ${newState.sets.PLAYER_1} sets x ${newState.sets.PLAYER_2} sets`,
+          "🏆 Partida Finalizada!",
         );
         navigate("/dashboard");
       }, 500);

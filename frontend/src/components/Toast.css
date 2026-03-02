@@ -1,0 +1,122 @@
+/* frontend/src/components/Toast.css */
+/* === AREA 4: Toast/Notification — CSS com custom properties (themeable) === */
+
+.toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: min(90vw, 400px);
+  pointer-events: none;
+}
+
+.toast-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius-badge, 12px);
+  color: var(--text-primary, #f8fafc);
+  font-family: var(--font-main, "Inter", sans-serif);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  pointer-events: auto;
+  box-shadow: var(--shadow-card, 0 8px 32px rgba(0, 0, 0, 0.4));
+  border: 1px solid var(--border-default, rgba(100, 220, 140, 0.18));
+  backdrop-filter: blur(12px);
+  transition: all var(--transition-normal, 300ms ease);
+}
+
+/* Tipos com cores derivadas dos tokens do tema */
+.toast-success {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: var(--success-green, #22c55e);
+}
+
+.toast-error {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: var(--alert-red, #ef4444);
+}
+
+.toast-warning {
+  background: rgba(234, 179, 8, 0.15);
+  border-color: var(--accent-gold, #eab308);
+}
+
+.toast-info {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: var(--player1-color, #3b82f6);
+}
+
+.toast-icon {
+  flex-shrink: 0;
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.toast-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.toast-title {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.toast-message {
+  font-size: 0.8125rem;
+  color: var(--text-secondary, #8fb8a4);
+}
+
+.toast-dismiss {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--text-muted, #4d7a62);
+  cursor: pointer;
+  font-size: 1.25rem;
+  padding: 0;
+  line-height: 1;
+  transition: color var(--transition-fast, 150ms ease);
+}
+
+.toast-dismiss:hover {
+  color: var(--text-primary, #f8fafc);
+}
+
+/* Animações */
+.toast-enter {
+  animation: toast-slide-in 300ms ease forwards;
+}
+
+.toast-exit {
+  animation: toast-slide-out 300ms ease forwards;
+}
+
+@keyframes toast-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-slide-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}

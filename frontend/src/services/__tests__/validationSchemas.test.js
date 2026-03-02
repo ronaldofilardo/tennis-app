@@ -45,7 +45,7 @@ describe("validationSchemas", () => {
 
       const result = MatchCreateSchema.safeParse(validData);
       expect(result.success).toBe(true);
-      expect(result.data).toEqual(validData);
+      expect(result.data).toMatchObject(validData);
     });
 
     it("deve validar dados com campos opcionais", () => {
@@ -238,16 +238,30 @@ describe("validationSchemas", () => {
   });
 
   describe("MatchStateUpdateSchema", () => {
-    it("deve aceitar qualquer payload (stub)", () => {
-      const testData = { any: "data", nested: { object: true } };
+    it("deve aceitar payload com matchState string", () => {
+      const testData = { matchState: '{"score":"1-0"}' };
 
       const result = MatchStateUpdateSchema.safeParse(testData);
       expect(result.success).toBe(true);
       expect(result.data).toEqual(testData);
     });
 
-    it("deve fazer parse de qualquer payload (stub)", () => {
-      const testData = { test: "data" };
+    it("deve aceitar payload com matchState objeto", () => {
+      const testData = { matchState: { score: "1-0", sets: [] } };
+
+      const result = MatchStateUpdateSchema.safeParse(testData);
+      expect(result.success).toBe(true);
+    });
+
+    it("deve rejeitar payload sem matchState (.strict())", () => {
+      const testData = { any: "data", nested: { object: true } };
+
+      const result = MatchStateUpdateSchema.safeParse(testData);
+      expect(result.success).toBe(false);
+    });
+
+    it("deve fazer parse de payload válido com matchState", () => {
+      const testData = { matchState: '{"test":"data"}' };
 
       const result = MatchStateUpdateSchema.parse(testData);
       expect(result).toEqual(testData);

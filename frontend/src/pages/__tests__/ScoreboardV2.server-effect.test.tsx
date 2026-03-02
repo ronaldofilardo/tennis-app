@@ -11,6 +11,20 @@ import { AuthProvider } from "../../contexts/AuthContext";
 import { MatchesProvider } from "../../contexts/MatchesContext";
 import { NavigationProvider } from "../../contexts/NavigationContext";
 
+// Mock do Toast para evitar erro de ToastProvider em testes unitários
+vi.mock("../../components/Toast", () => ({
+  useToast: () => ({
+    showToast: vi.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+    dismiss: vi.fn(),
+    dismissAll: vi.fn(),
+  }),
+  ToastProvider: ({ children }: any) => children,
+}));
+
 const navigateMock = vi.fn();
 
 vi.mock("../ScoreboardV2.css", () => ({}));
@@ -228,14 +242,11 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
 
       // Verificar que handleFault foi chamado (dupla falta automática)
       await waitFor(() => {
-        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
-          "PLAYER_2",
-          {
-            serve: { type: "DOUBLE_FAULT", isFirstServe: false },
-            result: { winner: "PLAYER_2", type: "FORCED_ERROR" },
-            rally: { ballExchanges: 1 },
-          },
-        );
+        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith("PLAYER_2", {
+          serve: { type: "DOUBLE_FAULT", isFirstServe: false },
+          result: { winner: "PLAYER_2", type: "FORCED_ERROR" },
+          rally: { ballExchanges: 1 },
+        });
       });
     });
 
@@ -261,14 +272,11 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
 
       // Verificar que handleFault foi chamado (dupla falta automática)
       await waitFor(() => {
-        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
-          "PLAYER_2",
-          {
-            serve: { type: "DOUBLE_FAULT", isFirstServe: false },
-            result: { winner: "PLAYER_2", type: "FORCED_ERROR" },
-            rally: { ballExchanges: 1 },
-          },
-        );
+        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith("PLAYER_2", {
+          serve: { type: "DOUBLE_FAULT", isFirstServe: false },
+          result: { winner: "PLAYER_2", type: "FORCED_ERROR" },
+          rally: { ballExchanges: 1 },
+        });
       });
     });
   });
@@ -372,14 +380,11 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
 
       // Verificar que o ponto foi marcado automaticamente
       await waitFor(() => {
-        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
-          "PLAYER_2",
-          {
-            serve: { type: "DOUBLE_FAULT", isFirstServe: false },
-            result: { winner: "PLAYER_2", type: "FORCED_ERROR" },
-            rally: { ballExchanges: 1 },
-          },
-        );
+        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith("PLAYER_2", {
+          serve: { type: "DOUBLE_FAULT", isFirstServe: false },
+          result: { winner: "PLAYER_2", type: "FORCED_ERROR" },
+          rally: { ballExchanges: 1 },
+        });
       });
 
       // Verificar que nenhum modal foi aberto
@@ -389,4 +394,3 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
     });
   });
 });
-

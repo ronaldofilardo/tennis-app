@@ -10,6 +10,20 @@ import { AuthProvider } from "../contexts/AuthContext";
 import { MatchesProvider } from "../contexts/MatchesContext";
 import { NavigationProvider } from "../contexts/NavigationContext";
 
+// Mock do Toast para evitar erro de ToastProvider em testes unitários
+vi.mock("../components/Toast", () => ({
+  useToast: () => ({
+    showToast: vi.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+    dismiss: vi.fn(),
+    dismissAll: vi.fn(),
+  }),
+  ToastProvider: ({ children }) => children,
+}));
+
 // Mock useParams hook para refletir o matchId da URL
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
@@ -218,9 +232,11 @@ describe("Testes de Regressão - Funcionalidades Críticas", () => {
     it("dashboard deve permitir navegar para criação de nova partida", async () => {
       renderWithProviders(<Dashboard />);
 
-      // Verificar se botão de criar partida existe
-      const createButton = screen.getByRole("button", { name: /Nova Partida/ });
-      expect(createButton).toBeInTheDocument();
+      // Verificar se botão de criar partida existe (header + FAB)
+      const createButtons = screen.getAllByRole("button", {
+        name: /Nova Partida/,
+      });
+      expect(createButtons.length).toBeGreaterThanOrEqual(1);
     });
 
     it("dashboard deve filtrar partidas visíveis corretamente", async () => {

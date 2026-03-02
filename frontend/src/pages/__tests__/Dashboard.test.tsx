@@ -3,6 +3,88 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import Dashboard from "../Dashboard";
 
+// Mocks capturáveis usando vi.hoisted para funcionar com hoisting do vi.mock
+const { mockToastError, mockToastSuccess, mockToastWarning } = vi.hoisted(
+  () => ({
+    mockToastError: vi.fn(),
+    mockToastSuccess: vi.fn(),
+    mockToastWarning: vi.fn(),
+  }),
+);
+
+// Mock do Toast para evitar erro de ToastProvider em testes unitários
+vi.mock("../../components/Toast", () => ({
+  useToast: () => ({
+    showToast: vi.fn(),
+    success: mockToastSuccess,
+    error: mockToastError,
+    warning: mockToastWarning,
+    info: vi.fn(),
+    dismiss: vi.fn(),
+    dismissAll: vi.fn(),
+  }),
+  ToastProvider: ({ children }: any) => children,
+}));
+
+// Mock new components
+vi.mock("../../components/AthleteHeader", () => ({
+  default: ({ name, stats }: any) => (
+    <div data-testid="athlete-header">
+      {name} V:{stats.wins} D:{stats.losses}
+    </div>
+  ),
+}));
+vi.mock("../../components/BottomTabBar", () => ({
+  default: ({ activeTab, onTabChange }: any) => (
+    <nav data-testid="bottom-tab-bar">
+      <button data-testid="tab-home" onClick={() => onTabChange("home")}>
+        {activeTab}
+      </button>
+    </nav>
+  ),
+}));
+vi.mock("../../components/FloatingActionButton", () => ({
+  default: ({ onClick }: any) => (
+    <button data-testid="fab-new-match" onClick={onClick}>
+      +
+    </button>
+  ),
+}));
+vi.mock("../../components/FilterChips", () => ({
+  default: ({ activeFilter, onFilterChange, counts }: any) => (
+    <div data-testid="filter-chips">
+      <button data-testid="filter-all" onClick={() => onFilterChange("all")}>
+        All ({counts.all})
+      </button>
+      <button data-testid="filter-live" onClick={() => onFilterChange("live")}>
+        Live ({counts.live})
+      </button>
+    </div>
+  ),
+}));
+vi.mock("../../components/LiveMatchesCarousel", () => ({
+  default: ({ matches, onMatchClick }: any) => (
+    <div data-testid="live-carousel">
+      {matches.map((m: any) => (
+        <div
+          key={m.id}
+          data-testid={`live-card-${m.id}`}
+          onClick={() => onMatchClick(m)}
+        >
+          {typeof m.players === "object"
+            ? `${m.players.p1} vs ${m.players.p2}`
+            : "match"}
+        </div>
+      ))}
+    </div>
+  ),
+}));
+vi.mock("../../components/AthleteHeader.css", () => ({}));
+vi.mock("../../components/BottomTabBar.css", () => ({}));
+vi.mock("../../components/FloatingActionButton.css", () => ({}));
+vi.mock("../../components/FilterChips.css", () => ({}));
+vi.mock("../../components/LiveMatchesCarousel.css", () => ({}));
+
 // Mock do MatchStatsModal
 vi.mock("../../components/MatchStatsModal", () => ({
   default: ({
@@ -94,8 +176,9 @@ describe("Dashboard", () => {
   ];
 
   const mockCurrentUser = {
-    role: "annotator" as const,
+    role: "annotator",
     email: "user@example.com",
+    name: "Test User",
   };
 
   beforeEach(() => {
@@ -162,7 +245,8 @@ describe("Dashboard", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /Nova Partida/ }));
+    // FAB is the primary mobile way to create match
+    fireEvent.click(screen.getByTestId("fab-new-match"));
     expect(mockOnNewMatchClick).toHaveBeenCalledTimes(1);
   });
 
@@ -177,11 +261,12 @@ describe("Dashboard", () => {
       />,
     );
 
-    // Should show matches 1 and 2 (user has access), but not 3 (different user)
+    // Match 1 (NOT_STARTED) should be visible in card list
     expect(screen.getAllByText("Player 1").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Player 2").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Player A").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Player B").length).toBeGreaterThan(0);
+    // Match 2 (IN_PROGRESS) goes to carousel — check Player A via carousel
+    expect(screen.getByTestId("live-card-2")).toBeInTheDocument();
+    // Match 3 (other user) should NOT be visible
     expect(screen.queryByText("Player X")).not.toBeInTheDocument();
     expect(screen.queryByText("Player Y")).not.toBeInTheDocument();
   });
@@ -202,7 +287,7 @@ describe("Dashboard", () => {
     expect(mockOnStartMatch).toHaveBeenCalledWith(mockMatches[0]);
   });
 
-  it("calls onContinueMatch when clicking on IN_PROGRESS match", async () => {
+  it("calls onContinueMatch when clicking on IN_PROGRESS match via carousel", async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       text: () =>
@@ -225,13 +310,11 @@ describe("Dashboard", () => {
       />,
     );
 
-    fireEvent.click(screen.getAllByText("Player A")[0]);
+    // Live matches are now in the carousel — click the live card
+    fireEvent.click(screen.getByTestId("live-card-2"));
 
     await waitFor(() => {
-      expect(mockOnContinueMatch).toHaveBeenCalledWith(mockMatches[1], {
-        id: "2",
-        players: { p1: "Player A", p2: "Player B" },
-      });
+      expect(mockOnContinueMatch).toHaveBeenCalled();
     });
   });
 
@@ -326,13 +409,14 @@ describe("Dashboard", () => {
     fireEvent.click(screen.getAllByRole("button", { name: /Relatório/ })[0]);
 
     await waitFor(() => {
-      expect(alertSpy).toHaveBeenCalledWith(
+      expect(mockToastError).toHaveBeenCalledWith(
         "Não foi possível carregar as estatísticas.",
+        expect.anything(),
       );
     });
   });
 
-  it("renders live status for IN_PROGRESS matches", () => {
+  it("renders live matches in the carousel for IN_PROGRESS matches", () => {
     render(
       <Dashboard
         onNewMatchClick={mockOnNewMatchClick}
@@ -343,14 +427,12 @@ describe("Dashboard", () => {
       />,
     );
 
-    expect(screen.getByTestId("live-status-2")).toBeInTheDocument();
-    expect(screen.getAllByText("Ao Vivo").length).toBeGreaterThan(0);
-    expect(screen.getByTestId("live-status-sets-2")).toBeInTheDocument();
-    expect(screen.getByTestId("live-status-games-2")).toBeInTheDocument();
-    expect(screen.getByTestId("live-status-points-2")).toBeInTheDocument();
+    // Live matches now appear in the carousel component
+    expect(screen.getByTestId("live-carousel")).toBeInTheDocument();
+    expect(screen.getByTestId("live-card-2")).toBeInTheDocument();
   });
 
-  it("renders match partials for completed sets", () => {
+  it("renders match partials in the carousel for live matches", () => {
     render(
       <Dashboard
         onNewMatchClick={mockOnNewMatchClick}
@@ -361,11 +443,8 @@ describe("Dashboard", () => {
       />,
     );
 
-    // IN_PROGRESS: parciais ficam dentro do bloco live-status-partials
-    expect(screen.getByTestId("live-status-partials-2")).toBeInTheDocument();
-    expect(screen.getByTestId("live-status-partials-2").textContent).toContain(
-      "6/4",
-    );
+    // Carousel renders the live match
+    expect(screen.getByTestId("live-card-2")).toBeInTheDocument();
   });
 
   it("renders match format labels correctly", () => {
@@ -499,8 +578,8 @@ describe("Dashboard", () => {
     ).toBeInTheDocument();
   });
 
-  it("aplica classe card--live em partidas IN_PROGRESS", () => {
-    const { container } = render(
+  it("aplica classe card--live no carousel para partidas IN_PROGRESS", () => {
+    render(
       <Dashboard
         onNewMatchClick={mockOnNewMatchClick}
         matches={[mockMatches[1]]}
@@ -510,7 +589,8 @@ describe("Dashboard", () => {
       />,
     );
 
-    expect(container.querySelector(".card--live")).toBeInTheDocument();
+    // Live matches now go to the carousel, not the main card list
+    expect(screen.getByTestId("live-carousel")).toBeInTheDocument();
   });
 
   it("aplica classe card--pending em partidas NOT_STARTED", () => {

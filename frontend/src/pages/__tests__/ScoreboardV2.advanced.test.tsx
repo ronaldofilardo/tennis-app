@@ -11,6 +11,20 @@ import { AuthProvider } from "../../contexts/AuthContext";
 import { MatchesProvider } from "../../contexts/MatchesContext";
 import { NavigationProvider } from "../../contexts/NavigationContext";
 
+// Mock do Toast para evitar erro de ToastProvider em testes unitários
+vi.mock("../../components/Toast", () => ({
+  useToast: () => ({
+    showToast: vi.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+    dismiss: vi.fn(),
+    dismissAll: vi.fn(),
+  }),
+  ToastProvider: ({ children }: any) => children,
+}));
+
 vi.mock("../../core/scoring/TennisScoring", () => {
   const validState = {
     sets: { PLAYER_1: 0, PLAYER_2: 0 },
@@ -418,4 +432,3 @@ describe("ScoreboardV2 - Cobertura Avançada", () => {
     });
   });
 });
-

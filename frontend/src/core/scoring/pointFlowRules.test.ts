@@ -269,10 +269,10 @@ describe("getValidGolpes", () => {
       "FH",
     ]);
   });
-  it("devolvedor|passada|erro-forcado → VBH,VFH (sem Smash)", () => {
+  it("devolvedor|passada|erro-forcado → VBH,VFH,Smash (IDs 617-700 incluem Smash)", () => {
     expect(
       sorted(getValidGolpes("devolvedor", "passada", "erro-forcado")),
-    ).toEqual(["VBH", "VFH"]);
+    ).toEqual(["Smash", "VBH", "VFH"]);
   });
   it("devolvedor|passada|erro-nao-forcado → VBH,VFH,Smash (conforme fluxotosystem.txt)", () => {
     expect(

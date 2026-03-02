@@ -1,11 +1,10 @@
 // pointFlowRules.ts
 // Fonte de verdade derivada estritamente do arquivo fluxotosystem.txt.
 // PREMISSA: nenhuma possibilidade omitida, nenhuma criada fora do arquivo.
-// v6: golpe_esp depende de golpe+efeito (não de contexto); flat/Smash sem golpe_esp;
-//     topspin→[lob,bate-pronto]; slice→[lob,drop]; volley→todos 4.
-//     rede|winner (AMBOS vencedores) → 3 direções.
-//     devolvedor|passada|erro-nao-forcado → Smash adicionado.
-//     sacador|fundo|winner → slice válido (era incorretamente removido).
+// v7: requiresSubtipo2 diferencia sacador|passada (nunca sub2) de devolvedor|passada (sempre sub2).
+//     getValidGolpes: devolvedor|passada|erro-forcado inclui Smash (igual ao erro-nao-forcado).
+//     getValidGolpeEsp: contextual por vencedor+situacao+tipo; topspin varia radicalmente;
+//     voleio devolvedor → sem lob; voleio sacador → com lob.
 // Estrutura: vencedor|situacao|tipo|subtipo1|subtipo2|golpe|efeito|direcao|golpe_esp
 
 import type {
@@ -121,10 +120,8 @@ export function getValidGolpes(
   // devolvedor
   if (situacao === "passada") {
     if (!isErro) return ["FH", "BH"];
-    // erro-forcado: VFH, VBH; erro-nao-forcado: VFH, VBH, Smash (conforme fluxotosystem.txt)
-    return tipo === "erro-nao-forcado"
-      ? ["VFH", "VBH", "Smash"]
-      : ["VFH", "VBH"];
+    // erro-forcado e erro-nao-forcado: VFH, VBH, Smash (IDs 617-700)
+    return ["VFH", "VBH", "Smash"];
   }
   if (situacao === "rede")
     return isErro ? ["FH", "BH"] : ["VFH", "VBH", "Smash"];
@@ -140,7 +137,7 @@ export function getValidEfeitos(): RallyEfeito[] {
 // REGRA UNIVERSAL: efeito=slice -> sempre 3 direcoes (sem inside-in/out)
 // passada|erro (qualquer vencedor)   -> cruzada, paralela, centro (sem inside)
 // devolvedor|rede|winner             -> cruzada, paralela, centro (VBH/VFH/Smash sem inside)
-// todos os outros sem slice           -> cruzada, paralela, centro, inside-in, inside-out
+// todos os outros sem slice           -> cruzada, paralela, centro, inside-out, inside-in
 export function getValidDirecoes(
   vencedor: RallyVencedor,
   situacao: RallySituacao,
@@ -160,22 +157,51 @@ export function getValidDirecoes(
   return ["cruzada", "paralela", "centro", "inside-out", "inside-in"];
 }
 
-// Golpes especiais validos — regra derivada do fluxotosystem.txt por golpe+efeito:
-//  golpe ausente ou Smash             → [] (sem golpe_esp)
-//  sem efeito (VBH/VFH = voleio)      → [lob, drop, bate-pronto, swingvolley]
-//  efeito=flat                        → [] (sem golpe_esp)
-//  efeito=topspin                     → [lob, bate-pronto]
-//  efeito=slice                       → [lob, drop]
+// Golpes especiais validos — regra derivada do fluxotosystem.txt por golpe+efeito+contexto:
+//  golpe ausente ou Smash → [] (sem golpe_esp)
+//  flat                   → [] (sem golpe_esp)
+//  slice                  → [lob, drop]
+//  VBH/VFH (sem efeito)   → devolvedor: [drop, bate-pronto, swingvolley]
+//                           sacador:    [lob, drop, bate-pronto, swingvolley]
+//  topspin (contextual):
+//    devolucao (ambos)              → [lob]
+//    devolvedor|fundo|winner        → []
+//    sacador|fundo|erro*            → [lob, drop, bate-pronto]
+//    devolvedor|rede|erro*          → [lob]
+//    resto (passada|winner, sacador|fundo|winner, sacador|rede|erro*...) → [lob, bate-pronto]
 export function getValidGolpeEsp(
   golpe: RallyGolpe | undefined,
   efeito: RallyEfeito | undefined,
+  vencedor?: RallyVencedor,
+  situacao?: RallySituacao,
+  tipo?: RallyTipo,
 ): RallyGolpeEsp[] {
   if (!golpe) return [];
-  if (golpe === "Smash") return []; // Smash: sem golpe_esp
-  if (!efeito) return ["lob", "drop", "swingvolley", "bate-pronto"]; // Voleio (VBH/VFH)
-  if (efeito === "flat") return []; // flat: sem golpe_esp
-  if (efeito === "topspin") return ["lob", "bate-pronto"]; // topspin: lob, bate-pronto
-  if (efeito === "slice") return ["lob", "drop"]; // slice: lob, drop
+  if (golpe === "Smash") return [];
+  // VBH/VFH (voleio) — sem efeito
+  if (!efeito) {
+    // devolvedor|rede|winner e devolvedor|passada|erro*: sem lob (IDs 617-688, 701-721)
+    if (vencedor === "devolvedor")
+      return ["drop", "bate-pronto", "swingvolley"];
+    // sacador|rede|winner e sacador|passada|erro*: com lob (IDs 1104-1181)
+    return ["lob", "drop", "bate-pronto", "swingvolley"];
+  }
+  if (efeito === "flat") return [];
+  if (efeito === "slice") return ["lob", "drop"];
+  if (efeito === "topspin") {
+    // devolucao (ambos os vencedores): apenas [lob] (IDs 427-466, 1060-1069)
+    if (situacao === "devolucao") return ["lob"];
+    // devolvedor|fundo|winner: sem golpe_esp (IDs 860-869)
+    if (vencedor === "devolvedor" && situacao === "fundo" && tipo === "winner")
+      return [];
+    // sacador|fundo|erro*: [lob, drop, bate-pronto] (IDs 219-278)
+    if (vencedor === "sacador" && situacao === "fundo" && tipo !== "winner")
+      return ["lob", "drop", "bate-pronto"];
+    // devolvedor|rede|erro*: [lob] apenas (IDs 722-761)
+    if (vencedor === "devolvedor" && situacao === "rede") return ["lob"];
+    // sacador|fundo|winner, sacador|rede|erro*, passada|winner (ambos): [lob, bate-pronto]
+    return ["lob", "bate-pronto"];
+  }
   return [];
 }
 

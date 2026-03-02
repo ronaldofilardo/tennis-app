@@ -1,35 +1,36 @@
 // frontend/api/matches/visible.js - Serverless Function para Matches Visíveis
+// Retorna partidas visíveis respeitando multi-tenancy
 
 import { getVisibleMatches } from "../../src/services/matchService.js";
 import {
-  corsHeaders,
-  createTimeoutHandler,
   handleCors,
-  handleApiError,
-} from "../../src/services/businessLogic.js";
+  extractContext,
+  sendJson,
+  methodNotAllowed,
+} from "../_lib/authMiddleware.js";
 
 export default async function handler(req, res) {
-  const timeout = createTimeoutHandler(res);
-
   try {
-    handleCors(res);
-    if (req.method === "OPTIONS") {
-      clearTimeout(timeout);
-      return res.status(200).end();
-    }
+    if (handleCors(req, res)) return;
 
     if (req.method !== "GET") {
-      clearTimeout(timeout);
-      return res.status(405).json({ error: "Método não permitido" });
+      return methodNotAllowed(res, ["GET"]);
     }
+
+    // Auth é opcional para partidas visíveis — usuários anônimos veem apenas PUBLIC
+    const ctx = extractContext(req);
+    const clubId = ctx?.clubId || null;
+    const userRole = ctx?.role || null;
 
     const queryParams = Object.fromEntries(
       new URL(req.url, "http://localhost").searchParams.entries()
     );
-    const result = await getVisibleMatches(queryParams);
-    clearTimeout(timeout);
-    return res.json(result);
+
+    // Injeta clubId e role nos params para filtrar no serviço
+    const result = await getVisibleMatches({ ...queryParams, clubId, userRole });
+    return sendJson(res, 200, result);
   } catch (error) {
-    return handleApiError(error, res, timeout, " matches/visible");
+    console.error("Erro em matches/visible:", error);
+    return sendJson(res, 500, { error: error.message || "Internal server error" });
   }
 }
