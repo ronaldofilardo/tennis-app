@@ -19,14 +19,14 @@
     { "src": "frontend/api/health.js", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/api/matches[^?#]*", "dest": "/frontend/api/matches.js" },
-    { "src": "/api/clubs[^?#]*", "dest": "/frontend/api/clubs.js" },
-    { "src": "/api/auth[^?#]*", "dest": "/frontend/api/auth.js" },
-    { "src": "/api/athletes[^?#]*", "dest": "/frontend/api/athletes.js" },
-    { "src": "/api/tournaments[^?#]*", "dest": "/frontend/api/tournaments.js" },
-    { "src": "/api/admin[^?#]*", "dest": "/frontend/api/admin.js" },
-    { "src": "/api/webhooks[^?#]*", "dest": "/frontend/api/webhooks.js" },
-    { "src": "/api/cron[^?#]*", "dest": "/frontend/api/cron.js" },
+    { "src": "/api/matches([\\s\\S]*)", "dest": "/frontend/api/matches.js" },
+    { "src": "/api/clubs([\\s\\S]*)", "dest": "/frontend/api/clubs.js" },
+    { "src": "/api/auth([\\s\\S]*)", "dest": "/frontend/api/auth.js" },
+    { "src": "/api/athletes([\\s\\S]*)", "dest": "/frontend/api/athletes.js" },
+    { "src": "/api/tournaments([\\s\\S]*)", "dest": "/frontend/api/tournaments.js" },
+    { "src": "/api/admin([\\s\\S]*)", "dest": "/frontend/api/admin.js" },
+    { "src": "/api/webhooks([\\s\\S]*)", "dest": "/frontend/api/webhooks.js" },
+    { "src": "/api/cron([\\s\\S]*)", "dest": "/frontend/api/cron.js" },
     { "src": "/api/health", "dest": "/frontend/api/health.js" },
     { "src": "/(.*)", "dest": "/frontend/dist/index.html" }
   ]
