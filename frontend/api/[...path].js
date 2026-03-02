@@ -25,9 +25,11 @@ const ROUTES = {
 };
 
 export default async function handler(req, res) {
-  // path param contém tudo após /api/ — ex: ["auth", "login"] ou ["health"]
-  const { path = [] } = req.query;
-  const module = Array.isArray(path) ? path[0] : path;
+  // Extrair o módulo diretamente de req.url (mais confiável que req.query em Node.js raw)
+  // URL: /api/auth/login → parts = ['api','auth','login'] → module = 'auth'
+  const { pathname } = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+  const parts = pathname.split("/").filter(Boolean); // remove strings vazias
+  const module = parts[1]; // parts[0]='api', parts[1]='auth'|'health'|etc.
 
   const target = ROUTES[module];
   if (!target) {
