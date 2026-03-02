@@ -7,14 +7,14 @@
 //   POST   /api/tournaments/:id?action=add-entry   → inscreve atleta
 //   POST   /api/tournaments/:id?action=generate    → gera chaveamento
 
-import prisma from "./_lib/prisma.js";
+import prisma from "../_lib/prisma.js";
 import {
   handleCors,
   requireAuth,
   sendJson,
   methodNotAllowed,
-} from "./_lib/authMiddleware.js";
-import { generateBracket } from "../src/services/tournamentService.js";
+} from "../_lib/authMiddleware.js";
+import { generateBracket } from "../../src/services/tournamentService.js";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

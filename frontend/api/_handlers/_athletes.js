@@ -5,13 +5,13 @@
 //   GET   /api/athletes/:id      → detalhe do atleta (com privacidade)
 //   PATCH /api/athletes/:id      → atualiza perfil
 
-import prisma from "./_lib/prisma.js";
+import prisma from "../_lib/prisma.js";
 import {
   handleCors,
   requireAuth,
   sendJson,
   methodNotAllowed,
-} from "./_lib/authMiddleware.js";
+} from "../_lib/authMiddleware.js";
 
 function getAthleteId(url) {
   const parts = url.pathname.split("/").filter(Boolean);

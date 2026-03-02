@@ -2,15 +2,15 @@
 // Único ponto de entrada para toda a API — Vercel Hobby (1 função)
 // Roteia: /api/auth/*, /api/matches/*, /api/clubs/*, etc.
 
-import authHandler from "./_auth.js";
-import matchesHandler from "./_matches.js";
-import clubsHandler from "./_clubs.js";
-import athletesHandler from "./_athletes.js";
-import tournamentsHandler from "./_tournaments.js";
-import adminHandler from "./_admin.js";
-import webhooksHandler from "./_webhooks.js";
-import cronHandler from "./_cron.js";
-import healthHandler from "./_health.js";
+import authHandler from "./_handlers/_auth.js";
+import matchesHandler from "./_handlers/_matches.js";
+import clubsHandler from "./_handlers/_clubs.js";
+import athletesHandler from "./_handlers/_athletes.js";
+import tournamentsHandler from "./_handlers/_tournaments.js";
+import adminHandler from "./_handlers/_admin.js";
+import webhooksHandler from "./_handlers/_webhooks.js";
+import cronHandler from "./_handlers/_cron.js";
+import healthHandler from "./_handlers/_health.js";
 
 const ROUTES = {
   auth: authHandler,
