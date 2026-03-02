@@ -27,7 +27,10 @@ const ROUTES = {
 export default async function handler(req, res) {
   // Extrair o módulo diretamente de req.url (mais confiável que req.query em Node.js raw)
   // URL: /api/auth/login → parts = ['api','auth','login'] → module = 'auth'
-  const parsedUrl = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+  const parsedUrl = new URL(
+    req.url,
+    `http://${req.headers.host || "localhost"}`,
+  );
 
   // O rewrite do Vercel (/api/:path* → /api/[[...path]]) injeta "path" nos search params.
   // Remover aqui para que nenhum sub-handler veja essa chave espúria.
