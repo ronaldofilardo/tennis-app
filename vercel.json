@@ -1,29 +1,7 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "frontend/dist" }
-    },
-    { "src": "frontend/api/auth.js", "use": "@vercel/node" },
-    { "src": "frontend/api/matches.js", "use": "@vercel/node" },
-    { "src": "frontend/api/clubs.js", "use": "@vercel/node" },
-    { "src": "frontend/api/athletes.js", "use": "@vercel/node" },
-    { "src": "frontend/api/tournaments.js", "use": "@vercel/node" },
-    { "src": "frontend/api/admin.js", "use": "@vercel/node" },
-    { "src": "frontend/api/webhooks.js", "use": "@vercel/node" },
-    { "src": "frontend/api/cron.js", "use": "@vercel/node" },
-    { "src": "frontend/api/health.js", "use": "@vercel/node" }
-  ],
+  "buildCommand": "npx prisma generate --schema=frontend/prisma/schema.prisma && cd frontend && pnpm run build",
+  "outputDirectory": "frontend/dist",
   "rewrites": [
-    { "source": "/api/auth/:path*", "destination": "/frontend/api/auth.js" },
-    { "source": "/api/matches/:path*", "destination": "/frontend/api/matches.js" },
-    { "source": "/api/clubs/:path*", "destination": "/frontend/api/clubs.js" },
-    { "source": "/api/athletes/:path*", "destination": "/frontend/api/athletes.js" },
-    { "source": "/api/tournaments/:path*", "destination": "/frontend/api/tournaments.js" },
-    { "source": "/api/admin/:path*", "destination": "/frontend/api/admin.js" },
-    { "source": "/api/webhooks/:path*", "destination": "/frontend/api/webhooks.js" },
-    { "source": "/api/cron/:path*", "destination": "/frontend/api/cron.js" }
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
