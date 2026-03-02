@@ -198,7 +198,7 @@ export const MatchApiResponseSchema = z
     matchState: MatchStateSchema.optional(),
     // Campos para multi-tenancy — opcionais hoje, obrigatórios no futuro
     club_id: z.string().optional().nullable(),
-    metadata: z.record(z.unknown()).optional().nullable(),
+    metadata: z.record(z.string(), z.unknown()).optional().nullable(),
     tags: z.array(z.string()).optional().nullable(),
   })
   .catchall(z.unknown()); // Permite campos extras
