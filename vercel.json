@@ -1,62 +1,6 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "frontend/dist"
-      }
-    },
-    { "src": "frontend/api/matches.js", "use": "@vercel/node" },
-    { "src": "frontend/api/clubs.js", "use": "@vercel/node" },
-    { "src": "frontend/api/auth.js", "use": "@vercel/node" },
-    { "src": "frontend/api/athletes.js", "use": "@vercel/node" },
-    { "src": "frontend/api/tournaments.js", "use": "@vercel/node" },
-    { "src": "frontend/api/admin.js", "use": "@vercel/node" },
-    { "src": "frontend/api/webhooks.js", "use": "@vercel/node" },
-    { "src": "frontend/api/cron.js", "use": "@vercel/node" },
-    { "src": "frontend/api/health.js", "use": "@vercel/node" }
-  ],
-  "routes": [
-    { "src": "/api/auth/login", "dest": "/api/auth" },
-    { "src": "/api/auth/register", "dest": "/api/auth" },
-    { "src": "/api/auth/switch-club", "dest": "/api/auth" },
-    { "src": "/api/auth", "dest": "/api/auth" },
-
-    { "src": "/api/matches/visible", "dest": "/frontend/api/matches.js" },
-    { "src": "/api/matches/([^/]+)/state", "dest": "/frontend/api/matches.js" },
-    { "src": "/api/matches/([^/]+)/stats", "dest": "/frontend/api/matches.js" },
-    { "src": "/api/matches/([^/]+)/scorer", "dest": "/frontend/api/matches.js" },
-    { "src": "/api/matches/([^/]+)", "dest": "/frontend/api/matches.js" },
-    { "src": "/api/matches", "dest": "/frontend/api/matches.js" },
-
-    { "src": "/api/clubs/invite/([^/]+)", "dest": "/frontend/api/clubs.js" },
-    { "src": "/api/clubs/join", "dest": "/frontend/api/clubs.js" },
-    { "src": "/api/clubs/([^/]+)/members/import", "dest": "/frontend/api/clubs.js" },
-    { "src": "/api/clubs/([^/]+)/members", "dest": "/frontend/api/clubs.js" },
-    { "src": "/api/clubs/([^/]+)/settings", "dest": "/frontend/api/clubs.js" },
-    { "src": "/api/clubs/([^/]+)/stats", "dest": "/frontend/api/clubs.js" },
-    { "src": "/api/clubs/([^/]+)/subscription", "dest": "/frontend/api/clubs.js" },
-    { "src": "/api/clubs/([^/]+)/theme", "dest": "/frontend/api/clubs.js" },
-    { "src": "/api/clubs/([^/]+)/invoices", "dest": "/frontend/api/clubs.js" },
-    { "src": "/api/clubs/([^/]+)", "dest": "/frontend/api/clubs.js" },
-    { "src": "/api/clubs", "dest": "/frontend/api/clubs.js" },
-
-    { "src": "/api/athletes/([^/]+)", "dest": "/frontend/api/athletes.js" },
-    { "src": "/api/athletes", "dest": "/frontend/api/athletes.js" },
-
-    { "src": "/api/tournaments/([^/]+)", "dest": "/frontend/api/tournaments.js" },
-    { "src": "/api/tournaments", "dest": "/frontend/api/tournaments.js" },
-
-    { "src": "/api/admin/clubs", "dest": "/frontend/api/admin.js" },
-    { "src": "/api/admin/users", "dest": "/frontend/api/admin.js" },
-    { "src": "/api/admin/stats", "dest": "/frontend/api/admin.js" },
-
-    { "src": "/api/webhooks/asaas", "dest": "/frontend/api/webhooks.js" },
-    { "src": "/api/cron/check-subscriptions", "dest": "/frontend/api/cron.js" },
-    { "src": "/api/health", "dest": "/frontend/api/health.js" },
-
-    { "src": "/(.*)", "dest": "/frontend/dist/index.html" }
-  ]
+  "buildCommand": "cd frontend && pnpm run build",
+  "outputDirectory": "frontend/dist",
+  "installCommand": "pnpm install",
+  "framework": null
 }

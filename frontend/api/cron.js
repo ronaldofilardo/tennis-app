@@ -36,6 +36,9 @@ export default async function handler(req, res) {
     });
   } catch (err) {
     console.error("[cron] Error:", err);
-    return sendJson(res, 500, { error: "Error checking subscriptions", message: err.message });
+    return sendJson(res, 500, {
+      error: "Error checking subscriptions",
+      message: err.message,
+    });
   }
 }
