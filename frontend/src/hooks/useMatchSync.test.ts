@@ -1,10 +1,17 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mocka API_URL para garantir URL absoluta válida nos testes
-vi.mock('../config/api', () => ({
-  API_URL: 'http://localhost:4001',
+const { mockHttpClient } = vi.hoisted(() => ({
+  mockHttpClient: {
+    get: vi.fn(),
+    patch: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+  },
 }));
+
+vi.mock('../config/httpClient', () => ({ default: mockHttpClient }));
 
 import { useMatchSync } from './useMatchSync';
 
@@ -15,18 +22,8 @@ describe('useMatchSync', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    global.fetch = vi.fn((input, init) => {
-      // PATCH: sucesso
-      if (typeof input === 'string' && input.includes('/matches/') && init?.method === 'PATCH') {
-        return Promise.resolve(new Response(JSON.stringify({ success: true }), { status: 200, headers: { 'Content-Type': 'application/json' } }));
-      }
-      // GET: sucesso
-      if (typeof input === 'string' && input.includes('/matches/')) {
-        return Promise.resolve(new Response(JSON.stringify({ id: mockMatchId, status: 'IN_PROGRESS' }), { status: 200, headers: { 'Content-Type': 'application/json' } }));
-      }
-      // fallback erro
-      return Promise.resolve(new Response('{}', { status: 500, headers: { 'Content-Type': 'application/json' } }));
-    });
+    mockHttpClient.patch.mockResolvedValue({ ok: true, data: { success: true }, status: 200 });
+    mockHttpClient.get.mockResolvedValue({ ok: true, data: { id: mockMatchId, status: 'IN_PROGRESS' }, status: 200 });
   });
 
   it('deve inicializar com o estado correto', () => {
@@ -60,8 +57,8 @@ describe('useMatchSync', () => {
   it('deve lidar com erros de sincronização', async () => {
     const { result } = renderHook(() => useMatchSync(mockMatchId));
     
-    // Mocka fetch para erro
-  (global.fetch as any) = vi.fn(() => Promise.resolve(new Response('{}', { status: 500, headers: { 'Content-Type': 'application/json' } })));
+    // Mocka httpClient para erro
+    mockHttpClient.patch.mockRejectedValue(new Error('Falha ao sincronizar estado'));
     await act(async () => {
       await expect(result.current.syncState(null)).rejects.toThrow();
     });

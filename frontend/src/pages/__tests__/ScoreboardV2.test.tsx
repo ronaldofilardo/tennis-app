@@ -4,6 +4,21 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 const navigateMock = vi.fn();
 
+// Mock httpClient (substitui global.fetch — ScoreboardV2 usa httpClient desde a correção de 401)
+const { mockHttpClient } = vi.hoisted(() => ({
+  mockHttpClient: {
+    get: vi.fn(),
+    patch: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+    setAuthConfig: vi.fn(),
+    setTenantConfig: vi.fn(),
+    onUnauthorized: vi.fn(),
+  },
+}));
+vi.mock("../../config/httpClient", () => ({ default: mockHttpClient }));
+
 vi.mock("../ScoreboardV2.css", () => ({}));
 
 // Mock do Toast para evitar erro de ToastProvider em testes unitários
@@ -123,10 +138,8 @@ describe("ScoreboardV2 - Ace Button Behavior", () => {
   beforeEach(() => {
     (global as any).resetGlobalMocks();
     __resetMockTennisScoring();
-    (global.fetch as any).mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(mockMatchData),
-    });
+    mockHttpClient.get.mockResolvedValue({ ok: true, data: mockMatchData, status: 200 });
+    mockHttpClient.patch.mockResolvedValue({ ok: true, data: { message: "OK" }, status: 200 });
   });
 
   afterEach(() => {
@@ -345,10 +358,8 @@ describe("ScoreboardV2 - Button Alignment Based on Server", () => {
   beforeEach(() => {
     (globalThis as any).resetGlobalMocks();
     __resetMockTennisScoring();
-    (globalThis.fetch as any).mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(mockMatchData),
-    });
+    mockHttpClient.get.mockResolvedValue({ ok: true, data: mockMatchData, status: 200 });
+    mockHttpClient.patch.mockResolvedValue({ ok: true, data: { message: "OK" }, status: 200 });
   });
 
   afterEach(() => {
@@ -434,10 +445,8 @@ describe("ScoreboardV2 - Button Alignment Based on Server", () => {
     beforeEach(() => {
       (globalThis as any).resetGlobalMocks();
       __resetMockTennisScoring();
-      (globalThis.fetch as any).mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(mockMatchData),
-      });
+      mockHttpClient.get.mockResolvedValue({ ok: true, data: mockMatchData, status: 200 });
+      mockHttpClient.patch.mockResolvedValue({ ok: true, data: { message: "OK" }, status: 200 });
     });
 
     afterEach(() => {
@@ -589,10 +598,8 @@ describe("ScoreboardV2 - Button Alignment Based on Server", () => {
 describe("ScoreboardV2 - Restauração de Estado e Fluxos", () => {
   beforeEach(() => {
     (global as any).resetGlobalMocks();
-    (global.fetch as any).mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(mockMatchData),
-    });
+    mockHttpClient.get.mockResolvedValue({ ok: true, data: mockMatchData, status: 200 });
+    mockHttpClient.patch.mockResolvedValue({ ok: true, data: { message: "OK" }, status: 200 });
     mockTennisScoring.getState.mockReturnValue(mockMatchData.matchState);
     mockTennisScoring.canUndo.mockReturnValue(false);
   });
@@ -638,18 +645,15 @@ describe("ScoreboardV2 - Restauração de Estado e Fluxos", () => {
   });
 
   it("redireciona para dashboard se partida finalizada", async () => {
-    (globalThis.fetch as any).mockResolvedValue({
+    mockHttpClient.get.mockResolvedValue({
       ok: true,
-      json: () =>
-        Promise.resolve({
-          ...mockMatchData,
-          status: "FINISHED",
-          format: "BEST_OF_3",
-          matchState: {
-            ...mockMatchData.matchState,
-            config: { format: "BEST_OF_3" },
-          },
-        }),
+      data: {
+        ...mockMatchData,
+        status: "FINISHED",
+        format: "BEST_OF_3",
+        matchState: { ...mockMatchData.matchState, config: { format: "BEST_OF_3" } },
+      },
+      status: 200,
     });
     // Remove navigation state para garantir que o backend seja usado
     window.history.replaceState({}, "");
@@ -660,18 +664,18 @@ describe("ScoreboardV2 - Restauração de Estado e Fluxos", () => {
   });
 
   it("abre setup se partida não iniciada", async () => {
-    (globalThis.fetch as any).mockResolvedValue({
+    mockHttpClient.get.mockResolvedValue({
       ok: true,
-      json: () =>
-        Promise.resolve({
-          ...mockMatchData,
-          status: "NOT_STARTED",
-          format: "BEST_OF_3",
-          matchState: {
-            ...mockMatchData.matchState,
-            config: { format: "BEST_OF_3" },
-          },
-        }),
+      data: {
+        ...mockMatchData,
+        status: "NOT_STARTED",
+        format: "BEST_OF_3",
+        matchState: {
+          ...mockMatchData.matchState,
+          config: { format: "BEST_OF_3" },
+        },
+      },
+      status: 200,
     });
     // Remove navigation state para garantir que o backend seja usado
     window.history.replaceState({}, "");
@@ -917,18 +921,15 @@ describe("ScoreboardV2 - Restauração de Estado e Fluxos", () => {
       const onEndMatchMock = vi.fn();
 
       // Mock para partida não iniciada
-      (global.fetch as any).mockResolvedValue({
+      mockHttpClient.get.mockResolvedValue({
         ok: true,
-        json: () =>
-          Promise.resolve({
-            ...mockMatchData,
-            status: "NOT_STARTED",
-            format: "BEST_OF_3",
-            matchState: {
-              ...mockMatchData.matchState,
-              config: { format: "BEST_OF_3" },
-            },
-          }),
+        data: {
+          ...mockMatchData,
+          status: "NOT_STARTED",
+          format: "BEST_OF_3",
+          matchState: { ...mockMatchData.matchState, config: { format: "BEST_OF_3" } },
+        },
+        status: 200,
       });
 
       renderScoreboard({ onEndMatch: onEndMatchMock });
