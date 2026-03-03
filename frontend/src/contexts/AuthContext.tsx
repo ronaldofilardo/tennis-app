@@ -69,37 +69,72 @@ const STORAGE_KEYS = {
   token: "racket_token",
   refreshToken: "racket_refresh_token",
   user: "racket_user",
+  schemaVersion: "racket_schema_v",
 } as const;
+
+// Incrementar este número sempre que o formato do AuthUser mudar de forma incompatível.
+// Isso garante que sessões antigas sejam limpas automaticamente em todos os browsers.
+const CURRENT_SCHEMA_VERSION = "3";
+
+/** Limpa todos os dados de sessão do localStorage */
+function clearAllSessionData(): void {
+  Object.values(STORAGE_KEYS).forEach((key) => localStorage.removeItem(key));
+  // Limpa legado
+  localStorage.removeItem("racket_auth");
+  localStorage.removeItem("racket_club");
+}
+
+/** Lê e valida o AuthUser do localStorage. Retorna null se inválido ou desatualizado. */
+function loadStoredUser(): AuthUser | null {
+  try {
+    // Verificar versão do schema — se diferente, limpar tudo
+    const storedVersion = localStorage.getItem(STORAGE_KEYS.schemaVersion);
+    if (storedVersion !== CURRENT_SCHEMA_VERSION) {
+      clearAllSessionData();
+      localStorage.setItem(STORAGE_KEYS.schemaVersion, CURRENT_SCHEMA_VERSION);
+      return null;
+    }
+
+    const storedUser = localStorage.getItem(STORAGE_KEYS.user);
+    if (!storedUser) return null;
+
+    const parsed = JSON.parse(storedUser) as AuthUser;
+
+    // Validação mínima de estrutura — garante que o objeto é um AuthUser válido
+    if (
+      !parsed ||
+      typeof parsed.id !== "string" ||
+      typeof parsed.email !== "string" ||
+      !Array.isArray(parsed.clubs)
+    ) {
+      clearAllSessionData();
+      return null;
+    }
+
+    // Recalcular activeRole a partir do clube ativo (migração de sessão antiga)
+    if (parsed.clubs.length > 0 && parsed.activeClubId) {
+      const club = parsed.clubs.find((c) => c.clubId === parsed.activeClubId);
+      if (club) {
+        parsed.activeRole = club.role;
+        parsed.role = club.role;
+      }
+    }
+
+    return parsed;
+  } catch {
+    clearAllSessionData();
+    return null;
+  }
+}
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => {
-    const storedUser = localStorage.getItem(STORAGE_KEYS.user);
-    if (storedUser) {
-      try {
-        const parsed = JSON.parse(storedUser) as AuthUser;
-        // Recalcular activeRole a partir do clube ativo (migração de sessão antiga)
-        if (parsed.clubs?.length && parsed.activeClubId) {
-          const club = parsed.clubs.find(
-            (c) => c.clubId === parsed.activeClubId,
-          );
-          if (club) {
-            parsed.activeRole = club.role;
-            parsed.role = club.role;
-          }
-        }
-        return parsed;
-      } catch {
-        localStorage.removeItem(STORAGE_KEYS.user);
-        localStorage.removeItem(STORAGE_KEYS.token);
-        return null;
-      }
-    }
-    return null;
-  });
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(
+    loadStoredUser,
+  );
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -152,6 +187,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.setItem(STORAGE_KEYS.refreshToken, refreshToken);
     }
     localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(user));
+    localStorage.setItem(STORAGE_KEYS.schemaVersion, CURRENT_SCHEMA_VERSION);
     httpClient.setAuthConfig({ token, refreshToken });
     if (user.activeClubId) {
       httpClient.setTenantConfig({ clubId: user.activeClubId });
@@ -160,11 +196,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const performLogout = () => {
-    localStorage.removeItem(STORAGE_KEYS.token);
-    localStorage.removeItem(STORAGE_KEYS.refreshToken);
-    localStorage.removeItem(STORAGE_KEYS.user);
-    // Limpa legado
-    localStorage.removeItem("racket_auth");
+    clearAllSessionData();
     setCurrentUser(null);
     setError(null);
     httpClient.setAuthConfig({ token: null, refreshToken: null });
