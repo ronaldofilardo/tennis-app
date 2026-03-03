@@ -167,10 +167,10 @@ export function useSubscription(): UseSubscriptionReturn {
     isEnterprise: planType === "ENTERPRISE",
 
     hasFeature,
-    canAddAthlete: data
+    canAddAthlete: data?.usage
       ? data.usage.activeAthletes < data.usage.maxAthletes
       : true,
-    athleteUsage: data
+    athleteUsage: data?.usage
       ? {
           current: data.usage.activeAthletes,
           max: data.usage.maxAthletes,
