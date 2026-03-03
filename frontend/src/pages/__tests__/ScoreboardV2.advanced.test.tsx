@@ -11,6 +11,21 @@ import { AuthProvider } from "../../contexts/AuthContext";
 import { MatchesProvider } from "../../contexts/MatchesContext";
 import { NavigationProvider } from "../../contexts/NavigationContext";
 
+// Mock httpClient (ScoreboardV2 usa httpClient desde a correção de 401)
+const { mockHttpClient } = vi.hoisted(() => ({
+  mockHttpClient: {
+    get: vi.fn(),
+    patch: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+    setAuthConfig: vi.fn(),
+    setTenantConfig: vi.fn(),
+    onUnauthorized: vi.fn(),
+  },
+}));
+vi.mock("../../config/httpClient", () => ({ default: mockHttpClient }));
+
 // Mock do Toast para evitar erro de ToastProvider em testes unitários
 vi.mock("../../components/Toast", () => ({
   useToast: () => ({
@@ -44,22 +59,16 @@ vi.mock("../../core/scoring/TennisScoring", () => {
     pointsHistory: [],
   };
   class MockTennisScoring {
-    addPoint = vi.fn();
-    addPoint = vi.fn(() => {
-      global.fetch("/api/matches/test-match-id/state", {});
-      return validState;
-    });
-    undoLastPoint = vi.fn(() => {
-      global.fetch("/api/matches/test-match-id/state", {});
-      return validState;
-    });
-    undoLastPoint = vi.fn();
+    addPoint = vi.fn(() => validState);
+    undoLastPoint = vi.fn(() => validState);
     getState = vi.fn(() => validState);
     shouldChangeSides = vi.fn(() => ({ shouldChange: false, reason: "" }));
     isFinished = vi.fn(() => false);
     enableSync = vi.fn();
     disableSync = vi.fn();
-    syncState = vi.fn();
+    syncState = vi.fn(async () => {
+      await mockHttpClient.patch(`/matches/test-match-id/state`, {});
+    });
     loadState = vi.fn();
     setStartedAt = vi.fn();
     canUndo = vi.fn(() => true);
@@ -250,12 +259,8 @@ const renderScoreboard = () => {
     },
   };
 
-  global.fetch = vi.fn().mockImplementation(() =>
-    Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve(mockResponse),
-    }),
-  );
+  mockHttpClient.get.mockResolvedValue({ ok: true, data: mockResponse, status: 200 });
+  mockHttpClient.patch.mockResolvedValue({ ok: true, data: { message: "OK" }, status: 200 });
 
   render(
     <BrowserRouter>
@@ -346,7 +351,7 @@ describe("ScoreboardV2 - Cobertura Avançada", () => {
 
   describe("Gerenciamento de Erros", () => {
     it("deve exibir mensagem de erro quando falha ao carregar partida", async () => {
-      global.fetch = vi.fn().mockRejectedValue(new Error("Falha na API"));
+      mockHttpClient.get.mockRejectedValue(new Error("Falha na API"));
       renderScoreboard();
 
       await waitFor(() => {
@@ -364,7 +369,7 @@ describe("ScoreboardV2 - Cobertura Avançada", () => {
         ).not.toBeInTheDocument();
       });
 
-      global.fetch = vi.fn().mockRejectedValue(new Error("Falha ao atualizar"));
+      mockHttpClient.patch.mockRejectedValue(new Error("Falha ao atualizar"));
 
       const pointButton = screen.getByText("+ Ponto Jogador 1");
       fireEvent.click(pointButton);
@@ -396,10 +401,7 @@ describe("ScoreboardV2 - Cobertura Avançada", () => {
 
       // Verifica se a função de atualização foi chamada após desfazer
       await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-          "/api/matches/test-match-id/state",
-          expect.any(Object),
-        );
+        expect(mockHttpClient.patch).toHaveBeenCalled();
       });
     });
   });
@@ -418,16 +420,10 @@ describe("ScoreboardV2 - Cobertura Avançada", () => {
       fireEvent.click(pointButton);
 
       await waitFor(() => {
-        // Aceita chamada de fetch com 1 ou 2 argumentos (URL relativa ou absoluta)
-        const calls = (global.fetch as any).mock.calls;
-        const found = calls.some(
-          (args: any[]) =>
-            typeof args[0] === "string" &&
-            /(\/api\/matches\/test-match-id\/state$|http:\/\/localhost:3001\/api\/matches\/test-match-id\/state$)/.test(
-              args[0],
-            ),
+        expect(mockHttpClient.patch).toHaveBeenCalledWith(
+          expect.stringContaining("/matches/test-match-id/state"),
+          expect.anything(),
         );
-        expect(found).toBe(true);
       });
     });
   });

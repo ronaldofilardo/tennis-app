@@ -11,6 +11,21 @@ import { AuthProvider } from "../../contexts/AuthContext";
 import { MatchesProvider } from "../../contexts/MatchesContext";
 import { NavigationProvider } from "../../contexts/NavigationContext";
 
+// Mock httpClient (ScoreboardV2 usa httpClient desde a correção de 401)
+const { mockHttpClient } = vi.hoisted(() => ({
+  mockHttpClient: {
+    get: vi.fn(),
+    patch: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+    setAuthConfig: vi.fn(),
+    setTenantConfig: vi.fn(),
+    onUnauthorized: vi.fn(),
+  },
+}));
+vi.mock("../../config/httpClient", () => ({ default: mockHttpClient }));
+
 // Mock do Toast para evitar erro de ToastProvider em testes unitários
 vi.mock("../../components/Toast", () => ({
   useToast: () => ({
@@ -136,10 +151,8 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
   beforeEach(() => {
     (globalThis as any).resetGlobalMocks();
     __resetMockTennisScoring();
-    (globalThis.fetch as any).mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(mockMatchData),
-    });
+    mockHttpClient.get.mockResolvedValue({ ok: true, data: mockMatchData, status: 200 });
+    mockHttpClient.patch.mockResolvedValue({ ok: true, data: { message: "OK" }, status: 200 });
   });
 
   afterEach(() => {
