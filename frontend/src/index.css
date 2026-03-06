@@ -18,8 +18,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Escala fluida — substitui zoom: 0.65 para responsividade em iframes/white-label */
-  font-size: clamp(9px, 1.2vw, 16px);
+  /* Escala fluida — mobile-first: 14px em telas pequenas, 16px em 375px+ */
+  font-size: clamp(14px, 4vw, 16px);
 
   /* ── App-level design tokens (dark sport theme) ────── */
   --clr-bg: #0f1117;
@@ -39,8 +39,6 @@
 }
 body {
   margin: 0;
-  display: flex;
-  justify-content: center;
   padding-top: 4rem;
   min-width: 320px;
   min-height: 100vh;

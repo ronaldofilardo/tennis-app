@@ -1,1 +1,76 @@
-/* Estilos globais para RacketApp começarão aqui */
+/* Shell layout — RacketApp */
+
+.app-container {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--clr-bg, #0f1117);
+}
+
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 900;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1rem;
+  background: var(--clr-surface, #181d27);
+  border-bottom: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: clamp(0.85rem, 3.5vw, 1rem);
+  font-weight: 800;
+  color: var(--clr-accent, #22c55e);
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+}
+
+/* cluster direito — agrupa nome + botões */
+.app-header > div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  overflow: hidden;
+  margin-left: auto;
+}
+
+.app-header span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+  font-size: 0.75rem;
+  color: var(--clr-text-muted, #6b7280);
+}
+
+.app-header button {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--clr-text-dim, #9ca3af);
+  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.1));
+  padding: 0.3rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.app-header button:hover {
+  background: rgba(255, 255, 255, 0.13);
+}
+
+main {
+  width: 100%;
+}

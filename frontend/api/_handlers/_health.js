@@ -3,7 +3,8 @@
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS, PATCH",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Payload-Version",
+  "Access-Control-Allow-Headers":
+    "Content-Type, Authorization, X-Payload-Version",
 };
 
 export default async function handler(req, res) {
@@ -15,7 +16,7 @@ export default async function handler(req, res) {
   try {
     // Lida com CORS preflight requests
     Object.entries(corsHeaders).forEach(([key, value]) =>
-      res.setHeader(key, value)
+      res.setHeader(key, value),
     );
     if (req.method === "OPTIONS") {
       clearTimeout(timeout);

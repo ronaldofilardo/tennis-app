@@ -138,8 +138,16 @@ describe("ScoreboardV2 - Ace Button Behavior", () => {
   beforeEach(() => {
     (global as any).resetGlobalMocks();
     __resetMockTennisScoring();
-    mockHttpClient.get.mockResolvedValue({ ok: true, data: mockMatchData, status: 200 });
-    mockHttpClient.patch.mockResolvedValue({ ok: true, data: { message: "OK" }, status: 200 });
+    mockHttpClient.get.mockResolvedValue({
+      ok: true,
+      data: mockMatchData,
+      status: 200,
+    });
+    mockHttpClient.patch.mockResolvedValue({
+      ok: true,
+      data: { message: "OK" },
+      status: 200,
+    });
   });
 
   afterEach(() => {
@@ -358,8 +366,16 @@ describe("ScoreboardV2 - Button Alignment Based on Server", () => {
   beforeEach(() => {
     (globalThis as any).resetGlobalMocks();
     __resetMockTennisScoring();
-    mockHttpClient.get.mockResolvedValue({ ok: true, data: mockMatchData, status: 200 });
-    mockHttpClient.patch.mockResolvedValue({ ok: true, data: { message: "OK" }, status: 200 });
+    mockHttpClient.get.mockResolvedValue({
+      ok: true,
+      data: mockMatchData,
+      status: 200,
+    });
+    mockHttpClient.patch.mockResolvedValue({
+      ok: true,
+      data: { message: "OK" },
+      status: 200,
+    });
   });
 
   afterEach(() => {
@@ -445,8 +461,16 @@ describe("ScoreboardV2 - Button Alignment Based on Server", () => {
     beforeEach(() => {
       (globalThis as any).resetGlobalMocks();
       __resetMockTennisScoring();
-      mockHttpClient.get.mockResolvedValue({ ok: true, data: mockMatchData, status: 200 });
-      mockHttpClient.patch.mockResolvedValue({ ok: true, data: { message: "OK" }, status: 200 });
+      mockHttpClient.get.mockResolvedValue({
+        ok: true,
+        data: mockMatchData,
+        status: 200,
+      });
+      mockHttpClient.patch.mockResolvedValue({
+        ok: true,
+        data: { message: "OK" },
+        status: 200,
+      });
     });
 
     afterEach(() => {
@@ -598,8 +622,16 @@ describe("ScoreboardV2 - Button Alignment Based on Server", () => {
 describe("ScoreboardV2 - Restauração de Estado e Fluxos", () => {
   beforeEach(() => {
     (global as any).resetGlobalMocks();
-    mockHttpClient.get.mockResolvedValue({ ok: true, data: mockMatchData, status: 200 });
-    mockHttpClient.patch.mockResolvedValue({ ok: true, data: { message: "OK" }, status: 200 });
+    mockHttpClient.get.mockResolvedValue({
+      ok: true,
+      data: mockMatchData,
+      status: 200,
+    });
+    mockHttpClient.patch.mockResolvedValue({
+      ok: true,
+      data: { message: "OK" },
+      status: 200,
+    });
     mockTennisScoring.getState.mockReturnValue(mockMatchData.matchState);
     mockTennisScoring.canUndo.mockReturnValue(false);
   });
@@ -651,7 +683,10 @@ describe("ScoreboardV2 - Restauração de Estado e Fluxos", () => {
         ...mockMatchData,
         status: "FINISHED",
         format: "BEST_OF_3",
-        matchState: { ...mockMatchData.matchState, config: { format: "BEST_OF_3" } },
+        matchState: {
+          ...mockMatchData.matchState,
+          config: { format: "BEST_OF_3" },
+        },
       },
       status: 200,
     });
@@ -927,7 +962,10 @@ describe("ScoreboardV2 - Restauração de Estado e Fluxos", () => {
           ...mockMatchData,
           status: "NOT_STARTED",
           format: "BEST_OF_3",
-          matchState: { ...mockMatchData.matchState, config: { format: "BEST_OF_3" } },
+          matchState: {
+            ...mockMatchData.matchState,
+            config: { format: "BEST_OF_3" },
+          },
         },
         status: 200,
       });

@@ -19,7 +19,8 @@ import { generateBracket } from "../../src/services/tournamentService.js";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PATCH, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Payload-Version",
+  "Access-Control-Allow-Headers":
+    "Content-Type, Authorization, X-Payload-Version",
 };
 
 function getTournamentId(url) {

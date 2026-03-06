@@ -165,7 +165,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  font-size: calc(1.1rem * var(--sb-scale, 1));
   font-weight: 700;
   color: var(--text-primary);
   background: rgba(255, 255, 255, 0.12);
@@ -175,7 +175,7 @@
 
 /* ── Nome ──────────────────────────────── */
 .player-card-name {
-  font-size: clamp(0.9rem, 4vw, 1.1rem);
+  font-size: calc(clamp(0.9rem, 4vw, 1.1rem) * var(--sb-scale, 1));
   font-weight: 700;
   color: var(--text-primary);
   text-align: center;
@@ -190,7 +190,7 @@
 
 .serve-dot {
   color: var(--accent-gold);
-  font-size: 0.6rem;
+  font-size: calc(0.6rem * var(--sb-scale, 1));
   animation: blink-dot 1.2s step-end infinite;
 }
 
@@ -206,7 +206,7 @@
 
 /* ── Badge de saque ────────────────────── */
 .serve-badge {
-  font-size: 0.7rem;
+  font-size: calc(0.7rem * var(--sb-scale, 1));
   font-weight: 700;
   color: var(--accent-gold);
   background: rgba(234, 179, 8, 0.12);
@@ -236,7 +236,7 @@
 }
 
 .score-value {
-  font-size: var(--score-size);
+  font-size: var(--score-size-user, var(--score-size));
   font-weight: 800;
   color: var(--text-primary);
   line-height: 1;
@@ -246,7 +246,7 @@
 }
 
 .score-adv {
-  font-size: clamp(40px, 10vw, 56px);
+  font-size: calc(clamp(40px, 10vw, 56px) * var(--sb-scale, 1));
   font-weight: 800;
   color: var(--accent-gold);
   line-height: 1;
@@ -267,7 +267,7 @@
 
 /* ── Games ─────────────────────────────── */
 .player-card-games {
-  font-size: var(--games-size);
+  font-size: calc(var(--games-size) * var(--sb-scale, 1));
   color: var(--text-secondary);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -281,7 +281,7 @@
 }
 
 .set-dot {
-  font-size: 0.5rem;
+  font-size: calc(0.5rem * var(--sb-scale, 1));
   color: var(--accent-gold);
   opacity: 0.8;
 }
@@ -315,7 +315,7 @@
 
 /* ── Indicadores de ponto ──────────────── */
 .point-indicator {
-  font-size: 0.65rem;
+  font-size: calc(0.65rem * var(--sb-scale, 1));
   font-weight: 700;
   color: var(--alert-red);
   text-transform: uppercase;
@@ -339,7 +339,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
-  font-size: 0.7rem;
+  font-size: calc(0.7rem * var(--sb-scale, 1));
   color: var(--text-muted);
   text-align: center;
   border-top: 1px solid var(--border-subtle);
@@ -354,7 +354,7 @@
 
 /* ── Hint de gesto ─────────────────────── */
 .card-hint {
-  font-size: 0.6rem;
+  font-size: calc(0.6rem * var(--sb-scale, 1));
   color: var(--text-muted);
   opacity: 0.6;
   position: absolute;

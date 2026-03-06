@@ -529,8 +529,70 @@
   transition: transform 0.1s;
 }
 
-/* Ensure player names don't overflow on small screens */
-@media (max-width: 380px) {
+/* ── 320px: Telefones muito pequenos ── */
+@media (max-width: 359px) {
+  .dashboard {
+    padding: 0.5rem 0.65rem calc(56px + env(safe-area-inset-bottom, 0px) + 20px);
+  }
+
+  .player-name {
+    font-size: 0.82rem;
+    max-width: 95px;
+  }
+
+  .card-top {
+    padding: 0.5rem 0.65rem 0.35rem;
+  }
+
+  .card-players {
+    padding: 0.35rem 0.65rem 0.45rem;
+  }
+
+  .card-footer {
+    padding: 0.45rem 0.65rem 0.55rem;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .card-format {
+    max-width: 160px;
+    font-size: 0.65rem;
+  }
+
+  .card-sport-label {
+    font-size: 0.62rem;
+  }
+
+  .court-type-badge {
+    font-size: 0.6rem;
+    padding: 2px 6px;
+  }
+
+  .status-badge {
+    font-size: 0.6rem;
+    padding: 2px 7px;
+  }
+
+  .live-stat {
+    min-width: 36px;
+  }
+
+  .live-stat-value {
+    font-size: 1rem;
+  }
+
+  .card-vs {
+    font-size: 0.7rem;
+  }
+
+  .dashboard-section-title {
+    font-size: 0.72rem;
+    margin: 12px 0 6px;
+  }
+}
+
+/* ── 360px–479px: iPhone SE, Galaxy A ── */
+@media (min-width: 360px) and (max-width: 479px) {
   .player-name {
     font-size: 0.9rem;
     max-width: 110px;
@@ -547,6 +609,7 @@
   .card-footer {
     padding: 0.5rem 0.75rem 0.65rem;
     flex-wrap: wrap;
+    gap: 4px;
   }
 
   .card-format {
@@ -555,6 +618,147 @@
 
   .live-stat {
     min-width: 40px;
+  }
+}
+
+/* ── 480px–639px: Landscape mobile, tablets pequenos ── */
+@media (min-width: 480px) and (max-width: 639px) {
+  .dashboard {
+    padding: 0.75rem 1.25rem
+      calc(56px + env(safe-area-inset-bottom, 0px) + 24px);
+  }
+
+  .player-name {
+    font-size: 1rem;
+    max-width: 160px;
+  }
+
+  .card-top {
+    padding: 0.7rem 1rem 0.45rem;
+  }
+
+  .card-footer {
+    padding: 0.55rem 1rem 0.7rem;
+  }
+
+  .card-format {
+    max-width: 280px;
+  }
+
+  .live-stat-value {
+    font-size: 1.2rem;
+  }
+}
+
+/* ── 640px–767px: Tablets pequenos ── */
+@media (min-width: 640px) and (max-width: 767px) {
+  .dashboard {
+    padding: 1rem 1.5rem calc(56px + env(safe-area-inset-bottom, 0px) + 28px);
+  }
+
+  .player-name {
+    font-size: 1.05rem;
+    max-width: 200px;
+  }
+
+  .card-top {
+    padding: 0.75rem 1.25rem 0.5rem;
+  }
+
+  .card-players {
+    padding: 0.5rem 1.25rem 0.6rem;
+  }
+
+  .card-footer {
+    padding: 0.6rem 1.25rem 0.75rem;
+  }
+
+  .live-stat-value {
+    font-size: 1.25rem;
+  }
+
+  .live-stat {
+    min-width: 56px;
+  }
+
+  .card-format {
+    max-width: 360px;
+  }
+}
+
+/* ── 768px+: Tablet médio (iPad) ── */
+@media (min-width: 768px) {
+  .dashboard {
+    padding: 1.25rem 2rem calc(56px + env(safe-area-inset-bottom, 0px) + 32px);
+  }
+
+  .player-name {
+    font-size: 1.1rem;
+    max-width: 240px;
+  }
+
+  .card-top {
+    padding: 0.85rem 1.5rem 0.55rem;
+  }
+
+  .card-players {
+    padding: 0.55rem 1.5rem 0.65rem;
+  }
+
+  .card-footer {
+    padding: 0.65rem 1.5rem 0.85rem;
+  }
+
+  .card-live-score,
+  .card-finished-score {
+    margin: 0 1.5rem 0.85rem;
+  }
+
+  .live-stat-value {
+    font-size: 1.35rem;
+  }
+
+  .live-stat {
+    min-width: 60px;
+  }
+
+  .status-badge {
+    font-size: 0.72rem;
+    padding: 4px 11px;
+  }
+
+  .court-type-badge {
+    font-size: 0.72rem;
+    padding: 3px 10px;
+  }
+
+  .card-format {
+    font-size: 0.75rem;
+    max-width: none;
+  }
+
+  .card-time {
+    font-size: 0.75rem;
+  }
+
+  .dashboard-section-title {
+    font-size: 0.82rem;
+    margin: 20px 0 10px;
+  }
+}
+
+/* ── Landscape restrito ── */
+@media (orientation: landscape) and (max-height: 500px) {
+  .dashboard {
+    padding-top: 0.5rem;
+  }
+
+  .dashboard-section-title {
+    margin: 8px 0 4px;
+  }
+
+  .match-list {
+    gap: 0.6rem;
   }
 }
 
@@ -571,5 +775,16 @@
 
   .match-card:active {
     transform: translateY(-2px);
+  }
+}
+
+/* ── Acessibilidade: animações reduzidas ── */
+@media (prefers-reduced-motion: reduce) {
+  .match-card {
+    transition: none;
+  }
+
+  .match-card:active {
+    transform: none;
   }
 }

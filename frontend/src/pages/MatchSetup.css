@@ -182,3 +182,242 @@
 .court-type-btn.grass.active .court-type-note {
   color: #22c55e;
 }
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVIDADE — MatchSetup Mobile-First
+   320px / 360px / 480px / 640px / 768px
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Base mobile: player-inputs empilhados verticalmente ── */
+.player-inputs {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+}
+
+.player-inputs span {
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--clr-text-muted, #6b7280);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0;
+}
+
+/* ── 320px: telefones muito pequenos ── */
+@media (max-width: 359px) {
+  .match-setup {
+    padding: 0.75rem;
+    border-radius: 6px;
+  }
+
+  .match-setup-header {
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .match-setup-header h2 {
+    font-size: 1rem;
+  }
+
+  .back-button {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+
+  .setup-form .form-group {
+    margin-bottom: 1.1rem;
+  }
+
+  .setup-form label {
+    font-size: 0.85rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .setup-form input,
+  .setup-form select {
+    padding: 9px;
+    font-size: 0.9rem;
+  }
+
+  .court-type-selector {
+    gap: 6px;
+  }
+
+  .court-type-btn {
+    padding: 9px 6px;
+  }
+
+  .court-type-icon {
+    font-size: 1.1rem;
+  }
+
+  .court-type-name {
+    font-size: 0.78rem;
+  }
+
+  .court-type-note {
+    font-size: 0.62rem;
+  }
+
+  .start-match-button {
+    padding: 11px 20px;
+    font-size: 1.05rem;
+  }
+}
+
+/* ── 360px–479px: iPhone SE, Galaxy A ── */
+@media (min-width: 360px) and (max-width: 479px) {
+  .match-setup {
+    padding: 1rem;
+  }
+
+  .setup-form input,
+  .setup-form select {
+    /* Garantir hit target mínimo de 44px */
+    min-height: 44px;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+  }
+
+  .court-type-btn {
+    padding: 10px 6px;
+  }
+
+  .court-type-name {
+    font-size: 0.82rem;
+  }
+}
+
+/* ── 480px–639px: Landscape mobile, tablets pequenos ── */
+@media (min-width: 480px) and (max-width: 639px) {
+  .setup-form input,
+  .setup-form select {
+    font-size: 1rem;
+    padding: 11px 14px;
+  }
+
+  /* Jogadores ainda empilhados mas com mais espaço */
+  .player-inputs {
+    gap: 0.85rem;
+  }
+
+  .player-inputs span {
+    font-size: 0.85rem;
+  }
+
+  .court-type-btn {
+    padding: 11px 8px;
+    border-radius: 14px;
+  }
+}
+
+/* ── 640px+: Layout com espaço suficiente para lado a lado ── */
+@media (min-width: 640px) {
+  .player-inputs {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 0.75rem;
+  }
+
+  .player-inputs span {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    margin-bottom: 12px;
+  }
+
+  .match-setup {
+    padding: 1.5rem;
+  }
+
+  .court-type-btn {
+    padding: 14px 10px;
+    border-radius: 14px;
+  }
+
+  .court-type-name {
+    font-size: 0.95rem;
+  }
+
+  .court-type-note {
+    font-size: 0.72rem;
+  }
+
+  .start-match-button {
+    padding: 14px 28px;
+    font-size: 1.1rem;
+    border-radius: 10px;
+  }
+}
+
+/* ── 768px+: Tablet médio (iPad) ── */
+@media (min-width: 768px) {
+  .match-setup {
+    padding: 2rem;
+    border-radius: 12px;
+  }
+
+  .match-setup-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .setup-form label {
+    font-size: 1rem;
+  }
+
+  .setup-form input,
+  .setup-form select {
+    padding: 12px 16px;
+    font-size: 1rem;
+    border-radius: 8px;
+  }
+
+  .court-type-selector {
+    gap: 14px;
+  }
+
+  .court-type-btn {
+    padding: 16px 14px;
+    border-radius: 16px;
+  }
+
+  .court-type-icon {
+    font-size: 1.7rem;
+  }
+
+  .start-match-button {
+    padding: 16px 32px;
+    font-size: 1.15rem;
+    border-radius: 12px;
+    max-width: 380px;
+  }
+}
+
+/* ── Landscape restrito ── */
+@media (orientation: landscape) and (max-height: 500px) {
+  .setup-form .form-group {
+    margin-bottom: 0.9rem;
+  }
+
+  .match-setup-header {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .form-actions {
+    margin-top: 1rem;
+  }
+}
+
+/* ── Acessibilidade: animação reduzida ── */
+@media (prefers-reduced-motion: reduce) {
+  .court-type-btn {
+    transition: none;
+  }
+
+  .start-match-button {
+    transition: none;
+  }
+}

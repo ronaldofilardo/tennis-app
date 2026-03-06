@@ -90,8 +90,8 @@ export function requiresSubtipo2(
   if (situacao === "passada") {
     if (!golpe) return false;
     if (golpe === "VBH" || golpe === "VFH") return true;
-    // devolvedor|passada|Smash: tem sub2 Out/Net (fluxotosystem.txt linhas 706-711)
-    if (golpe === "Smash" && vencedor === "devolvedor") return true;
+    // sacador+devolvedor|passada|Smash: tem sub2 Out/Net (linhas 706-711 e 1040-1051)
+    if (golpe === "Smash") return true;
     return false;
   }
   return true;
@@ -189,18 +189,15 @@ export function getValidGolpeEsp(
   if (efeito === "flat") return [];
   if (efeito === "slice") return ["lob", "drop"];
   if (efeito === "topspin") {
-    // devolucao (ambos os vencedores): apenas [lob] (IDs 427-466, 1060-1069)
-    if (situacao === "devolucao") return ["lob"];
-    // devolvedor|fundo|winner: sem golpe_esp (IDs 860-869)
-    if (vencedor === "devolvedor" && situacao === "fundo" && tipo === "winner")
-      return [];
-    // sacador|fundo|erro*: [lob, drop, bate-pronto] (IDs 219-278)
-    if (vencedor === "sacador" && situacao === "fundo" && tipo !== "winner")
-      return ["lob", "drop", "bate-pronto"];
-    // devolvedor|rede|erro*: [lob] apenas (IDs 722-761)
-    if (vencedor === "devolvedor" && situacao === "rede") return ["lob"];
-    // sacador|fundo|winner, sacador|rede|erro*, passada|winner (ambos): [lob, bate-pronto]
-    return ["lob", "bate-pronto"];
+    if (tipo === "winner") {
+      // apenas devolvedor|fundo|winner: sem golpe_esp (sacador|fundo|winner tem lob)
+      if (vencedor === "devolvedor" && situacao === "fundo") return [];
+      // todos os demais winners: lob
+      return ["lob"];
+    }
+    // erros: apenas sacador|rede tem lob
+    if (vencedor === "sacador" && situacao === "rede") return ["lob"];
+    return [];
   }
   return [];
 }

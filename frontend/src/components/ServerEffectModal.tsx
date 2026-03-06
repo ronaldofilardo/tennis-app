@@ -9,6 +9,7 @@ interface ServerEffectModalProps {
   playerInFocus: Player;
   onConfirm: (effect?: string, direction?: string) => void;
   onCancel: () => void;
+  fontScale?: number;
 }
 
 const ServerEffectModal: React.FC<ServerEffectModalProps> = ({
@@ -16,6 +17,7 @@ const ServerEffectModal: React.FC<ServerEffectModalProps> = ({
   playerInFocus,
   onConfirm,
   onCancel,
+  fontScale = 1,
 }) => {
   const [efeito, setEfeito] = useState<string | undefined>();
   const [direcao, setDirecao] = useState<string | undefined>();
@@ -42,6 +44,7 @@ const ServerEffectModal: React.FC<ServerEffectModalProps> = ({
         className="server-effect-modal"
         data-testid="server-effect-modal"
         onClick={(e) => e.stopPropagation()}
+        style={{ "--sb-scale": String(fontScale) } as React.CSSProperties}
       >
         <div className="modal-header">
           <h3>🎾 Efeito do Saque</h3>
