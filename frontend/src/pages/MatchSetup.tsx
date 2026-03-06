@@ -54,7 +54,10 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
     event.preventDefault(); // Impede o recarregamento da página
 
     // Garantir que os jogadores estão definidos
-    if (!player1 || !player2) {
+    const finalP1 = player1 || selectedAthlete1?.name;
+    const finalP2 = player2 || selectedAthlete2?.name;
+
+    if (!finalP1 || !finalP2) {
       setError("Os nomes dos jogadores são obrigatórios.");
       return;
     }
@@ -69,7 +72,7 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
         sportType: sport,
         format: format,
         courtType: sport === "TENNIS" ? courtType : undefined,
-        players: { p1: player1 || "Jogador 1", p2: player2 || "Jogador 2" },
+        players: { p1: finalP1, p2: finalP2 },
         nickname: nickname || null,
         visibility: visibility || "PLAYERS_ONLY",
         scorerId: selectedScorer?.id || null,
