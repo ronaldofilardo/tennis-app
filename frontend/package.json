@@ -26,7 +26,7 @@
     "test:mutation": "stryker run"
   },
   "dependencies": {
-    "@prisma/client": "^7.4.2",
+    "@prisma/client": "^6.19.0",
     "axios": "^1.6.0",
     "pg": "^8.16.3",
     "react": "^18.2.0",
@@ -56,7 +56,7 @@
     "eslint-plugin-react-refresh": "^0.4.3",
     "express": "^4.18.2",
     "jsdom": "^27.1.0",
-    "prisma": "^7.4.2",
+    "prisma": "^6.19.0",
     "typescript": "^5.0.2",
     "vite": "^4.5.14",
     "vitest": "^4.0.7"
