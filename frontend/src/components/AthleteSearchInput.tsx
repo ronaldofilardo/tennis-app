@@ -22,8 +22,10 @@ interface AthleteSearchInputProps {
   placeholder?: string;
   /** Atleta selecionado */
   value?: AthleteResult | null;
-  /** Callback quando atleta é selecionado */
+  /** Callback quando atleta é selecionado ou alterado */
   onSelect: (athlete: AthleteResult | null) => void;
+  /** Callback opcional quando o texto do input muda sem seleção formal */
+  onQueryChange?: (query: string) => void;
   /** Permite criar atleta convidado (digitando nome livre) */
   allowGuest?: boolean;
   /** Classes CSS extras */
@@ -42,6 +44,7 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
   placeholder = "Buscar atleta por nome...",
   value,
   onSelect,
+  onQueryChange,
   allowGuest = true,
   className = "",
   disabled = false,
@@ -61,8 +64,11 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
   useEffect(() => {
     if (value) {
       setQuery(value.name);
+    } else if (value === null) {
+      // Se for explicitamente null, mas o query não bater (foi limpo externamente)
+      // Não mexer se o user estiver digitando
     }
-  }, [value?.id]);
+  }, [value?.id, value?.name]);
 
   // Fechar dropdown ao clicar fora
   useEffect(() => {
@@ -105,8 +111,14 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
     const val = e.target.value;
     setQuery(val);
 
-    // Se havia um atleta selecionado e o user editou, desmarcar
-    if (value) {
+    // COMUNICAR AO PAI O NOVO TEXTO IMEDIATAMENTE (solução definitiva para o bug de nomes vazios)
+    if (onQueryChange) {
+      onQueryChange(val);
+    }
+
+    // Se havia um atleta de banco selecionado (ID numérico/UUID) e o user editou, desmarcar
+    // Mantemos atletas "guest_" porque eles já representam texto livre
+    if (value && value.id && !value.id.startsWith("guest_")) {
       onSelect(null);
     }
 
