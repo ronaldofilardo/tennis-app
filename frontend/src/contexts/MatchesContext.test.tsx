@@ -98,7 +98,9 @@ describe("MatchesContext", () => {
     mockUseLocation.mockReturnValue({ pathname: "/dashboard" });
 
     // Mock do usuário autenticado com formato novo (AuthUser completo)
+    // racket_schema_v é obrigatório para que loadStoredUser() não limpe tudo
     localStorageMock.getItem.mockImplementation((key: string) => {
+      if (key === "racket_schema_v") return "3";
       if (key === "racket_token") return "test-token";
       if (key === "racket_user")
         return JSON.stringify({

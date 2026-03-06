@@ -151,8 +151,16 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
   beforeEach(() => {
     (globalThis as any).resetGlobalMocks();
     __resetMockTennisScoring();
-    mockHttpClient.get.mockResolvedValue({ ok: true, data: mockMatchData, status: 200 });
-    mockHttpClient.patch.mockResolvedValue({ ok: true, data: { message: "OK" }, status: 200 });
+    mockHttpClient.get.mockResolvedValue({
+      ok: true,
+      data: mockMatchData,
+      status: 200,
+    });
+    mockHttpClient.patch.mockResolvedValue({
+      ok: true,
+      data: { message: "OK" },
+      status: 200,
+    });
   });
 
   afterEach(() => {

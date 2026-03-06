@@ -259,8 +259,16 @@ const renderScoreboard = () => {
     },
   };
 
-  mockHttpClient.get.mockResolvedValue({ ok: true, data: mockResponse, status: 200 });
-  mockHttpClient.patch.mockResolvedValue({ ok: true, data: { message: "OK" }, status: 200 });
+  mockHttpClient.get.mockResolvedValue({
+    ok: true,
+    data: mockResponse,
+    status: 200,
+  });
+  mockHttpClient.patch.mockResolvedValue({
+    ok: true,
+    data: { message: "OK" },
+    status: 200,
+  });
 
   render(
     <BrowserRouter>

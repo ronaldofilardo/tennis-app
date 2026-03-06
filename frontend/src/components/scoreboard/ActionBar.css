@@ -28,7 +28,7 @@
   pointer-events: none;
   border-radius: 20px;
   padding: 0.3rem 0.8rem;
-  font-size: 0.75rem;
+  font-size: calc(0.75rem * var(--sb-scale, 1));
   font-weight: 700;
   border: none;
   letter-spacing: 0.3px;
@@ -51,7 +51,7 @@
   color: var(--text-secondary);
   border-radius: var(--radius-btn);
   padding: 0.35rem 0.75rem;
-  font-size: 0.82rem;
+  font-size: calc(0.82rem * var(--sb-scale, 1));
   font-weight: 600;
   cursor: pointer;
   transition:
@@ -83,7 +83,7 @@
 .point-winner-btn {
   flex: 1;
   padding: 0.55rem 0.5rem;
-  font-size: 0.88rem;
+  font-size: calc(0.88rem * var(--sb-scale, 1));
   font-weight: 700;
   border-radius: var(--radius-btn);
   cursor: pointer;
@@ -128,7 +128,7 @@
 .main-action-btn {
   flex: 1;
   padding: 0.6rem 0.5rem;
-  font-size: 0.82rem;
+  font-size: calc(0.82rem * var(--sb-scale, 1));
   font-weight: 700;
   border-radius: var(--radius-btn);
   cursor: pointer;
@@ -172,5 +172,39 @@
 
 .main-action-btn-disabled {
   opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ── Controle de tamanho do placar ─────── */
+.font-scale-ctrl {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.font-scale-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  border-radius: var(--radius-btn);
+  padding: 0.6rem 0.55rem;
+  font-size: calc(0.72rem * var(--sb-scale, 1));
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+  min-width: 36px;
+  text-align: center;
+  letter-spacing: -0.3px;
+}
+
+.font-scale-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--text-secondary);
+}
+
+.font-scale-btn:disabled {
+  opacity: 0.3;
   cursor: not-allowed;
 }

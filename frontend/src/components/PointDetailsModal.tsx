@@ -43,6 +43,7 @@ interface PointDetailsModalProps {
   playerNames: { PLAYER_1: string; PLAYER_2: string };
   onConfirm: (details: RallyDetails | undefined) => void;
   onCancel: () => void;
+  fontScale?: number;
 }
 
 interface Sel {
@@ -94,6 +95,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
   playerNames,
   onConfirm,
   onCancel,
+  fontScale = 1,
 }) => {
   const [sel, setSel] = useState<Sel>({});
 
@@ -246,7 +248,12 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
         if (e.target === e.currentTarget) onCancel();
       }}
     >
-      <div className="point-details-modal" role="dialog" aria-modal="true">
+      <div
+        className="point-details-modal"
+        role="dialog"
+        aria-modal="true"
+        style={{ "--sb-scale": String(fontScale) } as React.CSSProperties}
+      >
         {/* Header */}
         <div className="pd-header">
           <h3>Detalhes do Ponto</h3>

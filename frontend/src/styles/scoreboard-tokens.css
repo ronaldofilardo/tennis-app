@@ -39,7 +39,7 @@
   /* Tipografia */
   --font-main:
     "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --score-size: clamp(72px, 18vw, 96px);
+  --score-size: clamp(48px, 13vw, 72px);
   --name-size: clamp(18px, 5vw, 24px);
   --label-size: 14px;
   --games-size: clamp(14px, 4vw, 18px);

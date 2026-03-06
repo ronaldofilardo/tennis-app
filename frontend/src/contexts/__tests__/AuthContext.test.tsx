@@ -52,6 +52,7 @@ import { AuthProvider, useAuth } from "../AuthContext";
 import type { AuthUser } from "../AuthContext";
 
 // Usuário retornado pela API após login
+// planType e subscriptionStatus são adicionados por mapLoginResponse quando ausentes na resposta
 const mockAuthUser: AuthUser = {
   id: "user-001",
   email: "play@email.com",
@@ -60,6 +61,8 @@ const mockAuthUser: AuthUser = {
   clubs: [],
   activeClubId: null,
   activeRole: "PLAYER",
+  planType: "FREE",
+  subscriptionStatus: "ACTIVE",
 };
 
 // Payload retornado por httpClient.post('/auth/login')
@@ -167,6 +170,7 @@ describe("AuthContext", () => {
 
   it("deve fazer logout com sucesso", () => {
     mockLocalStorage.getItem.mockImplementation((key: string) => {
+      if (key === "racket_schema_v") return "3";
       if (key === "racket_user") return JSON.stringify(mockAuthUser);
       if (key === "racket_token") return "test-jwt-token";
       return null;
@@ -194,6 +198,7 @@ describe("AuthContext", () => {
 
   it("deve restaurar sessão do localStorage com novo formato AuthUser", () => {
     mockLocalStorage.getItem.mockImplementation((key: string) => {
+      if (key === "racket_schema_v") return "3";
       if (key === "racket_token") return "test-jwt-token";
       if (key === "racket_user") return JSON.stringify(mockAuthUser);
       return null;

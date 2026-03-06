@@ -16,6 +16,10 @@ interface ActionBarProps {
   onServerWon: () => void;
   onReturnerWon: () => void;
   onConfig?: () => void;
+  /** Controle do tamanho do placar */
+  fontScale?: number;
+  onFontScaleInc?: () => void;
+  onFontScaleDec?: () => void;
 }
 
 const ActionBar: React.FC<ActionBarProps> = ({
@@ -33,6 +37,9 @@ const ActionBar: React.FC<ActionBarProps> = ({
   onServerWon,
   onReturnerWon,
   onConfig,
+  fontScale = 1,
+  onFontScaleInc,
+  onFontScaleDec,
 }) => {
   const isSecondServe = serveStep === "second";
   const returner: "PLAYER_1" | "PLAYER_2" =
@@ -108,6 +115,29 @@ const ActionBar: React.FC<ActionBarProps> = ({
         <button className="main-action-btn stats-btn" onClick={onStats}>
           📊 Stats
         </button>
+
+        {/* Controle de tamanho do placar */}
+        <div className="font-scale-ctrl" aria-label="Tamanho do placar">
+          <button
+            className="font-scale-btn"
+            onClick={onFontScaleDec}
+            disabled={fontScale <= 0.6}
+            aria-label="Diminuir placar"
+            title="Diminuir"
+          >
+            A−
+          </button>
+          <button
+            className="font-scale-btn"
+            onClick={onFontScaleInc}
+            disabled={fontScale >= 2.0}
+            aria-label="Aumentar placar"
+            title="Aumentar"
+          >
+            A+
+          </button>
+        </div>
+
         {onConfig && (
           <button className="main-action-btn config-btn" onClick={onConfig}>
             ⚙

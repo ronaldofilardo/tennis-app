@@ -38,10 +38,7 @@ export async function getAllMatches(clubId = null, userRole = null) {
     // ADMIN vê todas as partidas
   } else if (clubId) {
     // Usuário comum vê partidas do seu clube + partidas públicas
-    whereClause.OR = [
-      { clubId },
-      { visibility: "PUBLIC" },
-    ];
+    whereClause.OR = [{ clubId }, { visibility: "PUBLIC" }];
   } else {
     // Sem clube: apenas partidas públicas
     whereClause.visibility = "PUBLIC";

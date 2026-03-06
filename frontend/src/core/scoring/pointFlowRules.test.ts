@@ -126,7 +126,7 @@ describe("requiresSubtipo2", () => {
       false,
     );
   });
-  it("devolvedor|passada|erro com VFH/VBH → true; Smash → true (fluxotosystem.txt: Out/Net)", () => {
+  it("devolvedor+sacador|passada|erro com VFH/VBH/Smash → true", () => {
     expect(
       requiresSubtipo2("devolvedor", "passada", "erro-forcado", "VFH"),
     ).toBe(true);
@@ -139,6 +139,13 @@ describe("requiresSubtipo2", () => {
     // devolvedor|passada|Smash tem sub2 Out/Net (fluxotosystem.txt linhas 706-711)
     expect(
       requiresSubtipo2("devolvedor", "passada", "erro-nao-forcado", "Smash"),
+    ).toBe(true);
+    // sacador|passada|Smash também tem sub2 Out/Net (linhas 1040-1051)
+    expect(
+      requiresSubtipo2("sacador", "passada", "erro-forcado", "Smash"),
+    ).toBe(true);
+    expect(
+      requiresSubtipo2("sacador", "passada", "erro-nao-forcado", "Smash"),
     ).toBe(true);
   });
   it("sacador|rede|erro → true", () => {
@@ -403,16 +410,16 @@ describe("getValidGolpeEsp", () => {
     expect(getValidGolpeEsp("FH", "flat")).toEqual([]);
   });
 
-  it("BH + topspin → [lob, bate-pronto]", () => {
-    expect(sorted(getValidGolpeEsp("BH", "topspin"))).toEqual(
-      sorted(["lob", "bate-pronto"]),
-    );
+  it("BH + topspin + sacador|fundo|winner → [lob]", () => {
+    expect(
+      getValidGolpeEsp("BH", "topspin", "sacador", "fundo", "winner"),
+    ).toEqual(["lob"]);
   });
 
-  it("FH + topspin → [lob, bate-pronto]", () => {
-    expect(sorted(getValidGolpeEsp("FH", "topspin"))).toEqual(
-      sorted(["lob", "bate-pronto"]),
-    );
+  it("FH + topspin + devolvedor|fundo|winner → []", () => {
+    expect(
+      getValidGolpeEsp("FH", "topspin", "devolvedor", "fundo", "winner"),
+    ).toEqual([]);
   });
 
   it("BH + slice → [lob, drop]", () => {
@@ -482,13 +489,34 @@ describe("regra universal slice — getValidGolpeEsp", () => {
     },
   );
 
-  it("topspin sempre retorna [lob, bate-pronto] para qualquer golpe de fundo", () => {
-    expect(sorted(getValidGolpeEsp("BH", "topspin"))).toEqual(
-      sorted(["lob", "bate-pronto"]),
-    );
-    expect(sorted(getValidGolpeEsp("FH", "topspin"))).toEqual(
-      sorted(["lob", "bate-pronto"]),
-    );
+  it("topspin: winner+não-fundo→[lob]; devolvedor+fundo→[]; erro+sacador+rede→[lob]; erro outros→[]", () => {
+    expect(
+      getValidGolpeEsp("BH", "topspin", "sacador", "passada", "winner"),
+    ).toEqual(["lob"]);
+    expect(
+      getValidGolpeEsp("FH", "topspin", "devolvedor", "devolucao", "winner"),
+    ).toEqual(["lob"]);
+    expect(
+      getValidGolpeEsp("BH", "topspin", "sacador", "fundo", "winner"),
+    ).toEqual(["lob"]);
+    expect(
+      getValidGolpeEsp("FH", "topspin", "devolvedor", "fundo", "winner"),
+    ).toEqual([]);
+    expect(
+      getValidGolpeEsp("BH", "topspin", "sacador", "rede", "erro-forcado"),
+    ).toEqual(["lob"]);
+    expect(
+      getValidGolpeEsp("FH", "topspin", "sacador", "fundo", "erro-forcado"),
+    ).toEqual([]);
+    expect(
+      getValidGolpeEsp(
+        "BH",
+        "topspin",
+        "devolvedor",
+        "rede",
+        "erro-nao-forcado",
+      ),
+    ).toEqual([]);
   });
 
   it("flat sempre retorna [] para qualquer golpe de fundo", () => {

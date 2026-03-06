@@ -159,6 +159,7 @@ describe("AuthContext", () => {
 
     it("deve carregar usuário autenticado do localStorage", () => {
       localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === "racket_schema_v") return "3"; // schema version obrigatória para loadStoredUser()
         if (key === "racket_token") return "test-token";
         if (key === "racket_user") return JSON.stringify(mockAnnotatorUser);
         return null;
@@ -257,7 +258,15 @@ describe("AuthContext", () => {
       expect(screen.getByTestId("auth-status")).toHaveTextContent(
         "not-authenticated",
       );
-      expect(localStorageMock.setItem).not.toHaveBeenCalled();
+      // Apenas a gravação de schema_version é permitida durante init; token/user NÃO devem ser salvos
+      expect(localStorageMock.setItem).not.toHaveBeenCalledWith(
+        "racket_token",
+        expect.any(String),
+      );
+      expect(localStorageMock.setItem).not.toHaveBeenCalledWith(
+        "racket_user",
+        expect.any(String),
+      );
     });
 
     it("deve mostrar estado de loading durante login", async () => {
@@ -282,6 +291,7 @@ describe("AuthContext", () => {
   describe("Logout", () => {
     it("deve desautenticar usuário", () => {
       localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === "racket_schema_v") return "3";
         if (key === "racket_token") return "test-token";
         if (key === "racket_user") return JSON.stringify(mockAnnotatorUser);
         return null;
@@ -326,6 +336,7 @@ describe("AuthContext", () => {
   describe("Persistência de sessão", () => {
     it("deve limpar dados inválidos do localStorage", () => {
       localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === "racket_schema_v") return "3";
         if (key === "racket_token") return "test-token";
         if (key === "racket_user") return "invalid-json";
         return null;

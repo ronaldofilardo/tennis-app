@@ -1,6 +1,6 @@
 // frontend/src/hooks/useMatchSync.ts
-import { useState, useEffect, useCallback } from 'react';
-import httpClient from '../config/httpClient';
+import { useState, useEffect, useCallback } from "react";
+import httpClient from "../config/httpClient";
 
 interface MatchSyncOptions {
   interval?: number;
@@ -15,26 +15,32 @@ export function useMatchSync(matchId: string, options: MatchSyncOptions = {}) {
 
   const { interval = 5000, onStateChange, onError } = options;
 
-  const syncState = useCallback(async (state: any) => {
-    try {
-      setIsLoading(true);
-      const response = await httpClient.patch(`/matches/${matchId}/state`, state);
+  const syncState = useCallback(
+    async (state: any) => {
+      try {
+        setIsLoading(true);
+        const response = await httpClient.patch(
+          `/matches/${matchId}/state`,
+          state,
+        );
 
-      if (!response.ok) {
-        throw new Error('Falha ao sincronizar estado');
+        if (!response.ok) {
+          throw new Error("Falha ao sincronizar estado");
+        }
+
+        const data = response.data;
+        setLastSync(new Date());
+        return data;
+      } catch (err: any) {
+        setError(err);
+        onError?.(err);
+        throw err;
+      } finally {
+        setIsLoading(false);
       }
-
-      const data = response.data;
-      setLastSync(new Date());
-      return data;
-    } catch (err: any) {
-      setError(err);
-      onError?.(err);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [matchId, onError]);
+    },
+    [matchId, onError],
+  );
 
   const getState = useCallback(async () => {
     try {
@@ -42,7 +48,7 @@ export function useMatchSync(matchId: string, options: MatchSyncOptions = {}) {
       const response = await httpClient.get(`/matches/${matchId}/state`);
 
       if (!response.ok) {
-        throw new Error('Falha ao buscar estado');
+        throw new Error("Falha ao buscar estado");
       }
 
       const data = response.data;

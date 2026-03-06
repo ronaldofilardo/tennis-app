@@ -1,20 +1,20 @@
-import '../../../vitest.setup';
+import "../../../vitest.setup";
 
-import React from 'react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import { MatchesProvider, useMatches } from '../MatchesContext';
-import { AuthProvider } from '../AuthContext';
-import { MemoryRouter } from 'react-router-dom';
+import React from "react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, waitFor } from "@testing-library/react";
+import { MatchesProvider, useMatches } from "../MatchesContext";
+import { AuthProvider } from "../AuthContext";
+import { MemoryRouter } from "react-router-dom";
 
 // Mock do fetch global
 const mockFetch = vi.fn();
-(vi as any).stubGlobal('fetch', mockFetch);
+(vi as any).stubGlobal("fetch", mockFetch);
 
 const mockMatches = [
-  { id: '1', sportType: 'Tennis', status: 'NOT_STARTED' },
-  { id: '2', sportType: 'Tennis', status: 'IN_PROGRESS' },
-  { id: '3', sportType: 'Tennis', status: 'FINISHED' },
+  { id: "1", sportType: "Tennis", status: "NOT_STARTED" },
+  { id: "2", sportType: "Tennis", status: "IN_PROGRESS" },
+  { id: "3", sportType: "Tennis", status: "FINISHED" },
 ];
 
 const TestComponent: React.FC = () => {
@@ -22,9 +22,9 @@ const TestComponent: React.FC = () => {
   return (
     <div>
       <div data-testid="matches-count">{matches.length}</div>
-      <div data-testid="statuses">{matches.map(m => m.status).join(',')}</div>
-      <div data-testid="loading">{loading ? 'loading' : 'not-loading'}</div>
-      <div data-testid="error">{error || 'no-error'}</div>
+      <div data-testid="statuses">{matches.map((m) => m.status).join(",")}</div>
+      <div data-testid="loading">{loading ? "loading" : "not-loading"}</div>
+      <div data-testid="error">{error || "no-error"}</div>
     </div>
   );
 };
@@ -37,14 +37,25 @@ const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </MemoryRouter>
 );
 
-describe('MatchesContext integração com estados', () => {
+describe("MatchesContext integração com estados", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Mock usuário autenticado
-    vi.stubGlobal('localStorage', {
+    vi.stubGlobal("localStorage", {
       getItem: (key: string) => {
-        if (key === 'racket_auth') return 'true';
-        if (key === 'racket_user') return JSON.stringify({ role: 'annotator', email: 'test@test.com' });
+        // racket_schema_v é obrigatório para loadStoredUser() não limpar a sessão
+        if (key === "racket_schema_v") return "3";
+        if (key === "racket_token") return "test-token";
+        if (key === "racket_user")
+          return JSON.stringify({
+            id: "user-001",
+            email: "test@test.com",
+            name: "Test User",
+            role: "annotator",
+            clubs: [],
+            activeClubId: null,
+            activeRole: "annotator",
+          });
         return null;
       },
       setItem: vi.fn(),
@@ -59,15 +70,17 @@ describe('MatchesContext integração com estados', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
-  it('exibe todos os estados recebidos do backend', async () => {
+  it("exibe todos os estados recebidos do backend", async () => {
     render(
       <TestWrapper>
         <TestComponent />
-      </TestWrapper>
+      </TestWrapper>,
     );
     await waitFor(() => {
-      expect(screen.getByTestId('matches-count')).toHaveTextContent('3');
-      expect(screen.getByTestId('statuses')).toHaveTextContent('NOT_STARTED,IN_PROGRESS,FINISHED');
+      expect(screen.getByTestId("matches-count")).toHaveTextContent("3");
+      expect(screen.getByTestId("statuses")).toHaveTextContent(
+        "NOT_STARTED,IN_PROGRESS,FINISHED",
+      );
     });
   });
 });

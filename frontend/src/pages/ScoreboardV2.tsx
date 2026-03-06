@@ -143,6 +143,25 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
     null,
   );
   const courtRef = useRef<HTMLDivElement>(null);
+
+  // Tamanho do placar — persiste em localStorage
+  const [fontScale, setFontScale] = useState<number>(() => {
+    const saved = localStorage.getItem("sb-font-scale");
+    const parsed = saved ? parseFloat(saved) : 1.0;
+    return isNaN(parsed) ? 1.0 : Math.min(2.0, Math.max(0.6, parsed));
+  });
+  const handleFontScaleInc = () =>
+    setFontScale((prev) => {
+      const next = Math.min(2.0, parseFloat((prev + 0.2).toFixed(1)));
+      localStorage.setItem("sb-font-scale", String(next));
+      return next;
+    });
+  const handleFontScaleDec = () =>
+    setFontScale((prev) => {
+      const next = Math.max(0.6, parseFloat((prev - 0.2).toFixed(1)));
+      localStorage.setItem("sb-font-scale", String(next));
+      return next;
+    });
   // Ref para cancelar syncState pendente e evitar race condition de OOO writes
   const syncTimeoutRef = useRef<number | null>(null);
 
@@ -716,6 +735,12 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
       className="scoreboard-v2-court"
       data-render={renderKey}
       data-court={courtAttr}
+      style={
+        {
+          "--sb-scale": String(fontScale),
+          "--score-size-user": `calc(var(--score-size) * ${fontScale})`,
+        } as React.CSSProperties
+      }
     >
       {/* Modais que não mudam */}
       <MatchStatsModal
@@ -733,6 +758,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
           setIsServerEffectOpen(false);
           setPlayerInFocus(null);
         }}
+        fontScale={fontScale}
       />
       <PointDetailsModal
         isOpen={isPointDetailsOpen}
@@ -744,6 +770,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         }}
         onConfirm={handlePointDetailsConfirm}
         onCancel={handlePointDetailsCancel}
+        fontScale={fontScale}
       />
 
       {/* Header */}
@@ -915,6 +942,9 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
               : "PLAYER_1",
           )
         }
+        fontScale={fontScale}
+        onFontScaleInc={handleFontScaleInc}
+        onFontScaleDec={handleFontScaleDec}
       />
 
       {/* Menu contextual (long-press no card) */}

@@ -59,7 +59,7 @@
 .pd-header h3 {
   margin: 0 0 8px 0;
   color: var(--text-primary, #f8fafc);
-  font-size: 1.15rem;
+  font-size: calc(1.15rem * var(--sb-scale, 1));
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -72,7 +72,7 @@
   margin-top: 4px;
   padding: 4px 14px;
   border-radius: var(--radius-badge, 12px);
-  font-size: 0.8rem;
+  font-size: calc(0.8rem * var(--sb-scale, 1));
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -108,7 +108,7 @@
 }
 
 .pd-section-label {
-  font-size: 0.75rem;
+  font-size: calc(0.75rem * var(--sb-scale, 1));
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -137,7 +137,7 @@
     background var(--transition-fast, 150ms ease),
     border-color var(--transition-fast, 150ms ease),
     color var(--transition-fast, 150ms ease);
-  font-size: 0.875rem;
+  font-size: calc(0.875rem * var(--sb-scale, 1));
   font-weight: 600;
   color: var(--text-secondary, #94a3b8);
   line-height: 1.2;
@@ -199,7 +199,7 @@
   color: #fff;
   border: none;
   border-radius: var(--radius-btn, 12px);
-  font-size: 0.95rem;
+  font-size: calc(0.95rem * var(--sb-scale, 1));
   font-weight: 700;
   cursor: pointer;
   transition:
@@ -228,7 +228,7 @@
   color: var(--text-secondary, #94a3b8);
   border: 1.5px solid var(--border-default, rgba(255, 255, 255, 0.15));
   border-radius: var(--radius-btn, 12px);
-  font-size: 0.875rem;
+  font-size: calc(0.875rem * var(--sb-scale, 1));
   font-weight: 600;
   cursor: pointer;
   transition:
@@ -251,7 +251,7 @@
   color: var(--alert-red, #ef4444);
   border: 1.5px solid rgba(239, 68, 68, 0.35);
   border-radius: var(--radius-btn, 12px);
-  font-size: 0.875rem;
+  font-size: calc(0.875rem * var(--sb-scale, 1));
   font-weight: 600;
   cursor: pointer;
   transition:

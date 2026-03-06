@@ -169,9 +169,260 @@
   color: var(--clr-live, #f43f5e);
 }
 
-/* Small screens: 2x2 grid */
-@media (max-width: 360px) {
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVIDADE — Breakpoints Mobile-First
+   320px / 375px / 480px / 640px / 768px / 1024px
+   ══════════════════════════════════════════════════════════ */
+
+/* ── 320px: Telefones muito pequenos (Moto E, Galaxy J) ── */
+@media (max-width: 359px) {
+  .athlete-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
+  }
+
+  .athlete-header-main {
+    gap: 8px;
+    padding: 10px 0;
+  }
+
+  .athlete-name {
+    font-size: 0.88rem;
+  }
+
+  .athlete-subtitle {
+    font-size: 0.68rem;
+  }
+
+  .athlete-quick-stats {
+    gap: 8px;
+  }
+
+  .athlete-quick-stat-value {
+    font-size: 0.82rem;
+  }
+
+  .athlete-quick-stat-label {
+    font-size: 0.5rem;
+  }
+
+  /* Chevron maior para touch target */
+  .athlete-expand-icon {
+    font-size: 1rem;
+    padding: 4px;
+  }
+
   .athlete-kpis {
     grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    padding: 6px 0 10px;
+  }
+
+  .athlete-kpi-card {
+    padding: 8px 6px;
+  }
+
+  .athlete-kpi-value {
+    font-size: 0.9rem;
+  }
+
+  .athlete-kpi-label {
+    font-size: 0.52rem;
+  }
+}
+
+/* ── 360px–479px: iPhone SE, Galaxy A20, Galaxy A51 ── */
+@media (min-width: 360px) and (max-width: 479px) {
+  .athlete-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 0.95rem;
+  }
+
+  .athlete-header-main {
+    gap: 10px;
+  }
+
+  .athlete-name {
+    font-size: 0.95rem;
+  }
+
+  .athlete-subtitle {
+    font-size: 0.7rem;
+  }
+
+  /* Chevron com área de toque mínima 44px */
+  .athlete-expand-icon {
+    padding: 6px 4px;
+    font-size: 0.9rem;
+  }
+
+  .athlete-kpis {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 8px 0 12px;
+  }
+
+  .athlete-kpi-value {
+    font-size: 1rem;
+  }
+}
+
+/* ── 480px–639px: Landscape mobile, iPad mini pequeño ── */
+@media (min-width: 480px) and (max-width: 639px) {
+  .athlete-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .athlete-kpis {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .athlete-kpi-card {
+    padding: 10px 8px;
+  }
+}
+
+/* ── 640px–767px: Tablets pequenos, landscape iPad mini ── */
+@media (min-width: 640px) and (max-width: 767px) {
+  .athlete-avatar {
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+  }
+
+  .athlete-header-main {
+    gap: 14px;
+    padding: 14px 0;
+  }
+
+  .athlete-name {
+    font-size: 1.1rem;
+  }
+
+  .athlete-subtitle {
+    font-size: 0.78rem;
+  }
+
+  .athlete-quick-stat-value {
+    font-size: 1.05rem;
+  }
+
+  .athlete-kpis {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    padding: 10px 0 14px;
+  }
+
+  .athlete-kpi-card {
+    padding: 12px 10px;
+    border-radius: 12px;
+  }
+
+  .athlete-kpi-value {
+    font-size: 1.15rem;
+  }
+
+  .athlete-kpi-label {
+    font-size: 0.62rem;
+  }
+}
+
+/* ── 768px+: Tablet médio (iPad, Galaxy Tab) ── */
+@media (min-width: 768px) {
+  .athlete-avatar {
+    width: 48px;
+    height: 48px;
+    font-size: 1.3rem;
+    border-width: 2.5px;
+  }
+
+  .athlete-header-main {
+    gap: 16px;
+    padding: 16px 0;
+  }
+
+  .athlete-name {
+    font-size: 1.15rem;
+  }
+
+  .athlete-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .athlete-quick-stats {
+    gap: 16px;
+  }
+
+  .athlete-quick-stat-value {
+    font-size: 1.1rem;
+  }
+
+  .athlete-quick-stat-label {
+    font-size: 0.6rem;
+  }
+
+  .athlete-expand-icon {
+    font-size: 0.95rem;
+  }
+
+  .athlete-kpis {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    padding: 12px 0 16px;
+  }
+
+  .athlete-kpi-card {
+    padding: 14px 12px;
+    border-radius: 12px;
+  }
+
+  .athlete-kpi-value {
+    font-size: 1.2rem;
+  }
+
+  .athlete-kpi-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+  }
+}
+
+/* ── Landscape: altura restrita (>= 480px wide, <= 500px tall) ── */
+@media (orientation: landscape) and (max-height: 500px) {
+  .athlete-header-main {
+    padding: 8px 0;
+  }
+
+  .athlete-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
+  }
+
+  .athlete-kpis {
+    padding: 6px 0 8px;
+    gap: 6px;
+  }
+
+  .athlete-kpi-card {
+    padding: 7px 6px;
+  }
+
+  .athlete-kpi-value {
+    font-size: 0.9rem;
+  }
+}
+
+/* ── Acessibilidade: respeitar preferência por animação reduzida ── */
+@media (prefers-reduced-motion: reduce) {
+  .athlete-details {
+    transition: none;
+  }
+
+  .athlete-expand-icon {
+    transition: none;
   }
 }
