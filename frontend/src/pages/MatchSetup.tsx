@@ -173,7 +173,14 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
               value={selectedAthlete1}
               onSelect={(a) => {
                 setSelectedAthlete1(a);
-                setPlayer1(a?.name || "");
+                if (a) setPlayer1(a.name);
+              }}
+              onQueryChange={(q) => {
+                setPlayer1(q);
+                // Se o user apagou tudo ou está digitando algo novo que não é o atleta selecionado, resetamos o objeto
+                if (selectedAthlete1 && q !== selectedAthlete1.name) {
+                  setSelectedAthlete1(null);
+                }
               }}
               allowGuest
             />
@@ -185,7 +192,13 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
               value={selectedAthlete2}
               onSelect={(a) => {
                 setSelectedAthlete2(a);
-                setPlayer2(a?.name || "");
+                if (a) setPlayer2(a.name);
+              }}
+              onQueryChange={(q) => {
+                setPlayer2(q);
+                if (selectedAthlete2 && q !== selectedAthlete2.name) {
+                  setSelectedAthlete2(null);
+                }
               }}
               allowGuest
             />
