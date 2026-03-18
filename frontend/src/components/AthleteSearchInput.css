@@ -119,6 +119,33 @@
   gap: 6px;
 }
 
+.athlete-result-code {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent-gold, #eab308);
+  background: rgba(234, 179, 8, 0.12);
+  padding: 1px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+  border: 1px solid rgba(234, 179, 8, 0.25);
+}
+
+.athlete-selected-code {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--text-muted, #5a8a70);
+  padding-left: 2px;
+}
+
+.athlete-selected-code code {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: 700;
+  color: var(--accent-gold, #eab308);
+  letter-spacing: 0.05em;
+}
+
 .athlete-result-name {
   font-weight: 500;
   color: var(--text-primary, #f8fafc);

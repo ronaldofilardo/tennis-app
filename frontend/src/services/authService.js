@@ -181,7 +181,9 @@ export async function loginUser({ email, password }) {
         include: {
           club: {
             select: {
-              id: true, name: true, slug: true, logoUrl: true,
+              id: true,
+              name: true,
+              slug: true,
               planType: true,
               subscription: {
                 select: { status: true, planType: true },
@@ -204,7 +206,8 @@ export async function loginUser({ email, password }) {
   const defaultClubId = defaultMembership?.clubId || null;
   const defaultRole = defaultMembership?.role || "PLAYER";
   const defaultClub = defaultMembership?.club || null;
-  const defaultPlanType = defaultClub?.subscription?.planType || defaultClub?.planType || "FREE";
+  const defaultPlanType =
+    defaultClub?.subscription?.planType || defaultClub?.planType || "FREE";
   const defaultSubStatus = defaultClub?.subscription?.status || "ACTIVE";
 
   const token = generateToken({
@@ -230,7 +233,6 @@ export async function loginUser({ email, password }) {
         clubId: m.club.id,
         clubName: m.club.name,
         clubSlug: m.club.slug,
-        clubLogo: m.club.logoUrl,
         role: m.role,
         planType: m.club.subscription?.planType || m.club.planType,
         subscriptionStatus: m.club.subscription?.status || "ACTIVE",
@@ -266,7 +268,10 @@ export async function switchClub(userId, clubId) {
 
   if (!membership) throw new Error("NOT_A_MEMBER");
 
-  const planType = membership.club.subscription?.planType || membership.club.planType || "FREE";
+  const planType =
+    membership.club.subscription?.planType ||
+    membership.club.planType ||
+    "FREE";
   const subscriptionStatus = membership.club.subscription?.status || "ACTIVE";
 
   const token = generateToken({
@@ -371,7 +376,14 @@ export async function addClubMember({
   }
 
   return prisma.clubMembership.create({
-    data: { clubId, userId, role, invitedByUserId },
+    data: {
+      clubId,
+      userId,
+      role,
+      invitedByUserId,
+      // Atletas adicionados pelo gestor ficam PENDING até confirmarem
+      status: role === "ATHLETE" ? "PENDING" : "ACTIVE",
+    },
   });
 }
 
@@ -388,105 +400,17 @@ export async function getClubMembers(clubId, excludeUserId = null) {
     },
     include: {
       user: {
-        select: { id: true, email: true, name: true, avatarUrl: true },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          avatarUrl: true,
+          athleteProfile: {
+            select: { id: true, globalId: true, cpf: true, birthDate: true },
+          },
+        },
       },
     },
     orderBy: { joinedAt: "asc" },
-  });
-}
-
-/**
- * Solicita um marcador comunitário (scorer) para uma partida.
- * @param {{ matchId: string, scorerId: string, createdByUserId: string }} data
- */
-export async function requestScorer({ matchId, scorerId, createdByUserId }) {
-  // Validar que o criador e o scorer são diferentes
-  if (createdByUserId === scorerId) {
-    throw new Error(
-      "SCORER_CANNOT_BE_CREATOR: Scorer must be different from match creator",
-    );
-  }
-
-  const match = await prisma.match.findUnique({
-    where: { id: matchId },
-    select: {
-      createdByUserId: true,
-      player1Id: true,
-      player2Id: true,
-      scorerId: true,
-    },
-  });
-
-  if (!match) throw new Error("MATCH_NOT_FOUND");
-  if (match.createdByUserId !== createdByUserId) {
-    throw new Error("UNAUTHORIZED: Only match creator can request a scorer");
-  }
-
-  // Validar que o scorer não é um dos jogadores
-  const player1 = await prisma.athleteProfile.findUnique({
-    where: { id: match.player1Id || "" },
-    select: { userId: true },
-  });
-  const player2 = await prisma.athleteProfile.findUnique({
-    where: { id: match.player2Id || "" },
-    select: { userId: true },
-  });
-
-  if (player1?.userId === scorerId || player2?.userId === scorerId) {
-    throw new Error(
-      "SCORER_CANNOT_BE_PLAYER: Scorer cannot be one of the match players",
-    );
-  }
-
-  return prisma.match.update({
-    where: { id: matchId },
-    data: {
-      scorerId,
-      scorerStatus: "PENDING",
-    },
-    select: {
-      id: true,
-      scorerId: true,
-      scorerStatus: true,
-    },
-  });
-}
-
-/**
- * Scorer responde à solicitação (aceita ou recusa).
- * @param {{ matchId: string, scorerId: string, status: "ACCEPTED" | "DECLINED" }} data
- */
-export async function respondScorerRequest({ matchId, scorerId, status }) {
-  if (!["ACCEPTED", "DECLINED"].includes(status)) {
-    throw new Error("INVALID_STATUS: must be ACCEPTED or DECLINED");
-  }
-
-  const match = await prisma.match.findUnique({
-    where: { id: matchId },
-    select: { scorerId: true, scorerStatus: true },
-  });
-
-  if (!match) throw new Error("MATCH_NOT_FOUND");
-  if (match.scorerId !== scorerId) {
-    throw new Error("UNAUTHORIZED: Only the requested scorer can respond");
-  }
-  if (match.scorerStatus !== "PENDING") {
-    throw new Error("INVALID_STATE: Scorer request is not pending");
-  }
-
-  const newStatus = status === "ACCEPTED" ? "ACCEPTED" : null;
-  const newScorerId = status === "ACCEPTED" ? scorerId : null;
-
-  return prisma.match.update({
-    where: { id: matchId },
-    data: {
-      scorerId: newScorerId,
-      scorerStatus: newStatus,
-    },
-    select: {
-      id: true,
-      scorerId: true,
-      scorerStatus: true,
-    },
   });
 }

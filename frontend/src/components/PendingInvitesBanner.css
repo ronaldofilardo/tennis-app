@@ -1,0 +1,110 @@
+/* frontend/src/components/PendingInvitesBanner.css */
+
+.pending-invites-banner {
+  margin: 12px 16px 4px;
+  padding: 14px 16px;
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.12),
+    rgba(245, 158, 11, 0.06)
+  );
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 12px;
+}
+
+.pending-invites-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+  color: #f59e0b;
+}
+
+.pending-invites-icon {
+  font-size: 1rem;
+}
+
+.pending-invites-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pending-invite-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pending-invite-club {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.pending-invite-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.pending-invite-logo-placeholder {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.pending-invite-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pending-invite-club-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pending-invite-date {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.pending-invite-confirm-btn {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  background: #f59e0b;
+  color: #0f172a;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    opacity 0.15s;
+}
+
+.pending-invite-confirm-btn:hover:not(:disabled) {
+  background: #fbbf24;
+}
+
+.pending-invite-confirm-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}

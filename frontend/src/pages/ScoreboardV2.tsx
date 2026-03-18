@@ -10,7 +10,7 @@ function getDeepMatchState(state: any) {
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import MatchStatsModal from "../components/MatchStatsModal";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import LoadingIndicator from "../components/LoadingIndicator";
 import ServerEffectModal from "../components/ServerEffectModal";
 import PointDetailsModal from "../components/PointDetailsModal";
@@ -48,6 +48,8 @@ interface MatchData {
   players: { p1: string; p2: string };
   status?: "NOT_STARTED" | "IN_PROGRESS" | "FINISHED";
   matchState?: MatchState;
+  player1GlobalId?: string | null;
+  player2GlobalId?: string | null;
 }
 
 const SetupModal: React.FC<{
@@ -97,6 +99,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
   // AREA 4 & 7: Toast e Logger com contexto de módulo
   const toast = useToast();
   const scoreLog = createLogger("ScoreboardV2");
+  const location = useLocation();
   // Função para persistir o estado antes de fechar
   const handleEndMatch = async () => {
     console.log("[ScoreboardV2] Finalizando partida e persistindo estado");
@@ -137,11 +140,20 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
   const [pendingPointPlayer, setPendingPointPlayer] = useState<Player | null>(
     null,
   );
+  // Estado para o modal de erro de saque (Out/Net no 1º ou 2º saque)
+  const [isServeErrorModalOpen, setIsServeErrorModalOpen] = useState(false);
+  const [pendingServeError, setPendingServeError] = useState<{
+    errorType: "out" | "net";
+    serveStep: "first" | "second";
+  } | null>(null);
+  // Guarda detalhes do erro do 1º saque para incluir no PointDetails do 2º saque
+  const [firstServeError, setFirstServeError] = useState<{
+    errorType?: "out" | "net";
+    serveEffect?: string;
+    direction?: string;
+  } | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("simple");
   const [showFamilyExplainer, setShowFamilyExplainer] = useState(false);
-  const [contextMenuPlayer, setContextMenuPlayer] = useState<Player | null>(
-    null,
-  );
   const courtRef = useRef<HTMLDivElement>(null);
 
   // Tamanho do placar — persiste em localStorage
@@ -234,6 +246,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         console.log(
           `[ScoreboardV2] Buscando estado atualizado do backend para ${matchId}`,
         );
+
         const response = await httpClient.get(`/matches/${matchId}/state`);
 
         // Se este efeito já foi cancelado (StrictMode ou matchId mudou), aborta
@@ -365,15 +378,15 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         const response = await httpClient.patch(`/matches/${matchId}/state`, {
           matchState: state,
         });
-
         if (!response.ok) {
           throw new Error(
             `Falha na sincronização: ${response.status} - ${JSON.stringify(response.data)}`,
           );
         }
-
-        const result = response.data;
-        console.log(`[ScoreboardV2] Setup confirmado com sucesso:`, result);
+        console.log(
+          `[ScoreboardV2] Setup confirmado com sucesso:`,
+          response.data,
+        );
       } catch (syncError) {
         console.error(
           `[ScoreboardV2] Erro crítico na sincronização inicial:`,
@@ -394,15 +407,6 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
     setRenderKey((prev) => prev + 1);
   };
 
-  // Registra ponto diretamente (sem modal) — toque rápido no card do jogador
-  const handlePointButtonClick = (player: Player) => {
-    addPoint(player, {
-      serve: { isFirstServe: serveStep !== "second", type: "SERVICE_WINNER" },
-      result: { winner: player, type: "WINNER" },
-      rally: { ballExchanges: 1 },
-    } as Partial<PointDetails>);
-  };
-
   // Abre o modal de detalhes do ponto
   const handlePointDetailsOpen = (player: Player) => {
     setPendingPointPlayer(player);
@@ -412,6 +416,25 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
   // Chamado pelo PointDetailsModal ao confirmar ou pular
   const handlePointDetailsConfirm = (details: RallyDetails | undefined) => {
     setIsPointDetailsOpen(false);
+    const isSecond = serveStep === "second";
+    const firstFaultPayload =
+      isSecond && firstServeError
+        ? {
+            firstFault: {
+              errorType: firstServeError.errorType,
+              serveEffect: firstServeError.serveEffect as
+                | "TopSpin"
+                | "Slice"
+                | "Flat"
+                | undefined,
+              direction: firstServeError.direction as
+                | "Fechado"
+                | "Centro"
+                | "Aberto"
+                | undefined,
+            },
+          }
+        : {};
     if (pendingPointPlayer) {
       if (details) {
         addPoint(pendingPointPlayer, {
@@ -420,14 +443,17 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
             winner: pendingPointPlayer,
             type: "WINNER",
           },
-          serve: { isFirstServe: serveStep !== "second" },
+          serve: { isFirstServe: !isSecond, ...firstFaultPayload },
           rally: { ballExchanges: 1 },
         } as Partial<PointDetails>);
       } else {
-        addPoint(pendingPointPlayer);
+        addPoint(pendingPointPlayer, {
+          serve: { isFirstServe: !isSecond, ...firstFaultPayload },
+        } as Partial<PointDetails>);
       }
     }
     setPendingPointPlayer(null);
+    setFirstServeError(null);
   };
 
   const handlePointDetailsCancel = () => {
@@ -493,8 +519,8 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
       scoreLog.info(`Partida finalizada! Vencedor: ${newState.winner}`);
       const winnerName =
         newState.winner === "PLAYER_1" ? players.p1 : players.p2;
+
       setTimeout(() => {
-        // AREA 4: Substituído alert() nativo por Toast (themeable para White Label)
         toast.success(
           `Vencedor: ${winnerName} | Placar: ${newState.sets.PLAYER_1} sets x ${newState.sets.PLAYER_2} sets`,
           "🏆 Partida Finalizada!",
@@ -560,14 +586,30 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
 
   const handleServerEffectConfirm = (effect?: string, direction?: string) => {
     if (!playerInFocus) return;
-    // ServerEffectModal é usado apenas para Ace, nunca para dupla falta
-    // Dupla falta é tratada por handleFault()
+    const isSecond = serveStep === "second";
     const pointDetails: Partial<PointDetails> = {
       serve: {
         type: "ACE",
-        isFirstServe: serveStep !== "second",
-        serveEffect: effect as "Chapado" | "Cortado" | "TopSpin" | undefined,
-        direction: direction as "Fechado" | "Aberto" | undefined,
+        isFirstServe: !isSecond,
+        serveEffect: effect as "TopSpin" | "Slice" | "Flat" | undefined,
+        direction: direction as "Fechado" | "Centro" | "Aberto" | undefined,
+        ...(isSecond && firstServeError
+          ? {
+              firstFault: {
+                errorType: firstServeError.errorType,
+                serveEffect: firstServeError.serveEffect as
+                  | "TopSpin"
+                  | "Slice"
+                  | "Flat"
+                  | undefined,
+                direction: firstServeError.direction as
+                  | "Fechado"
+                  | "Centro"
+                  | "Aberto"
+                  | undefined,
+              },
+            }
+          : {}),
       },
       result: {
         winner: playerInFocus,
@@ -578,6 +620,74 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
     addPoint(playerInFocus, pointDetails);
     setIsServerEffectOpen(false);
     setPlayerInFocus(null);
+    setFirstServeError(null);
+  };
+
+  // Abre o modal de erro de saque (Out ou Net) para o saque atual
+  const handleServeErrorOpen = (
+    errorType: "out" | "net",
+    step: "first" | "second",
+  ) => {
+    setPendingServeError({ errorType, serveStep: step });
+    setIsServeErrorModalOpen(true);
+  };
+
+  // Callback do modal de erro: persiste detalhes e avança o fluxo
+  const handleServeErrorConfirm = (effect?: string, direction?: string) => {
+    setIsServeErrorModalOpen(false);
+    if (!pendingServeError) return;
+
+    if (pendingServeError.serveStep === "first") {
+      // Registrar erro do 1º saque — ir para 2º saque
+      setFirstServeError({
+        errorType: pendingServeError.errorType,
+        serveEffect: effect,
+        direction,
+      });
+      setServeStepSafe("second");
+    } else {
+      // 2º saque com erro = dupla falta
+      const scoringSystem = getSystem();
+      if (!scoringSystem) return;
+      const currentServer = scoringSystem.getState().server;
+      const opponent = currentServer === "PLAYER_1" ? "PLAYER_2" : "PLAYER_1";
+      const pointDetails: Partial<PointDetails> = {
+        serve: {
+          type: "DOUBLE_FAULT",
+          isFirstServe: false,
+          serveEffect: effect as "TopSpin" | "Slice" | "Flat" | undefined,
+          direction: direction as "Fechado" | "Centro" | "Aberto" | undefined,
+          errorType: pendingServeError.errorType,
+          ...(firstServeError
+            ? {
+                firstFault: {
+                  errorType: firstServeError.errorType,
+                  serveEffect: firstServeError.serveEffect as
+                    | "TopSpin"
+                    | "Slice"
+                    | "Flat"
+                    | undefined,
+                  direction: firstServeError.direction as
+                    | "Fechado"
+                    | "Centro"
+                    | "Aberto"
+                    | undefined,
+                },
+              }
+            : {}),
+        },
+        result: { winner: opponent, type: "FORCED_ERROR" },
+        rally: { ballExchanges: 1 },
+      };
+      addPoint(opponent, pointDetails);
+      setFirstServeError(null);
+    }
+    setPendingServeError(null);
+  };
+
+  const handleServeErrorCancel = () => {
+    setIsServeErrorModalOpen(false);
+    setPendingServeError(null);
   };
 
   if (isLoading) return <LoadingIndicator />;
@@ -626,6 +736,19 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
     p1: resolvePlayerName(matchData.players.p1),
     p2: resolvePlayerName(matchData.players.p2),
   };
+
+  // Nomes com código prefixado para uso no PointDetailsModal
+  const codeP1 = matchData.player1GlobalId
+    ? `[${matchData.player1GlobalId.slice(0, 8).toUpperCase()}]`
+    : null;
+  const codeP2 = matchData.player2GlobalId
+    ? `[${matchData.player2GlobalId.slice(0, 8).toUpperCase()}]`
+    : null;
+  const playersWithCode = {
+    PLAYER_1: codeP1 ? `${codeP1} ${players.p1}` : players.p1,
+    PLAYER_2: codeP2 ? `${codeP2} ${players.p2}` : players.p2,
+  };
+
   const isTiebreak = state.currentGame?.isTiebreak || false;
 
   if (isSetupOpen) {
@@ -760,14 +883,22 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         }}
         fontScale={fontScale}
       />
+      {/* Modal de erro de saque (Out/Net) — 1º e 2º saque */}
+      <ServerEffectModal
+        isOpen={isServeErrorModalOpen}
+        playerInFocus={state.server ?? "PLAYER_1"}
+        context="error"
+        errorType={pendingServeError?.errorType}
+        serveStep={pendingServeError?.serveStep ?? "first"}
+        onConfirm={handleServeErrorConfirm}
+        onCancel={handleServeErrorCancel}
+        fontScale={fontScale}
+      />
       <PointDetailsModal
         isOpen={isPointDetailsOpen}
         playerWinner={pendingPointPlayer || "PLAYER_1"}
         currentServer={state.server}
-        playerNames={{
-          PLAYER_1: players.p1,
-          PLAYER_2: players.p2,
-        }}
+        playerNames={playersWithCode}
         onConfirm={handlePointDetailsConfirm}
         onCancel={handlePointDetailsCancel}
         fontScale={fontScale}
@@ -804,6 +935,11 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
           <PlayerCard
             player="PLAYER_1"
             name={players.p1}
+            code={
+              matchData.player1GlobalId
+                ? `[${matchData.player1GlobalId.slice(0, 8).toUpperCase()}]`
+                : undefined
+            }
             score={p1Score}
             games={p1Games}
             sets={p1Sets}
@@ -822,9 +958,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
                 : undefined
             }
             disabled={state.isFinished}
-            onPress={() => handlePointButtonClick("PLAYER_1")}
-            onLongPress={() => setContextMenuPlayer("PLAYER_1")}
-            onSwipeUp={() => handlePointButtonClick("PLAYER_1")}
+            onPress={() => handlePointDetailsOpen("PLAYER_1")}
             onSwipeDown={() => {
               if (scoringSystem?.canUndo()) handleUndo();
             }}
@@ -846,6 +980,11 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
           <PlayerCard
             player="PLAYER_2"
             name={players.p2}
+            code={
+              matchData.player2GlobalId
+                ? `[${matchData.player2GlobalId.slice(0, 8).toUpperCase()}]`
+                : undefined
+            }
             score={p2Score}
             games={p2Games}
             sets={p2Sets}
@@ -864,9 +1003,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
                 : undefined
             }
             disabled={state.isFinished}
-            onPress={() => handlePointButtonClick("PLAYER_2")}
-            onLongPress={() => setContextMenuPlayer("PLAYER_2")}
-            onSwipeUp={() => handlePointButtonClick("PLAYER_2")}
+            onPress={() => handlePointDetailsOpen("PLAYER_2")}
             onSwipeDown={() => {
               if (scoringSystem?.canUndo()) handleUndo();
             }}
@@ -930,61 +1067,16 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
           setIsServerEffectOpen(true);
           setPlayerInFocus(state.server);
         }}
-        onOut={() => setServeStepSafe("second")}
-        onNet={() => setServeStepSafe("second")}
+        onOut={() => handleServeErrorOpen("out", "first")}
+        onNet={() => handleServeErrorOpen("net", "first")}
         onFault={handleFault}
+        onFaultOut={() => handleServeErrorOpen("out", "second")}
+        onFaultNet={() => handleServeErrorOpen("net", "second")}
         onStats={fetchStats}
-        onServerWon={() => handlePointDetailsOpen(state.server ?? "PLAYER_1")}
-        onReturnerWon={() =>
-          handlePointDetailsOpen(
-            (state.server ?? "PLAYER_1") === "PLAYER_1"
-              ? "PLAYER_2"
-              : "PLAYER_1",
-          )
-        }
         fontScale={fontScale}
         onFontScaleInc={handleFontScaleInc}
         onFontScaleDec={handleFontScaleDec}
       />
-
-      {/* Menu contextual (long-press no card) */}
-      {contextMenuPlayer && (
-        <div
-          className="context-menu-overlay"
-          onClick={() => setContextMenuPlayer(null)}
-        >
-          <div className="context-menu" onClick={(e) => e.stopPropagation()}>
-            <p className="context-menu-title">
-              {contextMenuPlayer === "PLAYER_1" ? players.p1 : players.p2}
-            </p>
-            <button
-              className="context-menu-item"
-              onClick={() => {
-                handlePointButtonClick(contextMenuPlayer);
-                setContextMenuPlayer(null);
-              }}
-            >
-              🎾 Marcar ponto
-            </button>
-            <button
-              className="context-menu-item"
-              onClick={() => {
-                handleUndo();
-                setContextMenuPlayer(null);
-              }}
-              disabled={!scoringSystem?.canUndo()}
-            >
-              ↩ Desfazer ponto
-            </button>
-            <button
-              className="context-menu-item"
-              onClick={() => setContextMenuPlayer(null)}
-            >
-              Cancelar
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Explainer modo família */}
       {showFamilyExplainer && (

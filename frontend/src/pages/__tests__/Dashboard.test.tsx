@@ -3,6 +3,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import Dashboard from "../Dashboard";
 
+// Mock do AuthContext (Dashboard usa useAuth)
+vi.mock("../../contexts/AuthContext", () => ({
+  useAuth: () => ({ currentUser: null }),
+  AuthProvider: ({ children }: any) => children,
+}));
+
 // Mocks capturáveis usando vi.hoisted para funcionar com hoisting do vi.mock
 const { mockToastError, mockToastSuccess, mockToastWarning } = vi.hoisted(
   () => ({

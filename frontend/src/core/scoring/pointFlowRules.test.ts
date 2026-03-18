@@ -433,6 +433,80 @@ describe("getValidGolpeEsp", () => {
       sorted(["lob", "drop"]),
     );
   });
+
+  it("sacador|VBH/VFH|erro-forcado|out|(cruzada|paralela|centro) → sem lob", () => {
+    // Out + cruzada
+    expect(
+      sorted(
+        getValidGolpeEsp(
+          "VBH",
+          undefined,
+          "sacador",
+          "passada",
+          "erro-forcado",
+          "Out",
+          "cruzada",
+        ),
+      ),
+    ).toEqual(sorted(["drop", "bate-pronto", "swingvolley"]));
+    // Out + paralela
+    expect(
+      sorted(
+        getValidGolpeEsp(
+          "VFH",
+          undefined,
+          "sacador",
+          "passada",
+          "erro-forcado",
+          "Out",
+          "paralela",
+        ),
+      ),
+    ).toEqual(sorted(["drop", "bate-pronto", "swingvolley"]));
+    // Net + centro
+    expect(
+      sorted(
+        getValidGolpeEsp(
+          "VBH",
+          undefined,
+          "sacador",
+          "rede",
+          "erro-nao-forcado",
+          "Net",
+          "centro",
+        ),
+      ),
+    ).toEqual(sorted(["drop", "bate-pronto", "swingvolley"]));
+  });
+
+  it("sacador|VBH/VFH|erro-forcado|out|(inside-out|inside-in) → com lob", () => {
+    expect(
+      sorted(
+        getValidGolpeEsp(
+          "VBH",
+          undefined,
+          "sacador",
+          "passada",
+          "erro-forcado",
+          "Out",
+          "inside-out",
+        ),
+      ),
+    ).toEqual(sorted(["lob", "drop", "bate-pronto", "swingvolley"]));
+    expect(
+      sorted(
+        getValidGolpeEsp(
+          "VFH",
+          undefined,
+          "sacador",
+          "passada",
+          "erro-nao-forcado",
+          "Net",
+          "inside-in",
+        ),
+      ),
+    ).toEqual(sorted(["lob", "drop", "bate-pronto", "swingvolley"]));
+  });
 });
 
 // ────────────────────────────────────────────────────────────────

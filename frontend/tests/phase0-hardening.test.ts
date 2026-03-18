@@ -414,7 +414,6 @@ describe("Prisma Enums — valores esperados no schema", () => {
   const MembershipStatusValues = ["ACTIVE", "INACTIVE", "SUSPENDED", "PENDING"];
   const PlanTypeValues = ["FREE", "BASIC", "PREMIUM", "ENTERPRISE"];
   const MatchVisibilityValues = ["PUBLIC", "PRIVATE", "CLUB_ONLY"];
-  const ScorerStatusValues = ["NONE", "REQUESTED", "ACCEPTED", "REJECTED"];
   const TournamentStatusValues = [
     "DRAFT",
     "OPEN",
@@ -467,10 +466,6 @@ describe("Prisma Enums — valores esperados no schema", () => {
     expect(MatchVisibilityValues).toContain("CLUB_ONLY");
   });
 
-  it("ScorerStatus contém NONE como padrão", () => {
-    expect(ScorerStatusValues[0]).toBe("NONE");
-  });
-
   it("TournamentStatus tem ciclo completo: DRAFT → OPEN → IN_PROGRESS → FINISHED", () => {
     const idx = (v: string) => TournamentStatusValues.indexOf(v);
     expect(idx("DRAFT")).toBeLessThan(idx("OPEN"));
@@ -505,7 +500,6 @@ describe("Prisma Enums — valores esperados no schema", () => {
       ...MembershipStatusValues,
       ...PlanTypeValues,
       ...MatchVisibilityValues,
-      ...ScorerStatusValues,
       ...TournamentStatusValues,
       ...TournamentFormatValues,
       ...TournamentEntryStatusValues,

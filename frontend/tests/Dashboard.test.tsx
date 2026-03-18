@@ -63,6 +63,12 @@ vi.mock("../src/config/api", () => ({
   API_URL: "http://localhost:3000/api",
 }));
 
+// ── Mock do AuthContext ──────────────────────────────────────
+vi.mock("../src/contexts/AuthContext", () => ({
+  useAuth: () => ({ currentUser: null }),
+  AuthProvider: ({ children }: any) => children,
+}));
+
 import Dashboard from "../src/pages/Dashboard";
 
 // ── Helpers ──────────────────────────────────────────────────

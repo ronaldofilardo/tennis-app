@@ -1,0 +1,322 @@
+/* AddAthleteModal.css — Tema escuro, alinhado ao Design System */
+
+/* ── Overlay ──────────────────────────────────────────────────── */
+.add-athlete-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 1100;
+  padding: 16px 16px 32px;
+  overflow-y: auto;
+  animation: aaFadeIn 0.2s ease-out;
+  backdrop-filter: blur(4px);
+}
+
+@keyframes aaFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Modal ────────────────────────────────────────────────────── */
+.add-athlete-modal {
+  background: var(--clr-surface, #181d27);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid var(--accent-gold, #eab308);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 560px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  font-family: var(--font-main, "Inter", sans-serif);
+  color: var(--clr-text, #e8eaf0);
+  overflow: hidden;
+}
+
+/* ── Header ───────────────────────────────────────────────────── */
+.add-athlete-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.add-athlete-header h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--clr-text, #e8eaf0);
+  margin: 0 0 4px;
+}
+
+.add-athlete-subtitle {
+  font-size: 0.8rem;
+  color: var(--clr-text-muted, #6b7280);
+  margin: 0;
+}
+
+.add-athlete-close {
+  background: none;
+  border: none;
+  color: var(--clr-text-muted, #6b7280);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition:
+    color 0.15s,
+    background 0.15s;
+  flex-shrink: 0;
+}
+
+.add-athlete-close:hover {
+  color: var(--clr-text, #e8eaf0);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* ── Form ─────────────────────────────────────────────────────── */
+.add-athlete-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-height: 72vh;
+  overflow-y: auto;
+}
+
+/* ── Sections ─────────────────────────────────────────────────── */
+.add-athlete-section {
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.add-athlete-section:last-of-type {
+  border-bottom: none;
+}
+
+.add-athlete-section-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent-gold, #eab308);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-athlete-section-hint {
+  font-size: 0.7rem;
+  color: var(--clr-text-muted, #6b7280);
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+/* ── Role buttons ─────────────────────────────────────────────── */
+.add-athlete-role-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.add-athlete-role-btn {
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--clr-text-muted, #6b7280);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.add-athlete-role-btn:hover {
+  border-color: rgba(234, 179, 8, 0.4);
+  color: var(--clr-text, #e8eaf0);
+  background: rgba(234, 179, 8, 0.06);
+}
+
+.add-athlete-role-btn.active {
+  border-color: var(--accent-gold, #eab308);
+  color: var(--accent-gold, #eab308);
+  background: rgba(234, 179, 8, 0.12);
+}
+
+/* ── Grid de campos ───────────────────────────────────────────── */
+.add-athlete-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.add-athlete-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.add-athlete-field--full {
+  grid-column: 1 / -1;
+}
+
+.add-athlete-field.required label::after {
+  content: " *";
+  color: #ef4444;
+}
+
+.add-athlete-field label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--clr-text-muted, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.add-athlete-field input,
+.add-athlete-field select {
+  padding: 9px 12px;
+  background: var(--clr-surface-2, #1e2535);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: var(--clr-text, #e8eaf0);
+  font-size: 0.875rem;
+  font-family: inherit;
+  transition: border-color 0.15s;
+  outline: none;
+}
+
+.add-athlete-field input:focus,
+.add-athlete-field select:focus {
+  border-color: var(--accent-gold, #eab308);
+  box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.1);
+}
+
+.add-athlete-field input::placeholder {
+  color: var(--clr-text-muted, #4b5563);
+}
+
+.add-athlete-field select option {
+  background: var(--clr-surface-2, #1e2535);
+}
+
+.add-athlete-error {
+  font-size: 0.72rem;
+  color: #ef4444;
+}
+
+.add-athlete-hint {
+  font-size: 0.72rem;
+  color: var(--clr-text-muted, #6b7280);
+  font-style: italic;
+}
+
+/* ── Footer ───────────────────────────────────────────────────── */
+.add-athlete-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--clr-surface-2, #1e2535);
+}
+
+.add-athlete-btn-cancel {
+  padding: 9px 18px;
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: var(--clr-text-muted, #6b7280);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.add-athlete-btn-cancel:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.25);
+  color: var(--clr-text, #e8eaf0);
+}
+
+.add-athlete-btn-save {
+  padding: 9px 22px;
+  background: var(--accent-gold, #eab308);
+  color: #0f172a;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition:
+    opacity 0.15s,
+    transform 0.1s;
+}
+
+.add-athlete-btn-save:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.add-athlete-btn-save:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.add-athlete-btn-save:disabled,
+.add-athlete-btn-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Spinner ──────────────────────────────────────────────────── */
+.add-athlete-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(15, 23, 42, 0.3);
+  border-top-color: #0f172a;
+  border-radius: 50%;
+  animation: aaSpin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes aaSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Responsive ───────────────────────────────────────────────── */
+@media (max-width: 520px) {
+  .add-athlete-modal {
+    border-radius: 16px 16px 0 0;
+    margin-top: auto;
+    margin-bottom: 0;
+    max-height: 92vh;
+  }
+
+  .add-athlete-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .add-athlete-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .add-athlete-field--full {
+    grid-column: 1;
+  }
+}

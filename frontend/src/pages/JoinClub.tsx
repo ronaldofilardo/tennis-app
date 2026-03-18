@@ -13,8 +13,6 @@ interface ClubPreview {
   id: string;
   name: string;
   slug: string;
-  logoUrl?: string | null;
-  appName?: string | null;
   memberCount?: number;
 }
 
@@ -57,9 +55,7 @@ const JoinClubPage: React.FC = () => {
   // Check if already a member
   useEffect(() => {
     if (club && currentUser) {
-      const isMember = currentUser.clubs?.some(
-        (c) => c.clubId === club.id,
-      );
+      const isMember = currentUser.clubs?.some((c) => c.clubId === club.id);
       setAlreadyMember(!!isMember);
     }
   }, [club, currentUser]);
@@ -110,10 +106,11 @@ const JoinClubPage: React.FC = () => {
         <div style={styles.card}>
           <div style={styles.errorIcon}>❌</div>
           <h2 style={styles.title}>Convite Inválido</h2>
-          <p style={styles.description}>
-            {error || "Clube não encontrado."}
-          </p>
-          <button style={styles.btnSecondary} onClick={() => navigation.replace("/")}>
+          <p style={styles.description}>{error || "Clube não encontrado."}</p>
+          <button
+            style={styles.btnSecondary}
+            onClick={() => navigation.replace("/")}
+          >
             Ir para o início
           </button>
         </div>
@@ -124,37 +121,16 @@ const JoinClubPage: React.FC = () => {
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-        {/* Club logo */}
-        {club.logoUrl ? (
-          <img
-            src={club.logoUrl}
-            alt={club.name}
-            style={styles.logo}
-          />
-        ) : (
-          <div style={styles.logoPlaceholder}>
-            {club.name.charAt(0).toUpperCase()}
-          </div>
-        )}
-
-        <h2 style={styles.title}>
-          {club.appName || club.name}
-        </h2>
-        <p style={styles.subtitle}>
-          convida você para entrar no clube
-        </p>
+        <h2 style={styles.title}>{club.name}</h2>
+        <p style={styles.subtitle}>convida você para entrar no clube</p>
 
         {club.memberCount !== undefined && (
-          <p style={styles.memberCount}>
-            👥 {club.memberCount} membros
-          </p>
+          <p style={styles.memberCount}>👥 {club.memberCount} membros</p>
         )}
 
         {alreadyMember ? (
           <>
-            <p style={styles.alreadyMember}>
-              ✅ Você já é membro deste clube!
-            </p>
+            <p style={styles.alreadyMember}>✅ Você já é membro deste clube!</p>
             <button
               style={styles.btnPrimary}
               onClick={() => navigation.navigateToDashboard()}

@@ -10,7 +10,6 @@ import AuthPage from "./pages/AuthPage";
 import TournamentDashboard from "./pages/TournamentDashboard";
 import GestorDashboard from "./pages/GestorDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
-import ClubSettingsPage from "./pages/ClubSettings";
 import JoinClubPage from "./pages/JoinClub";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { MatchesProvider, useMatches } from "./contexts/MatchesContext";
@@ -20,6 +19,7 @@ import {
 } from "./contexts/NavigationContext";
 import { ToastProvider } from "./components/Toast";
 import ClubSelector from "./components/ClubSelector";
+import OfflineBanner from "./components/OfflineBanner";
 
 function App() {
   return (
@@ -54,6 +54,8 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="app-container">
+      {/* ── Banner offline/sync — sticky no topo, visível em toda app ── */}
+      <OfflineBanner />
       <header className="app-header">
         <h1>RacketApp</h1>
         {isAuthenticated && (
@@ -216,22 +218,6 @@ const AppContent: React.FC = () => {
             element={
               isAuthenticated ? (
                 <TournamentDashboard />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-
-          {/* Configurações do Clube (GESTOR) */}
-          <Route
-            path="/club-settings"
-            element={
-              isAuthenticated ? (
-                isGestor ? (
-                  <ClubSettingsPage />
-                ) : (
-                  <Navigate to="/dashboard" />
-                )
               ) : (
                 <Navigate to="/login" />
               )

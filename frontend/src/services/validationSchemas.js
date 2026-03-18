@@ -90,6 +90,20 @@ if (!z) {
   throw new Error("Zod é obrigatório para validação de dados");
 }
 
+// Helper: aceita email OU CPF (11 dígitos) como identificador de login
+function emailOrCpf() {
+  return z.string().refine(
+    (val) => {
+      const cpfRegex = /^\d{11}$/;
+      if (cpfRegex.test(val)) return true;
+      // Validação básica de email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(val);
+    },
+    { message: "Deve ser um email válido ou CPF com 11 dígitos" },
+  );
+}
+
 // Esquema para criação de partida
 export const MatchCreateSchema = z.object({
   sportType: z
@@ -114,9 +128,10 @@ export const MatchCreateSchema = z.object({
   visibility: z
     .enum(["PUBLIC", "CLUB", "PLAYERS_ONLY"])
     .default("PLAYERS_ONLY"),
-  scorerId: z.string().optional().nullable(), // ID do marcador comunitário
-  apontadorEmail: z.string().email().optional().nullable(), // Legado — agora opcional
+  apontadorEmail: emailOrCpf().optional().nullable(), // Email ou CPF do apontador
   visibleTo: z.string().optional().nullable(), // Legado
+  clubId: z.string().optional().nullable(), // ID do clube dono da partida
+  createdByUserId: z.string().optional().nullable(), // User que criou
   club_id: z.string().optional().nullable(),
   metadata: z.record(z.unknown()).optional().nullable(),
   tags: z.array(z.string()).optional().nullable(),
@@ -153,7 +168,7 @@ export const MatchStateUpdateSchema = z
 // Esquema para parâmetros de query de matches visíveis
 export const VisibleMatchesQuerySchema = z
   .object({
-    email: z.string().email().optional(),
+    email: emailOrCpf().optional(),
     role: z.string().optional(),
   })
   .strict();

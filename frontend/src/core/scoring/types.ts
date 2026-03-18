@@ -100,8 +100,16 @@ export interface PointDetails {
   serve?: {
     type: ServeType;
     isFirstServe: boolean;
-    serveEffect?: "Chapado" | "Cortado" | "TopSpin";
-    direction?: "Fechado" | "Aberto";
+    serveEffect?: "TopSpin" | "Slice" | "Flat";
+    direction?: "Fechado" | "Centro" | "Aberto";
+    /** Tipo do erro (Out ou Net) — presente em FAULT_FIRST e DOUBLE_FAULT */
+    errorType?: "out" | "net";
+    /** Para DOUBLE_FAULT: detalhes do erro no 1º saque */
+    firstFault?: {
+      errorType?: "out" | "net";
+      serveEffect?: "TopSpin" | "Slice" | "Flat";
+      direction?: "Fechado" | "Centro" | "Aberto";
+    };
   };
 
   // Resultado do Ponto

@@ -1,0 +1,63 @@
+/* frontend/src/components/OfflineBanner.css */
+
+.offline-banner {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  animation: slide-down 0.2s ease-out;
+}
+
+@keyframes slide-down {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.offline-banner--offline {
+  background: rgba(239, 68, 68, 0.15);
+  border-bottom: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+}
+
+.offline-banner--syncing {
+  background: rgba(245, 158, 11, 0.12);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.35);
+  color: #fcd34d;
+}
+
+.offline-banner-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.offline-banner-text {
+  flex: 1;
+}
+
+.offline-banner-sync-btn {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  background: rgba(245, 158, 11, 0.25);
+  color: #fcd34d;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.offline-banner-sync-btn:hover {
+  background: rgba(245, 158, 11, 0.4);
+}

@@ -7,9 +7,9 @@
 
 .gestor-dashboard {
   width: 100%;
-  max-width: 900px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 1.25rem 1rem 3rem;
+  padding: 1.25rem 2rem 3rem;
 }
 
 /* ── Header ──────────────────────────────────────────────── */
@@ -102,6 +102,21 @@
 
 .tab-label {
   white-space: nowrap;
+}
+
+.tab-pending-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 9px;
+  line-height: 1;
 }
 
 /* ── Buttons ──────────────────────────────────────────────── */
@@ -604,26 +619,22 @@
   overflow: hidden;
 }
 
-.members-table-header {
-  display: grid;
-  grid-template-columns: 2fr 2fr 1.2fr 1fr 1fr;
-  padding: 10px 16px;
-  background: var(--clr-surface-2, #1e2535);
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--clr-text-muted, #6b7280);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-bottom: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
-}
-
+.members-table-header,
 .members-table-row {
   display: grid;
-  grid-template-columns: 2fr 2fr 1.2fr 1fr 1fr;
-  padding: 12px 16px;
+  /* Código(100px) Nome(1fr) Email(1.2fr) CPF(130px) Nasc(110px) Papel(110px) Status(100px) Entrada(110px) Actions(50px) */
+  grid-template-columns: 100px 1.2fr 1.5fr 135px 120px 115px 100px 110px 50px;
+  gap: 16px;
+  padding: 12px 20px;
   align-items: center;
   border-bottom: 1px solid var(--clr-border, rgba(255, 255, 255, 0.04));
   transition: background 0.2s;
+}
+
+.members-table-row.small-row {
+  grid-template-columns: 90px 1.5fr 1.5fr 125px 1fr;
+  padding: 8px 16px;
+  border-bottom: none;
 }
 
 .members-table-row:last-child {
@@ -632,6 +643,21 @@
 
 .members-table-row:hover {
   background: rgba(255, 255, 255, 0.02);
+}
+
+.member-cell-code {
+  font-size: 0.78rem;
+  color: var(--clr-text-muted, #6b7280);
+}
+
+.member-cell-code code {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: 700;
+  color: var(--accent-gold, #eab308);
+  letter-spacing: 0.05em;
+  background: rgba(234, 179, 8, 0.08);
+  padding: 1px 5px;
+  border-radius: 4px;
 }
 
 .member-cell-name {
@@ -658,11 +684,23 @@
 }
 
 .member-cell-email {
-  font-size: 0.8rem;
-  color: var(--clr-text-muted, #6b7280);
+  font-size: 0.88rem;
+  color: var(--clr-text-muted, #94a3b8);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.member-cell-cpf {
+  font-size: 0.88rem;
+  color: #e2e8f0;
+  font-family: inherit;
+  letter-spacing: normal;
+}
+
+.member-cell-birth {
+  font-size: 0.88rem;
+  color: #e2e8f0;
 }
 
 .member-cell-role {
@@ -703,12 +741,52 @@
   background: #6b7280;
 }
 
-.member-cell-date {
-  font-size: 0.75rem;
-  color: var(--clr-text-muted, #6b7280);
+.member-cell-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: #e2e8f0;
 }
 
-/* ── Invite Form ──────────────────────────────────────────── */
+.member-cell-date {
+  font-size: 0.88rem;
+  color: var(--clr-text-muted, #94a3b8);
+}
+
+.member-cell-status,
+.member-cell-birth,
+.member-cell-cpf,
+.member-cell-date {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+.member-cell-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.gestor-btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 4px 6px;
+  border-radius: 6px;
+  opacity: 0.6;
+  transition:
+    opacity 0.15s,
+    background 0.15s;
+}
+
+.gestor-btn-icon:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Invite Form ─────────────────────────────────────────── */
 
 .invite-form {
   background: var(--clr-surface, #181d27);
@@ -817,12 +895,19 @@
 
   .members-table-header,
   .members-table-row {
-    grid-template-columns: 1.5fr 1fr 1fr;
+    grid-template-columns: 2fr 1.2fr 1fr 40px;
   }
 
-  .members-table-header span:nth-child(2),
+  /* Colunas ocultas no mobile: Código (1º), E-mail (3º), CPF (4º), Nascimento (5º), Entrada (8º) */
+  .members-table-header span:nth-child(1),
+  .members-table-row .member-cell-code,
+  .members-table-header span:nth-child(3),
   .members-table-row .member-cell-email,
+  .members-table-header span:nth-child(4),
+  .members-table-row .member-cell-cpf,
   .members-table-header span:nth-child(5),
+  .members-table-row .member-cell-birth,
+  .members-table-header span:nth-child(8),
   .members-table-row .member-cell-date {
     display: none;
   }

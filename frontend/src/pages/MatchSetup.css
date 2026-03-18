@@ -77,6 +77,43 @@
   font-weight: bold;
 }
 
+/* ── Checkbox: Retomar jogo em andamento ────────────────────────────────── */
+
+.resume-check-group {
+  background: rgba(76, 175, 80, 0.06);
+  border: 1px solid rgba(76, 175, 80, 0.25);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.resume-check-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #ccc;
+  user-select: none;
+}
+
+.resume-check-input {
+  width: 18px;
+  height: 18px;
+  accent-color: #4caf50;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.resume-check-hint {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  color: #86efac;
+  line-height: 1.4;
+  padding-left: 28px;
+}
+
+/* ── Form actions ────────────────────────────────────────── */
+
 .form-actions {
   text-align: center;
   margin-top: 2rem;

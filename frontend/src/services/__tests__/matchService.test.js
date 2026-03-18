@@ -167,12 +167,69 @@ describe("matchService", () => {
       };
 
       matchService.createMatch.mockRejectedValue(
-        new Error("Erro de validação")
+        new Error("Erro de validação"),
       );
 
       await expect(matchService.createMatch(invalidData)).rejects.toThrow(
-        "Erro de validação"
+        "Erro de validação",
       );
+    });
+
+    // ── Testes para clubId e createdByUserId (adicionados nesta conversa) ──
+
+    it("deve criar partida com clubId quando gestor está autenticado", async () => {
+      const matchData = {
+        sportType: "TENNIS",
+        format: "BEST_OF_3",
+        players: { p1: "Jogador 1", p2: "Jogador 2" },
+        clubId: "cmm4dw15v0001hpm0e6pxy7ns",
+        createdByUserId: "user-gestor-id",
+      };
+
+      const expectedResult = {
+        id: "new-match-id",
+        sportType: "TENNIS",
+        format: "BEST_OF_3",
+        players: { p1: "Jogador 1", p2: "Jogador 2" },
+        status: "NOT_STARTED",
+        score: null,
+        winner: null,
+        clubId: "cmm4dw15v0001hpm0e6pxy7ns",
+        createdAt: expect.any(Date),
+      };
+
+      matchService.createMatch.mockResolvedValue(expectedResult);
+
+      const result = await matchService.createMatch(matchData);
+
+      expect(result.clubId).toBe("cmm4dw15v0001hpm0e6pxy7ns");
+      expect(result).toEqual(expectedResult);
+    });
+
+    it("deve criar partida avulsa com clubId null (sem clube)", async () => {
+      const matchData = {
+        sportType: "TENNIS",
+        format: "BEST_OF_3",
+        players: { p1: "Jogador 1", p2: "Jogador 2" },
+      };
+
+      const expectedResult = {
+        id: "new-match-id",
+        sportType: "TENNIS",
+        format: "BEST_OF_3",
+        players: { p1: "Jogador 1", p2: "Jogador 2" },
+        status: "NOT_STARTED",
+        score: null,
+        winner: null,
+        clubId: null,
+        createdAt: expect.any(Date),
+      };
+
+      matchService.createMatch.mockResolvedValue(expectedResult);
+
+      const result = await matchService.createMatch(matchData);
+
+      expect(result.clubId).toBeNull();
     });
   });
 
@@ -203,11 +260,11 @@ describe("matchService", () => {
 
     it("deve lançar erro 404 para partida não encontrada", async () => {
       matchService.getMatchById.mockRejectedValue(
-        new Error("Partida não encontrada")
+        new Error("Partida não encontrada"),
       );
 
       await expect(matchService.getMatchById("non-existent")).rejects.toThrow(
-        "Partida não encontrada"
+        "Partida não encontrada",
       );
     });
 
@@ -303,7 +360,7 @@ describe("matchService", () => {
 
       const result = await matchService.updateMatchState(
         "match-123",
-        matchState
+        matchState,
       );
 
       expect(result).toEqual(expectedResult);
@@ -325,7 +382,7 @@ describe("matchService", () => {
 
       const result = await matchService.updateMatchState(
         "match-123",
-        matchStateString
+        matchStateString,
       );
 
       expect(result).toEqual(expectedResult);
@@ -333,11 +390,11 @@ describe("matchService", () => {
 
     it("deve lidar com payload inválido", async () => {
       matchService.updateMatchState.mockRejectedValue(
-        new Error("Erro ao fazer parse do matchState")
+        new Error("Erro ao fazer parse do matchState"),
       );
 
       await expect(
-        matchService.updateMatchState("match-123", "INVALID_JSON")
+        matchService.updateMatchState("match-123", "INVALID_JSON"),
       ).rejects.toThrow("Erro ao fazer parse do matchState");
     });
 
@@ -357,7 +414,7 @@ describe("matchService", () => {
 
       const result = await matchService.updateMatchState(
         "match-123",
-        matchState
+        matchState,
       );
 
       expect(result).toEqual(expectedResult);

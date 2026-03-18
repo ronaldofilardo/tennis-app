@@ -1,7 +1,7 @@
 import React from "react";
 import "./BottomTabBar.css";
 
-export type TabId = "home" | "stats" | "tournaments" | "profile";
+export type TabId = "home" | "stats" | "ranking" | "tournaments" | "profile";
 
 export interface TabBadge {
   tabId: TabId;
@@ -17,6 +17,7 @@ interface BottomTabBarProps {
 const TABS: { id: TabId; icon: string; label: string }[] = [
   { id: "home", icon: "🏠", label: "Início" },
   { id: "stats", icon: "📊", label: "Stats" },
+  { id: "ranking", icon: "📈", label: "Ranking" },
   { id: "tournaments", icon: "🏆", label: "Torneios" },
   { id: "profile", icon: "👤", label: "Perfil" },
 ];

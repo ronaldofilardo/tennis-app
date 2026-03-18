@@ -41,12 +41,6 @@ enum MatchVisibility {
   PLAYERS_ONLY
 }
 
-enum ScorerStatus {
-  PENDING
-  ACCEPTED
-  DECLINED
-}
-
 enum TournamentStatus {
   DRAFT
   REGISTRATION
@@ -109,21 +103,13 @@ enum InvoiceStatus {
 model Club {
   id          String   @id @default(cuid())
   name        String
-  slug        String   @unique // ex: "clube-harmonia" → tenis.clubeharmonia.com
-  logoUrl     String?
-  themeConfig String? // JSON com cores, fontes, etc (ClubTheme)
+  slug        String   @unique // ex: "clube-harmonia"
   planType    PlanType @default(FREE)
 
-  // === White-Label & Onboarding ===
-  appName             String? // Nome customizado do app (ex: "Tênis Club X")
-  inviteCode          String? @unique // Código de convite único (6 chars)
-  allowedEmailDomains String? // JSON array de domínios permitidos (ex: ["@clube.com"])
-  customDomain        String? @unique // Domínio customizado (ex: "tenis.clube.com.br")
-  defaultVisibility   String  @default("CLUB") // Visibilidade padrão de partidas
-  defaultScoreMode    String  @default("technical") // Modo padrão: "family" ou "technical"
-  termsText           String? // Termos e políticas do clube
-  termsPdfUrl         String? // URL do PDF de termos
-  billingModel        String  @default("B2B") // "B2B" = clube paga, "B2C" = atleta paga
+  inviteCode        String? @unique // Código de convite único (6 chars)
+  defaultVisibility String  @default("CLUB") // Visibilidade padrão de partidas
+  defaultScoreMode  String  @default("technical") // Modo padrão: "family" ou "technical"
+  billingModel      String  @default("B2B") // "B2B" = clube paga, "B2C" = atleta paga
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -202,7 +188,6 @@ model User {
   memberships    ClubMembership[]
   athleteProfile AthleteProfile?
   createdMatches Match[]               @relation("MatchCreator")
-  scoredMatches  Match[]               @relation("MatchScorer")
   tournaments    TournamentOrganizer[]
 
   @@map("users")
@@ -227,6 +212,9 @@ model ClubMembership {
   // === Billing B2C (atleta paga) ===
   asaasPaymentId String? @unique // ID de pagamento individual no Asaas
 
+  // === Acúmulo de funções ===
+  alsoCoach Boolean @default(false) // Gestor que também exerce função de técnico
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
 
@@ -243,8 +231,10 @@ model ClubMembership {
 
 /// Perfil público de atleta. Dados completos visíveis apenas para o clube "dono".
 /// Outros clubes veem somente nome + clube de origem.
+/// globalId é o identificador global único do atleta na plataforma (diretório central).
 model AthleteProfile {
   id        String    @id @default(cuid())
+  globalId  String    @unique @default(cuid()) // ID global imutável — identidade no diretório central
   userId    String?   @unique // null = atleta convidado / sem conta
   name      String
   nickname  String?
@@ -395,10 +385,8 @@ model Match {
   roundNumber     Int? // Rodada no torneio (1 = final, 2 = semifinal, etc)
   bracketPosition Int? // Posição no chaveamento
 
-  // === Visibilidade e Marcador Comunitário ===
+  // === Visibilidade ===
   visibility   MatchVisibility @default(PLAYERS_ONLY)
-  scorerId     String? // User que marca pontos (marcador comunitário)
-  scorerStatus ScorerStatus?
 
   status    MatchStatus @default(NOT_STARTED)
   score     String?
@@ -411,7 +399,6 @@ model Match {
 
   // === Relações ===
   createdBy  User?               @relation("MatchCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
-  scorer     User?               @relation("MatchScorer", fields: [scorerId], references: [id], onDelete: SetNull)
   club       Club?               @relation(fields: [clubId], references: [id], onDelete: SetNull)
   player1    AthleteProfile?     @relation("MatchPlayer1", fields: [player1Id], references: [id], onDelete: SetNull)
   player2    AthleteProfile?     @relation("MatchPlayer2", fields: [player2Id], references: [id], onDelete: SetNull)
@@ -422,6 +409,7 @@ model Match {
   @@index([status])
   @@index([tournamentId])
   @@index([createdByUserId])
-  @@index([scorerId])
   @@map("matches")
 }
+
+

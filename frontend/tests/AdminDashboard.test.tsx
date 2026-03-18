@@ -1,5 +1,5 @@
 // tests/AdminDashboard.test.tsx
-// Testes de acesso e conteúdo do AdminDashboard
+// Testes de acesso e conteúdo    do AdminDashboard
 
 import "../vitest.setup";
 
@@ -177,8 +177,11 @@ describe("AdminDashboard", () => {
     it('NÃO exibe "Total Partidas" nos KPIs', async () => {
       render(<AdminDashboard />);
       await waitFor(() => expect(mockHttpGet).toHaveBeenCalled());
-      // O label de KPI "PARTIDAS" não deve existir
-      expect(screen.queryByText(/^Partidas$/i)).not.toBeInTheDocument();
+      // O label de KPI de "Total Partidas" não deve existir (diferente da aba "Partidas")
+      expect(
+        screen.queryByText(/^Total de Partidas$/i),
+      ).not.toBeInTheDocument();
+      expect(screen.queryByText(/^Partidas Total$/i)).not.toBeInTheDocument();
       expect(screen.queryByText(/^Torneios$/i)).not.toBeInTheDocument();
     });
   });

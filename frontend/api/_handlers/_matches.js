@@ -8,8 +8,6 @@
 //   GET    /api/matches/:id/state          → estado da partida
 //   PATCH  /api/matches/:id/state          → atualiza estado
 //   GET    /api/matches/:id/stats          → estatísticas
-//   POST   /api/matches/:id/scorer         → solicita marcador
-//   PATCH  /api/matches/:id/scorer         → responde solicitação de marcador
 
 import {
   getAllMatches,
@@ -22,10 +20,6 @@ import {
   getVisibleMatches,
 } from "../../src/services/matchService.js";
 import {
-  requestScorer,
-  respondScorerRequest,
-} from "../../src/services/authService.js";
-import {
   handleCors,
   requireAuth,
   extractContext,
@@ -34,6 +28,7 @@ import {
 } from "../_lib/authMiddleware.js";
 import { validateMatchApiResponse } from "../../src/schemas/contracts.js";
 import { requireActiveSubscription } from "../_lib/subscriptionMiddleware.js";
+import prisma from "../_lib/prisma.js";
 
 function parsePath(url) {
   const parts = url.pathname.split("/").filter(Boolean);
@@ -106,38 +101,6 @@ export default async function handler(req, res) {
       return sendJson(res, 200, await getMatchStats(id));
     }
 
-    // ─── /api/matches/:id/scorer ─────────────────────────────────────────────
-    if (id && sub === "scorer") {
-      const ctx = requireAuth(req, res);
-      if (!ctx) return;
-      if (req.method === "POST") {
-        const { scorerId } = req.body || {};
-        if (!scorerId)
-          return sendJson(res, 400, { error: "scorerId is required" });
-        const result = await requestScorer({
-          matchId: id,
-          scorerId,
-          createdByUserId: ctx.userId,
-        });
-        return sendJson(res, 200, result);
-      }
-      if (req.method === "PATCH") {
-        const { status } = req.body || {};
-        if (!["ACCEPTED", "DECLINED"].includes(status)) {
-          return sendJson(res, 400, {
-            error: "status must be ACCEPTED or DECLINED",
-          });
-        }
-        const result = await respondScorerRequest({
-          matchId: id,
-          scorerId: ctx.userId,
-          status,
-        });
-        return sendJson(res, 200, result);
-      }
-      return methodNotAllowed(res, ["POST", "PATCH"]);
-    }
-
     // ─── /api/matches/:id ────────────────────────────────────────────────────
     if (id) {
       const ctx = requireAuth(req, res);
@@ -172,7 +135,7 @@ export default async function handler(req, res) {
     if (!ctx) return;
 
     if (req.method === "GET") {
-      const result = await getAllMatches(ctx.clubId, ctx.role);
+      const result = await getAllMatches(ctx.clubId, ctx.role, ctx.userId);
       const validated = result.map((match) => {
         const validation = validateMatchApiResponse(match);
         if (!validation.success) {

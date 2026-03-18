@@ -1,4 +1,6 @@
 import React, { useState, useRef } from "react";
+// Note: longPress removido — marcador define o tempo necessário sem interrupção (demanda 4)
+// Note: swipeUp removido — toque no placar abre detalhes do ponto (demanda 5)
 import type { ViewMode } from "./MatchHeader";
 import "./PlayerCard.css";
 
@@ -13,6 +15,7 @@ interface TechStats {
 interface PlayerCardProps {
   player: "PLAYER_1" | "PLAYER_2";
   name: string;
+  code?: string | null;
   score: GamePoint;
   games: number;
   sets: number;
@@ -28,8 +31,6 @@ interface PlayerCardProps {
   techStats?: TechStats;
   disabled?: boolean;
   onPress: () => void;
-  onLongPress?: () => void;
-  onSwipeUp?: () => void;
   onSwipeDown?: () => void;
 }
 
@@ -59,6 +60,7 @@ function getInitials(name: string): string {
 const PlayerCard: React.FC<PlayerCardProps> = ({
   player,
   name,
+  code,
   score,
   games,
   sets,
@@ -74,12 +76,9 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
   techStats,
   disabled,
   onPress,
-  onLongPress,
-  onSwipeUp,
   onSwipeDown,
 }) => {
   const [pressed, setPressed] = useState(false);
-  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const touchStartY = useRef<number>(0);
   const touchStartX = useRef<number>(0);
   const didSwipe = useRef(false);
@@ -99,28 +98,15 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
     touchStartX.current = e.clientX;
     didSwipe.current = false;
     setPressed(true);
-
-    longPressTimer.current = setTimeout(() => {
-      if (!didSwipe.current) {
-        navigator.vibrate?.([30, 20, 60]);
-        onLongPress?.();
-      }
-    }, 500);
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
     const dy = e.clientY - touchStartY.current;
     const dx = e.clientX - touchStartX.current;
-    if (Math.abs(dy) > 15 || Math.abs(dx) > 15) {
-      if (longPressTimer.current) clearTimeout(longPressTimer.current);
-    }
-    if (Math.abs(dy) > 40 && !didSwipe.current) {
+    if (Math.abs(dy) > 40 && !didSwipe.current && Math.abs(dy) > Math.abs(dx)) {
       didSwipe.current = true;
       setPressed(false);
-      if (dy < 0) {
-        navigator.vibrate?.(30);
-        onSwipeUp?.();
-      } else {
+      if (dy > 0) {
         navigator.vibrate?.(30);
         onSwipeDown?.();
       }
@@ -128,7 +114,6 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
   };
 
   const handlePointerUp = () => {
-    if (longPressTimer.current) clearTimeout(longPressTimer.current);
     setPressed(false);
     // tap handled by onClick for test compatibility
   };
@@ -140,7 +125,6 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
   };
 
   const handlePointerCancel = () => {
-    if (longPressTimer.current) clearTimeout(longPressTimer.current);
     setPressed(false);
   };
 
@@ -181,6 +165,9 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
           </span>
         )}
       </div>
+
+      {/* Código do Atleta */}
+      {code && <div className="player-card-code">{code}</div>}
 
       {/* Indicador de saque */}
       {isServing && (

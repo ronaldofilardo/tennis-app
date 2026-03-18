@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import httpClient from "../config/httpClient";
 import "./MatchSetup.css";
 import { useAuth } from "../contexts/AuthContext";
@@ -6,9 +6,70 @@ import { useToast } from "../components/Toast";
 import { createLogger } from "../services/logger";
 import AthleteSearchInput from "../components/AthleteSearchInput";
 import type { AthleteResult } from "../components/AthleteSearchInput";
+import { savePendingMatch } from "../services/offlineDb";
+import { ResumeScoreModal } from "../components/ResumeScoreModal";
+import type { OngoingMatchSetup } from "../components/ResumeScoreModal";
+import { TennisConfigFactory } from "../core/scoring/TennisConfigFactory";
+import type { TennisFormat, MatchState, Player } from "../core/scoring/types";
+
+/**
+ * Constrói um MatchState inicial a partir do placar inserido pelo usuário
+ * para partidas que já estão em andamento.
+ */
+function buildInitialMatchState(
+  setup: OngoingMatchSetup,
+  format: string,
+): MatchState {
+  const config = TennisConfigFactory.getConfig(format as TennisFormat);
+
+  let p1Sets = 0;
+  let p2Sets = 0;
+  for (const s of setup.completedSets) {
+    if (s.winner === "PLAYER_1") p1Sets++;
+    else p2Sets++;
+  }
+
+  const currentSet = setup.completedSets.length + 1;
+  const useTiebreakPoints =
+    setup.currentGameIsTiebreak || setup.currentGameIsMatchTiebreak;
+
+  const gamePoints: Record<Player, string | number> = {
+    PLAYER_1: useTiebreakPoints
+      ? Number(setup.currentGamePoints.PLAYER_1) || 0
+      : String(setup.currentGamePoints.PLAYER_1) || "0",
+    PLAYER_2: useTiebreakPoints
+      ? Number(setup.currentGamePoints.PLAYER_2) || 0
+      : String(setup.currentGamePoints.PLAYER_2) || "0",
+  };
+
+  return {
+    sets: { PLAYER_1: p1Sets, PLAYER_2: p2Sets },
+    currentSet,
+    currentSetState: {
+      games: setup.currentSetGames,
+    },
+    currentGame: {
+      points: gamePoints,
+      server: setup.server,
+      isTiebreak:
+        setup.currentGameIsTiebreak || setup.currentGameIsMatchTiebreak,
+      isMatchTiebreak: setup.currentGameIsMatchTiebreak,
+    },
+    server: setup.server,
+    isFinished: false,
+    config,
+    completedSets: setup.completedSets.map((s) => ({
+      setNumber: s.setNumber,
+      games: s.games,
+      winner: s.winner,
+      ...(s.tiebreakScore ? { tiebreakScore: s.tiebreakScore } : {}),
+    })),
+    startedAt: new Date().toISOString(),
+  };
+}
 
 // Interface para as props, incluindo a função para voltar ao Dashboard
-interface CreatedMatchData {
+export interface CreatedMatchData {
   id: string;
   sportType: string;
   format: string;
@@ -44,11 +105,88 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
   const [visibility, setVisibility] = useState<
     "PUBLIC" | "CLUB" | "PLAYERS_ONLY"
   >("PLAYERS_ONLY");
-  const [selectedScorer, setSelectedScorer] = useState<AthleteResult | null>(
-    null,
-  );
   const [visibleTo, setVisibleTo] = useState<"both" | string>("both"); // Legado
   const [error, setError] = useState<string | null>(null);
+  const [isResuming, setIsResuming] = useState(false);
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+
+  // Monta o payload base da partida a partir do estado do formulário
+  const buildMatchPayload = useCallback(
+    (finalP1: string, finalP2: string) => ({
+      sportType: sport,
+      format: format,
+      courtType: sport === "TENNIS" ? courtType : undefined,
+      players: { p1: finalP1, p2: finalP2 },
+      nickname: nickname || null,
+      visibility: visibility || "PLAYERS_ONLY",
+      visibleTo: visibleTo || "both",
+      apontadorEmail: currentUser?.email || "",
+      player1Id: selectedAthlete1?.id?.startsWith("guest_")
+        ? undefined
+        : selectedAthlete1?.id,
+      player2Id: selectedAthlete2?.id?.startsWith("guest_")
+        ? undefined
+        : selectedAthlete2?.id,
+    }),
+    [
+      sport,
+      format,
+      courtType,
+      nickname,
+      visibility,
+      visibleTo,
+      currentUser,
+      selectedAthlete1,
+      selectedAthlete2,
+    ],
+  );
+
+  // Lida com confirmação do modal de retomada de partida
+  const handleResumeConfirm = useCallback(
+    async (setup: OngoingMatchSetup): Promise<void> => {
+      setIsResumeModalOpen(false);
+
+      const finalP1 = player1 || selectedAthlete1?.name;
+      const finalP2 = player2 || selectedAthlete2?.name;
+      if (!finalP1 || !finalP2) return;
+
+      setError(null);
+
+      try {
+        const matchPayload = buildMatchPayload(finalP1, finalP2);
+        const response = await httpClient.post<CreatedMatchData>(
+          "/matches",
+          matchPayload,
+        );
+        const createdMatch = response.data;
+
+        // Constrói e envia o estado inicial da partida em andamento
+        const initialState = buildInitialMatchState(setup, format);
+        await httpClient.patch(`/matches/${createdMatch.id}/state`, {
+          matchState: initialState,
+        });
+
+        log.info("Partida em andamento criada", { id: createdMatch.id });
+        onMatchCreated({ ...createdMatch, status: "IN_PROGRESS" });
+      } catch (err) {
+        log.error("Erro ao criar partida em andamento", err);
+        toast.error(
+          "Falha ao criar partida em andamento. Verifique o console.",
+          "Erro ao criar partida",
+        );
+      }
+    },
+    [
+      player1,
+      player2,
+      selectedAthlete1,
+      selectedAthlete2,
+      buildMatchPayload,
+      format,
+      onMatchCreated,
+      toast,
+    ],
+  );
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // Impede o recarregamento da página
@@ -62,20 +200,32 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
       return;
     }
 
+    // Partida em andamento: abre modal para inserir placar antes de criar
+    if (isResuming) {
+      if (!navigator.onLine) {
+        toast.warning(
+          "Retomada de partida não está disponível no modo offline.",
+          "Modo offline",
+        );
+        return;
+      }
+      setIsResumeModalOpen(true);
+      return;
+    }
+
     try {
       // visibleTo já é o email do jogador (valor do select)
       const visibleToValue = visibleTo;
 
       setError(null);
 
-      const response = await httpClient.post<CreatedMatchData>("/matches", {
+      const matchPayload = {
         sportType: sport,
         format: format,
         courtType: sport === "TENNIS" ? courtType : undefined,
         players: { p1: finalP1, p2: finalP2 },
         nickname: nickname || null,
         visibility: visibility || "PLAYERS_ONLY",
-        scorerId: selectedScorer?.id || null,
         visibleTo: visibleToValue || "both", // Legado
         apontadorEmail: currentUser?.email || "",
         // Novos campos multi-tenancy
@@ -85,7 +235,37 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
         player2Id: selectedAthlete2?.id?.startsWith("guest_")
           ? undefined
           : selectedAthlete2?.id,
-      });
+      };
+
+      // ── Suporte offline ───────────────────────────────────────────────────
+      if (!navigator.onLine) {
+        const tempId = `offline_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+        await savePendingMatch({
+          tempId,
+          matchData: matchPayload,
+          syncStatus: "PENDING",
+          createdAt: Date.now(),
+        });
+        toast.success(
+          "Partida salva localmente. Será enviada ao reconectar.",
+          "Modo offline",
+        );
+        // Criar objeto local para navegar ao placar sem ID do servidor
+        onMatchCreated({
+          id: tempId,
+          sportType: sport,
+          format: format,
+          courtType: sport === "TENNIS" ? courtType : undefined,
+          players: { p1: finalP1, p2: finalP2 },
+          status: "NOT_STARTED",
+        });
+        return;
+      }
+
+      const response = await httpClient.post<CreatedMatchData>(
+        "/matches",
+        matchPayload,
+      );
 
       log.info("Partida criada com sucesso", {
         id: response.data.id,
@@ -177,12 +357,12 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
               }}
               onQueryChange={(q) => {
                 setPlayer1(q);
-                // Se o user apagou tudo ou está digitando algo novo que não é o atleta selecionado, resetamos o objeto
                 if (selectedAthlete1 && q !== selectedAthlete1.name) {
                   setSelectedAthlete1(null);
                 }
               }}
               allowGuest
+              excludeUserId={currentUser?.id}
             />
             <span>vs</span>
             <AthleteSearchInput
@@ -201,6 +381,7 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
                 }
               }}
               allowGuest
+              excludeUserId={currentUser?.id}
             />
           </div>
         </div>
@@ -278,40 +459,44 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
           </select>
         </div>
 
-        <div className="form-group">
-          <label>Marcador Comunitário (opcional)</label>
-          <p style={{ fontSize: "0.85rem", color: "#666", margin: "4px 0" }}>
-            Selecione uma pessoa para marcar os pontos da partida
-          </p>
-          <AthleteSearchInput
-            id="scorer-search"
-            label="Procurar Marcador"
-            placeholder="Buscar atleta ou usuário..."
-            value={selectedScorer}
-            onSelect={(a) => {
-              // Validar que o scorer não é um dos jogadores
-              if (
-                a?.id === selectedAthlete1?.id ||
-                a?.id === selectedAthlete2?.id
-              ) {
-                toast.warning(
-                  "O marcador não pode ser um dos jogadores da partida.",
-                  "Seleção inválida",
-                );
-                return;
-              }
-              setSelectedScorer(a);
-            }}
-            allowGuest
-          />
+        {/* Checkbox: Retomar jogo em andamento */}
+        <div className="form-group resume-check-group">
+          <label className="resume-check-label" htmlFor="resume-check">
+            <input
+              id="resume-check"
+              type="checkbox"
+              checked={isResuming}
+              onChange={(e) => setIsResuming(e.target.checked)}
+              className="resume-check-input"
+            />
+            <span>Retomar jogo em andamento</span>
+          </label>
+          {isResuming && (
+            <p className="resume-check-hint">
+              Após clicar em &ldquo;Iniciar Partida&rdquo;, você poderá inserir
+              o placar atual antes de continuar.
+            </p>
+          )}
         </div>
 
         <div className="form-actions">
           <button type="submit" className="start-match-button">
-            Iniciar Partida
+            {isResuming ? "Continuar →" : "Iniciar Partida"}
           </button>
         </div>
       </form>
+
+      {/* Modal de placar para partida em andamento */}
+      <ResumeScoreModal
+        isOpen={isResumeModalOpen}
+        players={{
+          p1: player1 || selectedAthlete1?.name || "Jogador 1",
+          p2: player2 || selectedAthlete2?.name || "Jogador 2",
+        }}
+        format={format}
+        onConfirm={handleResumeConfirm}
+        onCancel={() => setIsResumeModalOpen(false)}
+      />
     </div>
   );
 };

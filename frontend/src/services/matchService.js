@@ -31,14 +31,19 @@ if (typeof globalThis !== "undefined" && globalThis.__prisma) {
   }
 }
 
-export async function getAllMatches(clubId = null, userRole = null) {
-  // Isolamento multi-tenant: filtra por clube ou mostra apenas partidas públicas
+export async function getAllMatches(
+  clubId = null,
+  userRole = null,
+  userId = null,
+) {
+  // Isolamento multi-tenant: filtra por clube ou mostra apenas partidas públicas.
   const whereClause = {};
   if (userRole === "ADMIN") {
     // ADMIN vê todas as partidas
   } else if (clubId) {
     // Usuário comum vê partidas do seu clube + partidas públicas
-    whereClause.OR = [{ clubId }, { visibility: "PUBLIC" }];
+    const orConditions = [{ clubId }, { visibility: "PUBLIC" }];
+    whereClause.OR = orConditions;
   } else {
     // Sem clube: apenas partidas públicas
     whereClause.visibility = "PUBLIC";
@@ -59,8 +64,6 @@ export async function getAllMatches(clubId = null, userRole = null) {
       createdAt: true,
       matchState: true,
       visibility: true,
-      scorerId: true,
-      scorerStatus: true,
     },
     orderBy: { createdAt: "desc" },
   });
@@ -98,8 +101,6 @@ export async function getAllMatches(clubId = null, userRole = null) {
       matchState: parsedState,
       visibleTo: parsedState?.visibleTo || "both",
       visibility: match.visibility || "PLAYERS_ONLY",
-      scorerId: match.scorerId,
-      scorerStatus: match.scorerStatus,
     };
   });
 }
@@ -124,26 +125,47 @@ export async function createMatch(matchData, testPrisma) {
     players,
     nickname,
     visibility = "PLAYERS_ONLY",
-    scorerId,
     apontadorEmail,
     visibleTo,
+    clubId,
+    createdByUserId,
   } = validation.data;
 
-  // Validar que scorer ≠ players (se scorerId foi fornecido)
-  if (scorerId) {
-    // Buscar IDs dos atletas para comparação
-    // NOTA: Para agora, apenas validar string de ID vs IDs dos atletas
-    // Em produção, seria mais rigoroso com busca no banco
+  const prismaClient = testPrisma || prisma;
+
+  // Buscar emails reais dos jogadores pelo nome
+  let p1Email = players.p1;
+  let p2Email = players.p2;
+
+  try {
+    const [user1, user2] = await Promise.all([
+      prismaClient.user.findFirst({
+        where: { name: { equals: players.p1, mode: "insensitive" } },
+        select: { email: true },
+      }),
+      prismaClient.user.findFirst({
+        where: { name: { equals: players.p2, mode: "insensitive" } },
+        select: { email: true },
+      }),
+    ]);
+
+    if (user1?.email) p1Email = user1.email;
+    if (user2?.email) p2Email = user2.email;
+  } catch (err) {
+    console.warn(
+      "[createMatch] Erro ao buscar emails dos jogadores:",
+      err.message,
+    );
+    // Continua mesmo que falhe o lookup - usar o nome como fallback
   }
 
   // Inclui o email do apontador e dos jogadores em playersEmails, sem duplicidade
   const emailsSet = new Set();
   if (apontadorEmail) emailsSet.add(apontadorEmail);
-  if (players && players.p1) emailsSet.add(players.p1);
-  if (players && players.p2) emailsSet.add(players.p2);
+  emailsSet.add(p1Email);
+  emailsSet.add(p2Email);
   const playersEmails = Array.from(emailsSet);
 
-  const prismaClient = testPrisma || prisma;
   const newMatch = await prismaClient.match.create({
     data: {
       sportType,
@@ -155,9 +177,9 @@ export async function createMatch(matchData, testPrisma) {
       playerP2: players.p2,
       playersEmails,
       visibility: visibility || "PLAYERS_ONLY",
-      scorerId: scorerId || null,
-      scorerStatus: scorerId ? "PENDING" : null,
       status: "NOT_STARTED",
+      clubId: clubId || null,
+      createdByUserId: createdByUserId || null,
       completedSets: JSON.stringify([]),
       matchState: JSON.stringify({
         playersIds: { p1: players.p1, p2: players.p2 },
@@ -178,9 +200,8 @@ export async function createMatch(matchData, testPrisma) {
     apontadorEmail: newMatch.apontadorEmail,
     playersEmails: newMatch.playersEmails,
     visibility: newMatch.visibility,
-    scorerId: newMatch.scorerId,
-    scorerStatus: newMatch.scorerStatus,
     visibleTo: visibleTo || "both",
+    clubId: newMatch.clubId || null,
     status: newMatch.status,
     score: newMatch.score,
     winner: newMatch.winner,
@@ -204,6 +225,7 @@ export async function getMatchById(id) {
       id: true,
       sportType: true,
       format: true,
+      courtType: true,
       playerP1: true,
       playerP2: true,
       status: true,
@@ -213,8 +235,6 @@ export async function getMatchById(id) {
       createdAt: true,
       matchState: true,
       visibility: true,
-      scorerId: true,
-      scorerStatus: true,
     },
   });
 
@@ -246,6 +266,7 @@ export async function getMatchById(id) {
     id: match.id,
     sportType: match.sportType,
     format: match.format,
+    courtType: match.courtType || "GRASS",
     players: { p1: match.playerP1, p2: match.playerP2 },
     status: match.status,
     score: match.score,
@@ -412,8 +433,8 @@ export async function getMatchState(id) {
       createdAt: true,
       matchState: true,
       visibility: true,
-      scorerId: true,
-      scorerStatus: true,
+      player1: { select: { globalId: true } },
+      player2: { select: { globalId: true } },
     },
   });
   if (!match) return null;
@@ -442,6 +463,7 @@ export async function getMatchState(id) {
     id: match.id,
     sportType: match.sportType,
     format: match.format,
+    courtType: match.courtType || "GRASS",
     players: { p1: match.playerP1, p2: match.playerP2 },
     status: match.status,
     score: match.score,
@@ -450,8 +472,8 @@ export async function getMatchState(id) {
     createdAt: match.createdAt ? match.createdAt.toISOString() : undefined,
     matchState,
     visibility: match.visibility,
-    scorerId: match.scorerId,
-    scorerStatus: match.scorerStatus,
+    player1GlobalId: match.player1?.globalId ?? null,
+    player2GlobalId: match.player2?.globalId ?? null,
   };
 }
 export async function getVisibleMatches(queryParams, testPrisma) {
@@ -484,8 +506,6 @@ export async function getVisibleMatches(queryParams, testPrisma) {
         apontadorEmail: true,
         playersEmails: true,
         visibility: true,
-        scorerId: true,
-        scorerStatus: true,
       },
       orderBy: { createdAt: "desc" },
     });
@@ -577,8 +597,6 @@ export async function getVisibleMatches(queryParams, testPrisma) {
       apontadorEmail: match.apontadorEmail,
       playersEmails: match.playersEmails,
       visibility: match.visibility || "PLAYERS_ONLY",
-      scorerId: match.scorerId,
-      scorerStatus: match.scorerStatus,
     };
   });
 }
@@ -604,8 +622,6 @@ export async function getMatchStats(id) {
       createdAt: true,
       matchState: true,
       visibility: true,
-      scorerId: true,
-      scorerStatus: true,
     },
   });
 

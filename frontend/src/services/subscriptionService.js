@@ -345,9 +345,7 @@ export async function findClubByInviteCode(inviteCode) {
       id: true,
       name: true,
       slug: true,
-      logoUrl: true,
       planType: true,
-      allowedEmailDomains: true,
       billingModel: true,
     },
   });

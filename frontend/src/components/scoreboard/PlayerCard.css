@@ -188,6 +188,21 @@
   word-break: break-word;
 }
 
+.player-card-code {
+  font-family: "Courier New", Courier, monospace;
+  font-size: calc(0.62rem * var(--sb-scale, 1));
+  font-weight: 700;
+  color: var(--accent-gold, #eab308);
+  background: rgba(234, 179, 8, 0.1);
+  border: 1px solid rgba(234, 179, 8, 0.2);
+  border-radius: 4px;
+  padding: 1px 6px;
+  letter-spacing: 0.08em;
+  text-align: center;
+  margin-top: 2px;
+  opacity: 0.85;
+}
+
 .serve-dot {
   color: var(--accent-gold);
   font-size: calc(0.6rem * var(--sb-scale, 1));

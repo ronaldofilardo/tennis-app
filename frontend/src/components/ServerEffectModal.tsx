@@ -10,6 +10,12 @@ interface ServerEffectModalProps {
   onConfirm: (effect?: string, direction?: string) => void;
   onCancel: () => void;
   fontScale?: number;
+  /** "winner" = modal de Ace/sacada (padrão) | "error" = modal de erro Out/Net */
+  context?: "winner" | "error";
+  /** Tipo do erro — presente quando context="error" */
+  errorType?: "out" | "net";
+  /** Qual saque errou — presente quando context="error" */
+  serveStep?: "first" | "second";
 }
 
 const ServerEffectModal: React.FC<ServerEffectModalProps> = ({
@@ -18,6 +24,9 @@ const ServerEffectModal: React.FC<ServerEffectModalProps> = ({
   onConfirm,
   onCancel,
   fontScale = 1,
+  context = "winner",
+  errorType,
+  serveStep = "first",
 }) => {
   const [efeito, setEfeito] = useState<string | undefined>();
   const [direcao, setDirecao] = useState<string | undefined>();
@@ -33,27 +42,48 @@ const ServerEffectModal: React.FC<ServerEffectModalProps> = ({
     onConfirm(efeito, direcao);
   };
 
-  const efeitosFixos = ["Chapado", "Top spin", "Cortado"];
-  const direcoesFixas = ["Fechado", "Aberto"];
+  const efeitosFixos = ["TopSpin", "Slice", "Flat"];
+  const direcoesFixas = ["Aberto", "Centro", "Fechado"];
+
+  const isError = context === "error";
+  const errorLabel = errorType === "net" ? "Net" : "Out";
+  const serveLabel = serveStep === "second" ? "2º Saque" : "1º Saque";
+
+  const confirmLabel = isError
+    ? serveStep === "second"
+      ? "Registrar Dupla Falta"
+      : "Registrar e Continuar"
+    : "Confirmar Ponto";
 
   if (!isOpen) return null;
 
   return (
     <div className="server-effect-modal-overlay" onClick={onCancel}>
       <div
-        className="server-effect-modal"
+        className={`server-effect-modal${isError ? " server-effect-modal--error" : ""}`}
         data-testid="server-effect-modal"
         onClick={(e) => e.stopPropagation()}
         style={{ "--sb-scale": String(fontScale) } as React.CSSProperties}
       >
         <div className="modal-header">
-          <h3>🎾 Efeito do Saque</h3>
-          <div className="winner-display">
-            Ponto para:{" "}
-            <strong>
-              {playerInFocus === "PLAYER_1" ? "Jogador 1" : "Jogador 2"}
-            </strong>
-          </div>
+          {isError ? (
+            <>
+              <h3>⚠️ Erro de Saque ({errorLabel})</h3>
+              <div className="winner-display">
+                <strong>{serveLabel}</strong>
+              </div>
+            </>
+          ) : (
+            <>
+              <h3>🎾 Efeito do Saque</h3>
+              <div className="winner-display">
+                Ponto para:{" "}
+                <strong>
+                  {playerInFocus === "PLAYER_1" ? "Jogador 1" : "Jogador 2"}
+                </strong>
+              </div>
+            </>
+          )}
         </div>
         <div className="modal-content">
           <div className="section">
@@ -92,7 +122,7 @@ const ServerEffectModal: React.FC<ServerEffectModalProps> = ({
             onClick={handleConfirm}
             aria-label="Confirm ServerEffect"
           >
-            Confirmar Ponto
+            {confirmLabel}
           </button>
           <button
             className="cancel-btn"

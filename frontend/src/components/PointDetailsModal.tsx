@@ -159,13 +159,15 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
       ? getValidDirecoes(vencedor, sel.situacao, sel.tipo, sel.efeito)
       : [];
 
-  // Golpe especial: depende de golpe + efeito + contexto (vencedor, situacao, tipo)
+  // Golpe especial: depende de golpe + efeito + contexto (vencedor, situacao, tipo, subtipo2, direcao)
   const golpeEspOpts = getValidGolpeEsp(
     sel.golpe,
     sel.efeito,
     vencedor,
     sel.situacao,
     sel.tipo,
+    sel.sub2,
+    sel.direcao,
   );
 
   // Confirmar fica disponível assim que 'golpe' for selecionado (registro parcial permitido)
