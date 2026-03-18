@@ -12,9 +12,10 @@ interface ActionBarProps {
   onOut: () => void;
   onNet: () => void;
   onFault: () => void;
+  /** Handlers específicos para Out/Net no 2º saque (fallback: onFault) */
+  onFaultOut?: () => void;
+  onFaultNet?: () => void;
   onStats: () => void;
-  onServerWon: () => void;
-  onReturnerWon: () => void;
   onConfig?: () => void;
   /** Controle do tamanho do placar */
   fontScale?: number;
@@ -33,9 +34,9 @@ const ActionBar: React.FC<ActionBarProps> = ({
   onOut,
   onNet,
   onFault,
+  onFaultOut,
+  onFaultNet,
   onStats,
-  onServerWon,
-  onReturnerWon,
   onConfig,
   fontScale = 1,
   onFontScaleInc,
@@ -72,33 +73,15 @@ const ActionBar: React.FC<ActionBarProps> = ({
           </button>
           <button
             className="action-quick-btn action-quick-fault"
-            onClick={isSecondServe ? onFault : onOut}
+            onClick={isSecondServe ? (onFaultOut ?? onFault) : onOut}
           >
             Out
           </button>
           <button
             className="action-quick-btn action-quick-fault"
-            onClick={isSecondServe ? onFault : onNet}
+            onClick={isSecondServe ? (onFaultNet ?? onFault) : onNet}
           >
             Net
-          </button>
-        </div>
-      )}
-
-      {/* Linha de quem venceu o ponto — sempre PLAYER_1 esquerda, PLAYER_2 direita */}
-      {!isFinished && (
-        <div className="point-winner-row">
-          <button
-            className={`point-winner-btn ${leftIsServer ? "point-winner-server" : "point-winner-returner"}`}
-            onClick={leftIsServer ? onServerWon : onReturnerWon}
-          >
-            {leftIsServer ? "🎾" : "🏓"} {leftName} venceu
-          </button>
-          <button
-            className={`point-winner-btn ${rightIsServer ? "point-winner-server" : "point-winner-returner"}`}
-            onClick={rightIsServer ? onServerWon : onReturnerWon}
-          >
-            {rightIsServer ? "🎾" : "🏓"} {rightName} venceu
           </button>
         </div>
       )}

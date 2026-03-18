@@ -7,12 +7,12 @@
  * Representa um atleta/jogador no sistema.
  * Preparado para busca centralizada e perfis únicos.
  *
- * Hoje: id é gerado no frontend, clubId é opcional.
- * Futuro (White Label): id vem do backend centralizado,
- * clubId identifica o clube/tenant do atleta.
+ * globalId: identidade global imutável no diretório central da plataforma.
+ * id: chave primária do AthleteProfile no banco (interna).
  */
 export interface Athlete {
   id: string;
+  globalId: string; // ID global único no diretório central — imutável
   name: string;
   email?: string;
   clubId?: string;

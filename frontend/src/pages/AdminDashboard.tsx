@@ -7,6 +7,9 @@ import httpClient from "../config/httpClient";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigation } from "../contexts/NavigationContext";
 import { useToast } from "../components/Toast";
+import ClubMembersModal, {
+  type ClubMember,
+} from "../components/ClubMembersModal";
 import "./AdminDashboard.css";
 
 // === Tipos ===
@@ -88,6 +91,26 @@ interface PaginatedUsers {
   offset: number;
 }
 
+interface AdminMatch {
+  id: string;
+  playerP1: string;
+  playerP2: string;
+  status: string;
+  score: string | null;
+  winner: string | null;
+  visibility: string;
+  clubName: string | null;
+  createdByName: string | null;
+  createdAt: string;
+}
+
+interface PaginatedMatches {
+  matches: AdminMatch[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
 // === Labels ===
 
 const ROLE_LABELS: Record<string, string> = {
@@ -118,11 +141,43 @@ const PLAN_COLORS: Record<string, string> = {
   ENTERPRISE: "plan-enterprise",
 };
 
+const MATCH_STATUS_LABELS: Record<string, string> = {
+  NOT_STARTED: "Não iniciada",
+  IN_PROGRESS: "Em andamento",
+  FINISHED: "Finalizada",
+};
+
+const MATCH_STATUS_COLORS: Record<string, string> = {
+  NOT_STARTED: "ms-not-started",
+  IN_PROGRESS: "ms-in-progress",
+  FINISHED: "ms-finished",
+};
+
 // === Componente ===
 
-type TabType = "overview" | "clubs" | "users";
+type TabType = "overview" | "clubs" | "users" | "matches";
 
 const PAGE_SIZE = 20;
+
+interface CreateClubForm {
+  name: string;
+  slug: string;
+  planType: string;
+  gestorName: string;
+  gestorEmail: string;
+  gestorPassword: string;
+  alsoCoach: boolean;
+}
+
+const INITIAL_CREATE_FORM: CreateClubForm = {
+  name: "",
+  slug: "",
+  planType: "FREE",
+  gestorName: "",
+  gestorEmail: "",
+  gestorPassword: "",
+  alsoCoach: false,
+};
 
 const AdminDashboard: React.FC = () => {
   const { currentUser } = useAuth();
@@ -149,6 +204,24 @@ const AdminDashboard: React.FC = () => {
   const [usersOffset, setUsersOffset] = useState(0);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [userSearch, setUserSearch] = useState("");
+
+  // Matches tab state
+  const [allMatches, setAllMatches] = useState<AdminMatch[]>([]);
+  const [matchesTotal, setMatchesTotal] = useState(0);
+  const [matchesOffset, setMatchesOffset] = useState(0);
+  const [loadingMatches, setLoadingMatches] = useState(false);
+  const [matchStatusFilter, setMatchStatusFilter] = useState("");
+
+  // Club members modal state
+  const [selectedClub, setSelectedClub] = useState<AdminClub | null>(null);
+  const [clubMembers, setClubMembers] = useState<ClubMember[]>([]);
+  const [loadingMembers, setLoadingMembers] = useState(false);
+
+  // Create club modal state
+  const [showCreateClub, setShowCreateClub] = useState(false);
+  const [createClubForm, setCreateClubForm] =
+    useState<CreateClubForm>(INITIAL_CREATE_FORM);
+  const [creatingClub, setCreatingClub] = useState(false);
 
   const isAdmin = currentUser?.activeRole === "ADMIN";
 
@@ -218,6 +291,31 @@ const AdminDashboard: React.FC = () => {
     [toast],
   );
 
+  // === Fetch All Matches ===
+  const fetchAllMatches = useCallback(
+    async (offset = 0, status = "") => {
+      setLoadingMatches(true);
+      try {
+        const params = new URLSearchParams({
+          limit: String(PAGE_SIZE),
+          offset: String(offset),
+        });
+        if (status) params.set("status", status);
+        const response = await httpClient.get<PaginatedMatches>(
+          `/admin/matches/all?${params.toString()}`,
+        );
+        setAllMatches(response.data.matches || []);
+        setMatchesTotal(response.data.total || 0);
+        setMatchesOffset(offset);
+      } catch {
+        toast.error("Erro ao carregar partidas.");
+      } finally {
+        setLoadingMatches(false);
+      }
+    },
+    [toast],
+  );
+
   // Load stats on mount
   useEffect(() => {
     fetchStats();
@@ -231,15 +329,46 @@ const AdminDashboard: React.FC = () => {
     if (activeTab === "users" && users.length === 0) {
       fetchUsers(0, userSearch);
     }
+    if (activeTab === "matches" && allMatches.length === 0) {
+      fetchAllMatches(0, matchStatusFilter);
+    }
   }, [
     activeTab,
     clubs.length,
     users.length,
+    allMatches.length,
     fetchClubs,
     fetchUsers,
+    fetchAllMatches,
     clubSearch,
     userSearch,
+    matchStatusFilter,
   ]);
+
+  // === Club Members ===
+  const handleShowMembers = useCallback(
+    async (club: AdminClub) => {
+      setSelectedClub(club);
+      setClubMembers([]);
+      setLoadingMembers(true);
+      try {
+        const response = await httpClient.get<{ members: ClubMember[] }>(
+          `/clubs/${club.id}/members`,
+        );
+        setClubMembers(response.data.members ?? []);
+      } catch {
+        toast.error("Erro ao carregar membros do clube.");
+      } finally {
+        setLoadingMembers(false);
+      }
+    },
+    [toast],
+  );
+
+  const handleCloseMembers = useCallback(() => {
+    setSelectedClub(null);
+    setClubMembers([]);
+  }, []);
 
   // === Search handlers ===
   const handleClubSearch = () => {
@@ -252,12 +381,61 @@ const AdminDashboard: React.FC = () => {
     fetchUsers(0, userSearch);
   };
 
+  // === Create Club ===
+  const handleCreateClub = async () => {
+    if (
+      !createClubForm.name.trim() ||
+      !createClubForm.gestorName.trim() ||
+      !createClubForm.gestorEmail.trim() ||
+      !createClubForm.gestorPassword
+    ) {
+      toast.error("Preencha todos os campos obrigatórios.");
+      return;
+    }
+    setCreatingClub(true);
+    try {
+      await httpClient.post("/admin/clubs", createClubForm);
+      toast.success(`Clube "${createClubForm.name}" criado com sucesso!`);
+      setShowCreateClub(false);
+      setCreateClubForm(INITIAL_CREATE_FORM);
+      fetchClubs(0, clubSearch);
+      fetchStats();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Erro ao criar clube.";
+      toast.error(msg);
+    } finally {
+      setCreatingClub(false);
+    }
+  };
+
+  const handleCreateClubFieldChange = (
+    field: keyof CreateClubForm,
+    value: string | boolean,
+  ) => {
+    setCreateClubForm((prev) => {
+      const updated = { ...prev, [field]: value };
+      // Auto-derivar slug a partir do nome
+      if (field === "name" && typeof value === "string") {
+        updated.slug = value
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "");
+      }
+      return updated;
+    });
+  };
+
   // === Pagination handlers ===
   const clubsPage = Math.floor(clubsOffset / PAGE_SIZE) + 1;
   const clubsTotalPages = Math.ceil(clubsTotal / PAGE_SIZE);
 
   const usersPage = Math.floor(usersOffset / PAGE_SIZE) + 1;
   const usersTotalPages = Math.ceil(usersTotal / PAGE_SIZE);
+
+  const matchesPage = Math.floor(matchesOffset / PAGE_SIZE) + 1;
+  const matchesTotalPages = Math.ceil(matchesTotal / PAGE_SIZE);
 
   // === Guards ===
   if (!isAdmin) {
@@ -306,7 +484,13 @@ const AdminDashboard: React.FC = () => {
             { key: "overview", label: "Visão Geral", icon: "📊" },
             { key: "clubs", label: "Clubes", icon: "🏢" },
             { key: "users", label: "Usuários", icon: "👥" },
-          ] as Array<{ key: TabType; label: string; icon: string }>
+            { key: "matches", label: "Partidas", icon: "🎾" },
+          ] as Array<{
+            key: TabType;
+            label: string;
+            icon: string;
+            badge?: number;
+          }>
         ).map((tab) => (
           <button
             key={tab.key}
@@ -315,6 +499,9 @@ const AdminDashboard: React.FC = () => {
           >
             <span className="tab-icon">{tab.icon}</span>
             <span className="tab-label">{tab.label}</span>
+            {tab.badge != null && tab.badge > 0 && (
+              <span className="admin-tab-badge">{tab.badge}</span>
+            )}
           </button>
         ))}
       </nav>
@@ -501,6 +688,12 @@ const AdminDashboard: React.FC = () => {
                   <span className="count-badge">{clubsTotal}</span>
                 )}
               </h3>
+              <button
+                className="admin-btn-primary"
+                onClick={() => setShowCreateClub(true)}
+              >
+                + Criar Clube
+              </button>
             </div>
 
             {/* Search */}
@@ -537,7 +730,18 @@ const AdminDashboard: React.FC = () => {
                     <span>Criado em</span>
                   </div>
                   {clubs.map((club) => (
-                    <div key={club.id} className="admin-table-row clubs-grid">
+                    <div
+                      key={club.id}
+                      className="admin-table-row clubs-grid admin-table-row--clickable"
+                      onClick={() => handleShowMembers(club)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) =>
+                        (e.key === "Enter" || e.key === " ") &&
+                        handleShowMembers(club)
+                      }
+                      aria-label={`Ver membros de ${club.name}`}
+                    >
                       <span className="cell-name">{club.name}</span>
                       <span className="cell-slug">/{club.slug}</span>
                       <span>
@@ -684,7 +888,277 @@ const AdminDashboard: React.FC = () => {
             )}
           </div>
         )}
+
+        {/* === TAB: Partidas === */}
+        {activeTab === "matches" && (
+          <div className="admin-matches-tab">
+            <div className="section-header">
+              <h3>
+                Todas as Partidas{" "}
+                {matchesTotal > 0 && (
+                  <span className="count-badge">{matchesTotal}</span>
+                )}
+              </h3>
+            </div>
+
+            {/* Filtro de Status */}
+            <div className="admin-search-bar">
+              <select
+                className="admin-search-input"
+                value={matchStatusFilter}
+                onChange={(e) => setMatchStatusFilter(e.target.value)}
+                aria-label="Filtrar por status"
+              >
+                <option value="">Todos os status</option>
+                <option value="NOT_STARTED">Não iniciadas</option>
+                <option value="IN_PROGRESS">Em andamento</option>
+                <option value="FINISHED">Finalizadas</option>
+              </select>
+              <button
+                className="admin-btn-primary"
+                onClick={() => {
+                  setMatchesOffset(0);
+                  setAllMatches([]);
+                  fetchAllMatches(0, matchStatusFilter);
+                }}
+              >
+                Filtrar
+              </button>
+            </div>
+
+            {/* Tabela */}
+            {loadingMatches ? (
+              <div className="admin-loading">
+                <div className="admin-loading-spinner" />
+                Carregando partidas...
+              </div>
+            ) : allMatches.length === 0 ? (
+              <p className="admin-muted">Nenhuma partida encontrada.</p>
+            ) : (
+              <>
+                <div className="admin-table">
+                  <div className="admin-table-header matches-grid">
+                    <span>Jogadores</span>
+                    <span>Status</span>
+                    <span>Placar</span>
+                    <span>Clube</span>
+                    <span>Criador</span>
+                    <span>Data</span>
+                  </div>
+                  {allMatches.map((match) => (
+                    <div
+                      key={match.id}
+                      className="admin-table-row matches-grid"
+                    >
+                      <span className="cell-name match-players">
+                        <span>{match.playerP1}</span>
+                        <span className="match-vs">vs</span>
+                        <span>{match.playerP2}</span>
+                      </span>
+                      <span>
+                        <span
+                          className={`match-status-badge ${MATCH_STATUS_COLORS[match.status] || ""}`}
+                        >
+                          {MATCH_STATUS_LABELS[match.status] || match.status}
+                        </span>
+                      </span>
+                      <span className="cell-score">
+                        {match.score || <span className="cell-muted">—</span>}
+                      </span>
+                      <span className="cell-muted">
+                        {match.clubName || "—"}
+                      </span>
+                      <span className="cell-muted">
+                        {match.createdByName || "—"}
+                      </span>
+                      <span className="cell-date">
+                        {new Date(match.createdAt).toLocaleDateString("pt-BR")}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Paginação */}
+                {matchesTotalPages > 1 && (
+                  <div className="admin-pagination">
+                    <button
+                      className="admin-btn-secondary"
+                      disabled={matchesPage <= 1}
+                      onClick={() =>
+                        fetchAllMatches(
+                          matchesOffset - PAGE_SIZE,
+                          matchStatusFilter,
+                        )
+                      }
+                    >
+                      ← Anterior
+                    </button>
+                    <span className="pagination-info">
+                      Página {matchesPage} de {matchesTotalPages}
+                    </span>
+                    <button
+                      className="admin-btn-secondary"
+                      disabled={matchesPage >= matchesTotalPages}
+                      onClick={() =>
+                        fetchAllMatches(
+                          matchesOffset + PAGE_SIZE,
+                          matchStatusFilter,
+                        )
+                      }
+                    >
+                      Próxima →
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
       </div>
+
+      {/* === Modal: Membros do Clube === */}
+      {selectedClub && (
+        <ClubMembersModal
+          clubName={selectedClub.name}
+          members={clubMembers}
+          loading={loadingMembers}
+          onClose={handleCloseMembers}
+        />
+      )}
+
+      {/* === Modal: Criar Clube === */}
+      {showCreateClub && (
+        <div
+          className="admin-modal-overlay"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowCreateClub(false);
+          }}
+        >
+          <div className="admin-modal">
+            <div className="admin-modal-header">
+              <h3>Criar Novo Clube</h3>
+              <button
+                className="admin-modal-close"
+                onClick={() => setShowCreateClub(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="admin-modal-body">
+              <fieldset className="admin-modal-fieldset">
+                <legend>Dados do Clube</legend>
+                <label>
+                  Nome do Clube *
+                  <input
+                    type="text"
+                    value={createClubForm.name}
+                    onChange={(e) =>
+                      handleCreateClubFieldChange("name", e.target.value)
+                    }
+                    placeholder="Ex: Clube Harmonia"
+                    className="admin-modal-input"
+                  />
+                </label>
+                <label>
+                  Slug (URL)
+                  <input
+                    type="text"
+                    value={createClubForm.slug}
+                    onChange={(e) =>
+                      handleCreateClubFieldChange("slug", e.target.value)
+                    }
+                    placeholder="clube-harmonia"
+                    className="admin-modal-input"
+                  />
+                </label>
+                <label>
+                  Plano
+                  <select
+                    value={createClubForm.planType}
+                    onChange={(e) =>
+                      handleCreateClubFieldChange("planType", e.target.value)
+                    }
+                    className="admin-modal-input"
+                  >
+                    <option value="FREE">Gratuito</option>
+                    <option value="PREMIUM">Premium</option>
+                    <option value="ENTERPRISE">Enterprise</option>
+                  </select>
+                </label>
+              </fieldset>
+
+              <fieldset className="admin-modal-fieldset">
+                <legend>Dados do Gestor</legend>
+                <label>
+                  Nome Completo *
+                  <input
+                    type="text"
+                    value={createClubForm.gestorName}
+                    onChange={(e) =>
+                      handleCreateClubFieldChange("gestorName", e.target.value)
+                    }
+                    placeholder="Nome do gestor"
+                    className="admin-modal-input"
+                  />
+                </label>
+                <label>
+                  E-mail *
+                  <input
+                    type="email"
+                    value={createClubForm.gestorEmail}
+                    onChange={(e) =>
+                      handleCreateClubFieldChange("gestorEmail", e.target.value)
+                    }
+                    placeholder="gestor@clube.com"
+                    className="admin-modal-input"
+                  />
+                </label>
+                <label>
+                  Senha *
+                  <input
+                    type="password"
+                    value={createClubForm.gestorPassword}
+                    onChange={(e) =>
+                      handleCreateClubFieldChange(
+                        "gestorPassword",
+                        e.target.value,
+                      )
+                    }
+                    placeholder="Mínimo 6 caracteres"
+                    className="admin-modal-input"
+                  />
+                </label>
+                <label className="admin-modal-checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={createClubForm.alsoCoach}
+                    onChange={(e) =>
+                      handleCreateClubFieldChange("alsoCoach", e.target.checked)
+                    }
+                  />
+                  <span>Também exerce função de Técnico</span>
+                </label>
+              </fieldset>
+            </div>
+            <div className="admin-modal-footer">
+              <button
+                className="admin-btn-secondary"
+                onClick={() => setShowCreateClub(false)}
+                disabled={creatingClub}
+              >
+                Cancelar
+              </button>
+              <button
+                className="admin-btn-primary"
+                onClick={handleCreateClub}
+                disabled={creatingClub}
+              >
+                {creatingClub ? "Criando..." : "Criar Clube"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

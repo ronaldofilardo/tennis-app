@@ -28,7 +28,7 @@ async function main() {
 
   try {
     // 1. Criar ou buscar admin
-    const adminEmail = "ronaldofilardo@gmail.com";
+    const adminEmail = "admin@tennis.com";
     let admin = await prisma.user.findUnique({
       where: { email: adminEmail },
     });
@@ -38,7 +38,7 @@ async function main() {
       admin = await prisma.user.create({
         data: {
           email: adminEmail,
-          name: "Ronaldo Filardo",
+          name: "Admin Tennis",
           passwordHash,
           isActive: true,
         },

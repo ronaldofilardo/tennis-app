@@ -9,6 +9,9 @@ import FloatingActionButton from "../components/FloatingActionButton";
 import FilterChips from "../components/FilterChips";
 import type { MatchFilter } from "../components/FilterChips";
 import LiveMatchesCarousel from "../components/LiveMatchesCarousel";
+import PendingInvitesBanner from "../components/PendingInvitesBanner";
+import { ClubRankings } from "../components/ClubRankings";
+import { useAuth } from "../contexts/AuthContext";
 import { API_URL } from "../config/api";
 import { resolvePlayerName } from "../data/players";
 import { useToast } from "../components/Toast";
@@ -57,6 +60,8 @@ const Dashboard: React.FC<DashboardProps> = ({
   // AREA 4 & 7: Toast e Logger
   const toast = useToast();
   const dashLog = createLogger("Dashboard");
+  const { currentUser: authUser } = useAuth();
+  const activeClubId = authUser?.activeClubId ?? null;
   const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState<DashboardMatch | null>(
     null,
@@ -354,6 +359,9 @@ const Dashboard: React.FC<DashboardProps> = ({
         stats={athleteStats}
       />
 
+      {/* ── Convites de clube pendentes (atleta confirma) ── */}
+      {currentUser?.role === "ATHLETE" && <PendingInvitesBanner />}
+
       {loading && (
         <div className="dashboard-loading">
           <div className="dashboard-loading-spinner" />
@@ -402,6 +410,18 @@ const Dashboard: React.FC<DashboardProps> = ({
                 : "Aguardando"}
         </span>
       )}
+
+      {/* ── Ranking tab ── */}
+      {activeTab === "ranking" &&
+        (activeClubId ? (
+          <ClubRankings clubId={activeClubId} />
+        ) : (
+          <div className="dashboard-empty">
+            <span className="dashboard-empty-icon">📈</span>
+            <h3>Ranking</h3>
+            <p>Faça parte de um clube para ver o ranking intraclubes.</p>
+          </div>
+        ))}
 
       {/* ── Stats tab placeholder ── */}
       {activeTab === "stats" && (
@@ -662,20 +682,6 @@ const Dashboard: React.FC<DashboardProps> = ({
                           : match.visibility === "CLUB"
                             ? "🏢"
                             : "🔒"}
-                      </span>
-                    )}
-                    {match.scorerStatus === "PENDING" && (
-                      <span
-                        className="scorer-pending-badge"
-                        title="Aguardando resposta do marcador"
-                        style={{
-                          marginLeft: "4px",
-                          fontSize: "1rem",
-                          display: "inline-block",
-                          animation: "pulse 1.5s infinite",
-                        }}
-                      >
-                        ⏳
                       </span>
                     )}
                   </div>

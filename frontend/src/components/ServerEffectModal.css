@@ -45,6 +45,14 @@
   color: var(--text-primary, #f8fafc);
 }
 
+/* Variante erro (Out / Net) — borda laranja âmbar para diferenciar de sacadas */
+.server-effect-modal--error {
+  border-top-color: #f59e0b;
+  box-shadow:
+    var(--shadow-card, 0 8px 32px rgba(0, 0, 0, 0.4)),
+    0 0 32px rgba(245, 158, 11, 0.1);
+}
+
 /* ── Header ─────────────────────────────────────────────────── */
 
 .modal-header {

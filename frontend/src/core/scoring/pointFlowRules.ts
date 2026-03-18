@@ -162,7 +162,10 @@ export function getValidDirecoes(
 //  flat                   → [] (sem golpe_esp)
 //  slice                  → [lob, drop]
 //  VBH/VFH (sem efeito)   → devolvedor: [drop, bate-pronto, swingvolley]
-//                           sacador:    [lob, drop, bate-pronto, swingvolley]
+//                           sacador|rede|winner: [lob, drop, bate-pronto, swingvolley]
+//                           sacador|passada|erro*/out/(cruzada|paralela|centro): [drop, bate-pronto, swingvolley] (SEM LOB)
+//                           sacador|passada|erro*/net/(cruzada|paralela|centro): [drop, bate-pronto, swingvolley] (SEM LOB)
+//                           demais sacador: [lob, drop, bate-pronto, swingvolley]
 //  topspin (contextual):
 //    devolucao (ambos)              → [lob]
 //    devolvedor|fundo|winner        → []
@@ -175,6 +178,8 @@ export function getValidGolpeEsp(
   vencedor?: RallyVencedor,
   situacao?: RallySituacao,
   tipo?: RallyTipo,
+  subtipo2?: RallySubtipo2,
+  direcao?: RallyDirecao,
 ): RallyGolpeEsp[] {
   if (!golpe) return [];
   if (golpe === "Smash") return [];
@@ -183,6 +188,18 @@ export function getValidGolpeEsp(
     // devolvedor|rede|winner e devolvedor|passada|erro*: sem lob (IDs 617-688, 701-721)
     if (vencedor === "devolvedor")
       return ["drop", "bate-pronto", "swingvolley"];
+    // sacador com voleio
+    // REGRA ESPECIAL: remove LOB se erro-forcado/erro-nao-forcado + (out|net) + direções simples
+    if (
+      vencedor === "sacador" &&
+      tipo !== "winner" &&
+      subtipo2 &&
+      ["Out", "Net"].includes(subtipo2) &&
+      direcao &&
+      ["cruzada", "paralela", "centro"].includes(direcao)
+    ) {
+      return ["drop", "bate-pronto", "swingvolley"];
+    }
     // sacador|rede|winner e sacador|passada|erro*: com lob (IDs 1104-1181)
     return ["lob", "drop", "bate-pronto", "swingvolley"];
   }

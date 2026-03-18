@@ -1,6 +1,6 @@
 // frontend/api/athletes.js
 // Router consolidado — todas as rotas /api/athletes/*
-//   GET   /api/athletes?q=...    → busca global de atletas
+//   GET   /api/athletes?q=...    → busca global de atletas (pública — usada pelo scorer)
 //   POST  /api/athletes          → cria perfil de atleta
 //   GET   /api/athletes/:id      → detalhe do atleta (com privacidade)
 //   PATCH /api/athletes/:id      → atualiza perfil
@@ -9,6 +9,7 @@ import prisma from "../_lib/prisma.js";
 import {
   handleCors,
   requireAuth,
+  extractContext,
   sendJson,
   methodNotAllowed,
 } from "../_lib/authMiddleware.js";
@@ -22,11 +23,77 @@ function getAthleteId(url) {
 export default async function handler(req, res) {
   if (handleCors(req, res)) return;
 
-  const ctx = requireAuth(req, res);
-  if (!ctx) return;
-
   const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
   const athleteId = getAthleteId(url);
+
+  // ─── GET /api/athletes (busca pública — não requer auth) ──────────────────
+  // Permite que o scorer avulso (anônimo) encontre atletas da base central.
+  // Retorna apenas campos públicos; dados sensíveis ficam protegidos.
+  if (!athleteId && req.method === "GET") {
+    try {
+      const ctx = extractContext(req); // pode ser null (anon)
+      const searchQuery = url.searchParams.get("q") || "";
+      const filterClubId = url.searchParams.get("clubId") || null;
+      const excludeUserId = url.searchParams.get("excludeUserId") || null;
+      const limit = Math.min(
+        parseInt(url.searchParams.get("limit") || "20"),
+        200,
+      );
+      const sanitized = searchQuery
+        .replace(/[<>'"%;()&+]/g, "")
+        .trim()
+        .slice(0, 100);
+      const where = {
+        isPublic: true,
+        ...(sanitized && {
+          OR: [
+            { name: { contains: sanitized, mode: "insensitive" } },
+            { globalId: { contains: sanitized, mode: "insensitive" } },
+          ],
+        }),
+        ...(filterClubId && { clubId: filterClubId }),
+        ...(excludeUserId && { NOT: { userId: excludeUserId } }),
+      };
+      const athletes = await prisma.athleteProfile.findMany({
+        where,
+        take: limit,
+        orderBy: { name: "asc" },
+        select: {
+          id: true,
+          globalId: true,
+          name: true,
+          nickname: true,
+          category: true,
+          gender: true,
+          ranking: true,
+          userId: true,
+          // clubId e nome do clube expostos para todos — necessário para o combobox do scorer
+          clubId: true,
+          club: { select: { name: true } },
+        },
+      });
+      // Para usuários anônimos, omite userId (privacidade) mas mantém clubName
+      const response = athletes.map((a) => ({
+        id: a.id,
+        globalId: a.globalId,
+        name: a.name,
+        nickname: a.nickname,
+        category: a.category,
+        gender: a.gender,
+        ranking: a.ranking,
+        clubName: a.club?.name ?? null,
+        ...(ctx ? { clubId: a.clubId, userId: a.userId } : {}),
+      }));
+      return sendJson(res, 200, { athletes: response });
+    } catch (err) {
+      console.error("[athletes GET]", err);
+      return sendJson(res, 500, { error: "Internal server error" });
+    }
+  }
+
+  // Todas as demais rotas exigem autenticação
+  const ctx = requireAuth(req, res);
+  if (!ctx) return;
 
   // ─── /api/athletes/:id ────────────────────────────────────────────────────
   if (athleteId) {
@@ -43,6 +110,7 @@ export default async function handler(req, res) {
             ? athlete
             : {
                 id: athlete.id,
+                globalId: athlete.globalId,
                 name: athlete.name,
                 nickname: athlete.nickname,
                 clubId: athlete.clubId,
@@ -63,11 +131,14 @@ export default async function handler(req, res) {
           where: { id: athleteId },
         });
         if (!athlete) return sendJson(res, 404, { error: "Athlete not found" });
-        const isOwnClub = ctx.clubId && athlete.clubId === ctx.clubId;
         const isSelf = athlete.userId && athlete.userId === ctx.userId;
-        if (!isOwnClub && !isSelf)
+        const isGestorOfClub =
+          (ctx.role === "GESTOR" && ctx.clubId === athlete.clubId) ||
+          ctx.role === "ADMIN";
+        if (!isSelf && !isGestorOfClub)
           return sendJson(res, 403, {
-            error: "Cannot edit athlete from another club",
+            error:
+              "Apenas o gestor do clube pode editar perfis de atletas e técnicos.",
           });
         const { name, nickname, birthDate, phone, category, gender, ranking } =
           req.body || {};
@@ -97,48 +168,7 @@ export default async function handler(req, res) {
     return methodNotAllowed(res, ["GET", "PATCH"]);
   }
 
-  // ─── /api/athletes (root) ─────────────────────────────────────────────────
-  if (req.method === "GET") {
-    try {
-      const searchQuery = url.searchParams.get("q") || "";
-      const filterClubId = url.searchParams.get("clubId") || null;
-      const limit = Math.min(
-        parseInt(url.searchParams.get("limit") || "20"),
-        50,
-      );
-      const sanitized = searchQuery
-        .replace(/[<>'"%;()&+]/g, "")
-        .trim()
-        .slice(0, 100);
-      const where = {
-        isPublic: true,
-        ...(sanitized && {
-          name: { contains: sanitized, mode: "insensitive" },
-        }),
-        ...(filterClubId && { clubId: filterClubId }),
-      };
-      const athletes = await prisma.athleteProfile.findMany({
-        where,
-        take: limit,
-        orderBy: { name: "asc" },
-        select: {
-          id: true,
-          name: true,
-          nickname: true,
-          clubId: true,
-          category: true,
-          gender: true,
-          ranking: true,
-          birthDate: true,
-        },
-      });
-      return sendJson(res, 200, athletes);
-    } catch (err) {
-      console.error("[athletes GET]", err);
-      return sendJson(res, 500, { error: "Internal server error" });
-    }
-  }
-
+  // ─── POST /api/athletes ───────────────────────────────────────────────────
   if (req.method === "POST") {
     try {
       const {

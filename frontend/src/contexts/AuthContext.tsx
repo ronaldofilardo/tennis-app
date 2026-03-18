@@ -8,11 +8,6 @@ import React, {
 import type { ReactNode } from "react";
 import { logger } from "../services/logger";
 import httpClient from "../config/httpClient";
-import {
-  loadClubTheme,
-  applyClubTheme,
-  resetTheme,
-} from "../config/themeProvider";
 
 const authLog = logger.createModuleLogger("AuthContext");
 
@@ -32,7 +27,6 @@ export interface ClubMembership {
   clubName: string;
   clubSlug: string;
   role: UserRole;
-  logoUrl?: string;
   planType?: string;
   subscriptionStatus?: string;
 }
@@ -156,17 +150,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [currentUser?.activeClubId]);
 
-  // Carregar tema quando clube muda
-  useEffect(() => {
-    if (currentUser?.activeClubId) {
-      loadClubTheme(currentUser.activeClubId)
-        .then(applyClubTheme)
-        .catch(() => {});
-    } else {
-      resetTheme();
-    }
-  }, [currentUser?.activeClubId]);
-
   // Redirecionar ao login em caso de 401
   useEffect(() => {
     httpClient.onUnauthorized(() => {
@@ -201,7 +184,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
     httpClient.setAuthConfig({ token: null, refreshToken: null });
     httpClient.setTenantConfig({ clubId: null });
-    resetTheme();
     logger.clearGlobalContext();
     authLog.info("Logout realizado");
   };
@@ -218,7 +200,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         clubName: string;
         clubSlug: string;
         role: string;
-        logoUrl?: string;
         planType?: string;
         subscriptionStatus?: string;
       }>;

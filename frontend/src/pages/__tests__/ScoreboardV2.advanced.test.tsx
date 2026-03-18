@@ -153,6 +153,32 @@ vi.mock("../../core/scoring/TennisScoring", () => {
 
 vi.mock("../ScoreboardV2.css", () => ({}));
 vi.mock("../../components/LoadingIndicator", () => ({ default: () => null }));
+vi.mock("../../components/ServerEffectModal", () => ({
+  default: ({ isOpen, onConfirm, onCancel, context }: any) =>
+    isOpen ? (
+      <div data-testid="server-effect-modal">
+        {context === "error" ? (
+          <button onClick={() => onConfirm("TopSpin", "Centro")}>
+            Confirm ServerEffect Error
+          </button>
+        ) : (
+          <button onClick={() => onConfirm("TopSpin", "Centro")}>
+            Confirm ServerEffect
+          </button>
+        )}
+        <button onClick={onCancel}>Cancel ServerEffect</button>
+      </div>
+    ) : null,
+}));
+
+vi.mock("../../components/PointDetailsModal", () => ({
+  default: ({ isOpen, onConfirm }: any) =>
+    isOpen ? (
+      <div data-testid="point-details-modal">
+        <button onClick={() => onConfirm(undefined)}>Pular Detalhes</button>
+      </div>
+    ) : null,
+}));
 
 import { NavigationProvider } from "../../contexts/NavigationContext";
 import { AuthProvider } from "../../contexts/AuthContext";
@@ -308,7 +334,15 @@ describe("ScoreboardV2 - Cobertura Avançada", () => {
       const outBtn = screen.getByText("Out");
       fireEvent.click(outBtn);
 
-      const secondServeBtn = screen.getByText("2º Saque");
+      // Novo fluxo: clicar Out no 1º saque abre modal de erro — confirmar para ir ao 2º saque
+      await waitFor(() => {
+        expect(screen.getByTestId("server-effect-modal")).toBeInTheDocument();
+      });
+      fireEvent.click(
+        screen.getByRole("button", { name: "Confirm ServerEffect Error" }),
+      );
+
+      const secondServeBtn = await screen.findByText("2º Saque");
       expect(secondServeBtn).toBeInTheDocument();
 
       fireEvent.click(secondServeBtn);
@@ -426,6 +460,7 @@ describe("ScoreboardV2 - Cobertura Avançada", () => {
 
       const pointButton = screen.getByText("+ Ponto Jogador 1");
       fireEvent.click(pointButton);
+      fireEvent.click(screen.getByRole("button", { name: "Pular Detalhes" }));
 
       await waitFor(() => {
         expect(mockHttpClient.patch).toHaveBeenCalledWith(

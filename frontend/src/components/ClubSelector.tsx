@@ -103,17 +103,6 @@ const ClubSelector: React.FC<ClubSelectorProps> = ({
             onClick={() => handleSelect(club)}
             disabled={loading}
           >
-            {club.logoUrl ? (
-              <img
-                src={club.logoUrl}
-                alt={club.clubName}
-                className="club-card-logo"
-              />
-            ) : (
-              <div className="club-card-logo-placeholder">
-                {club.clubName.charAt(0).toUpperCase()}
-              </div>
-            )}
             <span className="club-card-name">{club.clubName}</span>
             <span className="club-card-role">
               {ROLE_LABELS[club.role] || club.role}

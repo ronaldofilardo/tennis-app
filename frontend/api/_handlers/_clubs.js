@@ -7,6 +7,7 @@
 //   GET    /api/clubs/:clubId/members              → lista membros
 //   POST   /api/clubs/:clubId/members              → convida membro
 //   POST   /api/clubs/:clubId/members/import       → importação em massa
+//   POST   /api/clubs/:clubId/athletes             → cadastro manual (gestor)
 //   GET    /api/clubs/:clubId/settings             → configurações
 //   PATCH  /api/clubs/:clubId/settings             → atualiza configurações
 //   GET    /api/clubs/:clubId/stats                → estatísticas do clube
@@ -45,18 +46,56 @@ const PLAN_LIMITS = { FREE: 30, BASIC: 100, PRO: 500, ENTERPRISE: 9999 };
 
 function parsePath(url) {
   const parts = url.pathname.split("/").filter(Boolean);
-  // parts: [api, clubs, ?seg, ?sub, ?sub2]
+  // parts: [api, clubs, ?seg, ?sub, ?sub2, ?sub3]
   const seg = parts[2] || null; // clubId | 'join' | 'invite'
   const sub = parts[3] || null; // 'members' | 'settings' | etc.
-  const sub2 = parts[4] || null; // 'import'
-  return { seg, sub, sub2 };
+  const sub2 = parts[4] || null; // membershipId | 'import'
+  const sub3 = parts[5] || null; // 'confirm' | 'profile'
+  return { seg, sub, sub2, sub3 };
 }
 
 export default async function handler(req, res) {
   if (handleCors(req, res)) return;
 
   const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
-  const { seg, sub, sub2 } = parsePath(url);
+  const { seg, sub, sub2, sub3 } = parsePath(url);
+
+  // ─── GET /api/clubs/my-invites ────────────────────────────────────────────
+  // Atleta vê todos os convites de clube pendentes para ele
+  if (seg === "my-invites") {
+    if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
+    const ctx = requireAuth(req, res);
+    if (!ctx) return;
+    try {
+      const pending = await prisma.clubMembership.findMany({
+        where: { userId: ctx.userId, status: "PENDING" },
+        include: {
+          club: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+        },
+        orderBy: { joinedAt: "desc" },
+      });
+      return sendJson(
+        res,
+        200,
+        pending.map((m) => ({
+          id: m.id,
+          clubId: m.clubId,
+          role: m.role,
+          joinedAt: m.joinedAt,
+          club: m.club,
+        })),
+      );
+    } catch (err) {
+      console.error("[my-invites GET]", err);
+      return sendJson(res, 500, { error: "Erro interno." });
+    }
+  }
 
   // ─── POST /api/clubs/join ──────────────────────────────────────────────────
   if (seg === "join") {
@@ -70,7 +109,7 @@ export default async function handler(req, res) {
     try {
       const club = await prisma.club.findFirst({
         where: { inviteCode },
-        select: { id: true, name: true, slug: true, allowedEmailDomains: true },
+        select: { id: true, name: true, slug: true },
       });
       if (!club)
         return sendJson(res, 404, { error: "Código de convite inválido." });
@@ -90,21 +129,6 @@ export default async function handler(req, res) {
           message: `Bem-vindo de volta ao ${club.name}!`,
           clubId: club.id,
         });
-      }
-
-      if (club.allowedEmailDomains) {
-        const domains = club.allowedEmailDomains
-          .split(",")
-          .map((d) => d.trim().toLowerCase())
-          .filter(Boolean);
-        if (domains.length > 0) {
-          const userDomain = ctx.email?.split("@")[1]?.toLowerCase();
-          if (!domains.includes(userDomain)) {
-            return sendJson(res, 403, {
-              error: `Este clube aceita apenas e-mails dos domínios: ${domains.join(", ")}`,
-            });
-          }
-        }
       }
 
       const tempCtx = { ...ctx, clubId: club.id };
@@ -144,8 +168,6 @@ export default async function handler(req, res) {
           id: true,
           name: true,
           slug: true,
-          logoUrl: true,
-          appName: true,
           _count: { select: { members: { where: { status: "ACTIVE" } } } },
         },
       });
@@ -157,8 +179,6 @@ export default async function handler(req, res) {
         id: club.id,
         name: club.name,
         slug: club.slug,
-        logoUrl: club.logoUrl,
-        appName: club.appName,
         memberCount: club._count.members,
       });
     } catch (err) {
@@ -170,6 +190,228 @@ export default async function handler(req, res) {
   // ─── /api/clubs/:clubId/* ──────────────────────────────────────────────────
   if (seg && seg !== "join" && seg !== "invite") {
     const clubId = seg;
+
+    // ── POST /api/clubs/:clubId/athletes ──────────────────────────────────────
+    // Cadastro manual de um atleta ou técnico pelo gestor (gera globalId automaticamente)
+    if (sub === "athletes" && !sub2) {
+      if (req.method !== "POST") return methodNotAllowed(res, ["POST"]);
+      const ctx = requireClubAccess(req, res, clubId, "GESTOR", "ADMIN");
+      if (!ctx) return;
+      const subCheck = await requireActiveSubscription(req, res, ctx);
+      if (!subCheck) return;
+
+      const {
+        name,
+        email,
+        role = "ATHLETE",
+        gender,
+        cpf,
+        birthDate,
+        category,
+        entity,
+        nickname,
+        phone,
+        ranking,
+        fatherName,
+        fatherCpf,
+        motherName,
+        motherCpf,
+      } = req.body || {};
+
+      if (!name || !name.trim())
+        return sendJson(res, 400, { error: "Nome é obrigatório" });
+
+      const VALID_ROLES = ["ATHLETE", "COACH", "SPECTATOR"];
+      if (!VALID_ROLES.includes(role))
+        return sendJson(res, 400, { error: "Papel inválido" });
+
+      const cleanCpf = cpf ? cpf.replace(/\D/g, "").trim() : null;
+      if (cleanCpf && cleanCpf.length !== 11)
+        return sendJson(res, 400, {
+          error: "CPF inválido (deve ter 11 dígitos)",
+        });
+
+      // Deriva a senha do atleta: data de nascimento no formato DDMMAAAA
+      // Se não houver data, usa os primeiros 8 dígitos do CPF (ou '12345678')
+      function derivarSenha(birthDate, cleanCpf) {
+        if (birthDate) {
+          // Fazer parsing manual de ISO date (YYYY-MM-DD) para evitar problemas de timezone
+          let dd, mm, yyyy;
+          if (
+            typeof birthDate === "string" &&
+            birthDate.match(/^\d{4}-\d{2}-\d{2}$/)
+          ) {
+            // ISO format: YYYY-MM-DD
+            const [year, month, day] = birthDate.split("-");
+            dd = String(day).padStart(2, "0");
+            mm = String(month).padStart(2, "0");
+            yyyy = year;
+          } else {
+            // Tentar com Date object
+            const d = new Date(birthDate);
+            if (!isNaN(d.getTime())) {
+              dd = String(d.getUTCDate()).padStart(2, "0");
+              mm = String(d.getUTCMonth() + 1).padStart(2, "0");
+              yyyy = d.getUTCFullYear();
+            }
+          }
+          if (dd && mm && yyyy) {
+            return `${dd}${mm}${yyyy}`;
+          }
+        }
+        return cleanCpf ? cleanCpf.substring(0, 8) : "12345678";
+      }
+
+      try {
+        // ─── Fluxo COACH: cria User + ClubMembership, sem AthleteProfile ───
+        if (role === "COACH") {
+          if (!email || !email.trim())
+            return sendJson(res, 400, {
+              error: "E-mail é obrigatório para técnicos.",
+            });
+
+          const cleanEmail = email.trim().toLowerCase();
+          let coachUser = await prisma.user.findUnique({
+            where: { email: cleanEmail },
+          });
+          if (!coachUser) {
+            const passwordHash = await hashPassword(
+              derivarSenha(birthDate, cleanCpf),
+            );
+            coachUser = await prisma.user.create({
+              data: {
+                email: cleanEmail,
+                name: name.trim(),
+                passwordHash,
+                isActive: true,
+              },
+            });
+          }
+
+          const existingMembership = await prisma.clubMembership.findFirst({
+            where: { userId: coachUser.id, clubId },
+          });
+          if (existingMembership)
+            return sendJson(res, 409, {
+              error: "Técnico já vinculado a este clube.",
+            });
+
+          const membership = await prisma.clubMembership.create({
+            data: {
+              userId: coachUser.id,
+              clubId,
+              role: "COACH",
+              status: "ACTIVE",
+              invitedByUserId: ctx.userId,
+            },
+          });
+          return sendJson(res, 201, {
+            id: coachUser.id,
+            name: coachUser.name,
+            email: coachUser.email,
+            role: membership.role,
+            membershipId: membership.id,
+          });
+        }
+
+        // ─── Fluxo ATHLETE / SPECTATOR: cria User (login via CPF) + AthleteProfile + ClubMembership ───
+        let userId = null;
+        let user = null;
+
+        // Identificador de login: CPF (sem pontuação) se disponível, senão email
+        const loginIdentifier =
+          cleanCpf || (email ? email.trim().toLowerCase() : null);
+
+        if (loginIdentifier) {
+          const novaSenha = derivarSenha(birthDate, cleanCpf);
+          user = await prisma.user.findUnique({
+            where: { email: loginIdentifier },
+          });
+          if (!user) {
+            const passwordHash = await hashPassword(novaSenha);
+            user = await prisma.user.create({
+              data: {
+                email: loginIdentifier, // CPF como identificador único de login
+                name: name.trim(),
+                passwordHash,
+                isActive: true,
+              },
+            });
+          } else if (birthDate) {
+            // Atualizar senha para o formato DDMMYYYY caso tenha sido registrado com senha antiga
+            const passwordHash = await hashPassword(novaSenha);
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { passwordHash },
+            });
+          }
+          userId = user.id;
+        }
+
+        const athleteFields = {
+          name: name.trim(),
+          nickname: nickname?.trim() || null,
+          cpf: cleanCpf || null,
+          gender: gender ? gender.toUpperCase() : null,
+          birthDate: birthDate ? new Date(birthDate) : null,
+          category: category?.trim() || null,
+          entity: entity?.trim() || null,
+          phone: phone?.trim() || null,
+          ranking: ranking ? parseInt(String(ranking), 10) : null,
+          fatherName: fatherName?.trim() || null,
+          fatherCpf: fatherCpf?.replace(/\D/g, "") || null,
+          motherName: motherName?.trim() || null,
+          motherCpf: motherCpf?.replace(/\D/g, "") || null,
+          clubId,
+          isPublic: true,
+        };
+
+        let profile = userId
+          ? await prisma.athleteProfile.findUnique({ where: { userId } })
+          : null;
+
+        if (profile) {
+          profile = await prisma.athleteProfile.update({
+            where: { id: profile.id },
+            data: { ...athleteFields, clubId: profile.clubId || clubId },
+          });
+        } else {
+          profile = await prisma.athleteProfile.create({
+            data: { userId, ...athleteFields },
+          });
+        }
+
+        // Cria ou garante vínculo com o clube (apenas se há userId)
+        if (userId) {
+          const existing = await prisma.clubMembership.findFirst({
+            where: { userId, clubId },
+          });
+          if (!existing) {
+            await prisma.clubMembership.create({
+              data: {
+                userId,
+                clubId,
+                role,
+                status: "ACTIVE",
+                invitedByUserId: ctx.userId,
+              },
+            });
+          }
+        }
+
+        return sendJson(res, 201, {
+          ...profile,
+          globalIdDisplay: `[${profile.globalId.slice(0, 8).toUpperCase()}]`,
+        });
+      } catch (err) {
+        console.error("[clubs/:clubId/athletes POST]", err);
+        if (err.code === "P2002")
+          return sendJson(res, 409, { error: "CPF ou e-mail já cadastrado" });
+        return sendJson(res, 500, {
+          error: "Erro interno ao cadastrar atleta",
+        });
+      }
+    }
 
     // ── /api/clubs/:clubId/members/import ─────────────────────────────────────
     if (sub === "members" && sub2 === "import") {
@@ -296,6 +538,70 @@ export default async function handler(req, res) {
 
     // ── /api/clubs/:clubId/members ─────────────────────────────────────────────
     if (sub === "members") {
+      // PATCH /api/clubs/:clubId/members/:membershipId/confirm
+      // → atleta confirma a inscrição no clube (PENDING → ACTIVE)
+      if (sub2 && sub3 !== "profile" && req.method === "PATCH") {
+        const membershipId = sub2;
+        const ctx = requireAuth(req, res);
+        if (!ctx) return;
+        try {
+          const membership = await prisma.clubMembership.findUnique({
+            where: { id: membershipId },
+          });
+          if (!membership)
+            return sendJson(res, 404, { error: "Membership não encontrada." });
+          if (membership.userId !== ctx.userId)
+            return sendJson(res, 403, {
+              error: "Somente o próprio atleta pode confirmar sua inscrição.",
+            });
+          if (membership.status !== "PENDING")
+            return sendJson(res, 400, {
+              error: "Inscrição não está pendente.",
+            });
+
+          const updated = await prisma.clubMembership.update({
+            where: { id: membershipId },
+            data: { status: "ACTIVE" },
+          });
+          return sendJson(res, 200, { success: true, membership: updated });
+        } catch (err) {
+          console.error("[members/:id PATCH]", err);
+          return sendJson(res, 500, { error: "Erro interno." });
+        }
+      }
+
+      // PATCH /api/clubs/:clubId/members/:membershipId/profile
+      // → gestor edita nome/email de um atleta convidado ou técnico
+      if (sub2 && sub3 === "profile" && req.method === "PATCH") {
+        const membershipId = sub2;
+        const ctx = requireClubAccess(req, res, clubId, "GESTOR", "ADMIN");
+        if (!ctx) return;
+        try {
+          const membership = await prisma.clubMembership.findUnique({
+            where: { id: membershipId },
+            include: { user: { select: { id: true } } },
+          });
+          if (!membership || membership.clubId !== clubId)
+            return sendJson(res, 404, { error: "Membership não encontrada." });
+
+          const { name, email } = req.body || {};
+          const updateData = {};
+          if (name !== undefined) updateData.name = name.trim();
+          if (email !== undefined)
+            updateData.email = email.trim().toLowerCase();
+
+          const updatedUser = await prisma.user.update({
+            where: { id: membership.userId },
+            data: updateData,
+            select: { id: true, name: true, email: true },
+          });
+          return sendJson(res, 200, { success: true, user: updatedUser });
+        } catch (err) {
+          console.error("[members/:id/profile PATCH]", err);
+          return sendJson(res, 500, { error: "Erro interno." });
+        }
+      }
+
       if (req.method === "GET") {
         const ctx = requireClubAccess(
           req,
@@ -308,7 +614,35 @@ export default async function handler(req, res) {
         );
         if (!ctx) return;
         const members = await getClubMembers(clubId, ctx.userId);
-        return sendJson(res, 200, { members });
+
+        // Inclui atletas convidados sem conta (userId=null) vinculados ao clube
+        const guestProfiles = await prisma.athleteProfile.findMany({
+          where: { clubId, userId: null },
+          orderBy: { createdAt: "asc" },
+        });
+        const guestMembers = guestProfiles.map((p) => ({
+          id: `guest-${p.id}`,
+          userId: null,
+          clubId,
+          role: "ATHLETE",
+          status: "ACTIVE",
+          joinedAt: p.createdAt,
+          isGuest: true,
+          user: {
+            id: null,
+            email: null,
+            name: p.name,
+            avatarUrl: null,
+            athleteProfile: {
+              id: p.id,
+              globalId: p.globalId,
+              cpf: p.cpf,
+              birthDate: p.birthDate,
+            },
+          },
+        }));
+
+        return sendJson(res, 200, { members: [...members, ...guestMembers] });
       }
       if (req.method === "POST") {
         const ctx = requireClubAccess(req, res, clubId, "GESTOR", "ADMIN");
@@ -330,93 +664,131 @@ export default async function handler(req, res) {
         });
         return sendJson(res, 201, result);
       }
-      return methodNotAllowed(res, ["GET", "POST"]);
+      return methodNotAllowed(res, ["GET", "POST", "PATCH"]);
     }
 
-    // ── /api/clubs/:clubId/settings ───────────────────────────────────────────
-    if (sub === "settings") {
+    // ── /api/clubs/:clubId/pending-invites ─────────────────────────────────────
+    // Gestor vê atletas aguardando confirmação
+    if (sub === "pending-invites") {
+      if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
+      const ctx = requireClubAccess(req, res, clubId, "GESTOR", "ADMIN");
+      if (!ctx) return;
+      try {
+        const pending = await prisma.clubMembership.findMany({
+          where: { clubId, status: "PENDING" },
+          include: {
+            user: { select: { id: true, email: true, name: true } },
+          },
+          orderBy: { joinedAt: "desc" },
+        });
+        return sendJson(
+          res,
+          200,
+          pending.map((m) => ({
+            id: m.id,
+            userId: m.userId,
+            role: m.role,
+            joinedAt: m.joinedAt,
+            user: m.user,
+          })),
+        );
+      } catch (err) {
+        console.error("[pending-invites GET]", err);
+        return sendJson(res, 500, { error: "Erro interno." });
+      }
+    }
+
+    // ── /api/clubs/:clubId/rankings ───────────────────────────────────────────
+    // Rankings intraclubes por sets acumulados
+    if (sub === "rankings") {
+      if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
       const ctx = requireAuth(req, res);
       if (!ctx) return;
-      if (ctx.role !== "GESTOR" && ctx.role !== "ADMIN")
-        return sendJson(res, 403, {
-          error: "Apenas gestores podem gerenciar configurações.",
+      // Permite GESTOR, ADMIN e membros ACTIVE do clube
+      const isSiteAdmin = ctx.role === "ADMIN";
+      if (!isSiteAdmin) {
+        const membership = await prisma.clubMembership.findFirst({
+          where: { clubId, userId: ctx.userId, status: "ACTIVE" },
         });
-      if (ctx.clubId && ctx.clubId !== clubId && ctx.role !== "ADMIN")
-        return sendJson(res, 403, { error: "Sem permissão para este clube." });
-
-      if (req.method === "GET") {
-        const club = await prisma.club.findUnique({
-          where: { id: clubId },
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-            appName: true,
-            logoUrl: true,
-            inviteCode: true,
-            allowedEmailDomains: true,
-            defaultVisibility: true,
-            defaultScoreMode: true,
-            termsText: true,
-            termsPdfUrl: true,
-            themeConfig: true,
-          },
-        });
-        if (!club)
-          return sendJson(res, 404, { error: "Clube não encontrado." });
-        return sendJson(res, 200, {
-          appName: club.appName || "",
-          logoUrl: club.logoUrl || "",
-          inviteCode: club.inviteCode || "",
-          allowedEmailDomains: club.allowedEmailDomains || "",
-          defaultVisibility: club.defaultVisibility || "CLUB",
-          defaultScoreMode: club.defaultScoreMode || "MANUAL",
-          termsText: club.termsText || "",
-          termsPdfUrl: club.termsPdfUrl || "",
-          themeConfig: club.themeConfig || null,
-        });
-      }
-      if (req.method === "PATCH") {
-        const {
-          appName,
-          logoUrl,
-          allowedEmailDomains,
-          defaultVisibility,
-          defaultScoreMode,
-          termsText,
-          termsPdfUrl,
-          themeConfig,
-        } = req.body || {};
-        const updateData = {};
-        if (appName !== undefined) updateData.appName = appName;
-        if (logoUrl !== undefined) updateData.logoUrl = logoUrl;
-        if (allowedEmailDomains !== undefined)
-          updateData.allowedEmailDomains = allowedEmailDomains;
-        if (defaultVisibility !== undefined) {
-          if (!["PUBLIC", "CLUB", "PLAYERS_ONLY"].includes(defaultVisibility))
-            return sendJson(res, 400, { error: "Visibilidade inválida." });
-          updateData.defaultVisibility = defaultVisibility;
+        if (!membership) {
+          return sendJson(res, 403, {
+            error: "Apenas membros do clube podem ver o ranking.",
+          });
         }
-        if (defaultScoreMode !== undefined)
-          updateData.defaultScoreMode = defaultScoreMode;
-        if (termsText !== undefined) updateData.termsText = termsText;
-        if (termsPdfUrl !== undefined) updateData.termsPdfUrl = termsPdfUrl;
-        if (themeConfig !== undefined) updateData.themeConfig = themeConfig;
-        const updated = await prisma.club.update({
-          where: { id: clubId },
-          data: updateData,
+      }
+      try {
+        const matches = await prisma.match.findMany({
+          where: { clubId, status: "FINISHED" },
           select: {
             id: true,
-            name: true,
-            slug: true,
-            appName: true,
-            logoUrl: true,
-            themeConfig: true,
+            player1Id: true,
+            player2Id: true,
+            completedSets: true,
+            player1: { select: { id: true, globalId: true, name: true } },
+            player2: { select: { id: true, globalId: true, name: true } },
           },
         });
-        return sendJson(res, 200, { success: true, club: updated });
+
+        // Agrega sets por AthleteProfile.globalId
+        const statsMap = new Map();
+
+        function ensureEntry(athlete) {
+          if (!athlete) return;
+          if (!statsMap.has(athlete.globalId)) {
+            statsMap.set(athlete.globalId, {
+              globalId: athlete.globalId,
+              name: athlete.name,
+              setsWon: 0,
+              matchesPlayed: 0,
+              wins: 0,
+            });
+          }
+        }
+
+        for (const match of matches) {
+          if (!match.player1 || !match.player2) continue;
+          ensureEntry(match.player1);
+          ensureEntry(match.player2);
+
+          const p1 = statsMap.get(match.player1.globalId);
+          const p2 = statsMap.get(match.player2.globalId);
+          p1.matchesPlayed++;
+          p2.matchesPlayed++;
+
+          let p1SetsWon = 0;
+          let p2SetsWon = 0;
+
+          if (match.completedSets) {
+            try {
+              const sets = JSON.parse(match.completedSets);
+              for (const set of sets) {
+                if (set.winner === "PLAYER_1") p1SetsWon++;
+                else if (set.winner === "PLAYER_2") p2SetsWon++;
+              }
+            } catch {
+              // completedSets malformado — ignora
+            }
+          }
+
+          p1.setsWon += p1SetsWon;
+          p2.setsWon += p2SetsWon;
+
+          if (p1SetsWon > p2SetsWon) p1.wins++;
+          else if (p2SetsWon > p1SetsWon) p2.wins++;
+        }
+
+        const rankings = Array.from(statsMap.values()).sort(
+          (a, b) =>
+            b.setsWon - a.setsWon ||
+            b.wins - a.wins ||
+            b.matchesPlayed - a.matchesPlayed,
+        );
+
+        return sendJson(res, 200, { rankings });
+      } catch (err) {
+        console.error("[rankings GET]", err);
+        return sendJson(res, 500, { error: "Erro interno." });
       }
-      return sendJson(res, 405, { error: "Method not allowed" });
     }
 
     // ── /api/clubs/:clubId/stats ───────────────────────────────────────────────
@@ -465,9 +837,26 @@ export default async function handler(req, res) {
           },
           orderBy: { joinedAt: "desc" },
           take: 5,
-          include: { user: { select: { id: true, email: true, name: true } } },
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                name: true,
+                athleteProfile: {
+                  select: {
+                    id: true,
+                    globalId: true,
+                    cpf: true,
+                    birthDate: true,
+                  },
+                },
+              },
+            },
+          },
         }),
       ]);
+      res.setHeader("Cache-Control", "no-cache, must-revalidate");
       return sendJson(res, 200, {
         totalMembers,
         totalMatches: matchesByStatus.reduce((s, g) => s + g._count.id, 0),
@@ -487,11 +876,16 @@ export default async function handler(req, res) {
         recentMembers: recentMembers.map((m) => ({
           id: m.id,
           userId: m.userId,
-          name: m.user.name,
-          email: m.user.email,
+          clubId: m.clubId,
           role: m.role,
           status: m.status,
           joinedAt: m.joinedAt,
+          user: {
+            id: m.user.id,
+            email: m.user.email,
+            name: m.user.name,
+            athleteProfile: m.user.athleteProfile,
+          },
         })),
       });
     }
@@ -537,37 +931,6 @@ export default async function handler(req, res) {
       return methodNotAllowed(res, ["GET", "PATCH"]);
     }
 
-    // ── /api/clubs/:clubId/theme ───────────────────────────────────────────────
-    if (sub === "theme") {
-      if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
-      const club = await prisma.club.findFirst({
-        where: { OR: [{ slug: clubId.toLowerCase() }, { id: clubId }] },
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-          logoUrl: true,
-          themeConfig: true,
-        },
-      });
-      if (!club) return sendJson(res, 404, { error: "Club not found" });
-      const themeConfig =
-        typeof club.themeConfig === "string"
-          ? JSON.parse(club.themeConfig)
-          : club.themeConfig;
-      res.setHeader("Cache-Control", "public, max-age=3600, s-maxage=3600");
-      return sendJson(res, 200, {
-        theme: {
-          name: club.name,
-          logoUrl: club.logoUrl || null,
-          colors: themeConfig?.colors || {},
-          fontFamily: themeConfig?.fontFamily || null,
-          defaultCourtType: themeConfig?.defaultCourtType || null,
-        },
-        clubId: club.id,
-      });
-    }
-
     // ── /api/clubs/:clubId/invoices ────────────────────────────────────────────
     if (sub === "invoices") {
       if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
@@ -597,7 +960,6 @@ export default async function handler(req, res) {
               id: true,
               name: true,
               slug: true,
-              logoUrl: true,
               planType: true,
               createdAt: true,
             },

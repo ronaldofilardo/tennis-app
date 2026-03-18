@@ -13,6 +13,7 @@ export interface AthleteResult {
   ranking?: number;
   clubName?: string;
   isOwnClub?: boolean;
+  globalId?: string; // Código único no diretório central
 }
 
 interface AthleteSearchInputProps {
@@ -34,6 +35,8 @@ interface AthleteSearchInputProps {
   disabled?: boolean;
   /** ID para label/accessibility */
   id?: string;
+  /** userId do usuário logado — exclui da busca para não aparecer como opção */
+  excludeUserId?: string;
 }
 
 const DEBOUNCE_MS = 300;
@@ -41,7 +44,7 @@ const MIN_SEARCH_LENGTH = 2;
 
 const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
   label,
-  placeholder = "Buscar atleta por nome...",
+  placeholder = "Buscar atleta por nome ou código...",
   value,
   onSelect,
   onQueryChange,
@@ -49,6 +52,7 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
   className = "",
   disabled = false,
   id,
+  excludeUserId,
 }) => {
   const [query, setQuery] = useState(value?.name || "");
   const [results, setResults] = useState<AthleteResult[]>([]);
@@ -93,11 +97,22 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
 
     setIsLoading(true);
     try {
+      const excludeParam = excludeUserId
+        ? `&excludeUserId=${encodeURIComponent(excludeUserId)}`
+        : "";
       const response = await httpClient.get<{
         athletes: AthleteResult[];
-      }>(`/athletes?q=${encodeURIComponent(searchQuery)}&limit=10`);
+      }>(
+        `/athletes?q=${encodeURIComponent(searchQuery)}&limit=10${excludeParam}`,
+      );
 
-      setResults(response.data.athletes || []);
+      // A API retorna { athletes: [...] } — normaliza arrays legados
+      const raw = response.data as any;
+      const list: AthleteResult[] = Array.isArray(raw)
+        ? raw
+        : (raw?.athletes ?? []);
+
+      setResults(list);
       setIsOpen(true);
       setHighlightIndex(-1);
     } catch {
@@ -230,6 +245,12 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
         )}
       </div>
 
+      {value?.globalId && !value.id.startsWith("guest_") && (
+        <div className="athlete-selected-code">
+          <code>[{value.globalId.slice(0, 8).toUpperCase()}]</code>
+        </div>
+      )}
+
       {isOpen && (results.length > 0 || (allowGuest && query.trim())) && (
         <ul className="athlete-search-results" role="listbox">
           {results.map((athlete, idx) => (
@@ -242,6 +263,11 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
               onMouseEnter={() => setHighlightIndex(idx)}
             >
               <div className="athlete-result-main">
+                {athlete.globalId && (
+                  <code className="athlete-result-code">
+                    [{athlete.globalId.slice(0, 8).toUpperCase()}]
+                  </code>
+                )}
                 <span className="athlete-result-name">{athlete.name}</span>
                 {athlete.nickname && (
                   <span className="athlete-result-nickname">

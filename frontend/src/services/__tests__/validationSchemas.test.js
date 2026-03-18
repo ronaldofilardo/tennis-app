@@ -194,6 +194,73 @@ describe("validationSchemas", () => {
         expect(result.error.errors[0].message).toContain("obrigatório");
       }
     });
+    // ── Testes para clubId e createdByUserId (adicionados nesta conversa) ──
+
+    it("deve aceitar clubId opcional", () => {
+      const validData = {
+        sportType: "TENNIS",
+        format: "BEST_OF_3",
+        players: { p1: "Jogador 1", p2: "Jogador 2" },
+        clubId: "club-abc-123",
+      };
+      const result = MatchCreateSchema.safeParse(validData);
+      expect(result.success).toBe(true);
+      expect(result.data.clubId).toBe("club-abc-123");
+    });
+
+    it("deve aceitar createdByUserId opcional", () => {
+      const validData = {
+        sportType: "TENNIS",
+        format: "BEST_OF_3",
+        players: { p1: "Jogador 1", p2: "Jogador 2" },
+        createdByUserId: "user-xyz-456",
+      };
+      const result = MatchCreateSchema.safeParse(validData);
+      expect(result.success).toBe(true);
+      expect(result.data.createdByUserId).toBe("user-xyz-456");
+    });
+
+    it("deve aceitar clubId e createdByUserId como null", () => {
+      const validData = {
+        sportType: "TENNIS",
+        format: "BEST_OF_3",
+        players: { p1: "Jogador 1", p2: "Jogador 2" },
+        clubId: null,
+        createdByUserId: null,
+      };
+      const result = MatchCreateSchema.safeParse(validData);
+      expect(result.success).toBe(true);
+      expect(result.data.clubId).toBeNull();
+      expect(result.data.createdByUserId).toBeNull();
+    });
+
+    it("deve validar sem clubId (partida avulsa)", () => {
+      const validData = {
+        sportType: "TENNIS",
+        format: "BEST_OF_3",
+        players: { p1: "Jogador 1", p2: "Jogador 2" },
+      };
+      const result = MatchCreateSchema.safeParse(validData);
+      expect(result.success).toBe(true);
+      expect(result.data.clubId).toBeUndefined();
+      expect(result.data.createdByUserId).toBeUndefined();
+    });
+
+    it("deve preservar clubId e createdByUserId no objeto validado", () => {
+      const validData = {
+        sportType: "TENNIS",
+        format: "BEST_OF_3",
+        players: { p1: "Jogador 1", p2: "Jogador 2" },
+        clubId: "cmm4dw15v0001hpm0e6pxy7ns",
+        createdByUserId: "user-gestor-99",
+      };
+      const result = MatchCreateSchema.safeParse(validData);
+      expect(result.success).toBe(true);
+      expect(result.data).toMatchObject({
+        clubId: "cmm4dw15v0001hpm0e6pxy7ns",
+        createdByUserId: "user-gestor-99",
+      });
+    });
   });
 
   describe("MatchUpdateSchema", () => {

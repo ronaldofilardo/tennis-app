@@ -54,17 +54,18 @@ describe("ServerEffectModal", () => {
       expect(screen.getByText(/Jogador 2/i)).toBeInTheDocument();
     });
 
-    it("exibe botões de efeito: Chapado, Top spin, Cortado", () => {
+    it("exibe botões de efeito: TopSpin, Slice, Flat", () => {
       render(<ServerEffectModal {...defaultProps} />);
-      expect(screen.getByText("Chapado")).toBeInTheDocument();
-      expect(screen.getByText("Top spin")).toBeInTheDocument();
-      expect(screen.getByText("Cortado")).toBeInTheDocument();
+      expect(screen.getByText("TopSpin")).toBeInTheDocument();
+      expect(screen.getByText("Slice")).toBeInTheDocument();
+      expect(screen.getByText("Flat")).toBeInTheDocument();
     });
 
-    it("exibe botões de direção: Fechado, Aberto", () => {
+    it("exibe botões de direção: Aberto, Centro, Fechado", () => {
       render(<ServerEffectModal {...defaultProps} />);
-      expect(screen.getByText("Fechado")).toBeInTheDocument();
       expect(screen.getByText("Aberto")).toBeInTheDocument();
+      expect(screen.getByText("Centro")).toBeInTheDocument();
+      expect(screen.getByText("Fechado")).toBeInTheDocument();
     });
   });
 
@@ -130,9 +131,9 @@ describe("ServerEffectModal", () => {
 
     it("chama onConfirm com efeito selecionado", () => {
       render(<ServerEffectModal {...defaultProps} />);
-      fireEvent.click(screen.getByText("Chapado"));
+      fireEvent.click(screen.getByText("TopSpin"));
       fireEvent.click(screen.getByLabelText("Confirm ServerEffect"));
-      expect(defaultProps.onConfirm).toHaveBeenCalledWith("Chapado", undefined);
+      expect(defaultProps.onConfirm).toHaveBeenCalledWith("TopSpin", undefined);
     });
 
     it("chama onConfirm com direção selecionada", () => {
@@ -144,10 +145,10 @@ describe("ServerEffectModal", () => {
 
     it("chama onConfirm com efeito e direção selecionados", () => {
       render(<ServerEffectModal {...defaultProps} />);
-      fireEvent.click(screen.getByText("Top spin"));
+      fireEvent.click(screen.getByText("Slice"));
       fireEvent.click(screen.getByText("Aberto"));
       fireEvent.click(screen.getByLabelText("Confirm ServerEffect"));
-      expect(defaultProps.onConfirm).toHaveBeenCalledWith("Top spin", "Aberto");
+      expect(defaultProps.onConfirm).toHaveBeenCalledWith("Slice", "Aberto");
     });
 
     it("clique no modal não propaga para overlay (não chama onCancel)", () => {
@@ -160,13 +161,146 @@ describe("ServerEffectModal", () => {
     it("reseta seleção de efeito/direção ao reabrir o modal", () => {
       const { rerender } = render(<ServerEffectModal {...defaultProps} />);
       // Seleciona um efeito
-      fireEvent.click(screen.getByText("Cortado"));
+      fireEvent.click(screen.getByText("Slice"));
       // Fecha e reabre
       rerender(<ServerEffectModal {...defaultProps} isOpen={false} />);
       rerender(<ServerEffectModal {...defaultProps} isOpen={true} />);
       // Confirma sem seleção — deve chamar com undefined
       fireEvent.click(screen.getByLabelText("Confirm ServerEffect"));
       expect(defaultProps.onConfirm).toHaveBeenCalledWith(undefined, undefined);
+    });
+  });
+
+  // ── Contexto de Erro de Saque ─────────────────────────────
+  describe("Contexto de Erro (context='error')", () => {
+    it("renderiza com header de erro quando context='error'", () => {
+      render(
+        <ServerEffectModal
+          {...defaultProps}
+          context="error"
+          errorType="out"
+          serveStep="first"
+        />,
+      );
+      expect(screen.getByText(/⚠️ Erro de Saque/i)).toBeInTheDocument();
+      expect(screen.getByText(/Out/i)).toBeInTheDocument();
+    });
+
+    it("indica corretamente o tipo de erro (Out)", () => {
+      render(
+        <ServerEffectModal
+          {...defaultProps}
+          context="error"
+          errorType="out"
+          serveStep="first"
+        />,
+      );
+      expect(screen.getByText(/Out/i)).toBeInTheDocument();
+    });
+
+    it("indica corretamente o tipo de erro (Net)", () => {
+      render(
+        <ServerEffectModal
+          {...defaultProps}
+          context="error"
+          errorType="net"
+          serveStep="first"
+        />,
+      );
+      expect(screen.getByText(/Net/i)).toBeInTheDocument();
+    });
+
+    it("exibe botão 'Registrar e Continuar' para 1º saque com erro", () => {
+      render(
+        <ServerEffectModal
+          {...defaultProps}
+          context="error"
+          errorType="out"
+          serveStep="first"
+        />,
+      );
+      expect(screen.getByText(/Registrar e Continuar/i)).toBeInTheDocument();
+    });
+
+    it("exibe botão 'Registrar Dupla Falta' para 2º saque com erro", () => {
+      render(
+        <ServerEffectModal
+          {...defaultProps}
+          context="error"
+          errorType="net"
+          serveStep="second"
+        />,
+      );
+      expect(screen.getByText(/Registrar Dupla Falta/i)).toBeInTheDocument();
+    });
+
+    it("aplica classe CSS de erro ao modal", () => {
+      render(
+        <ServerEffectModal
+          {...defaultProps}
+          context="error"
+          errorType="out"
+          serveStep="first"
+        />,
+      );
+      const modal = screen.getByTestId("server-effect-modal");
+      expect(modal.className).toContain("server-effect-modal--error");
+    });
+
+    it("permite seleção de efeito e direção no contexto de erro", () => {
+      render(
+        <ServerEffectModal
+          {...defaultProps}
+          context="error"
+          errorType="out"
+          serveStep="first"
+        />,
+      );
+      fireEvent.click(screen.getByText("TopSpin"));
+      fireEvent.click(screen.getByText("Centro"));
+      fireEvent.click(screen.getByLabelText("Confirm ServerEffect"));
+      expect(defaultProps.onConfirm).toHaveBeenCalledWith("TopSpin", "Centro");
+    });
+
+    it("chama onConfirm com efeito/direção ao confirmar erro de 1º saque", () => {
+      render(
+        <ServerEffectModal
+          {...defaultProps}
+          context="error"
+          errorType="out"
+          serveStep="first"
+        />,
+      );
+      fireEvent.click(screen.getByText("Slice"));
+      fireEvent.click(screen.getByText("Aberto"));
+      fireEvent.click(screen.getByText(/Registrar e Continuar/i));
+      expect(defaultProps.onConfirm).toHaveBeenCalledWith("Slice", "Aberto");
+    });
+
+    it("chama onConfirm sem seleção ao confirmar erro sem efeito/direção", () => {
+      render(
+        <ServerEffectModal
+          {...defaultProps}
+          context="error"
+          errorType="net"
+          serveStep="second"
+        />,
+      );
+      fireEvent.click(screen.getByText(/Registrar Dupla Falta/i));
+      expect(defaultProps.onConfirm).toHaveBeenCalledWith(undefined, undefined);
+    });
+
+    it("permite cancelamento do erro de saque", () => {
+      render(
+        <ServerEffectModal
+          {...defaultProps}
+          context="error"
+          errorType="out"
+          serveStep="first"
+        />,
+      );
+      fireEvent.click(screen.getByLabelText("Cancel ServerEffect"));
+      expect(defaultProps.onCancel).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -14,7 +14,12 @@ export type UserRole =
   | "coach"
   | "admin"
   | "club_owner"
-  | "spectator";
+  | "spectator"
+  | "ATHLETE"
+  | "GESTOR"
+  | "ADMIN"
+  | "COACH"
+  | "SPECTATOR";
 
 /**
  * Representa um usuário autenticado para verificação de permissão.
@@ -23,6 +28,9 @@ export interface AuthUser {
   email: string;
   role: UserRole;
   clubId?: string;
+  /** globalId do AthleteProfile — usado para verificar auto-anotação */
+  globalId?: string;
+  id?: string;
 }
 
 /**
@@ -35,6 +43,14 @@ export interface MatchPermissionData {
   visibleTo?: string;
   clubId?: string;
   status?: string;
+  /** globalId do AthleteProfile do jogador 1 */
+  player1GlobalId?: string | null;
+  /** globalId do AthleteProfile do jogador 2 */
+  player2GlobalId?: string | null;
+  /** userId do jogador 1 (fallback) */
+  player1UserId?: string | null;
+  /** userId do jogador 2 (fallback) */
+  player2UserId?: string | null;
 }
 
 // === Funções de Autorização ===
@@ -145,7 +161,65 @@ export function canDeleteMatch(
  */
 export function canCreateMatch(user: AuthUser | null): boolean {
   if (!user) return false;
-  return ["annotator", "admin", "club_owner", "coach"].includes(user.role);
+  return ["annotator", "admin", "club_owner", "coach", "ADMIN", "GESTOR", "COACH"].includes(user.role);
+}
+
+/**
+ * Verifica se um usuário é participante (jogador) de uma partida.
+ * Usa globalId (preferencial), userId ou email como fallback.
+ */
+export function isMatchParticipant(
+  user: AuthUser,
+  match: MatchPermissionData,
+): boolean {
+  // Verificação por globalId (mais confiável — identidade global)
+  if (user.globalId) {
+    if (
+      user.globalId === match.player1GlobalId ||
+      user.globalId === match.player2GlobalId
+    ) {
+      return true;
+    }
+  }
+  // Fallback: userId
+  if (user.id) {
+    if (
+      user.id === match.player1UserId ||
+      user.id === match.player2UserId
+    ) {
+      return true;
+    }
+  }
+  // Fallback legado: email em playersEmails
+  if (user.email && Array.isArray(match.playersEmails)) {
+    return match.playersEmails.includes(user.email);
+  }
+  return false;
+}
+
+/**
+ * Verifica se o usuário pode anotar uma partida como marcador.
+ * Regra central: participante da partida NÃO pode ser seu próprio anotador.
+ * Um atleta pode anotar partidas de terceiros (não as suas).
+ */
+export function canAnnotateMatch(
+  user: AuthUser | null,
+  match: MatchPermissionData,
+): boolean {
+  if (!user) return false;
+  if (match.status === "FINISHED") return false;
+
+  // Admin e gestor sempre podem
+  if (["admin", "club_owner", "ADMIN", "GESTOR"].includes(user.role)) return true;
+
+  // Participante da partida NÃO pode ser seu anotador
+  if (isMatchParticipant(user, match)) return false;
+
+  // Anotador designado pode
+  if (match.apontadorEmail && match.apontadorEmail === user.email) return true;
+
+  // Qualquer usuário não-participante pode anotar (coach, annotator, atleta de outro jogo)
+  return true;
 }
 
 export default {
@@ -154,4 +228,6 @@ export default {
   canUndoPoint,
   canDeleteMatch,
   canCreateMatch,
+  canAnnotateMatch,
+  isMatchParticipant,
 };

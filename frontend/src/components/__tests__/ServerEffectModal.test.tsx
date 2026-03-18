@@ -56,29 +56,29 @@ describe("ServerEffectModal", () => {
     it("exibe todas as opções de efeito", () => {
       render(<ServerEffectModal {...defaultProps} />);
       expect(screen.getByText("Efeito (opcional)")).toBeTruthy();
-      expect(screen.getByRole("button", { name: "Chapado" })).toBeTruthy();
-      expect(screen.getByRole("button", { name: "Top spin" })).toBeTruthy();
-      expect(screen.getByRole("button", { name: "Cortado" })).toBeTruthy();
+      expect(screen.getByRole("button", { name: "TopSpin" })).toBeTruthy();
+      expect(screen.getByRole("button", { name: "Slice" })).toBeTruthy();
+      expect(screen.getByRole("button", { name: "Flat" })).toBeTruthy();
     });
 
     it("permite seleção de efeito", () => {
       render(<ServerEffectModal {...defaultProps} />);
-      const efeitoButton = screen.getByRole("button", { name: "Chapado" });
+      const efeitoButton = screen.getByRole("button", { name: "TopSpin" });
       fireEvent.click(efeitoButton);
       expect(efeitoButton.classList.contains("active")).toBe(true);
     });
 
     it("permite mudança de efeito", () => {
       render(<ServerEffectModal {...defaultProps} />);
-      const chapadoButton = screen.getByRole("button", { name: "Chapado" });
-      const topspinButton = screen.getByRole("button", { name: "Top spin" });
-
-      fireEvent.click(chapadoButton);
-      expect(chapadoButton.classList.contains("active")).toBe(true);
+      const topspinButton = screen.getByRole("button", { name: "TopSpin" });
+      const sliceButton = screen.getByRole("button", { name: "Slice" });
 
       fireEvent.click(topspinButton);
-      expect(chapadoButton.classList.contains("active")).toBe(false);
       expect(topspinButton.classList.contains("active")).toBe(true);
+
+      fireEvent.click(sliceButton);
+      expect(topspinButton.classList.contains("active")).toBe(false);
+      expect(sliceButton.classList.contains("active")).toBe(true);
     });
   });
 
@@ -86,28 +86,29 @@ describe("ServerEffectModal", () => {
     it("exibe todas as opções de direção", () => {
       render(<ServerEffectModal {...defaultProps} />);
       expect(screen.getByText("Direção (opcional)")).toBeTruthy();
-      expect(screen.getByRole("button", { name: "Fechado" })).toBeTruthy();
       expect(screen.getByRole("button", { name: "Aberto" })).toBeTruthy();
+      expect(screen.getByRole("button", { name: "Centro" })).toBeTruthy();
+      expect(screen.getByRole("button", { name: "Fechado" })).toBeTruthy();
     });
 
     it("permite seleção de direção", () => {
       render(<ServerEffectModal {...defaultProps} />);
-      const direcaoButton = screen.getByRole("button", { name: "Fechado" });
+      const direcaoButton = screen.getByRole("button", { name: "Aberto" });
       fireEvent.click(direcaoButton);
       expect(direcaoButton.classList.contains("active")).toBe(true);
     });
 
     it("permite mudança de direção", () => {
       render(<ServerEffectModal {...defaultProps} />);
-      const fechadoButton = screen.getByRole("button", { name: "Fechado" });
       const abertoButton = screen.getByRole("button", { name: "Aberto" });
-
-      fireEvent.click(fechadoButton);
-      expect(fechadoButton.classList.contains("active")).toBe(true);
+      const centroButton = screen.getByRole("button", { name: "Centro" });
 
       fireEvent.click(abertoButton);
-      expect(fechadoButton.classList.contains("active")).toBe(false);
       expect(abertoButton.classList.contains("active")).toBe(true);
+
+      fireEvent.click(centroButton);
+      expect(abertoButton.classList.contains("active")).toBe(false);
+      expect(centroButton.classList.contains("active")).toBe(true);
     });
   });
 
@@ -136,12 +137,12 @@ describe("ServerEffectModal", () => {
       const mockOnConfirm = vi.fn();
       render(<ServerEffectModal {...defaultProps} onConfirm={mockOnConfirm} />);
 
-      fireEvent.click(screen.getByRole("button", { name: "Chapado" }));
+      fireEvent.click(screen.getByRole("button", { name: "Slice" }));
       fireEvent.click(
         screen.getByRole("button", { name: /Confirm ServerEffect/i }),
       );
 
-      expect(mockOnConfirm).toHaveBeenCalledWith("Chapado", undefined);
+      expect(mockOnConfirm).toHaveBeenCalledWith("Slice", undefined);
     });
 
     it("permite confirmação com apenas direção selecionada", () => {
@@ -160,13 +161,13 @@ describe("ServerEffectModal", () => {
       const mockOnConfirm = vi.fn();
       render(<ServerEffectModal {...defaultProps} onConfirm={mockOnConfirm} />);
 
-      fireEvent.click(screen.getByRole("button", { name: "Top spin" }));
+      fireEvent.click(screen.getByRole("button", { name: "TopSpin" }));
       fireEvent.click(screen.getByRole("button", { name: "Aberto" }));
       fireEvent.click(
         screen.getByRole("button", { name: /Confirm ServerEffect/i }),
       );
 
-      expect(mockOnConfirm).toHaveBeenCalledWith("Top spin", "Aberto");
+      expect(mockOnConfirm).toHaveBeenCalledWith("TopSpin", "Aberto");
     });
   });
 
@@ -174,12 +175,12 @@ describe("ServerEffectModal", () => {
     it("reseta seleções quando modal é reaberto", () => {
       const { rerender } = render(<ServerEffectModal {...defaultProps} />);
 
-      fireEvent.click(screen.getByRole("button", { name: "Chapado" }));
+      fireEvent.click(screen.getByRole("button", { name: "TopSpin" }));
       fireEvent.click(screen.getByRole("button", { name: "Fechado" }));
 
       expect(
         screen
-          .getByRole("button", { name: "Chapado" })
+          .getByRole("button", { name: "TopSpin" })
           .classList.contains("active"),
       ).toBe(true);
       expect(
@@ -196,7 +197,7 @@ describe("ServerEffectModal", () => {
 
       expect(
         screen
-          .getByRole("button", { name: "Chapado" })
+          .getByRole("button", { name: "TopSpin" })
           .classList.contains("active"),
       ).toBe(false);
       expect(
@@ -244,6 +245,115 @@ describe("ServerEffectModal", () => {
     });
   });
 
+  // ── Contexto de Erro de Saque ─────────────────────────────
+  describe("Contexto de Erro (context='error')", () => {
+    it("renderiza com header diferente quando context='error'", () => {
+      render(
+        <ServerEffectModal
+          {...defaultProps}
+          context="error"
+          errorType="out"
+          serveStep="first"
+        />,
+      );
+      expect(screen.getByText(/⚠️ Erro de Saque/i)).toBeTruthy();
+    });
+
+    it("aplica classe CSS error quando context='error'", () => {
+      const { container } = render(
+        <ServerEffectModal
+          {...defaultProps}
+          context="error"
+          errorType="out"
+          serveStep="first"
+        />,
+      );
+      const modal = container.querySelector(".server-effect-modal--error");
+      expect(modal).toBeInTheDocument();
+    });
+
+    it("mostra tipo de erro Out quando errorType='out'", () => {
+      render(
+        <ServerEffectModal
+          {...defaultProps}
+          context="error"
+          errorType="out"
+          serveStep="first"
+        />,
+      );
+      expect(screen.getByText(/Out/i)).toBeTruthy();
+    });
+
+    it("mostra tipo de erro Net quando errorType='net'", () => {
+      render(
+        <ServerEffectModal
+          {...defaultProps}
+          context="error"
+          errorType="net"
+          serveStep="first"
+        />,
+      );
+      expect(screen.getByText(/Net/i)).toBeTruthy();
+    });
+
+    it("mostra 'Registrar e Continuar' para 1º saque", () => {
+      render(
+        <ServerEffectModal
+          {...defaultProps}
+          context="error"
+          errorType="out"
+          serveStep="first"
+        />,
+      );
+      expect(screen.getByText(/Registrar e Continuar/i)).toBeTruthy();
+    });
+
+    it("mostra 'Registrar Dupla Falta' para 2º saque", () => {
+      render(
+        <ServerEffectModal
+          {...defaultProps}
+          context="error"
+          errorType="net"
+          serveStep="second"
+        />,
+      );
+      expect(screen.getByText(/Registrar Dupla Falta/i)).toBeTruthy();
+    });
+
+    it("permite seleção de efeito e direção em contexto de erro", () => {
+      const mockOnConfirm = vi.fn();
+      render(
+        <ServerEffectModal
+          {...defaultProps}
+          context="error"
+          errorType="out"
+          serveStep="first"
+          onConfirm={mockOnConfirm}
+        />,
+      );
+      fireEvent.click(screen.getByRole("button", { name: "Slice" }));
+      fireEvent.click(screen.getByRole("button", { name: "Centro" }));
+      fireEvent.click(screen.getByText(/Registrar e Continuar/i));
+
+      expect(mockOnConfirm).toHaveBeenCalledWith("Slice", "Centro");
+    });
+
+    it("registra dupla falta sem seleção em 2º saque", () => {
+      const mockOnConfirm = vi.fn();
+      render(
+        <ServerEffectModal
+          {...defaultProps}
+          context="error"
+          errorType="out"
+          serveStep="second"
+          onConfirm={mockOnConfirm}
+        />,
+      );
+      fireEvent.click(screen.getByText(/Registrar Dupla Falta/i));
+      expect(mockOnConfirm).toHaveBeenCalledWith(undefined, undefined);
+    });
+  });
+
   // ── Novos testes: redesign dark theme ────────────────────────────────────────
 
   describe("Redesign — estrutura dark theme", () => {
@@ -276,7 +386,7 @@ describe("ServerEffectModal", () => {
 
     it("botão selecionado recebe classe active", () => {
       render(<ServerEffectModal {...defaultProps} />);
-      const btn = screen.getByRole("button", { name: "Top spin" });
+      const btn = screen.getByRole("button", { name: "TopSpin" });
       fireEvent.click(btn);
       expect(btn.classList.contains("active")).toBe(true);
     });

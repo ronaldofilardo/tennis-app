@@ -109,13 +109,13 @@ const AuthPage: React.FC = () => {
           )}
 
           <div className="auth-field">
-            <label htmlFor="auth-email">Email</label>
+            <label htmlFor="auth-email">CPF ou E-mail</label>
             <input
               id="auth-email"
-              type="email"
+              type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="seu@email.com"
+              placeholder="CPF ou e-mail"
               disabled={loading}
               autoComplete="email"
               required

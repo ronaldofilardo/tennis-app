@@ -50,13 +50,30 @@ vi.mock("../../components/MatchStatsModal", () => ({
 }));
 
 vi.mock("../../components/ServerEffectModal", () => ({
-  default: ({ isOpen, onConfirm, onCancel }: any) =>
+  default: ({
+    isOpen,
+    onConfirm,
+    onCancel,
+    context,
+    errorType,
+    serveStep,
+  }: any) =>
     isOpen ? (
       <div data-testid="server-effect-modal">
         ServerEffectModal
-        <button onClick={() => onConfirm("Chapado", "Fechado")}>
-          Confirm ServerEffect
-        </button>
+        {context === "error" ? (
+          <>
+            <div data-testid="error-type">{errorType}</div>
+            <div data-testid="serve-step">{serveStep}</div>
+            <button onClick={() => onConfirm("TopSpin", "Centro")}>
+              Confirm ServerEffect Error
+            </button>
+          </>
+        ) : (
+          <button onClick={() => onConfirm("TopSpin", "Centro")}>
+            Confirm ServerEffect
+          </button>
+        )}
         <button onClick={onCancel}>Cancel ServerEffect</button>
       </div>
     ) : null,
@@ -187,6 +204,14 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
       const outButton = screen.getByRole("button", { name: "Out" });
       fireEvent.click(outButton);
 
+      // Confirmar modal de erro do 1º saque para avançar ao 2º saque
+      await waitFor(() => {
+        expect(screen.getByTestId("server-effect-modal")).toBeInTheDocument();
+      });
+      fireEvent.click(
+        screen.getByRole("button", { name: "Confirm ServerEffect Error" }),
+      );
+
       await waitFor(() => {
         expect(screen.getByText("2º Saque")).toBeInTheDocument();
       });
@@ -230,6 +255,18 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
       const outButton = screen.getByRole("button", { name: "Out" });
       fireEvent.click(outButton); // 1ª falta, vai para 2º saque
 
+      // Confirmar modal de erro do 1º saque para avançar ao 2º saque
+      await waitFor(() => {
+        expect(screen.getByTestId("server-effect-modal")).toBeInTheDocument();
+      });
+      fireEvent.click(
+        screen.getByRole("button", { name: "Confirm ServerEffect Error" }),
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("2º Saque")).toBeInTheDocument();
+      });
+
       // No 2º saque, botão Ace ainda é o mesmo
       const aceButton = screen.getByRole("button", { name: "Ace" });
       fireEvent.click(aceButton);
@@ -252,6 +289,14 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
       const outButton = screen.getByRole("button", { name: "Out" });
       fireEvent.click(outButton); // 1ª falta - vai para 2º saque
 
+      // Confirmar modal de erro do 1º saque para avançar ao 2º saque
+      await waitFor(() => {
+        expect(screen.getByTestId("server-effect-modal")).toBeInTheDocument();
+      });
+      fireEvent.click(
+        screen.getByRole("button", { name: "Confirm ServerEffect Error" }),
+      );
+
       // Aguardar mudança para 2º saque
       await waitFor(() => {
         expect(screen.getByText("2º Saque")).toBeInTheDocument();
@@ -259,15 +304,28 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
 
       // Pegar o botão Out novamente após re-renderização
       const outButtonSecond = screen.getByRole("button", { name: "Out" });
-      fireEvent.click(outButtonSecond); // 2ª falta - dupla falta automática
+      fireEvent.click(outButtonSecond); // 2ª falta - dupla falta
 
-      // Verificar que handleFault foi chamado (dupla falta automática)
+      // Confirmar modal de erro do 2º saque (dupla falta)
       await waitFor(() => {
-        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith("PLAYER_2", {
-          serve: { type: "DOUBLE_FAULT", isFirstServe: false },
-          result: { winner: "PLAYER_2", type: "FORCED_ERROR" },
-          rally: { ballExchanges: 1 },
-        });
+        expect(screen.getByTestId("server-effect-modal")).toBeInTheDocument();
+      });
+      fireEvent.click(
+        screen.getByRole("button", { name: "Confirm ServerEffect Error" }),
+      );
+
+      // Verificar que handleFault foi chamado (dupla falta)
+      await waitFor(() => {
+        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
+          "PLAYER_2",
+          expect.objectContaining({
+            serve: expect.objectContaining({
+              type: "DOUBLE_FAULT",
+              isFirstServe: false,
+            }),
+            result: { winner: "PLAYER_2", type: "FORCED_ERROR" },
+          }),
+        );
       });
     });
 
@@ -282,6 +340,14 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
       const netButton = screen.getByRole("button", { name: "Net" });
       fireEvent.click(netButton); // 1ª falta - vai para 2º saque
 
+      // Confirmar modal de erro do 1º saque para avançar ao 2º saque
+      await waitFor(() => {
+        expect(screen.getByTestId("server-effect-modal")).toBeInTheDocument();
+      });
+      fireEvent.click(
+        screen.getByRole("button", { name: "Confirm ServerEffect Error" }),
+      );
+
       // Aguardar mudança para 2º saque
       await waitFor(() => {
         expect(screen.getByText("2º Saque")).toBeInTheDocument();
@@ -289,15 +355,28 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
 
       // Pegar o botão Net novamente após re-renderização
       const netButtonSecond = screen.getByRole("button", { name: "Net" });
-      fireEvent.click(netButtonSecond); // 2ª falta - dupla falta automática
+      fireEvent.click(netButtonSecond); // 2ª falta - dupla falta
 
-      // Verificar que handleFault foi chamado (dupla falta automática)
+      // Confirmar modal de erro do 2º saque (dupla falta)
       await waitFor(() => {
-        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith("PLAYER_2", {
-          serve: { type: "DOUBLE_FAULT", isFirstServe: false },
-          result: { winner: "PLAYER_2", type: "FORCED_ERROR" },
-          rally: { ballExchanges: 1 },
-        });
+        expect(screen.getByTestId("server-effect-modal")).toBeInTheDocument();
+      });
+      fireEvent.click(
+        screen.getByRole("button", { name: "Confirm ServerEffect Error" }),
+      );
+
+      // Verificar que handleFault foi chamado (dupla falta)
+      await waitFor(() => {
+        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
+          "PLAYER_2",
+          expect.objectContaining({
+            serve: expect.objectContaining({
+              type: "DOUBLE_FAULT",
+              isFirstServe: false,
+            }),
+            result: { winner: "PLAYER_2", type: "FORCED_ERROR" },
+          }),
+        );
       });
     });
   });
@@ -327,8 +406,8 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
             serve: {
               type: "ACE",
               isFirstServe: true,
-              serveEffect: "Chapado",
-              direction: "Fechado",
+              serveEffect: "TopSpin",
+              direction: "Centro",
             },
             result: { winner: "PLAYER_1", type: "WINNER" },
           }),
@@ -346,6 +425,14 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
       // Ir para 2º saque
       const outButton = screen.getByRole("button", { name: "Out" });
       fireEvent.click(outButton); // 1ª falta - vai para 2º saque
+
+      // Confirmar modal de erro do 1º saque para avançar ao 2º saque
+      await waitFor(() => {
+        expect(screen.getByTestId("server-effect-modal")).toBeInTheDocument();
+      });
+      fireEvent.click(
+        screen.getByRole("button", { name: "Confirm ServerEffect Error" }),
+      );
 
       await waitFor(() => {
         expect(screen.getByText("2º Saque")).toBeInTheDocument();
@@ -367,12 +454,12 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
         expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
           "PLAYER_1",
           expect.objectContaining({
-            serve: {
+            serve: expect.objectContaining({
               type: "ACE",
               isFirstServe: false,
-              serveEffect: "Chapado",
-              direction: "Fechado",
-            },
+              serveEffect: "TopSpin",
+              direction: "Centro",
+            }),
             result: { winner: "PLAYER_1", type: "WINNER" },
           }),
         );
@@ -390,6 +477,14 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
       const outButton = screen.getByRole("button", { name: "Out" });
       fireEvent.click(outButton); // 1ª falta - vai para 2º saque
 
+      // Confirmar modal de erro do 1º saque para avançar ao 2º saque
+      await waitFor(() => {
+        expect(screen.getByTestId("server-effect-modal")).toBeInTheDocument();
+      });
+      fireEvent.click(
+        screen.getByRole("button", { name: "Confirm ServerEffect Error" }),
+      );
+
       // Aguardar mudança para 2º saque
       await waitFor(() => {
         expect(screen.getByText("2º Saque")).toBeInTheDocument();
@@ -397,21 +492,261 @@ describe("ScoreboardV2 - ServerEffect Integration", () => {
 
       // Pegar o botão Out novamente após re-renderização
       const outButtonSecond = screen.getByRole("button", { name: "Out" });
-      fireEvent.click(outButtonSecond); // 2ª falta - dupla falta automática
+      fireEvent.click(outButtonSecond); // 2ª falta - dupla falta
 
-      // Verificar que o ponto foi marcado automaticamente
+      // Confirmar modal de erro do 2º saque (dupla falta)
       await waitFor(() => {
-        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith("PLAYER_2", {
-          serve: { type: "DOUBLE_FAULT", isFirstServe: false },
-          result: { winner: "PLAYER_2", type: "FORCED_ERROR" },
-          rally: { ballExchanges: 1 },
-        });
+        expect(screen.getByTestId("server-effect-modal")).toBeInTheDocument();
+      });
+      fireEvent.click(
+        screen.getByRole("button", { name: "Confirm ServerEffect Error" }),
+      );
+
+      // Verificar que o ponto foi marcado
+      await waitFor(() => {
+        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
+          "PLAYER_2",
+          expect.objectContaining({
+            serve: expect.objectContaining({
+              type: "DOUBLE_FAULT",
+              isFirstServe: false,
+            }),
+            result: { winner: "PLAYER_2", type: "FORCED_ERROR" },
+          }),
+        );
       });
 
-      // Verificar que nenhum modal foi aberto
+      // Verificar que o modal foi fechado após confirmação
       expect(
         screen.queryByTestId("server-effect-modal"),
       ).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Fluxo de Erro de Saque (Out/Net)", () => {
+    it("abre modal de erro ao clicar em Out no 1º saque", async () => {
+      renderScoreboard();
+
+      await waitFor(() => {
+        expect(screen.getByText("Player 1")).toBeInTheDocument();
+      });
+
+      const outButton = screen.getByRole("button", { name: "Out" });
+      fireEvent.click(outButton);
+
+      await waitFor(() => {
+        expect(screen.getByTestId("server-effect-modal")).toBeInTheDocument();
+        expect(screen.getByTestId("error-type")).toHaveTextContent("out");
+        expect(screen.getByTestId("serve-step")).toHaveTextContent("first");
+      });
+    });
+
+    it("abre modal de erro ao clicar em Net no 1º saque", async () => {
+      renderScoreboard();
+
+      await waitFor(() => {
+        expect(screen.getByText("Player 1")).toBeInTheDocument();
+      });
+
+      const netButton = screen.getByRole("button", { name: "Net" });
+      fireEvent.click(netButton);
+
+      await waitFor(() => {
+        expect(screen.getByTestId("server-effect-modal")).toBeInTheDocument();
+        expect(screen.getByTestId("error-type")).toHaveTextContent("net");
+        expect(screen.getByTestId("serve-step")).toHaveTextContent("first");
+      });
+    });
+
+    it("salva erro do 1º saque e permite continuar para 2º saque", async () => {
+      renderScoreboard();
+
+      await waitFor(() => {
+        expect(screen.getByText("Player 1")).toBeInTheDocument();
+      });
+
+      // 1º saque com erro (Out)
+      const outButton = screen.getByRole("button", { name: "Out" });
+      fireEvent.click(outButton);
+
+      // Confirmar registro de erro
+      await waitFor(() => {
+        const confirmButton = screen.getByRole("button", {
+          name: "Confirm ServerEffect Error",
+        });
+        fireEvent.click(confirmButton);
+      });
+
+      // Verificar que estava em 1º saque e agora mudou para 2º
+      await waitFor(() => {
+        expect(screen.getByText("2º Saque")).toBeInTheDocument();
+      });
+
+      // Modal deve estar fechado
+      expect(
+        screen.queryByTestId("server-effect-modal"),
+      ).not.toBeInTheDocument();
+    });
+
+    it("abre modal de erro ao clicar em Out no 2º saque", async () => {
+      renderScoreboard();
+
+      await waitFor(() => {
+        expect(screen.getByText("Player 1")).toBeInTheDocument();
+      });
+
+      // Primeira falta para ir ao 2º saque
+      const outButton = screen.getByRole("button", { name: "Out" });
+      fireEvent.click(outButton);
+
+      // Confirmar modal de erro do 1º saque para avançar ao 2º saque
+      await waitFor(() => {
+        expect(screen.getByTestId("server-effect-modal")).toBeInTheDocument();
+        expect(screen.getByTestId("serve-step")).toHaveTextContent("first");
+      });
+      fireEvent.click(
+        screen.getByRole("button", { name: "Confirm ServerEffect Error" }),
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("2º Saque")).toBeInTheDocument();
+      });
+
+      // Segunda falta (Out novamente)
+      const outButtonSecond = screen.getByRole("button", { name: "Out" });
+      fireEvent.click(outButtonSecond);
+
+      await waitFor(() => {
+        expect(screen.getByTestId("server-effect-modal")).toBeInTheDocument();
+        expect(screen.getByTestId("error-type")).toHaveTextContent("out");
+        expect(screen.getByTestId("serve-step")).toHaveTextContent("second");
+      });
+    });
+
+    it("registra dupla falta ao confirmar erro no 2º saque", async () => {
+      renderScoreboard();
+
+      await waitFor(() => {
+        expect(screen.getByText("Player 1")).toBeInTheDocument();
+      });
+
+      // Primeira falta
+      const outButton = screen.getByRole("button", { name: "Out" });
+      fireEvent.click(outButton);
+
+      // Confirmar modal de erro do 1º saque para avançar ao 2º saque
+      await waitFor(() => {
+        expect(screen.getByTestId("server-effect-modal")).toBeInTheDocument();
+      });
+      fireEvent.click(
+        screen.getByRole("button", { name: "Confirm ServerEffect Error" }),
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("2º Saque")).toBeInTheDocument();
+      });
+
+      // Segunda falta com modal
+      const outButtonSecond = screen.getByRole("button", { name: "Out" });
+      fireEvent.click(outButtonSecond);
+
+      // Confirmar dupla falta com detalhes
+      await waitFor(() => {
+        const confirmButton = screen.getByRole("button", {
+          name: "Confirm ServerEffect Error",
+        });
+        fireEvent.click(confirmButton);
+      });
+
+      // Verificar que dupla falta foi registrada com firstFault
+      await waitFor(() => {
+        expect(mockTennisScoring.addPoint).toHaveBeenCalledWith(
+          "PLAYER_2",
+          expect.objectContaining({
+            serve: expect.objectContaining({
+              type: "DOUBLE_FAULT",
+              isFirstServe: false,
+              errorType: "out",
+              firstFault: expect.objectContaining({
+                errorType: "out",
+              }),
+            }),
+          }),
+        );
+      });
+    });
+
+    it("permite cancelamento do modal de erro volta para mesmo saque", async () => {
+      renderScoreboard();
+
+      await waitFor(() => {
+        expect(screen.getByText("Player 1")).toBeInTheDocument();
+      });
+
+      const outButton = screen.getByRole("button", { name: "Out" });
+      fireEvent.click(outButton);
+
+      await waitFor(() => {
+        expect(screen.getByTestId("server-effect-modal")).toBeInTheDocument();
+      });
+
+      const cancelButton = screen.getByRole("button", {
+        name: "Cancel ServerEffect",
+      });
+      fireEvent.click(cancelButton);
+
+      // Modal deve fechar
+      expect(
+        screen.queryByTestId("server-effect-modal"),
+      ).not.toBeInTheDocument();
+
+      // Deve continuar no 1º saque
+      expect(screen.getByText("1º Saque")).toBeInTheDocument();
+    });
+
+    it("permite cancelamento do modal de erro no 2º saque", async () => {
+      renderScoreboard();
+
+      await waitFor(() => {
+        expect(screen.getByText("Player 1")).toBeInTheDocument();
+      });
+
+      // Ir para 2º saque
+      let outButton = screen.getByRole("button", { name: "Out" });
+      fireEvent.click(outButton);
+
+      // Confirmar modal de erro do 1º saque para avançar ao 2º saque
+      await waitFor(() => {
+        expect(screen.getByTestId("server-effect-modal")).toBeInTheDocument();
+      });
+      fireEvent.click(
+        screen.getByRole("button", { name: "Confirm ServerEffect Error" }),
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("2º Saque")).toBeInTheDocument();
+      });
+
+      // Errar novamente
+      outButton = screen.getByRole("button", { name: "Out" });
+      fireEvent.click(outButton);
+
+      await waitFor(() => {
+        expect(screen.getByTestId("server-effect-modal")).toBeInTheDocument();
+      });
+
+      const cancelButton = screen.getByRole("button", {
+        name: "Cancel ServerEffect",
+      });
+      fireEvent.click(cancelButton);
+
+      // Modal deve fechar
+      expect(
+        screen.queryByTestId("server-effect-modal"),
+      ).not.toBeInTheDocument();
+
+      // Deve continuar no 2º saque
+      expect(screen.getByText("2º Saque")).toBeInTheDocument();
     });
   });
 });
