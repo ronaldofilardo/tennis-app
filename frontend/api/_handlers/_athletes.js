@@ -35,6 +35,7 @@ export default async function handler(req, res) {
       const searchQuery = url.searchParams.get("q") || "";
       const filterClubId = url.searchParams.get("clubId") || null;
       const excludeUserId = url.searchParams.get("excludeUserId") || null;
+      const excludeAthleteId = url.searchParams.get("excludeAthleteId") || null;
       const limit = Math.min(
         parseInt(url.searchParams.get("limit") || "20"),
         200,
@@ -43,6 +44,10 @@ export default async function handler(req, res) {
         .replace(/[<>'"%;()&+]/g, "")
         .trim()
         .slice(0, 100);
+      const notClauses = [
+        ...(excludeUserId ? [{ userId: excludeUserId }] : []),
+        ...(excludeAthleteId ? [{ id: excludeAthleteId }] : []),
+      ];
       const where = {
         isPublic: true,
         ...(sanitized && {
@@ -52,7 +57,9 @@ export default async function handler(req, res) {
           ],
         }),
         ...(filterClubId && { clubId: filterClubId }),
-        ...(excludeUserId && { NOT: { userId: excludeUserId } }),
+        ...(notClauses.length > 0 && {
+          NOT: notClauses.length === 1 ? notClauses[0] : notClauses,
+        }),
       };
       const athletes = await prisma.athleteProfile.findMany({
         where,
@@ -70,13 +77,15 @@ export default async function handler(req, res) {
           // clubId e nome do clube expostos para todos — necessário para o combobox do scorer
           clubId: true,
           club: { select: { name: true } },
+          user: { select: { name: true } },
         },
       });
       // Para usuários anônimos, omite userId (privacidade) mas mantém clubName
+      // Usa User.name como nome canônico (mesmo exibido no Gestor); AthleteProfile.name como fallback
       const response = athletes.map((a) => ({
         id: a.id,
         globalId: a.globalId,
-        name: a.name,
+        name: a.user?.name ?? a.name,
         nickname: a.nickname,
         category: a.category,
         gender: a.gender,

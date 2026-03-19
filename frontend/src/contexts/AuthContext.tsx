@@ -51,6 +51,28 @@ interface AuthContextType {
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   switchClub: (clubId: string) => Promise<void>;
+  /** Aplica uma sessão a partir de uma resposta de API já obtida (ex: após auto-cadastro). */
+  loginWithResult: (apiResponse: {
+    token: string;
+    refreshToken?: string;
+    user: {
+      id: string;
+      email: string;
+      name: string;
+      clubs: Array<{
+        clubId: string;
+        clubName: string;
+        clubSlug: string;
+        role: string;
+        planType?: string;
+        subscriptionStatus?: string;
+      }>;
+      activeClubId?: string;
+      activeRole?: string;
+      planType?: string;
+      subscriptionStatus?: string;
+    };
+  }) => void;
   loading: boolean;
   error: string | null;
   clearError: () => void;
@@ -390,6 +412,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const clearError = useCallback(() => setError(null), []);
 
+  const loginWithResult = useCallback(
+    (apiResponse: Parameters<AuthContextType["loginWithResult"]>[0]) => {
+      const { token, refreshToken, user } = mapLoginResponse(apiResponse);
+      persistSession(token, refreshToken, user);
+      setCurrentUser(user);
+    },
+    [],
+  );
+
   const value: AuthContextType = {
     isAuthenticated,
     currentUser,
@@ -398,6 +429,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     register,
     logout,
     switchClub,
+    loginWithResult,
     loading,
     error,
     clearError,

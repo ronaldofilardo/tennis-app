@@ -223,6 +223,9 @@ const AdminDashboard: React.FC = () => {
     useState<CreateClubForm>(INITIAL_CREATE_FORM);
   const [creatingClub, setCreatingClub] = useState(false);
 
+  // Sync passwords state
+  const [syncingPasswords, setSyncingPasswords] = useState(false);
+
   const isAdmin = currentUser?.activeRole === "ADMIN";
 
   // === Fetch Stats ===
@@ -427,6 +430,32 @@ const AdminDashboard: React.FC = () => {
     });
   };
 
+  // === Sync Passwords (atletas → senha = DDMMAAAA) ===
+  const handleSyncPasswords = async () => {
+    if (
+      !window.confirm(
+        "Isso irá recalcular a senha de TODOS os atletas com data de nascimento para o formato DDMMAAAA.\n\nContinuar?",
+      )
+    )
+      return;
+    setSyncingPasswords(true);
+    try {
+      const resp = await httpClient.post<{ updated: number; skipped: number }>(
+        "/admin/athletes/sync-passwords",
+        {},
+      );
+      toast.success(
+        `Senhas sincronizadas: ${resp.data.updated} atletas atualizados, ${resp.data.skipped} ignorados.`,
+      );
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error ? err.message : "Erro ao sincronizar senhas.";
+      toast.error(msg);
+    } finally {
+      setSyncingPasswords(false);
+    }
+  };
+
   // === Pagination handlers ===
   const clubsPage = Math.floor(clubsOffset / PAGE_SIZE) + 1;
   const clubsTotalPages = Math.ceil(clubsTotal / PAGE_SIZE);
@@ -468,6 +497,14 @@ const AdminDashboard: React.FC = () => {
           <span className="admin-role-tag">🔑 Administrador</span>
         </div>
         <div className="admin-header-actions">
+          <button
+            className="admin-btn-secondary"
+            onClick={handleSyncPasswords}
+            disabled={syncingPasswords}
+            title="Recalcula a senha de todos os atletas para DDMMAAAA (data de nascimento)"
+          >
+            {syncingPasswords ? "Sincronizando..." : "🔑 Sync Senhas Atletas"}
+          </button>
           <button
             className="admin-btn-secondary"
             onClick={() => navigation.navigateToDashboard()}

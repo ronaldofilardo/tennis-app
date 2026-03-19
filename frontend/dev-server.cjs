@@ -203,6 +203,176 @@ app.post("/api/auth/switch-club", async (req, res) => {
   }
 });
 
+// POST /api/auth/register-scorer
+app.post("/api/auth/register-scorer", async (req, res) => {
+  try {
+    const { name, email, cpf, phone, birthDate } = req.body || {};
+    if (!name?.trim())
+      return res.status(400).json({ error: "Nome é obrigatório." });
+    const cleanCpf = cpf ? cpf.replace(/\D/g, "").trim() : null;
+    if (cleanCpf && cleanCpf.length !== 11)
+      return res.status(400).json({ error: "CPF inválido." });
+    const loginIdentifier =
+      cleanCpf || (email ? email.trim().toLowerCase() : null);
+    if (!loginIdentifier)
+      return res.status(400).json({ error: "E-mail ou CPF é obrigatório." });
+    const existing = await prisma.user.findUnique({
+      where: { email: loginIdentifier },
+    });
+    if (existing)
+      return res
+        .status(409)
+        .json({ error: "Este CPF/e-mail já está cadastrado." });
+    function derivarSenhaPure(birthDateRaw, cleanCpfVal) {
+      if (birthDateRaw) {
+        let dd, mm, yyyy;
+        if (
+          typeof birthDateRaw === "string" &&
+          birthDateRaw.match(/^\d{4}-\d{2}-\d{2}$/)
+        ) {
+          const [year, month, day] = birthDateRaw.split("-");
+          dd = String(day).padStart(2, "0");
+          mm = String(month).padStart(2, "0");
+          yyyy = year;
+        } else {
+          const d = new Date(birthDateRaw);
+          if (!isNaN(d.getTime())) {
+            dd = String(d.getUTCDate()).padStart(2, "0");
+            mm = String(d.getUTCMonth() + 1).padStart(2, "0");
+            yyyy = d.getUTCFullYear();
+          }
+        }
+        if (dd && mm && yyyy) return `${dd}${mm}${yyyy}`;
+      }
+      return cleanCpfVal ? cleanCpfVal.substring(0, 8) : "12345678";
+    }
+    const senha = derivarSenhaPure(birthDate || null, cleanCpf);
+    const svc = await getAuthService();
+    const passwordHash = await svc.hashPassword(senha);
+    await prisma.user.create({
+      data: {
+        email: loginIdentifier,
+        name: name.trim(),
+        passwordHash,
+        isActive: true,
+      },
+    });
+    const result = await svc.loginUser({
+      email: loginIdentifier,
+      password: senha,
+    });
+    res.status(201).json(result);
+  } catch (err) {
+    console.error("[POST /api/auth/register-scorer]", err);
+    res.status(500).json({ error: "Erro interno ao cadastrar anotador." });
+  }
+});
+
+// POST /api/auth/register-athlete-independent
+app.post("/api/auth/register-athlete-independent", async (req, res) => {
+  try {
+    const {
+      name,
+      email,
+      cpf,
+      phone,
+      birthDate,
+      gender,
+      category,
+      nickname,
+      ranking,
+      entity,
+      fatherName,
+      fatherCpf,
+      motherName,
+      motherCpf,
+    } = req.body || {};
+    if (!name?.trim())
+      return res.status(400).json({ error: "Nome é obrigatório." });
+    const cleanCpf = cpf ? cpf.replace(/\D/g, "").trim() : null;
+    if (cleanCpf && cleanCpf.length !== 11)
+      return res.status(400).json({ error: "CPF inválido." });
+    if (!birthDate)
+      return res
+        .status(400)
+        .json({ error: "Data de nascimento é obrigatória." });
+    const loginIdentifier =
+      cleanCpf || (email ? email.trim().toLowerCase() : null);
+    if (!loginIdentifier)
+      return res.status(400).json({ error: "E-mail ou CPF é obrigatório." });
+    const existing = await prisma.user.findUnique({
+      where: { email: loginIdentifier },
+    });
+    if (existing)
+      return res
+        .status(409)
+        .json({ error: "Este CPF/e-mail já está cadastrado." });
+    function derivarSenhaPure2(birthDateRaw, cleanCpfVal) {
+      if (birthDateRaw) {
+        let dd, mm, yyyy;
+        if (
+          typeof birthDateRaw === "string" &&
+          birthDateRaw.match(/^\d{4}-\d{2}-\d{2}$/)
+        ) {
+          const [year, month, day] = birthDateRaw.split("-");
+          dd = String(day).padStart(2, "0");
+          mm = String(month).padStart(2, "0");
+          yyyy = year;
+        } else {
+          const d = new Date(birthDateRaw);
+          if (!isNaN(d.getTime())) {
+            dd = String(d.getUTCDate()).padStart(2, "0");
+            mm = String(d.getUTCMonth() + 1).padStart(2, "0");
+            yyyy = d.getUTCFullYear();
+          }
+        }
+        if (dd && mm && yyyy) return `${dd}${mm}${yyyy}`;
+      }
+      return cleanCpfVal ? cleanCpfVal.substring(0, 8) : "12345678";
+    }
+    const senha = derivarSenhaPure2(birthDate, cleanCpf);
+    const svc = await getAuthService();
+    const passwordHash = await svc.hashPassword(senha);
+    const parsedBirth = birthDate ? new Date(birthDate) : null;
+    const user = await prisma.user.create({
+      data: {
+        email: loginIdentifier,
+        name: name.trim(),
+        passwordHash,
+        isActive: true,
+      },
+    });
+    await prisma.athleteProfile.create({
+      data: {
+        userId: user.id,
+        name: name.trim(),
+        nickname: nickname || null,
+        birthDate: parsedBirth,
+        phone: phone || null,
+        cpf: cleanCpf || null,
+        gender: gender || null,
+        category: category || null,
+        ranking: ranking ? Number(ranking) : null,
+        entity: entity || null,
+        fatherName: fatherName || null,
+        fatherCpf: fatherCpf ? fatherCpf.replace(/\D/g, "") : null,
+        motherName: motherName || null,
+        motherCpf: motherCpf ? motherCpf.replace(/\D/g, "") : null,
+        clubId: null,
+        isPublic: true,
+      },
+    });
+    const result = await svc.loginUser({
+      email: loginIdentifier,
+      password: senha,
+    });
+    res.status(201).json(result);
+  } catch (err) {
+    console.error("[POST /api/auth/register-athlete-independent]", err);
+    res.status(500).json({ error: "Erro interno ao cadastrar atleta." });
+  }
+});
+
 // ─── Clubes ──────────────────────────────────────────────────────────────────
 
 // GET /api/clubs — clubes do usuário autenticado
@@ -932,7 +1102,12 @@ app.get("/api/athletes", async (req, res) => {
       .slice(0, 100);
     const filterClubId = req.query.clubId || null;
     const excludeUserId = req.query.excludeUserId || null;
+    const excludeAthleteId = req.query.excludeAthleteId || null;
     const limit = Math.min(parseInt(req.query.limit || "20"), 200); // Aumentado para 200
+    const notClauses = [
+      ...(excludeUserId ? [{ userId: excludeUserId }] : []),
+      ...(excludeAthleteId ? [{ id: excludeAthleteId }] : []),
+    ];
     const where = {
       isPublic: true,
       ...(q && {
@@ -942,7 +1117,9 @@ app.get("/api/athletes", async (req, res) => {
         ],
       }),
       ...(filterClubId && { clubId: filterClubId }),
-      ...(excludeUserId && { NOT: { userId: excludeUserId } }),
+      ...(notClauses.length > 0 && {
+        NOT: notClauses.length === 1 ? notClauses[0] : notClauses,
+      }),
     };
     const athletes = await prisma.athleteProfile.findMany({
       where,
@@ -958,6 +1135,7 @@ app.get("/api/athletes", async (req, res) => {
         gender: true,
         ranking: true,
         userId: true,
+        user: { select: { name: true } },
       },
     });
     // Busca nomes dos clubes separadamente (AthleteProfile não tem relação direta com Club no schema)
@@ -971,10 +1149,11 @@ app.get("/api/athletes", async (req, res) => {
         : [];
     const clubMap = Object.fromEntries(clubs.map((c) => [c.id, c.name]));
     // Anônimos não veem userId (privacidade), mas veem clubName
+    // Usa User.name como nome canônico (mesmo exibido no Gestor); AthleteProfile.name como fallback
     const response = athletes.map((a) => ({
       id: a.id,
       globalId: a.globalId,
-      name: a.name,
+      name: a.user?.name ?? a.name,
       nickname: a.nickname,
       category: a.category,
       gender: a.gender,
@@ -1601,258 +1780,30 @@ app.get("/api/matches/:id/stats", async (req, res) => {
   }
 });
 
-async function checkReviewsStatus(matchId) {
-  const reviews = await prisma.matchReview.findMany({
-    where: { matchId },
-    select: { status: true },
-  });
-  const total = reviews.length;
-  const allRejected =
-    total > 0 && reviews.every((r) => r.status === "REJECTED");
-  const allApproved =
-    total > 0 && reviews.every((r) => r.status === "APPROVED");
-  const anyPending = reviews.some((r) => r.status === "PENDING");
-  return { allRejected, allApproved, anyPending, total };
-}
+// Sistema de revisão removido na migration 20260317180000_remove_scorer_review_system
 
-// GET /api/matches/:id/reviews — lista revisões (requer auth)
+// GET /api/matches/:id/reviews — removido, retorna vazio para compatibilidade
 app.get("/api/matches/:id/reviews", async (req, res) => {
-  try {
-    const ctx = await extractCtx(req);
-    if (!ctx) return res.status(401).json({ error: "Authentication required" });
-
-    const reviews = await prisma.matchReview.findMany({
-      where: { matchId: req.params.id },
-      select: {
-        id: true,
-        reviewerType: true,
-        athleteId: true,
-        clubId: true,
-        userId: true,
-        status: true,
-        reviewedAt: true,
-        notes: true,
-        createdAt: true,
-      },
-      orderBy: { createdAt: "asc" },
-    });
-
-    res.json(reviews);
-  } catch (error) {
-    console.error("[GET /api/matches/:id/reviews] Erro:", error);
-    res
-      .status(500)
-      .json({ error: error instanceof Error ? error.message : String(error) });
-  }
+  const ctx = await extractCtx(req);
+  if (!ctx) return res.status(401).json({ error: "Authentication required" });
+  return res.json([]);
 });
 
-// PATCH /api/matches/:id/reviews/:reviewId — atleta/clube responde à revisão
-app.patch("/api/matches/:id/reviews/:reviewId", async (req, res) => {
-  try {
-    const ctx = await extractCtx(req);
-    if (!ctx) return res.status(401).json({ error: "Authentication required" });
-
-    const review = await prisma.matchReview.findUnique({
-      where: { id: req.params.reviewId },
-      select: { id: true, matchId: true, userId: true, status: true },
-    });
-
-    if (!review)
-      return res.status(404).json({ error: "Revisão não encontrada" });
-    if (review.matchId !== req.params.id)
-      return res
-        .status(400)
-        .json({ error: "Revisão não pertence a esta partida" });
-    if (review.userId && review.userId !== ctx.userId)
-      return res
-        .status(403)
-        .json({ error: "Sem permissão para responder esta revisão" });
-    if (review.status !== "PENDING")
-      return res.status(409).json({ error: "Esta revisão já foi respondida" });
-
-    const { status, notes, rejectionReason } = req.body || {};
-    if (!["APPROVED", "REJECTED"].includes(status))
-      return res
-        .status(400)
-        .json({ error: "status deve ser APPROVED ou REJECTED" });
-
-    const updated = await prisma.matchReview.update({
-      where: { id: req.params.reviewId },
-      data: {
-        status,
-        notes: notes || null,
-        rejectionReason: rejectionReason || null,
-        reviewedAt: new Date(),
-      },
-      select: {
-        id: true,
-        matchId: true,
-        reviewerType: true,
-        status: true,
-        reviewedAt: true,
-        notes: true,
-        rejectionReason: true,
-      },
-    });
-
-    // Check if all reviews are done and update match status accordingly
-    const reviewStatus = await checkReviewsStatus(req.params.id);
-    let matchStatus = null;
-    if (!reviewStatus.anyPending) {
-      if (reviewStatus.allRejected) {
-        matchStatus = "REJECTED";
-        console.log(
-          `[ADMIN NOTIFICATION] Partida ${req.params.id} rejeitada por todos os revisores.`,
-        );
-      } else if (reviewStatus.allApproved) {
-        matchStatus = "APPROVED_CENTRAL";
-      } else {
-        // Mixed: at least one approved — mark as APPROVED_CENTRAL so approved ones can download
-        matchStatus = "APPROVED_CENTRAL";
-      }
-      await prisma.match.update({
-        where: { id: req.params.id },
-        data: { status: matchStatus },
-      });
-    }
-
-    res.json({ ...updated, matchStatus });
-  } catch (error) {
-    console.error("[PATCH /api/matches/:id/reviews/:reviewId] Erro:", error);
-    res
-      .status(500)
-      .json({ error: error instanceof Error ? error.message : String(error) });
-  }
+// PATCH /api/matches/:id/reviews/:reviewId — removido
+app.patch("/api/matches/:id/reviews/:reviewId", (_req, res) => {
+  return res.status(410).json({ error: "Sistema de revisão removido" });
 });
 
-// GET /api/reviews/pending — revisões pendentes do usuário logado
+// GET /api/reviews/pending — removido, retorna vazio para compatibilidade
 app.get("/api/reviews/pending", async (req, res) => {
-  try {
-    const ctx = await extractCtx(req);
-    if (!ctx) return res.status(401).json({ error: "Authentication required" });
-
-    const reviews = await prisma.matchReview.findMany({
-      where: { userId: ctx.userId, status: "PENDING" },
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        matchId: true,
-        reviewerType: true,
-        status: true,
-        createdAt: true,
-        match: {
-          select: {
-            id: true,
-            playerP1: true,
-            playerP2: true,
-            score: true,
-            winner: true,
-            scorerName: true,
-            createdAt: true,
-            status: true,
-            matchState: true,
-            completedSets: true,
-          },
-        },
-      },
-    });
-
-    res.json(reviews);
-  } catch (error) {
-    console.error("[GET /api/reviews/pending] Erro:", error);
-    res
-      .status(500)
-      .json({ error: error instanceof Error ? error.message : String(error) });
-  }
+  const ctx = await extractCtx(req);
+  if (!ctx) return res.status(401).json({ error: "Authentication required" });
+  return res.json([]);
 });
 
-// POST /api/matches/download-review — baixa cópia privada de partida central aprovada
-app.post("/api/matches/download-review", async (req, res) => {
-  try {
-    const ctx = await extractCtx(req);
-    if (!ctx) return res.status(401).json({ error: "Authentication required" });
-
-    const { reviewId } = req.body || {};
-    if (!reviewId)
-      return res.status(400).json({ error: "reviewId é obrigatório" });
-
-    const review = await prisma.matchReview.findUnique({
-      where: { id: reviewId },
-      select: { id: true, userId: true, status: true, matchId: true },
-    });
-    if (!review)
-      return res.status(404).json({ error: "Revisão não encontrada" });
-    if (review.userId !== ctx.userId)
-      return res
-        .status(403)
-        .json({ error: "Sem permissão para baixar esta revisão" });
-    if (review.status !== "APPROVED")
-      return res.status(400).json({ error: "Revisão ainda não foi aprovada" });
-
-    const centralMatch = await prisma.match.findUnique({
-      where: { id: review.matchId },
-      select: {
-        id: true,
-        playerP1: true,
-        playerP2: true,
-        score: true,
-        winner: true,
-        scorerName: true,
-        createdAt: true,
-        format: true,
-        courtType: true,
-        sportType: true,
-        matchState: true,
-        completedSets: true,
-      },
-    });
-    if (!centralMatch)
-      return res.status(404).json({ error: "Partida central não encontrada" });
-
-    // Prevent duplicate downloads
-    const existing = await prisma.match.findFirst({
-      where: {
-        originatedFromCentralMatchId: centralMatch.id,
-        createdByUserId: ctx.userId,
-      },
-      select: { id: true },
-    });
-    if (existing)
-      return res
-        .status(409)
-        .json({ error: "Você já baixou esta partida", matchId: existing.id });
-
-    const privateCopy = await prisma.match.create({
-      data: {
-        playerP1: centralMatch.playerP1,
-        playerP2: centralMatch.playerP2,
-        score: centralMatch.score,
-        winner: centralMatch.winner,
-        format: centralMatch.format,
-        courtType: centralMatch.courtType,
-        sportType: centralMatch.sportType,
-        matchState: centralMatch.matchState,
-        completedSets: centralMatch.completedSets,
-        scorerName: centralMatch.scorerName,
-        status: "FINISHED",
-        isCentralMatch: false,
-        originatedFromCentralMatchId: centralMatch.id,
-        createdByUserId: ctx.userId,
-        playersEmails: [ctx.email],
-      },
-    });
-
-    res.status(201).json({
-      ...privateCopy,
-      centralMatchId: centralMatch.id,
-      scorerName: centralMatch.scorerName,
-    });
-  } catch (error) {
-    console.error("[POST /api/matches/download-review] Erro:", error);
-    res
-      .status(500)
-      .json({ error: error instanceof Error ? error.message : String(error) });
-  }
+// POST /api/matches/download-review — removido
+app.post("/api/matches/download-review", (_req, res) => {
+  return res.status(410).json({ error: "Sistema de revisão removido" });
 });
 
 // DELETE /api/matches/:id/local-only — remove cópia privada (central intacta)
@@ -1866,7 +1817,6 @@ app.delete("/api/matches/:id/local-only", async (req, res) => {
       select: {
         id: true,
         createdByUserId: true,
-        originatedFromCentralMatchId: true,
       },
     });
     if (!match)
@@ -1875,10 +1825,6 @@ app.delete("/api/matches/:id/local-only", async (req, res) => {
       return res
         .status(403)
         .json({ error: "Sem permissão para remover esta partida" });
-    if (!match.originatedFromCentralMatchId)
-      return res
-        .status(400)
-        .json({ error: "Esta partida não é uma cópia baixada" });
 
     await prisma.match.delete({ where: { id: req.params.id } });
     res.json({ message: "Cópia local removida com sucesso." });
@@ -1918,12 +1864,9 @@ app.get("/api/admin/matches/all", async (req, res) => {
           score: true,
           winner: true,
           visibility: true,
-          isCentralMatch: true,
-          scorerName: true,
           createdAt: true,
           club: { select: { name: true } },
           createdBy: { select: { name: true } },
-          scorer: { select: { name: true } },
         },
       }),
       prisma.match.count({ where }),
@@ -1937,10 +1880,8 @@ app.get("/api/admin/matches/all", async (req, res) => {
       score: m.score,
       winner: m.winner,
       visibility: m.visibility,
-      isCentralMatch: m.isCentralMatch,
       clubName: m.club?.name ?? null,
       createdByName: m.createdBy?.name ?? null,
-      scorerName: m.scorerName ?? m.scorer?.name ?? null,
       createdAt: m.createdAt,
     }));
 
@@ -1961,9 +1902,9 @@ app.get("/api/admin/matches", async (req, res) => {
     if (ctx.role !== "ADMIN")
       return res.status(403).json({ error: "Acesso negado" });
 
-    const status = req.query.status || "REJECTED";
+    const status = req.query.status || "FINISHED";
     const matches = await prisma.match.findMany({
-      where: { status, isCentralMatch: true },
+      where: { status },
       orderBy: { updatedAt: "desc" },
       select: {
         id: true,
@@ -1971,19 +1912,8 @@ app.get("/api/admin/matches", async (req, res) => {
         playerP2: true,
         score: true,
         winner: true,
-        scorerName: true,
         createdAt: true,
         updatedAt: true,
-        reviews: {
-          select: {
-            id: true,
-            status: true,
-            rejectionReason: true,
-            reviewerType: true,
-            notes: true,
-            userId: true,
-          },
-        },
       },
     });
     res.json({ matches, total: matches.length });
@@ -2005,18 +1935,11 @@ app.delete("/api/admin/matches/central/:id", async (req, res) => {
 
     const match = await prisma.match.findUnique({
       where: { id: req.params.id },
-      select: { id: true, isCentralMatch: true },
+      select: { id: true },
     });
     if (!match)
       return res.status(404).json({ error: "Partida não encontrada" });
-    if (!match.isCentralMatch)
-      return res
-        .status(400)
-        .json({ error: "Esta partida não é do banco central" });
 
-    await prisma.match.deleteMany({
-      where: { originatedFromCentralMatchId: req.params.id },
-    });
     await prisma.match.delete({ where: { id: req.params.id } });
 
     res.json({
