@@ -763,16 +763,17 @@ const GestorDashboard: React.FC = () => {
                       </span>
                       <span className="member-cell-actions">
                         {(member.role === "ATHLETE" ||
-                          member.role === "COACH") && (
-                          <button
-                            type="button"
-                            className="gestor-btn-icon"
-                            title="Editar"
-                            onClick={() => setEditingMember(member)}
-                          >
-                            ✏️
-                          </button>
-                        )}
+                          member.role === "COACH") &&
+                          member.clubId === clubId && (
+                            <button
+                              type="button"
+                              className="gestor-btn-icon"
+                              title="Editar"
+                              onClick={() => setEditingMember(member)}
+                            >
+                              ✏️
+                            </button>
+                          )}
                       </span>
                     </div>
                   ))}

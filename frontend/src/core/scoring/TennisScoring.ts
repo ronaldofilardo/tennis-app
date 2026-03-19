@@ -553,15 +553,21 @@ export class TennisScoring {
       // Sempre usa o endpoint autenticado
       const url = `${API_URL}/matches/${this.matchId}/state`;
 
+      const token =
+        typeof localStorage !== "undefined"
+          ? localStorage.getItem("racket_token")
+          : null;
+
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       };
 
       const response = await fetch(url, {
         method: "PATCH",
         headers,
         body: JSON.stringify({
-          matchState: this.state,
+          matchState: this.getState(),
         }),
         signal: controller.signal,
       });

@@ -20,8 +20,8 @@ import {
   createClub,
   addClubMember,
   getClubMembers,
-  hashPassword,
 } from "../../src/services/authService.js";
+import { hashPassword, derivarSenha } from "../_lib/passwordUtils.js";
 import {
   getSubscriptionWithUsage,
   createOrUpdateSubscription,
@@ -230,37 +230,6 @@ export default async function handler(req, res) {
         return sendJson(res, 400, {
           error: "CPF inválido (deve ter 11 dígitos)",
         });
-
-      // Deriva a senha do atleta: data de nascimento no formato DDMMAAAA
-      // Se não houver data, usa os primeiros 8 dígitos do CPF (ou '12345678')
-      function derivarSenha(birthDate, cleanCpf) {
-        if (birthDate) {
-          // Fazer parsing manual de ISO date (YYYY-MM-DD) para evitar problemas de timezone
-          let dd, mm, yyyy;
-          if (
-            typeof birthDate === "string" &&
-            birthDate.match(/^\d{4}-\d{2}-\d{2}$/)
-          ) {
-            // ISO format: YYYY-MM-DD
-            const [year, month, day] = birthDate.split("-");
-            dd = String(day).padStart(2, "0");
-            mm = String(month).padStart(2, "0");
-            yyyy = year;
-          } else {
-            // Tentar com Date object
-            const d = new Date(birthDate);
-            if (!isNaN(d.getTime())) {
-              dd = String(d.getUTCDate()).padStart(2, "0");
-              mm = String(d.getUTCMonth() + 1).padStart(2, "0");
-              yyyy = d.getUTCFullYear();
-            }
-          }
-          if (dd && mm && yyyy) {
-            return `${dd}${mm}${yyyy}`;
-          }
-        }
-        return cleanCpf ? cleanCpf.substring(0, 8) : "12345678";
-      }
 
       try {
         // ─── Fluxo COACH: cria User + ClubMembership, sem AthleteProfile ───

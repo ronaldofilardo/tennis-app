@@ -37,6 +37,8 @@ interface AthleteSearchInputProps {
   id?: string;
   /** userId do usuário logado — exclui da busca para não aparecer como opção */
   excludeUserId?: string;
+  /** AthleteProfile.id a excluir dos resultados (ex: o jogador já selecionado no campo oposto) */
+  excludeAthleteId?: string;
 }
 
 const DEBOUNCE_MS = 300;
@@ -53,6 +55,7 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
   disabled = false,
   id,
   excludeUserId,
+  excludeAthleteId,
 }) => {
   const [query, setQuery] = useState(value?.name || "");
   const [results, setResults] = useState<AthleteResult[]>([]);
@@ -74,6 +77,20 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
     }
   }, [value?.id, value?.name]);
 
+  // Quando excludeAthleteId muda (jogador oposto selecionado), filtra resultados em cache
+  // e re-busca se o dropdown estiver aberto para garantir consistência
+  useEffect(() => {
+    // Filtra imediatamente o resultado já carregado
+    if (excludeAthleteId) {
+      setResults((prev) => prev.filter((a) => a.id !== excludeAthleteId));
+    }
+    // Se dropdown aberto, re-busca para garantir lista atualizada
+    if (isOpen) {
+      searchAthletes(query);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [excludeAthleteId]);
+
   // Fechar dropdown ao clicar fora
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -88,39 +105,39 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const searchAthletes = useCallback(async (searchQuery: string) => {
-    if (searchQuery.length < MIN_SEARCH_LENGTH) {
-      setResults([]);
-      setIsOpen(false);
-      return;
-    }
+  const searchAthletes = useCallback(
+    async (searchQuery: string) => {
+      setIsLoading(true);
+      try {
+        const excludeParam = excludeUserId
+          ? `&excludeUserId=${encodeURIComponent(excludeUserId)}`
+          : "";
+        const excludeAthleteParam = excludeAthleteId
+          ? `&excludeAthleteId=${encodeURIComponent(excludeAthleteId)}`
+          : "";
+        const response = await httpClient.get<{
+          athletes: AthleteResult[];
+        }>(
+          `/athletes?q=${encodeURIComponent(searchQuery)}&limit=20${excludeParam}${excludeAthleteParam}`,
+        );
 
-    setIsLoading(true);
-    try {
-      const excludeParam = excludeUserId
-        ? `&excludeUserId=${encodeURIComponent(excludeUserId)}`
-        : "";
-      const response = await httpClient.get<{
-        athletes: AthleteResult[];
-      }>(
-        `/athletes?q=${encodeURIComponent(searchQuery)}&limit=10${excludeParam}`,
-      );
+        // A API retorna { athletes: [...] } — normaliza arrays legados
+        const raw = response.data as any;
+        const list: AthleteResult[] = Array.isArray(raw)
+          ? raw
+          : (raw?.athletes ?? []);
 
-      // A API retorna { athletes: [...] } — normaliza arrays legados
-      const raw = response.data as any;
-      const list: AthleteResult[] = Array.isArray(raw)
-        ? raw
-        : (raw?.athletes ?? []);
-
-      setResults(list);
-      setIsOpen(true);
-      setHighlightIndex(-1);
-    } catch {
-      setResults([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+        setResults(list);
+        setIsOpen(true);
+        setHighlightIndex(-1);
+      } catch {
+        setResults([]);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [excludeUserId, excludeAthleteId],
+  );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
@@ -137,8 +154,13 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
       onSelect(null);
     }
 
-    // Debounce da busca
+    // Debounce da busca (mínimo de 2 caracteres)
     if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (val.length < 2) {
+      setResults([]);
+      setIsOpen(false);
+      return;
+    }
     debounceRef.current = setTimeout(() => searchAthletes(val), DEBOUNCE_MS);
   };
 
@@ -193,8 +215,11 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
   };
 
   const handleFocus = () => {
-    if (results.length > 0 || query.length >= MIN_SEARCH_LENGTH) {
+    if (results.length > 0) {
       setIsOpen(true);
+    } else {
+      // Carrega todos os atletas imediatamente ao focar (mesmo com campo vazio)
+      searchAthletes(query);
     }
   };
 

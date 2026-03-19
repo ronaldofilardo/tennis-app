@@ -4,6 +4,8 @@
 import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigation } from "../contexts/NavigationContext";
+import ScorerRegisterModal from "../components/ScorerRegisterModal";
+import AthleteIndependentRegisterModal from "../components/AthleteIndependentRegisterModal";
 import "./AuthPage.css";
 
 type AuthMode = "login" | "register";
@@ -12,6 +14,7 @@ const AuthPage: React.FC = () => {
   const {
     login,
     register,
+    loginWithResult,
     loading,
     error,
     clearError,
@@ -31,6 +34,8 @@ const AuthPage: React.FC = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [localError, setLocalError] = useState<string | null>(null);
+  const [showScorerModal, setShowScorerModal] = useState(false);
+  const [showAthleteModal, setShowAthleteModal] = useState(false);
 
   // Se já autenticado, redirecionar com base no papel do clube ativo
   React.useEffect(() => {
@@ -75,6 +80,12 @@ const AuthPage: React.FC = () => {
     setLocalError(null);
     clearError();
     setConfirmPassword("");
+  };
+
+  // Callback chamado pelos modais de auto-cadastro após registro bem-sucedido
+  const handleRegistrationSuccess = (loginResult: unknown) => {
+    loginWithResult(loginResult as Parameters<typeof loginWithResult>[0]);
+    navigateToDashboard();
   };
 
   const displayError = localError || error;
@@ -188,7 +199,38 @@ const AuthPage: React.FC = () => {
             </p>
           )}
         </div>
+
+        {mode === "login" && (
+          <div className="auth-register-options">
+            <p className="auth-register-label">Cadastre-se como:</p>
+            <button
+              type="button"
+              className="auth-register-btn"
+              onClick={() => setShowScorerModal(true)}
+            >
+              📋 Anotador (Scorer)
+            </button>
+            <button
+              type="button"
+              className="auth-register-btn"
+              onClick={() => setShowAthleteModal(true)}
+            >
+              🎾 Atleta (sem clube)
+            </button>
+          </div>
+        )}
       </div>
+
+      <ScorerRegisterModal
+        isOpen={showScorerModal}
+        onClose={() => setShowScorerModal(false)}
+        onSuccess={handleRegistrationSuccess}
+      />
+      <AthleteIndependentRegisterModal
+        isOpen={showAthleteModal}
+        onClose={() => setShowAthleteModal(false)}
+        onSuccess={handleRegistrationSuccess}
+      />
     </div>
   );
 };

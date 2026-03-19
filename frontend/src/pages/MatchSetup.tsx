@@ -363,6 +363,11 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
               }}
               allowGuest
               excludeUserId={currentUser?.id}
+              excludeAthleteId={
+                selectedAthlete2?.id?.startsWith("guest_")
+                  ? undefined
+                  : selectedAthlete2?.id
+              }
             />
             <span>vs</span>
             <AthleteSearchInput
@@ -382,6 +387,11 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
               }}
               allowGuest
               excludeUserId={currentUser?.id}
+              excludeAthleteId={
+                selectedAthlete1?.id?.startsWith("guest_")
+                  ? undefined
+                  : selectedAthlete1?.id
+              }
             />
           </div>
         </div>

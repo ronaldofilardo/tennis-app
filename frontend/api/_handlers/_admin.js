@@ -12,7 +12,7 @@ import {
   sendJson,
   methodNotAllowed,
 } from "../_lib/authMiddleware.js";
-import { hashPassword } from "../../src/services/authService.js";
+import { hashPassword, derivarSenha } from "../_lib/passwordUtils.js";
 
 function getSection(url) {
   const parts = url.pathname.split("/").filter(Boolean);
@@ -402,6 +402,63 @@ export default async function handler(req, res) {
         return sendJson(res, 500, { error: err.message || "Erro interno." });
       }
     }
+  }
+
+  // ─── POST /api/admin/athletes/sync-passwords ─────────────────────────────
+  // Recalcula a senha padrão (DDMMAAAA) de todos os atletas com data de nascimento.
+  if (section === "athletes") {
+    const parts = url.pathname.split("/").filter(Boolean);
+    const subSection = parts[3]; // sync-passwords
+    if (subSection === "sync-passwords") {
+      if (req.method !== "POST") return methodNotAllowed(res, ["POST"]);
+      try {
+        const BATCH_SIZE = 100;
+        let offset = 0;
+        let updated = 0;
+        let skipped = 0;
+
+        while (true) {
+          const profiles = await prisma.athleteProfile.findMany({
+            where: { birthDate: { not: null }, userId: { not: null } },
+            select: { id: true, birthDate: true, cpf: true, userId: true },
+            skip: offset,
+            take: BATCH_SIZE,
+          });
+
+          if (profiles.length === 0) break;
+
+          await Promise.all(
+            profiles.map(async (profile) => {
+              try {
+                const cleanCpf = profile.cpf
+                  ? profile.cpf.replace(/\D/g, "")
+                  : null;
+                const senha = derivarSenha(
+                  profile.birthDate.toISOString().split("T")[0],
+                  cleanCpf,
+                );
+                const passwordHash = await hashPassword(senha);
+                await prisma.user.update({
+                  where: { id: profile.userId },
+                  data: { passwordHash },
+                });
+                updated++;
+              } catch {
+                skipped++;
+              }
+            }),
+          );
+
+          offset += BATCH_SIZE;
+        }
+
+        return sendJson(res, 200, { updated, skipped });
+      } catch (err) {
+        console.error("[admin/athletes/sync-passwords]", err);
+        return sendJson(res, 500, { error: err.message || "Erro interno." });
+      }
+    }
+  }
 
   return sendJson(res, 404, { error: "Unknown admin section" });
 }
