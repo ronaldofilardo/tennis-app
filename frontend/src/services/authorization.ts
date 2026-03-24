@@ -1,25 +1,11 @@
 // frontend/src/services/authorization.ts
 // === AREA 5: Segurança e Permissões — RBAC (Role Based Access Control) ===
-// Funções utilitárias de autorização. Hoje retornam true, mas a chamada
-// deve existir no fluxo de addPoint, undo, viewStats etc.
-// Quando as regras de clube forem ativadas, basta alterar a lógica aqui.
+// Funções utilitárias de autorização alinhadas com o enum UserRole do Prisma.
 
 /**
- * Roles possíveis no sistema.
- * Futuro: pode incluir 'coach', 'admin', 'club_owner', 'spectator'.
+ * Roles possíveis no sistema — alinhadas com enum UserRole do Prisma.
  */
-export type UserRole =
-  | "annotator"
-  | "player"
-  | "coach"
-  | "admin"
-  | "club_owner"
-  | "spectator"
-  | "ATHLETE"
-  | "GESTOR"
-  | "ADMIN"
-  | "COACH"
-  | "SPECTATOR";
+export type UserRole = "ADMIN" | "GESTOR" | "COACH" | "ATHLETE" | "SPECTATOR";
 
 /**
  * Representa um usuário autenticado para verificação de permissão.
@@ -57,12 +43,10 @@ export interface MatchPermissionData {
 
 /**
  * Verifica se o usuário pode editar/pontuar uma partida.
- * Regras (futuras):
- * - annotator: pode pontuar se é o apontador designado
- * - player: pode pontuar se é participante e não há apontador
- * - admin/club_owner: pode editar qualquer partida do clube
- *
- * Hoje: retorna true (habilitado para todos).
+ * - ADMIN/GESTOR: pode editar qualquer partida do clube
+ * - COACH: pode editar se é o apontador designado
+ * - ATHLETE: pode pontuar se é participante e não há apontador
+ * - SPECTATOR: nunca pode editar
  */
 export function canEditMatch(
   user: AuthUser | null,
@@ -73,35 +57,38 @@ export function canEditMatch(
   // Partida finalizada não pode ser editada
   if (match.status === "FINISHED") return false;
 
-  // Admin e club_owner podem tudo (dentro do clube)
-  if (user.role === "admin" || user.role === "club_owner") {
-    // Futuro: verificar se match.clubId === user.clubId
+  // SPECTATOR nunca edita
+  if (user.role === "SPECTATOR") return false;
+
+  // ADMIN e GESTOR podem tudo (dentro do clube)
+  if (user.role === "ADMIN" || user.role === "GESTOR") {
     return true;
   }
 
   // Apontador designado pode sempre editar
-  if (user.role === "annotator" && match.apontadorEmail === user.email) {
+  if (match.apontadorEmail === user.email) {
     return true;
   }
 
-  // Jogador participante pode editar se não tem apontador
-  if (user.role === "player") {
-    const isParticipant = match.playersEmails?.includes(user.email);
-    const hasAnnotator = !!match.apontadorEmail;
-    return isParticipant === true && !hasAnnotator;
+  // COACH pode editar partidas do seu clube
+  if (user.role === "COACH") {
+    return true;
   }
 
-  // Futuro: aplicar regras de clube aqui
-  return true; // Permissão padrão aberta (fase atual)
+  // ATHLETE participante pode editar se não tem apontador
+  if (user.role === "ATHLETE") {
+    const isParticipant = isMatchParticipant(user, match);
+    const hasAnnotator = !!match.apontadorEmail;
+    return isParticipant && !hasAnnotator;
+  }
+
+  return false;
 }
 
 /**
  * Verifica se o usuário pode visualizar estatísticas de uma partida.
- * Regras (futuras):
  * - Partidas públicas: todos podem ver
  * - Partidas privadas: apenas participantes e membros do clube
- *
- * Hoje: retorna true.
  */
 export function canViewStats(
   user: AuthUser | null,
@@ -109,8 +96,8 @@ export function canViewStats(
 ): boolean {
   if (!user) return false;
 
-  // Admin e club_owner podem ver tudo
-  if (user.role === "admin" || user.role === "club_owner") return true;
+  // ADMIN e GESTOR podem ver tudo
+  if (user.role === "ADMIN" || user.role === "GESTOR") return true;
 
   // Verificar visibilidade
   if (match.visibleTo === "both") return true;
@@ -120,14 +107,12 @@ export function canViewStats(
     return match.visibleTo === user.email;
   }
 
-  return true; // Permissão padrão aberta
+  return true;
 }
 
 /**
  * Verifica se o usuário pode desfazer o último ponto.
- * Regras (futuras): apenas quem pontuou pode desfazer dentro de X segundos.
- *
- * Hoje: mesmo que canEditMatch.
+ * Mesmo critério de canEditMatch.
  */
 export function canUndoPoint(
   user: AuthUser | null,
@@ -138,9 +123,7 @@ export function canUndoPoint(
 
 /**
  * Verifica se o usuário pode excluir uma partida.
- * Regras: apenas o criador ou admin/club_owner.
- *
- * Hoje: retorna true para admin/annotator.
+ * Regras: apenas ADMIN/GESTOR ou o apontador designado.
  */
 export function canDeleteMatch(
   user: AuthUser | null,
@@ -148,20 +131,19 @@ export function canDeleteMatch(
 ): boolean {
   if (!user) return false;
 
-  if (user.role === "admin" || user.role === "club_owner") return true;
-  if (user.role === "annotator" && match.apontadorEmail === user.email)
-    return true;
+  if (user.role === "ADMIN" || user.role === "GESTOR") return true;
+  if (match.apontadorEmail === user.email) return true;
 
   return false;
 }
 
 /**
  * Verifica se o usuário pode criar partidas.
- * Hoje: annotator e admin podem.
+ * ADMIN, GESTOR e COACH podem criar.
  */
 export function canCreateMatch(user: AuthUser | null): boolean {
   if (!user) return false;
-  return ["annotator", "admin", "club_owner", "coach", "ADMIN", "GESTOR", "COACH"].includes(user.role);
+  return ["ADMIN", "GESTOR", "COACH"].includes(user.role);
 }
 
 /**
@@ -183,10 +165,7 @@ export function isMatchParticipant(
   }
   // Fallback: userId
   if (user.id) {
-    if (
-      user.id === match.player1UserId ||
-      user.id === match.player2UserId
-    ) {
+    if (user.id === match.player1UserId || user.id === match.player2UserId) {
       return true;
     }
   }
@@ -200,7 +179,6 @@ export function isMatchParticipant(
 /**
  * Verifica se o usuário pode anotar uma partida como marcador.
  * Regra central: participante da partida NÃO pode ser seu próprio anotador.
- * Um atleta pode anotar partidas de terceiros (não as suas).
  */
 export function canAnnotateMatch(
   user: AuthUser | null,
@@ -209,8 +187,11 @@ export function canAnnotateMatch(
   if (!user) return false;
   if (match.status === "FINISHED") return false;
 
-  // Admin e gestor sempre podem
-  if (["admin", "club_owner", "ADMIN", "GESTOR"].includes(user.role)) return true;
+  // SPECTATOR nunca anota
+  if (user.role === "SPECTATOR") return false;
+
+  // ADMIN e GESTOR sempre podem
+  if (user.role === "ADMIN" || user.role === "GESTOR") return true;
 
   // Participante da partida NÃO pode ser seu anotador
   if (isMatchParticipant(user, match)) return false;
@@ -218,7 +199,7 @@ export function canAnnotateMatch(
   // Anotador designado pode
   if (match.apontadorEmail && match.apontadorEmail === user.email) return true;
 
-  // Qualquer usuário não-participante pode anotar (coach, annotator, atleta de outro jogo)
+  // Qualquer usuário não-participante pode anotar (COACH, ATHLETE de outro jogo)
   return true;
 }
 

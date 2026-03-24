@@ -27,8 +27,6 @@ interface AthleteSearchInputProps {
   onSelect: (athlete: AthleteResult | null) => void;
   /** Callback opcional quando o texto do input muda sem seleção formal */
   onQueryChange?: (query: string) => void;
-  /** Permite criar atleta convidado (digitando nome livre) */
-  allowGuest?: boolean;
   /** Classes CSS extras */
   className?: string;
   /** Desabilitar */
@@ -50,7 +48,6 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
   value,
   onSelect,
   onQueryChange,
-  allowGuest = true,
   className = "",
   disabled = false,
   id,
@@ -148,9 +145,8 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
       onQueryChange(val);
     }
 
-    // Se havia um atleta de banco selecionado (ID numérico/UUID) e o user editou, desmarcar
-    // Mantemos atletas "guest_" porque eles já representam texto livre
-    if (value && value.id && !value.id.startsWith("guest_")) {
+    // Se havia um atleta de banco selecionado e o user editou, desmarcar
+    if (value && value.id) {
       onSelect(null);
     }
 
@@ -171,21 +167,10 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
     onSelect(athlete);
   };
 
-  const handleGuestSelect = () => {
-    if (!query.trim()) return;
-    const guest: AthleteResult = {
-      id: `guest_${Date.now()}`,
-      name: query.trim(),
-      category: "Convidado",
-    };
-    onSelect(guest);
-    setIsOpen(false);
-  };
-
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!isOpen) return;
 
-    const totalOptions = results.length + (allowGuest && query.trim() ? 1 : 0);
+    const totalOptions = results.length;
 
     switch (e.key) {
       case "ArrowDown":
@@ -200,12 +185,6 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
         e.preventDefault();
         if (highlightIndex >= 0 && highlightIndex < results.length) {
           handleSelect(results[highlightIndex]);
-        } else if (
-          highlightIndex === results.length &&
-          allowGuest &&
-          query.trim()
-        ) {
-          handleGuestSelect();
         }
         break;
       case "Escape":
@@ -270,13 +249,13 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
         )}
       </div>
 
-      {value?.globalId && !value.id.startsWith("guest_") && (
+      {value?.globalId && (
         <div className="athlete-selected-code">
           <code>[{value.globalId.slice(0, 8).toUpperCase()}]</code>
         </div>
       )}
 
-      {isOpen && (results.length > 0 || (allowGuest && query.trim())) && (
+      {isOpen && results.length > 0 && (
         <ul className="athlete-search-results" role="listbox">
           {results.map((athlete, idx) => (
             <li
@@ -321,33 +300,13 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
               </div>
             </li>
           ))}
-
-          {allowGuest && query.trim() && (
-            <li
-              role="option"
-              aria-selected={highlightIndex === results.length}
-              className={`athlete-result-item guest-option ${highlightIndex === results.length ? "highlighted" : ""}`}
-              onClick={handleGuestSelect}
-              onMouseEnter={() => setHighlightIndex(results.length)}
-            >
-              <div className="athlete-result-main">
-                <span className="athlete-result-name">
-                  Usar "{query.trim()}" como convidado
-                </span>
-              </div>
-              <div className="athlete-result-meta">
-                <span className="athlete-result-category">Sem cadastro</span>
-              </div>
-            </li>
-          )}
         </ul>
       )}
 
       {isOpen &&
         results.length === 0 &&
         !isLoading &&
-        query.length >= MIN_SEARCH_LENGTH &&
-        !allowGuest && (
+        query.length >= MIN_SEARCH_LENGTH && (
           <div className="athlete-search-empty">
             Nenhum atleta encontrado para "{query}"
           </div>

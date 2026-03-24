@@ -3,11 +3,11 @@ import { VisibleMatchesQuerySchema } from "./validationSchemas.js";
 
 describe("VisibleMatchesQuerySchema", () => {
   it("aceita email válido e role opcional", () => {
-    const data = { email: "user@email.com", role: "player" };
+    const data = { email: "user@email.com", role: "ATHLETE" };
     const result = VisibleMatchesQuerySchema.safeParse(data);
     expect(result.success).toBe(true);
     expect(result.data.email).toBe("user@email.com");
-    expect(result.data.role).toBe("player");
+    expect(result.data.role).toBe("ATHLETE");
   });
 
   it("aceita apenas email", () => {

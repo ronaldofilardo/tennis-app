@@ -57,10 +57,10 @@ const mockAuthUser: AuthUser = {
   id: "user-001",
   email: "play@email.com",
   name: "Player Test",
-  role: "PLAYER",
+  role: "ATHLETE",
   clubs: [],
   activeClubId: null,
-  activeRole: "PLAYER",
+  activeRole: "ATHLETE",
   planType: "FREE",
   subscriptionStatus: "ACTIVE",
 };
@@ -76,7 +76,7 @@ const mockLoginResponse = {
       name: "Player Test",
       clubs: [],
       activeClubId: null,
-      activeRole: "PLAYER",
+      activeRole: "ATHLETE",
     },
   },
 };

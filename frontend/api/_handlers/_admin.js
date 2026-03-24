@@ -5,51 +5,45 @@
 //   GET  /api/admin/stats          → estatísticas globais da plataforma
 //   GET  /api/admin/users          → lista todos os usuários
 
-import prisma from "../_lib/prisma.js";
-import {
-  handleCors,
-  requireRole,
-  sendJson,
-  methodNotAllowed,
-} from "../_lib/authMiddleware.js";
-import { hashPassword, derivarSenha } from "../_lib/passwordUtils.js";
+import prisma from '../_lib/prisma.js';
+import { handleCors, requireRole, sendJson, methodNotAllowed } from '../_lib/authMiddleware.js';
+import { hashPassword, derivarSenha } from '../_lib/passwordUtils.js';
 
 function getSection(url) {
-  const parts = url.pathname.split("/").filter(Boolean);
+  const parts = url.pathname.split('/').filter(Boolean);
   return parts[2] || null; // [api, admin, section]
 }
 
 export default async function handler(req, res) {
   if (handleCors(req, res)) return;
 
-  const ctx = requireRole(req, res, "ADMIN");
+  const ctx = requireRole(req, res, 'ADMIN');
   if (!ctx) return;
 
-  const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+  const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const section = getSection(url);
 
   // ─── POST /api/admin/clubs ───────────────────────────────────────────────
   // Cria um novo clube e seu gestor em uma única transação
-  if (section === "clubs" && req.method === "POST") {
+  if (section === 'clubs' && req.method === 'POST') {
     const {
       name,
       slug,
-      planType = "FREE",
+      planType = 'FREE',
       gestorName,
       gestorEmail,
       gestorPassword,
       alsoCoach = false,
     } = req.body || {};
 
-    if (!name || !name.trim())
-      return sendJson(res, 400, { error: "Nome do clube é obrigatório." });
+    if (!name || !name.trim()) return sendJson(res, 400, { error: 'Nome do clube é obrigatório.' });
     if (!gestorName || !gestorName.trim())
-      return sendJson(res, 400, { error: "Nome do gestor é obrigatório." });
+      return sendJson(res, 400, { error: 'Nome do gestor é obrigatório.' });
     if (!gestorEmail || !gestorEmail.trim())
-      return sendJson(res, 400, { error: "E-mail do gestor é obrigatório." });
+      return sendJson(res, 400, { error: 'E-mail do gestor é obrigatório.' });
     if (!gestorPassword || gestorPassword.length < 6)
       return sendJson(res, 400, {
-        error: "Senha do gestor deve ter ao menos 6 caracteres.",
+        error: 'Senha do gestor deve ter ao menos 6 caracteres.',
       });
 
     const cleanEmail = gestorEmail.trim().toLowerCase();
@@ -57,14 +51,14 @@ export default async function handler(req, res) {
       ? slug
           .trim()
           .toLowerCase()
-          .replace(/[^a-z0-9-]/g, "-")
+          .replace(/[^a-z0-9-]/g, '-')
       : name
           .trim()
           .toLowerCase()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/(^-|-$)/g, "");
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
 
     try {
       // Verificar slug único
@@ -106,8 +100,8 @@ export default async function handler(req, res) {
           data: {
             userId: gestor.id,
             clubId: club.id,
-            role: "GESTOR",
-            status: "ACTIVE",
+            role: 'GESTOR',
+            status: 'ACTIVE',
             alsoCoach: Boolean(alsoCoach),
             invitedByUserId: ctx.userId,
           },
@@ -126,40 +120,37 @@ export default async function handler(req, res) {
         alsoCoach: result.membership.alsoCoach,
       });
     } catch (err) {
-      console.error("[admin/clubs POST]", err);
-      if (err.code === "P2002")
+      console.error('[admin/clubs POST]', err);
+      if (err.code === 'P2002')
         return sendJson(res, 409, {
-          error: "E-mail do gestor ou slug já cadastrado.",
+          error: 'E-mail do gestor ou slug já cadastrado.',
         });
-      return sendJson(res, 500, { error: err.message || "Erro interno." });
+      return sendJson(res, 500, { error: err.message || 'Erro interno.' });
     }
   }
 
   // Demais rotas são GET only
-  if (req.method !== "GET") return methodNotAllowed(res, ["GET", "POST"]);
+  if (req.method !== 'GET') return methodNotAllowed(res, ['GET', 'POST']);
 
-  const limit = Math.min(
-    parseInt(url.searchParams.get("limit") || "20", 10),
-    100,
-  );
-  const offset = parseInt(url.searchParams.get("offset") || "0", 10);
-  const search = url.searchParams.get("search") || "";
+  const limit = Math.min(parseInt(url.searchParams.get('limit') || '20', 10), 100);
+  const offset = parseInt(url.searchParams.get('offset') || '0', 10);
+  const search = url.searchParams.get('search') || '';
 
   // ─── GET /api/admin/clubs ─────────────────────────────────────────────────
-  if (section === "clubs") {
+  if (section === 'clubs') {
     try {
       const where = search
         ? {
             OR: [
-              { name: { contains: search, mode: "insensitive" } },
-              { slug: { contains: search, mode: "insensitive" } },
+              { name: { contains: search, mode: 'insensitive' } },
+              { slug: { contains: search, mode: 'insensitive' } },
             ],
           }
         : {};
       const [clubs, total] = await Promise.all([
         prisma.club.findMany({
           where,
-          orderBy: { createdAt: "desc" },
+          orderBy: { createdAt: 'desc' },
           skip: offset,
           take: limit,
           select: {
@@ -193,28 +184,28 @@ export default async function handler(req, res) {
         offset,
       });
     } catch (err) {
-      console.error("[admin/clubs]", err);
+      console.error('[admin/clubs]', err);
       return sendJson(res, 500, {
-        error: err.message || "Internal server error",
+        error: err.message || 'Internal server error',
       });
     }
   }
 
   // ─── GET /api/admin/users ─────────────────────────────────────────────────
-  if (section === "users") {
+  if (section === 'users') {
     try {
       const where = search
         ? {
             OR: [
-              { name: { contains: search, mode: "insensitive" } },
-              { email: { contains: search, mode: "insensitive" } },
+              { name: { contains: search, mode: 'insensitive' } },
+              { email: { contains: search, mode: 'insensitive' } },
             ],
           }
         : {};
       const [users, total] = await Promise.all([
         prisma.user.findMany({
           where,
-          orderBy: { createdAt: "desc" },
+          orderBy: { createdAt: 'desc' },
           skip: offset,
           take: limit,
           select: {
@@ -222,9 +213,15 @@ export default async function handler(req, res) {
             email: true,
             name: true,
             isActive: true,
+            platformRole: true,
             createdAt: true,
             updatedAt: true,
             _count: { select: { memberships: true, createdMatches: true } },
+            memberships: {
+              take: 1,
+              orderBy: { joinedAt: 'asc' },
+              select: { club: { select: { name: true } } },
+            },
           },
         }),
         prisma.user.count({ where }),
@@ -235,6 +232,8 @@ export default async function handler(req, res) {
           email: u.email,
           name: u.name,
           isActive: u.isActive,
+          platformRole: u.platformRole,
+          primaryClub: u.memberships[0]?.club?.name ?? null,
           createdAt: u.createdAt,
           updatedAt: u.updatedAt,
           clubCount: u._count.memberships,
@@ -245,15 +244,15 @@ export default async function handler(req, res) {
         offset,
       });
     } catch (err) {
-      console.error("[admin/users]", err);
+      console.error('[admin/users]', err);
       return sendJson(res, 500, {
-        error: err.message || "Internal server error",
+        error: err.message || 'Internal server error',
       });
     }
   }
 
   // ─── GET /api/admin/stats ─────────────────────────────────────────────────
-  if (section === "stats") {
+  if (section === 'stats') {
     try {
       const now = new Date();
       const oneWeekAgo = new Date(now);
@@ -276,11 +275,11 @@ export default async function handler(req, res) {
         prisma.user.count({ where: { createdAt: { gte: firstDayOfMonth } } }),
         prisma.club.count({ where: { createdAt: { gte: firstDayOfMonth } } }),
         prisma.user.count({ where: { updatedAt: { gte: oneWeekAgo } } }),
-        prisma.club.groupBy({ by: ["planType"], _count: { id: true } }),
-        prisma.clubMembership.groupBy({ by: ["role"], _count: { id: true } }),
+        prisma.club.groupBy({ by: ['planType'], _count: { id: true } }),
+        prisma.clubMembership.groupBy({ by: ['role'], _count: { id: true } }),
         prisma.club.findMany({
           take: 10,
-          orderBy: { memberships: { _count: "desc" } },
+          orderBy: { memberships: { _count: 'desc' } },
           select: {
             id: true,
             name: true,
@@ -291,7 +290,7 @@ export default async function handler(req, res) {
           },
         }),
         prisma.club.findMany({
-          orderBy: { createdAt: "desc" },
+          orderBy: { createdAt: 'desc' },
           take: 5,
           select: {
             id: true,
@@ -336,35 +335,32 @@ export default async function handler(req, res) {
         })),
       });
     } catch (err) {
-      console.error("[admin/stats]", err);
+      console.error('[admin/stats]', err);
       return sendJson(res, 500, {
-        error: err.message || "Internal server error",
+        error: err.message || 'Internal server error',
       });
     }
   }
 
   // ─── GET /api/admin/matches/all ─────────────────────────────────────────
-  if (section === "matches") {
-    const parts = url.pathname.split("/").filter(Boolean);
+  if (section === 'matches') {
+    const parts = url.pathname.split('/').filter(Boolean);
     const subSection = parts[3];
 
     // GET /api/admin/matches/all — lista TODAS as partidas com paginação e filtro por status
-    if (subSection === "all") {
-      if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
+    if (subSection === 'all') {
+      if (req.method !== 'GET') return methodNotAllowed(res, ['GET']);
       try {
-        const limit = Math.min(
-          parseInt(url.searchParams.get("limit") || "20", 10),
-          100,
-        );
-        const offset = parseInt(url.searchParams.get("offset") || "0", 10);
-        const status = url.searchParams.get("status") || null;
+        const limit = Math.min(parseInt(url.searchParams.get('limit') || '20', 10), 100);
+        const offset = parseInt(url.searchParams.get('offset') || '0', 10);
+        const status = url.searchParams.get('status') || null;
 
         const where = status ? { status } : {};
 
         const [matches, total] = await Promise.all([
           prisma.match.findMany({
             where,
-            orderBy: { createdAt: "desc" },
+            orderBy: { createdAt: 'desc' },
             skip: offset,
             take: limit,
             select: {
@@ -398,19 +394,19 @@ export default async function handler(req, res) {
 
         return sendJson(res, 200, { matches: formatted, total, limit, offset });
       } catch (err) {
-        console.error("[admin/matches/all]", err);
-        return sendJson(res, 500, { error: err.message || "Erro interno." });
+        console.error('[admin/matches/all]', err);
+        return sendJson(res, 500, { error: err.message || 'Erro interno.' });
       }
     }
   }
 
   // ─── POST /api/admin/athletes/sync-passwords ─────────────────────────────
   // Recalcula a senha padrão (DDMMAAAA) de todos os atletas com data de nascimento.
-  if (section === "athletes") {
-    const parts = url.pathname.split("/").filter(Boolean);
+  if (section === 'athletes') {
+    const parts = url.pathname.split('/').filter(Boolean);
     const subSection = parts[3]; // sync-passwords
-    if (subSection === "sync-passwords") {
-      if (req.method !== "POST") return methodNotAllowed(res, ["POST"]);
+    if (subSection === 'sync-passwords') {
+      if (req.method !== 'POST') return methodNotAllowed(res, ['POST']);
       try {
         const BATCH_SIZE = 100;
         let offset = 0;
@@ -430,13 +426,8 @@ export default async function handler(req, res) {
           await Promise.all(
             profiles.map(async (profile) => {
               try {
-                const cleanCpf = profile.cpf
-                  ? profile.cpf.replace(/\D/g, "")
-                  : null;
-                const senha = derivarSenha(
-                  profile.birthDate.toISOString().split("T")[0],
-                  cleanCpf,
-                );
+                const cleanCpf = profile.cpf ? profile.cpf.replace(/\D/g, '') : null;
+                const senha = derivarSenha(profile.birthDate.toISOString().split('T')[0], cleanCpf);
                 const passwordHash = await hashPassword(senha);
                 await prisma.user.update({
                   where: { id: profile.userId },
@@ -454,11 +445,11 @@ export default async function handler(req, res) {
 
         return sendJson(res, 200, { updated, skipped });
       } catch (err) {
-        console.error("[admin/athletes/sync-passwords]", err);
-        return sendJson(res, 500, { error: err.message || "Erro interno." });
+        console.error('[admin/athletes/sync-passwords]', err);
+        return sendJson(res, 500, { error: err.message || 'Erro interno.' });
       }
     }
   }
 
-  return sendJson(res, 404, { error: "Unknown admin section" });
+  return sendJson(res, 404, { error: 'Unknown admin section' });
 }

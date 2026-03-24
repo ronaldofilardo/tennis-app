@@ -213,6 +213,7 @@ async function main() {
           gender: "MALE",
           isPublic: true,
           clubId: defaultClub.id,
+          cpf: "87545772920",
         },
       });
       console.log(`✅ AthleteProfile criado para ${athlete.email}`);
@@ -220,14 +221,84 @@ async function main() {
       console.log(`⚠️  AthleteProfile já existe para ${athlete.email}`);
     }
 
+    // 9. Criar ou buscar anotador
+    const anotadorEmail = "anotador@clubeteste.com";
+    let anotador = await prisma.user.findUnique({
+      where: { email: anotadorEmail },
+    });
+
+    if (!anotador) {
+      const passwordHash = await hashPassword("anotador");
+      anotador = await prisma.user.create({
+        data: {
+          email: anotadorEmail,
+          name: "Anotador",
+          passwordHash,
+          isActive: true,
+        },
+      });
+      console.log(
+        `✅ Usuário anotador criado: ${anotador.email} (ID: ${anotador.id})`,
+      );
+    } else {
+      console.log(`⚠️  Usuário anotador já existe: ${anotador.email}`);
+    }
+
+    // 10. Membership do anotador como COACH no clube
+    const existingAnotadorMembership = await prisma.clubMembership.findUnique({
+      where: { userId_clubId: { userId: anotador.id, clubId: defaultClub.id } },
+    });
+
+    if (!existingAnotadorMembership) {
+      await prisma.clubMembership.create({
+        data: {
+          userId: anotador.id,
+          clubId: defaultClub.id,
+          role: "COACH",
+          status: "ACTIVE",
+        },
+      });
+      console.log(
+        `✅ Membership criado: ${anotador.email} → ${defaultClub.name} (role: COACH)`,
+      );
+    } else {
+      console.log(
+        `⚠️  Membership anotador já existe: ${anotador.email} → ${defaultClub.name}`,
+      );
+    }
+
+    // 11. AthleteProfile do anotador
+    const anotadorProfile = await prisma.athleteProfile.findUnique({
+      where: { userId: anotador.id },
+    });
+
+    if (!anotadorProfile) {
+      await prisma.athleteProfile.create({
+        data: {
+          userId: anotador.id,
+          name: "Anotador",
+          nickname: "Anotador",
+          category: "ADULTO",
+          gender: "MALE",
+          isPublic: true,
+          clubId: defaultClub.id,
+          cpf: "12345678901",
+          birthDate: new Date("1974-10-24"),
+        },
+      });
+      console.log(`✅ AthleteProfile criado para anotador (CPF: 12345678901)`);
+    } else {
+      console.log(`⚠️  AthleteProfile anotador já existe`);
+    }
+
     console.log("\n✨ Seed concluído com sucesso!");
     console.log(`\n📋 Dados criados/verificados:`);
     console.log(`   • Admin: ${admin.email} / 5978rdf`);
-    console.log(`   • Gestor: ${gestor.email} / gestor123`);
-    console.log(`   • Atleta: ${athlete.email} / 123`);
     console.log(`   • Clube: ${defaultClub.name}`);
+    console.log(`   • Gestor: ${gestor.email} / gestor123`);
+    console.log(`   • Atleta: ${athlete.email} / 123 (CPF: 87545772920)`);
     console.log(
-      `   • CPF (nota): 87545772920 (armazenar em AthleteProfile se necessário)`,
+      `   • Anotador: ${anotador.email} / anotador (CPF: 12345678901, nasc: 24/10/1974)`,
     );
   } catch (error) {
     console.error("❌ Erro durante seed:", error);

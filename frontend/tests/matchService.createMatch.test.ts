@@ -7,18 +7,22 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// Mock Prisma
-const mockPrismaClient = {
-  user: {
-    findFirst: vi.fn(),
+// Mock Prisma via vi.hoisted para funcionar com new PrismaClient()
+const { mockPrismaClient } = vi.hoisted(() => ({
+  mockPrismaClient: {
+    user: {
+      findFirst: vi.fn(),
+    },
+    match: {
+      create: vi.fn(),
+    },
   },
-  match: {
-    create: vi.fn(),
-  },
-};
+}));
 
 vi.mock("@prisma/client", () => ({
-  PrismaClient: vi.fn(() => mockPrismaClient),
+  PrismaClient: vi.fn(function () {
+    return mockPrismaClient;
+  }),
 }));
 
 // Import after mocking
@@ -51,16 +55,27 @@ describe("matchService.createMatch", () => {
         "player.one@test.com",
         "player.two@test.com",
       ],
+      sportType: "TENNIS",
+      format: "BEST_OF_3",
+      courtType: null,
+      nickname: null,
+      visibility: "PLAYERS_ONLY",
+      openForAnnotation: false,
+      status: "NOT_STARTED",
+      score: "",
+      winner: null,
+      completedSets: "[]",
+      clubId: null,
+      createdAt: new Date("2024-01-01"),
     });
 
     // Act
-    const result = await createMatch(
-      {
-        p1: players.p1,
-        p2: players.p2,
-      },
+    const result = await createMatch({
+      sportType: "TENNIS",
+      format: "BEST_OF_3",
+      players: { p1: players.p1, p2: players.p2 },
       apontadorEmail,
-    );
+    });
 
     // Assert
     expect(mockPrismaClient.user.findFirst).toHaveBeenCalledTimes(2);
@@ -102,16 +117,27 @@ describe("matchService.createMatch", () => {
       playerP1: "Pupilo",
       playerP2: "Genio",
       playersEmails: ["pupilo@test.com", "genio@test.com"], // Duplicata removida
+      sportType: "TENNIS",
+      format: "BEST_OF_3",
+      courtType: null,
+      nickname: null,
+      visibility: "PLAYERS_ONLY",
+      openForAnnotation: false,
+      status: "NOT_STARTED",
+      score: "",
+      winner: null,
+      completedSets: "[]",
+      clubId: null,
+      createdAt: new Date("2024-01-01"),
     });
 
     // Act
-    const result = await createMatch(
-      {
-        p1: players.p1,
-        p2: players.p2,
-      },
+    const result = await createMatch({
+      sportType: "TENNIS",
+      format: "BEST_OF_3",
+      players: { p1: players.p1, p2: players.p2 },
       apontadorEmail,
-    );
+    });
 
     // Assert
     expect(result.playersEmails).toContain("pupilo@test.com");
@@ -138,16 +164,27 @@ describe("matchService.createMatch", () => {
       playerP2: "Player Two",
       playersEmails: ["scorer@test.com", "player.two@test.com"],
       // Nota: "Unknown Player" não será adicionado pois não é email
+      sportType: "TENNIS",
+      format: "BEST_OF_3",
+      courtType: null,
+      nickname: null,
+      visibility: "PLAYERS_ONLY",
+      openForAnnotation: false,
+      status: "NOT_STARTED",
+      score: "",
+      winner: null,
+      completedSets: "[]",
+      clubId: null,
+      createdAt: new Date("2024-01-01"),
     });
 
     // Act
-    const result = await createMatch(
-      {
-        p1: players.p1,
-        p2: players.p2,
-      },
+    const result = await createMatch({
+      sportType: "TENNIS",
+      format: "BEST_OF_3",
+      players: { p1: players.p1, p2: players.p2 },
       apontadorEmail,
-    );
+    });
 
     // Assert
     expect(result.playersEmails).toContain("player.two@test.com");
@@ -173,16 +210,27 @@ describe("matchService.createMatch", () => {
       playerP1: "Pupilo",
       playerP2: "Pupilo",
       playersEmails: ["pupilo@test.com"], // Apenas uma cópia
+      sportType: "TENNIS",
+      format: "BEST_OF_3",
+      courtType: null,
+      nickname: null,
+      visibility: "PLAYERS_ONLY",
+      openForAnnotation: false,
+      status: "NOT_STARTED",
+      score: "",
+      winner: null,
+      completedSets: "[]",
+      clubId: null,
+      createdAt: new Date("2024-01-01"),
     });
 
     // Act
-    const result = await createMatch(
-      {
-        p1: players.p1,
-        p2: players.p2,
-      },
+    const result = await createMatch({
+      sportType: "TENNIS",
+      format: "BEST_OF_3",
+      players: { p1: players.p1, p2: players.p2 },
       apontadorEmail,
-    );
+    });
 
     // Assert
     expect(result.playersEmails.length).toBe(1);
@@ -207,16 +255,27 @@ describe("matchService.createMatch", () => {
       playerP1: "Player One",
       playerP2: "Player Two",
       playersEmails: ["scorer@test.com", "player.two@test.com"],
+      sportType: "TENNIS",
+      format: "BEST_OF_3",
+      courtType: null,
+      nickname: null,
+      visibility: "PLAYERS_ONLY",
+      openForAnnotation: false,
+      status: "NOT_STARTED",
+      score: "",
+      winner: null,
+      completedSets: "[]",
+      clubId: null,
+      createdAt: new Date("2024-01-01"),
     });
 
     // Act
-    const result = await createMatch(
-      {
-        p1: players.p1,
-        p2: players.p2,
-      },
+    const result = await createMatch({
+      sportType: "TENNIS",
+      format: "BEST_OF_3",
+      players: { p1: players.p1, p2: players.p2 },
       apontadorEmail,
-    );
+    });
 
     // Assert
     // playersEmails deve ser um array derivado de Set
@@ -248,16 +307,27 @@ describe("matchService.createMatch", () => {
         "player.one@test.com",
         "player.two@test.com",
       ],
+      sportType: "TENNIS",
+      format: "BEST_OF_3",
+      courtType: null,
+      nickname: null,
+      visibility: "PLAYERS_ONLY",
+      openForAnnotation: false,
+      status: "NOT_STARTED",
+      score: "",
+      winner: null,
+      completedSets: "[]",
+      clubId: null,
+      createdAt: new Date("2024-01-01"),
     });
 
     // Act
-    await createMatch(
-      {
-        p1: players.p1,
-        p2: players.p2,
-      },
+    await createMatch({
+      sportType: "TENNIS",
+      format: "BEST_OF_3",
+      players: { p1: players.p1, p2: players.p2 },
       apontadorEmail,
-    );
+    });
 
     // Assert
     expect(mockPrismaClient.match.create).toHaveBeenCalledOnce();

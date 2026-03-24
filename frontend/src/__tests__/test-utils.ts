@@ -87,7 +87,7 @@ export const clearAppLocalStorage = (): void => {
  */
 export const setMockAuthUser = (
   email = "apontador@teste.com",
-  role: "annotator" | "player" = "annotator",
+  role: "COACH" | "ATHLETE" = "COACH",
 ): void => {
   const user = { email, role };
   if (typeof localStorage !== "undefined") {

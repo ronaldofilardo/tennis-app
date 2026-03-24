@@ -14,10 +14,19 @@ datasource db {
 // ENUMS — Fonte única de verdade para roles, status e tipos
 // ============================================================
 
+/// Tipo de plataforma do usuário — independente de clube.
+/// MEMBER = usuário vinculado a pelo menos um clube.
+enum PlatformRole {
+  ADMIN
+  SCORER
+  INDEPENDENT_ATHLETE
+  SPECTATOR
+  MEMBER
+}
+
 enum UserRole {
   ADMIN
   GESTOR
-  CLUB_STAFF
   COACH
   ATHLETE
   SPECTATOR
@@ -176,19 +185,22 @@ model Invoice {
 
 /// Usuário autenticado (identidade global). Um User pode pertencer a N clubes.
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
+  id           String       @id @default(cuid())
+  email        String       @unique
   name         String
   passwordHash String
   avatarUrl    String?
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  isActive     Boolean      @default(true)
+  platformRole PlatformRole @default(MEMBER) // Tipo independente de clube
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   memberships    ClubMembership[]
   athleteProfile AthleteProfile?
   createdMatches Match[]               @relation("MatchCreator")
   tournaments    TournamentOrganizer[]
+  annotationSessions MatchAnnotationSession[] @relation("AnnotationSessions")
+  endorsements       AnnotationEndorsement[]  @relation("Endorsements")
 
   @@map("users")
 }
@@ -290,9 +302,10 @@ model Tournament {
   status           TournamentStatus @default(DRAFT)
   maxPlayers       Int?
   rules            String? // JSON com regras específicas (matchFormat, setsToWin, etc)
-  registrationType String           @default("INVITE_ONLY") // OPEN, INVITE_ONLY, CLUB_ONLY
-  isInternal       Boolean          @default(false) // true = torneio de treino (COACH)
-  createdAt        DateTime         @default(now())
+  registrationType          String  @default("INVITE_ONLY") // OPEN, INVITE_ONLY, CLUB_ONLY
+  isInternal                Boolean @default(false) // true = torneio de treino (COACH)
+  isOpenToExternalAthletes  Boolean @default(false) // true = aceita atletas de outros clubes
+  createdAt                 DateTime @default(now())
   updatedAt        DateTime         @updatedAt
 
   club       Club                  @relation(fields: [clubId], references: [id], onDelete: Cascade)
@@ -386,7 +399,8 @@ model Match {
   bracketPosition Int? // Posição no chaveamento
 
   // === Visibilidade ===
-  visibility   MatchVisibility @default(PLAYERS_ONLY)
+  visibility          MatchVisibility @default(PLAYERS_ONLY)
+  openForAnnotation   Boolean         @default(false) // Permite qualquer autenticado anotar
 
   status    MatchStatus @default(NOT_STARTED)
   score     String?
@@ -404,6 +418,7 @@ model Match {
   player2    AthleteProfile?     @relation("MatchPlayer2", fields: [player2Id], references: [id], onDelete: SetNull)
   tournament Tournament?         @relation("TournamentMatches", fields: [tournamentId], references: [id], onDelete: SetNull)
   category   TournamentCategory? @relation("CategoryMatches", fields: [categoryId], references: [id], onDelete: SetNull)
+  annotationSessions MatchAnnotationSession[]
 
   @@index([clubId])
   @@index([status])
@@ -412,4 +427,44 @@ model Match {
   @@map("matches")
 }
 
+// ============================================================
+// FASE 4: Sessões de Anotação (evita split-brain placar)
+// ============================================================
+
+/// Sessão de anotação de uma partida. Apenas UMA sessão pode estar ativa por vez.
+/// Resolve o problema de split-brain: último ponto de verdade é a sessão ativa.
+model MatchAnnotationSession {
+  id                   String    @id @default(cuid())
+  matchId              String
+  annotatorUserId      String    // Quem está anotando
+  startedAt            DateTime  @default(now())
+  endedAt              DateTime? // null = sessão ativa
+  matchStateSnapshot   String?   // JSON — snapshot do matchState no início da sessão
+  isActive             Boolean   @default(true)
+  createdAt            DateTime  @default(now())
+
+  match     Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  annotator User   @relation("AnnotationSessions", fields: [annotatorUserId], references: [id], onDelete: Cascade)
+
+  endorsements AnnotationEndorsement[]
+
+  @@index([matchId])
+  @@index([annotatorUserId])
+  @@index([isActive])
+  @@map("match_annotation_sessions")
+}
+
+/// Endosso de uma sessão de anotação (validação por participante/coach).
+model AnnotationEndorsement {
+  id               String   @id @default(cuid())
+  sessionId        String
+  endorsedByUserId String   // Quem endossou (jogador, coach)
+  endorsedAt       DateTime @default(now())
+
+  session    MatchAnnotationSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  endorsedBy User                   @relation("Endorsements", fields: [endorsedByUserId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, endorsedByUserId])
+  @@map("annotation_endorsements")
+}
 

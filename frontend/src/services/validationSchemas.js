@@ -1,6 +1,6 @@
 // frontend/src/services/validationSchemas.js - Esquemas de validação Zod para APIs
 
-import * as zodPackage from "zod";
+import * as zodPackage from 'zod';
 
 // Carrega Zod de forma robusta para múltiplos ambientes
 let z = null;
@@ -14,31 +14,20 @@ try {
   } else {
     z = zodPackage;
   }
-} catch (importError) {
-  console.warn(
-    "[validationSchemas] Import direto falhou, tentando globalThis:",
-    importError.message,
-  );
+} catch {
   try {
     // Fallback para globalThis (ambiente serverless)
-    if (typeof globalThis !== "undefined" && globalThis.Zod) {
+    if (typeof globalThis !== 'undefined' && globalThis.Zod) {
       z = globalThis.Zod;
     } else {
-      throw new Error("Zod não encontrado em globalThis");
+      throw new Error('Zod não encontrado em globalThis');
     }
-  } catch (globalError) {
-    console.error(
-      "[validationSchemas] Zod não pôde ser carregado:",
-      globalError.message,
-    );
+  } catch {
     // Cria um stub mínimo para evitar crashes
     z = {
       object: (shape) => ({
         strict: () => ({
           parse: (data) => {
-            console.warn(
-              "[validationSchemas] Usando stub Zod - validação desabilitada",
-            );
             return data;
           },
           safeParse: (data) => ({
@@ -86,8 +75,7 @@ try {
 
 // Verificação final de carregamento
 if (!z) {
-  console.error("[validationSchemas] ❌ Zod não está disponível!");
-  throw new Error("Zod é obrigatório para validação de dados");
+  throw new Error('Zod é obrigatório para validação de dados');
 }
 
 // Helper: aceita email OU CPF (11 dígitos) como identificador de login
@@ -100,39 +88,38 @@ function emailOrCpf() {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(val);
     },
-    { message: "Deve ser um email válido ou CPF com 11 dígitos" },
+    { message: 'Deve ser um email válido ou CPF com 11 dígitos' },
   );
 }
 
 // Esquema para criação de partida
 export const MatchCreateSchema = z.object({
   sportType: z
-    .string({ required_error: "O campo sportType é obrigatório." })
-    .min(1, "O campo sportType não pode ser vazio."),
+    .string({ required_error: 'O campo sportType é obrigatório.' })
+    .min(1, 'O campo sportType não pode ser vazio.'),
   format: z
-    .string({ required_error: "O campo format é obrigatório." })
-    .min(1, "O campo format não pode ser vazio."),
+    .string({ required_error: 'O campo format é obrigatório.' })
+    .min(1, 'O campo format não pode ser vazio.'),
   courtType: z.string().optional().nullable(), // CLAY | HARD | GRASS
   players: z.object(
     {
       p1: z
-        .string({ required_error: "O jogador p1 é obrigatório." })
-        .min(1, "O nome do jogador p1 não pode ser vazio."),
+        .string({ required_error: 'O jogador p1 é obrigatório.' })
+        .min(1, 'O nome do jogador p1 não pode ser vazio.'),
       p2: z
-        .string({ required_error: "O jogador p2 é obrigatório." })
-        .min(1, "O nome do jogador p2 não pode ser vazio."),
+        .string({ required_error: 'O jogador p2 é obrigatório.' })
+        .min(1, 'O nome do jogador p2 não pode ser vazio.'),
     },
-    { required_error: "O objeto players é obrigatório." },
+    { required_error: 'O objeto players é obrigatório.' },
   ),
   nickname: z.string().optional().nullable(),
-  visibility: z
-    .enum(["PUBLIC", "CLUB", "PLAYERS_ONLY"])
-    .default("PLAYERS_ONLY"),
+  visibility: z.enum(['PUBLIC', 'CLUB', 'PLAYERS_ONLY']).default('PLAYERS_ONLY'),
   apontadorEmail: emailOrCpf().optional().nullable(), // Email ou CPF do apontador
   visibleTo: z.string().optional().nullable(), // Legado
   clubId: z.string().optional().nullable(), // ID do clube dono da partida
   createdByUserId: z.string().optional().nullable(), // User que criou
   club_id: z.string().optional().nullable(),
+  openForAnnotation: z.boolean().optional().default(false), // Permite qualquer autenticado anotar
   metadata: z.record(z.unknown()).optional().nullable(),
   tags: z.array(z.string()).optional().nullable(),
   _meta: z
@@ -151,6 +138,7 @@ export const MatchUpdateSchema = z
     score: z.string().optional(),
     winner: z.string().nullable().optional(),
     completedSets: z.array(z.any()).optional(),
+    openForAnnotation: z.boolean().optional(),
   })
   .strict();
 
@@ -159,7 +147,7 @@ export const MatchUpdateSchema = z
 export const MatchStateUpdateSchema = z
   .object({
     matchState: z.union([
-      z.string().min(1, "matchState string não pode ser vazio"),
+      z.string().min(1, 'matchState string não pode ser vazio'),
       z.object({}).passthrough(), // aceita qualquer objeto (o estado JSON é complexo e variável)
     ]),
   })
@@ -176,15 +164,15 @@ export const VisibleMatchesQuerySchema = z
 // Esquema para ID de partida (parâmetro de rota)
 export const MatchIdSchema = z
   .string()
-  .min(1, "ID da partida não pode ser vazio")
-  .max(100, "ID da partida muito longo");
+  .min(1, 'ID da partida não pode ser vazio')
+  .max(100, 'ID da partida muito longo');
 
 // Função utilitária para validar payload de estado de partida
 export function validateMatchStatePayload(data) {
   // Simula validação: aceita se tem as principais chaves, rejeita se faltar
   if (
     data &&
-    typeof data === "object" &&
+    typeof data === 'object' &&
     data.sets &&
     data.currentSet !== undefined &&
     data.currentSetState &&
@@ -194,7 +182,7 @@ export function validateMatchStatePayload(data) {
   ) {
     return { success: true, data };
   } else {
-    return { success: false, error: "Payload inválido" };
+    return { success: false, error: 'Payload inválido' };
   }
 }
 
@@ -205,13 +193,10 @@ export function validateAndFormatZodError(error) {
     return error.errors
       .map(
         (e) =>
-          (Array.isArray(e.path) ? e.path.join(".") : e.path) +
-          (e.message ? ": " + e.message : ""),
+          (Array.isArray(e.path) ? e.path.join('.') : e.path) + (e.message ? ': ' + e.message : ''),
       )
-      .join("\n");
+      .join('\n');
   }
   // Erro genérico
-  return `Erro de validação: ${
-    error && error.message ? error.message : String(error)
-  }`;
+  return `Erro de validação: ${error && error.message ? error.message : String(error)}`;
 }

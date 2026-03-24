@@ -3,10 +3,10 @@
 // Atleta: edita AthleteProfile (nome, apelido, telefone, sexo, nascimento, categoria, ranking).
 // Técnico: edita User (nome, email).
 
-import React, { useState, useEffect } from "react";
-import httpClient from "../config/httpClient";
-import { useToast } from "./Toast";
-import "./AddAthleteModal.css";
+import React, { useState, useEffect } from 'react';
+import httpClient from '../config/httpClient';
+import { useToast } from './Toast';
+import './AddAthleteModal.css';
 
 export interface EditableMember {
   id: string; // membership ID
@@ -17,7 +17,12 @@ export interface EditableMember {
     id: string | null;
     email: string | null;
     name: string;
-    athleteProfile?: { id: string; globalId: string } | null;
+    athleteProfile?: {
+      id: string;
+      globalId: string;
+      cpf?: string | null;
+      birthDate?: string | null;
+    } | null;
   };
 }
 
@@ -30,14 +35,14 @@ interface EditMemberModalProps {
 }
 
 const CATEGORY_OPTIONS = [
-  "SUB-10",
-  "SUB-12",
-  "SUB-14",
-  "SUB-16",
-  "SUB-18",
-  "ADULTO",
-  "SENIOR",
-  "MASTER",
+  'SUB-10',
+  'SUB-12',
+  'SUB-14',
+  'SUB-16',
+  'SUB-18',
+  'ADULTO',
+  'SENIOR',
+  'MASTER',
 ];
 
 interface AthleteFullProfile {
@@ -62,26 +67,33 @@ const EditMemberModal: React.FC<EditMemberModalProps> = ({
   const [loadingProfile, setLoadingProfile] = useState(false);
 
   // Shared
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [cpf, setCpf] = useState('');
+  const [birthDate, setBirthDate] = useState('');
 
   // Athlete-only
-  const [nickname, setNickname] = useState("");
-  const [birthDate, setBirthDate] = useState("");
-  const [phone, setPhone] = useState("");
-  const [category, setCategory] = useState("");
-  const [gender, setGender] = useState("");
-  const [ranking, setRanking] = useState("");
+  const [nickname, setNickname] = useState('');
+  const [phone, setPhone] = useState('');
+  const [category, setCategory] = useState('');
+  const [gender, setGender] = useState('');
+  const [ranking, setRanking] = useState('');
 
-  const isCoach = member?.role === "COACH";
-  const isAthlete = member?.role === "ATHLETE";
+  const isCoach = member?.role === 'COACH';
+  const isAthlete = member?.role === 'ATHLETE';
 
   useEffect(() => {
     if (!isOpen || !member) return;
 
     if (isCoach) {
-      setName(member.user.name ?? "");
-      setEmail(member.user.email ?? "");
+      setName(member.user.name ?? '');
+      setEmail(member.user.email?.includes('@') ? member.user.email : '');
+      setCpf(member.user.athleteProfile?.cpf ?? '');
+      setBirthDate(
+        member.user.athleteProfile?.birthDate
+          ? String(member.user.athleteProfile.birthDate).substring(0, 10)
+          : '',
+      );
     } else if (isAthlete) {
       const profileId = member.user.athleteProfile?.id;
       if (profileId) {
@@ -90,46 +102,46 @@ const EditMemberModal: React.FC<EditMemberModalProps> = ({
           .get<AthleteFullProfile>(`/athletes/${profileId}`)
           .then((res) => {
             const p = res.data;
-            setName(p.name ?? "");
-            setNickname(p.nickname ?? "");
-            setBirthDate(
-              p.birthDate ? String(p.birthDate).substring(0, 10) : "",
-            );
-            setPhone(p.phone ?? "");
-            setCategory(p.category ?? "");
-            setGender(p.gender ?? "");
-            setRanking(p.ranking != null ? String(p.ranking) : "");
+            setName(p.name ?? '');
+            setNickname(p.nickname ?? '');
+            setBirthDate(p.birthDate ? String(p.birthDate).substring(0, 10) : '');
+            setPhone(p.phone ?? '');
+            setCategory(p.category ?? '');
+            setGender(p.gender ?? '');
+            setRanking(p.ranking != null ? String(p.ranking) : '');
           })
-          .catch(() => toast.error("Erro ao carregar dados do atleta"))
+          .catch(() => toast.error('Erro ao carregar dados do atleta'))
           .finally(() => setLoadingProfile(false));
       } else {
         // Atleta convidado sem AthleteProfile ligado
-        setName(member.user.name ?? "");
+        setName(member.user.name ?? '');
       }
     }
   }, [isOpen, member]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!isOpen || !member) return null;
 
-  const roleLabel = isCoach ? "Técnico" : "Atleta";
+  const roleLabel = isCoach ? 'Técnico' : 'Atleta';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      toast.error("Nome é obrigatório");
+      toast.error('Nome é obrigatório');
       return;
     }
 
     setSaving(true);
     try {
       if (isCoach) {
-        await httpClient.patch(
-          `/clubs/${clubId}/members/${member.id}/profile`,
-          { name: name.trim(), email: email.trim() || undefined },
-        );
+        await httpClient.patch(`/clubs/${clubId}/members/${member.id}/profile`, {
+          name: name.trim(),
+          email: email.trim() || undefined,
+          cpf: cpf.replace(/\D/g, '') || undefined,
+          birthDate: birthDate || undefined,
+        });
       } else {
         const profileId = member.user.athleteProfile?.id;
-        if (!profileId) throw new Error("Perfil de atleta não encontrado");
+        if (!profileId) throw new Error('Perfil de atleta não encontrado');
         await httpClient.patch(`/athletes/${profileId}`, {
           name: name.trim(),
           nickname: nickname.trim() || undefined,
@@ -140,13 +152,13 @@ const EditMemberModal: React.FC<EditMemberModalProps> = ({
           ranking: ranking ? parseInt(ranking, 10) : undefined,
         });
       }
-      toast.success("Dados atualizados com sucesso!");
+      toast.success('Dados atualizados com sucesso!');
       onSuccess();
       onClose();
     } catch (err: unknown) {
       const msg =
-        (err as { response?: { data?: { error?: string } } })?.response?.data
-          ?.error ?? "Erro ao salvar. Tente novamente.";
+        (err as { response?: { data?: { error?: string } } })?.response?.data?.error ??
+        'Erro ao salvar. Tente novamente.';
       toast.error(msg);
     } finally {
       setSaving(false);
@@ -169,9 +181,7 @@ const EditMemberModal: React.FC<EditMemberModalProps> = ({
         {/* Header */}
         <div className="add-athlete-header">
           <div>
-            <h2 id="edit-member-title">
-              Editar {roleLabel}
-            </h2>
+            <h2 id="edit-member-title">Editar {roleLabel}</h2>
             <p className="add-athlete-subtitle">{member.user.name}</p>
           </div>
           <button
@@ -188,11 +198,11 @@ const EditMemberModal: React.FC<EditMemberModalProps> = ({
           <div
             style={{
               padding: 40,
-              textAlign: "center",
-              color: "var(--clr-text-muted, #6b7280)",
+              textAlign: 'center',
+              color: 'var(--clr-text-muted, #6b7280)',
             }}
           >
-            <div className="add-athlete-spinner" style={{ margin: "0 auto 8px" }} />
+            <div className="add-athlete-spinner" style={{ margin: '0 auto 8px' }} />
             Carregando dados...
           </div>
         ) : (
@@ -214,17 +224,40 @@ const EditMemberModal: React.FC<EditMemberModalProps> = ({
                 </div>
 
                 {isCoach && (
-                  <div className="add-athlete-field">
-                    <label htmlFor="em-email">E-mail</label>
-                    <input
-                      id="em-email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="email@exemplo.com"
-                      autoComplete="off"
-                    />
-                  </div>
+                  <>
+                    <div className="add-athlete-field">
+                      <label htmlFor="em-email">E-mail</label>
+                      <input
+                        id="em-email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="email@exemplo.com"
+                        autoComplete="off"
+                      />
+                    </div>
+                    <div className="add-athlete-field">
+                      <label htmlFor="em-cpf">CPF</label>
+                      <input
+                        id="em-cpf"
+                        type="text"
+                        value={cpf}
+                        onChange={(e) => setCpf(e.target.value)}
+                        placeholder="000.000.000-00"
+                        autoComplete="off"
+                        maxLength={14}
+                      />
+                    </div>
+                    <div className="add-athlete-field">
+                      <label htmlFor="em-birthdate-coach">Data de nascimento</label>
+                      <input
+                        id="em-birthdate-coach"
+                        type="date"
+                        value={birthDate}
+                        onChange={(e) => setBirthDate(e.target.value)}
+                      />
+                    </div>
+                  </>
                 )}
 
                 {isAthlete && (
@@ -288,9 +321,7 @@ const EditMemberModal: React.FC<EditMemberModalProps> = ({
             {/* Dados Esportivos — apenas atleta */}
             {isAthlete && (
               <div className="add-athlete-section">
-                <div className="add-athlete-section-title">
-                  Dados Esportivos
-                </div>
+                <div className="add-athlete-section-title">Dados Esportivos</div>
                 <div className="add-athlete-grid">
                   <div className="add-athlete-field">
                     <label htmlFor="em-category">Categoria</label>
@@ -332,18 +363,14 @@ const EditMemberModal: React.FC<EditMemberModalProps> = ({
               >
                 Cancelar
               </button>
-              <button
-                type="submit"
-                className="add-athlete-btn-save"
-                disabled={saving}
-              >
+              <button type="submit" className="add-athlete-btn-save" disabled={saving}>
                 {saving ? (
                   <>
                     <span className="add-athlete-spinner" />
                     Salvando...
                   </>
                 ) : (
-                  "✅ Salvar"
+                  '✅ Salvar'
                 )}
               </button>
             </div>

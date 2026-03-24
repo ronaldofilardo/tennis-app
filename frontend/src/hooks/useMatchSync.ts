@@ -68,7 +68,7 @@ export function useMatchSync(matchId: string, options: MatchSyncOptions = {}) {
   useEffect(() => {
     if (interval > 0) {
       const timer = setInterval(() => {
-        getState().catch(console.error);
+        getState().catch(() => {});
       }, interval);
 
       return () => clearInterval(timer);

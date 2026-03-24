@@ -67,10 +67,6 @@ async function asaasRequest(endpoint, options = {}) {
  */
 export async function createCustomer({ name, email, cpfCnpj, phone }) {
   if (!isAsaasConfigured()) {
-    console.log("[asaas-stub] createCustomer called (not configured)", {
-      name,
-      email,
-    });
     return {
       id: `cus_stub_${Date.now()}`,
       name,
@@ -101,7 +97,9 @@ export async function findCustomerByEmail(email) {
     return null;
   }
 
-  const result = await asaasRequest(`/customers?email=${encodeURIComponent(email)}`);
+  const result = await asaasRequest(
+    `/customers?email=${encodeURIComponent(email)}`,
+  );
   return result.data?.[0] || null;
 }
 
@@ -124,11 +122,6 @@ export async function createAsaasSubscription({
   nextDueDate,
 }) {
   if (!isAsaasConfigured()) {
-    console.log("[asaas-stub] createSubscription called (not configured)", {
-      customerId,
-      value,
-      cycle,
-    });
     return {
       id: `sub_stub_${Date.now()}`,
       status: "ACTIVE",
@@ -140,7 +133,8 @@ export async function createAsaasSubscription({
   }
 
   const dueDate =
-    nextDueDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+    nextDueDate ||
+    new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
 
   return asaasRequest("/subscriptions", {
     method: "POST",
@@ -162,9 +156,6 @@ export async function createAsaasSubscription({
  */
 export async function cancelAsaasSubscription(subscriptionId) {
   if (!isAsaasConfigured()) {
-    console.log("[asaas-stub] cancelSubscription called (not configured)", {
-      subscriptionId,
-    });
     return { deleted: true, stub: true };
   }
 
@@ -187,9 +178,7 @@ export async function getSubscriptionPayments(subscriptionId) {
     return [];
   }
 
-  const result = await asaasRequest(
-    `/payments?subscription=${subscriptionId}`,
-  );
+  const result = await asaasRequest(`/payments?subscription=${subscriptionId}`);
   return result.data || [];
 }
 

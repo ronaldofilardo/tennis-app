@@ -309,8 +309,7 @@ const BulkAthleteImport: React.FC<BulkAthleteImportProps> = ({
           setAthletes(rows);
           setStep("preview");
           toast.success(`${rows.length} registro(s) carregado(s) da planilha.`);
-        } catch (err) {
-          console.error("[BulkImport] Parse error:", err);
+        } catch {
           toast.error("Erro ao ler a planilha. Verifique se o formato é XLSX.");
         }
       };

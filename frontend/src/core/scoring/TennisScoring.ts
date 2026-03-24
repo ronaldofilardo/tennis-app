@@ -7,9 +7,9 @@ import type {
   TennisConfig,
   PointDetails,
   EnhancedMatchState,
-} from "./types";
-import { TennisConfigFactory } from "./TennisConfigFactory";
-import { API_URL } from "../../config/api";
+} from './types';
+import { TennisConfigFactory } from './TennisConfigFactory';
+import { API_URL } from '../../config/api';
 
 // Lógica universal para todos os 8 formatos de tênis do PDF
 export class TennisScoring {
@@ -19,19 +19,21 @@ export class TennisScoring {
   private syncEnabled: boolean = false;
   private tiebreakPointsPlayed: number = 0; // Contador para troca de sacador no tie-break
   private history: MatchState[] = []; // Histórico de estados para undo
+  private historyPointsLengths: number[] = []; // Tamanho de pointsHistory em cada snapshot de history
   private pointsHistory: PointDetails[] = []; // Histórico detalhado dos pontos
 
-  constructor(server: Player, format: TennisFormat = "BEST_OF_3") {
+  constructor(server: Player, format: TennisFormat = 'BEST_OF_3') {
     if (!TennisScoring.isValidPlayer(server)) {
       throw new Error(`Jogador inválido: ${server}`);
     }
     this.config = TennisConfigFactory.getConfig(format);
     this.state = this.getInitialState(server);
     this.history = []; // Inicializar histórico vazio
+    this.historyPointsLengths = [];
   }
 
   private static isValidPlayer(player: any): player is Player {
-    return player === "PLAYER_1" || player === "PLAYER_2";
+    return player === 'PLAYER_1' || player === 'PLAYER_2';
   }
 
   // Configurar sincronização com backend
@@ -46,16 +48,14 @@ export class TennisScoring {
   }
 
   private getInitialState(server: Player): MatchState {
-    const isMatchTiebreak = this.config.format === "MATCH_TIEBREAK";
+    const isMatchTiebreak = this.config.format === 'MATCH_TIEBREAK';
 
     return {
       sets: { PLAYER_1: 0, PLAYER_2: 0 },
       currentSet: 1,
       currentSetState: { games: { PLAYER_1: 0, PLAYER_2: 0 } },
       currentGame: {
-        points: isMatchTiebreak
-          ? { PLAYER_1: 0, PLAYER_2: 0 }
-          : { PLAYER_1: "0", PLAYER_2: "0" },
+        points: isMatchTiebreak ? { PLAYER_1: 0, PLAYER_2: 0 } : { PLAYER_1: '0', PLAYER_2: '0' },
         server: server,
         isTiebreak: isMatchTiebreak,
         isMatchTiebreak: isMatchTiebreak,
@@ -91,17 +91,12 @@ export class TennisScoring {
   public loadState(savedState: MatchState | EnhancedMatchState): void {
     // Se o estado salvo não tem config, usar a config atual
     if (!savedState.config) {
-      console.warn(
-        "⚠️ Estado salvo não possui configuração, usando configuração atual",
-      );
       savedState.config = this.config;
     }
 
     // Validar se o estado é compatível com a configuração atual
     if (savedState.config.format !== this.config.format) {
-      console.warn(
-        "⚠️ Formato do estado salvo diferente da configuração atual",
-      );
+      // formato divergente — continua com config atual por segurança
     }
 
     // Restaurar estado completo
@@ -111,7 +106,7 @@ export class TennisScoring {
     };
 
     // Restaurar histórico de pontos se disponível
-    if ("pointsHistory" in savedState && savedState.pointsHistory) {
+    if ('pointsHistory' in savedState && savedState.pointsHistory) {
       this.pointsHistory = [...savedState.pointsHistory];
     } else {
       this.pointsHistory = []; // Inicializar vazio se não houver histórico
@@ -119,30 +114,36 @@ export class TennisScoring {
 
     // Limpar histórico de undo ao carregar um estado salvo
     this.history = [];
-    console.log("✅ Estado restaurado:", this.state);
+    this.historyPointsLengths = [];
   }
 
   // Salvar estado atual no histórico antes de fazer mudanças
+  // Também persiste o comprimento atual de pointsHistory para que o undo possa
+  // truncar precisamente, independentemente de o ponto ter details ou não.
   private saveToHistory(): void {
     const stateCopy = JSON.parse(JSON.stringify(this.state));
     this.history.push(stateCopy);
+    this.historyPointsLengths.push(this.pointsHistory.length);
     // Manter apenas os últimos 50 estados para evitar uso excessivo de memória
     if (this.history.length > 50) {
       this.history.shift();
+      this.historyPointsLengths.shift();
     }
   }
 
   // Desfazer último ponto (undo)
+  // Restaura tanto o estado do jogo quanto o pointsHistory ao comprimento anterior,
+  // garantindo stats consistentes independentemente de o ponto ter tido details ou não.
   public undoLastPoint(): MatchState | null {
     if (this.history.length === 0) {
-      console.log("❌ Nenhum ponto para desfazer");
       return null;
     }
 
     const previousState = this.history.pop();
+    const previousPointsLength = this.historyPointsLengths.pop() ?? this.pointsHistory.length;
     if (previousState) {
       this.state = previousState;
-      console.log("↩️ Ponto desfeito, estado restaurado");
+      this.pointsHistory = this.pointsHistory.slice(0, previousPointsLength);
       return this.getState();
     }
 
@@ -169,10 +170,7 @@ export class TennisScoring {
     }
 
     // Se é tiebreak ou match tiebreak, usa lógica numérica
-    if (
-      this.state.currentGame.isTiebreak ||
-      this.state.currentGame.isMatchTiebreak
-    ) {
+    if (this.state.currentGame.isTiebreak || this.state.currentGame.isMatchTiebreak) {
       return this.addTiebreakPoint(player);
     }
 
@@ -180,9 +178,9 @@ export class TennisScoring {
     const games = this.state.currentSetState.games;
     const tiebreakAt = this.config.tiebreakAt;
     if (
-      this.state.currentGame.points.PLAYER_1 === "0" &&
-      this.state.currentGame.points.PLAYER_2 === "0" &&
-      typeof tiebreakAt === "number" &&
+      this.state.currentGame.points.PLAYER_1 === '0' &&
+      this.state.currentGame.points.PLAYER_2 === '0' &&
+      typeof tiebreakAt === 'number' &&
       tiebreakAt > 0 &&
       games.PLAYER_1 === tiebreakAt &&
       games.PLAYER_2 === tiebreakAt
@@ -196,20 +194,20 @@ export class TennisScoring {
   }
 
   private addRegularPoint(player: Player): MatchState {
-    const opponent: Player = player === "PLAYER_1" ? "PLAYER_2" : "PLAYER_1";
+    const opponent: Player = player === 'PLAYER_1' ? 'PLAYER_2' : 'PLAYER_1';
     const currentPoints = this.state.currentGame.points[player] as GamePoint;
     const opponentPoints = this.state.currentGame.points[opponent] as GamePoint;
 
     let newPoints: GamePoint;
 
     // Verifica se precisa iniciar tie-break no SHORT_SET
-    if (this.config.format === "SHORT_SET") {
+    if (this.config.format === 'SHORT_SET') {
       const games = this.state.currentSetState.games;
       if (
         games.PLAYER_1 >= 4 &&
         games.PLAYER_2 >= 4 &&
-        currentPoints === "0" &&
-        opponentPoints === "0"
+        currentPoints === '0' &&
+        opponentPoints === '0'
       ) {
         this.startTiebreak();
         return this.addTiebreakPoint(player);
@@ -217,19 +215,19 @@ export class TennisScoring {
     }
 
     switch (currentPoints) {
-      case "0":
-        newPoints = "15";
+      case '0':
+        newPoints = '15';
         break;
-      case "15":
-        newPoints = "30";
+      case '15':
+        newPoints = '30';
         break;
-      case "30":
-        newPoints = "40";
+      case '30':
+        newPoints = '40';
         break;
-      case "40":
-        if (opponentPoints === "40") {
+      case '40':
+        if (opponentPoints === '40') {
           if (this.config.useAdvantage && !this.config.useNoAd) {
-            newPoints = "AD"; // Vantagem
+            newPoints = 'AD'; // Vantagem
           } else if (this.config.useNoAd) {
             // Método No-Ad (Anexo V): Ponto decisivo
             this.state.currentGame.isNoAdDecidingPoint = true;
@@ -240,9 +238,9 @@ export class TennisScoring {
             this.winGame(player);
             return this.getState();
           }
-        } else if (opponentPoints === "AD") {
+        } else if (opponentPoints === 'AD') {
           // Oponente tinha vantagem, volta para 40-40
-          this.state.currentGame.points[opponent] = "40";
+          this.state.currentGame.points[opponent] = '40';
           return this.getState();
         } else {
           // Ganhou o game
@@ -250,7 +248,7 @@ export class TennisScoring {
           return this.getState();
         }
         break;
-      case "AD":
+      case 'AD':
         // Ganhou o game
         this.winGame(player);
         return this.getState();
@@ -262,7 +260,7 @@ export class TennisScoring {
 
   private addTiebreakPoint(player: Player): MatchState {
     const currentPoints = this.state.currentGame.points[player] as number;
-    const opponent: Player = player === "PLAYER_1" ? "PLAYER_2" : "PLAYER_1";
+    const opponent: Player = player === 'PLAYER_1' ? 'PLAYER_2' : 'PLAYER_1';
     const opponentPoints = this.state.currentGame.points[opponent] as number;
 
     this.state.currentGame.points[player] = currentPoints + 1;
@@ -272,9 +270,7 @@ export class TennisScoring {
     this.handleTiebreakServerChange();
 
     // Verifica se ganhou o tiebreak
-    const minPoints = this.state.currentGame.isMatchTiebreak
-      ? this.config.tiebreakPoints
-      : 7;
+    const minPoints = this.state.currentGame.isMatchTiebreak ? this.config.tiebreakPoints : 7;
 
     if (newPoints >= minPoints && newPoints - opponentPoints >= 2) {
       // Resetar contador do tie-break ao finalizar
@@ -294,14 +290,14 @@ export class TennisScoring {
     // Incrementa o contador de games
     this.state.currentSetState.games[player]++;
 
-    const opponent: Player = player === "PLAYER_1" ? "PLAYER_2" : "PLAYER_1";
+    const opponent: Player = player === 'PLAYER_1' ? 'PLAYER_2' : 'PLAYER_1';
     const gamesWon = this.state.currentSetState.games[player];
     const gamesLost = this.state.currentSetState.games[opponent];
 
     // Verifica se deve iniciar tie-break imediatamente ao atingir tiebreakAt para ambos
     const tiebreakAt = this.config.tiebreakAt;
     if (
-      typeof tiebreakAt === "number" &&
+      typeof tiebreakAt === 'number' &&
       tiebreakAt > 0 &&
       gamesWon === tiebreakAt &&
       gamesLost === tiebreakAt &&
@@ -323,17 +319,17 @@ export class TennisScoring {
     const { gamesPerSet } = this.config;
 
     // Casos especiais
-    if (this.config.format === "SHORT_SET") {
+    if (this.config.format === 'SHORT_SET') {
       // Se ambos chegaram a 4, não pode vencer por diferença de 2, deve ir para tie-break
       if (gamesWon === 4 && gamesLost === 4) return false;
       return gamesWon >= 4 && gamesWon - gamesLost >= 2;
     }
 
-    if (this.config.format === "PRO_SET") {
+    if (this.config.format === 'PRO_SET') {
       return gamesWon >= 8 && gamesWon - gamesLost >= 2;
     }
 
-    if (this.config.format === "FAST4") {
+    if (this.config.format === 'FAST4') {
       return gamesWon >= 4 && gamesWon - gamesLost >= 2;
     }
 
@@ -352,21 +348,12 @@ export class TennisScoring {
       server: this.state.server,
       isTiebreak: true,
     };
-
-    console.log(
-      "🏆 Iniciando tie-break - Servidor inicial:",
-      this.state.server,
-    );
   }
 
   private winSet(player: Player) {
     // Capturar resultado do tie-break se aplicável ANTES de alterar qualquer coisa
-    let tiebreakScore: { PLAYER_1: number; PLAYER_2: number } | undefined =
-      undefined;
-    if (
-      this.state.currentGame.isTiebreak &&
-      !this.state.currentGame.isMatchTiebreak
-    ) {
+    let tiebreakScore: { PLAYER_1: number; PLAYER_2: number } | undefined = undefined;
+    if (this.state.currentGame.isTiebreak && !this.state.currentGame.isMatchTiebreak) {
       // O placar do tie-break deve refletir os pontos de cada jogador
       tiebreakScore = {
         PLAYER_1: this.state.currentGame.points.PLAYER_1 as number,
@@ -375,10 +362,7 @@ export class TennisScoring {
     }
 
     // Se foi tie-break, incrementar o game do vencedor para refletir 7-6 ou 6-7
-    if (
-      this.state.currentGame.isTiebreak &&
-      !this.state.currentGame.isMatchTiebreak
-    ) {
+    if (this.state.currentGame.isTiebreak && !this.state.currentGame.isMatchTiebreak) {
       this.state.currentSetState.games[player]++;
     }
 
@@ -422,7 +406,7 @@ export class TennisScoring {
     const isLastSet = this.isDecidingSet();
 
     // BEST_OF_3_MATCH_TB: Match tiebreak no 3º set quando 1-1
-    if (this.config.format === "BEST_OF_3_MATCH_TB" && isLastSet) {
+    if (this.config.format === 'BEST_OF_3_MATCH_TB' && isLastSet) {
       const sets = this.state.sets;
       return sets.PLAYER_1 === 1 && sets.PLAYER_2 === 1;
     }
@@ -464,8 +448,7 @@ export class TennisScoring {
 
       if (!alreadyRecorded) {
         const gamesSnapshot = { ...this.state.currentSetState.games };
-        let tiebreakScore: { PLAYER_1: number; PLAYER_2: number } | undefined =
-          undefined;
+        let tiebreakScore: { PLAYER_1: number; PLAYER_2: number } | undefined = undefined;
         if (this.state.currentGame && this.state.currentGame.isMatchTiebreak) {
           const cg = this.state.currentGame;
           tiebreakScore = {
@@ -483,13 +466,12 @@ export class TennisScoring {
         });
 
         // Incrementar o contador de sets do vencedor (apenas se ainda não incrementado)
-        if (typeof this.state.sets[player] === "number") {
+        if (typeof this.state.sets[player] === 'number') {
           this.state.sets[player] = (this.state.sets[player] as number) + 1;
         }
       }
     } catch (e) {
       // Se algo falhar aqui não queremos bloquear a finalização da partida
-      console.warn("Falha ao registrar set final em winMatch:", e);
     }
 
     this.state.winner = player;
@@ -501,7 +483,7 @@ export class TennisScoring {
     this.changeServer();
 
     this.state.currentGame = {
-      points: { PLAYER_1: "0", PLAYER_2: "0" },
+      points: { PLAYER_1: '0', PLAYER_2: '0' },
       server: this.state.server,
       isTiebreak: false,
     };
@@ -509,9 +491,7 @@ export class TennisScoring {
 
   // Método explícito para troca de sacador com regras específicas
   private changeServer(): void {
-    this.state.server =
-      this.state.server === "PLAYER_1" ? "PLAYER_2" : "PLAYER_1";
-    console.log(`🎾 Sacador alterado para: ${this.state.server}`);
+    this.state.server = this.state.server === 'PLAYER_1' ? 'PLAYER_2' : 'PLAYER_1';
   }
 
   // Lógica específica de troca no tie-break (a cada 2 pontos)
@@ -536,16 +516,10 @@ export class TennisScoring {
   // Sincronizar estado atual com o backend
   public async syncState(): Promise<boolean> {
     if (!this.syncEnabled || !this.matchId) {
-      console.warn("⚠️ Sync não habilitado ou matchId ausente");
       return false;
     }
 
     try {
-      console.log("🔄 Sincronizando estado com backend...", {
-        matchId: this.matchId,
-        state: this.state,
-      });
-
       // Usar fetch com controle de timeout
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
@@ -554,17 +528,15 @@ export class TennisScoring {
       const url = `${API_URL}/matches/${this.matchId}/state`;
 
       const token =
-        typeof localStorage !== "undefined"
-          ? localStorage.getItem("racket_token")
-          : null;
+        typeof localStorage !== 'undefined' ? localStorage.getItem('racket_token') : null;
 
       const headers: Record<string, string> = {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       };
 
       const response = await fetch(url, {
-        method: "PATCH",
+        method: 'PATCH',
         headers,
         body: JSON.stringify({
           matchState: this.getState(),
@@ -580,23 +552,17 @@ export class TennisScoring {
       }
 
       const result = await response.json();
-      console.log("✅ Estado sincronizado:", result.message);
       return true;
     } catch (error) {
-      if (error.name === "AbortError") {
-        console.error("❌ Timeout ao sincronizar estado");
-      } else {
-        console.error("❌ Erro ao sincronizar estado:", error);
+      if (error.name !== 'AbortError') {
+        // propagar para tratamento pelo chamador
       }
-      throw error; // Propagar erro para tratamento adequado
+      throw error;
     }
   }
 
   // Wrapper para addPoint que inclui sincronização automática
-  public async addPointWithSync(
-    player: Player,
-    details?: PointDetails,
-  ): Promise<MatchState> {
+  public async addPointWithSync(player: Player, details?: PointDetails): Promise<MatchState> {
     const newState = this.addPoint(player, details);
 
     // Sincronizar automaticamente se habilitado
@@ -622,15 +588,15 @@ export class TennisScoring {
   // Converte pontos do placar (GamePoint) para número real de pontos disputados
   private convertScoreToActualPoints(score: GamePoint): number {
     switch (score) {
-      case "0":
+      case '0':
         return 0;
-      case "15":
+      case '15':
         return 1;
-      case "30":
+      case '30':
         return 2;
-      case "40":
+      case '40':
         return 3;
-      case "AD":
+      case 'AD':
         return 4; // Na vantagem, pelo menos 4 pontos foram disputados
       default:
         return 0;
@@ -653,12 +619,11 @@ export class TennisScoring {
       const p2ActualPoints = this.convertScoreToActualPoints(p2Score);
 
       // Casos especiais para vantagem
-      if (p1Score === "AD" || p2Score === "AD") {
+      if (p1Score === 'AD' || p2Score === 'AD') {
         // Se há vantagem, sabemos que foram disputados pelo menos 7 pontos (6 para chegar no deuce + 1 para vantagem)
         // Podemos ser mais precisos contando quantas vantagens já houve
         const basePoints = 6; // Mínimo para chegar ao deuce (40-40)
-        const extraPoints =
-          Math.max(p1ActualPoints - 3, 0) + Math.max(p2ActualPoints - 3, 0);
+        const extraPoints = Math.max(p1ActualPoints - 3, 0) + Math.max(p2ActualPoints - 3, 0);
         return basePoints + extraPoints;
       }
 
@@ -667,7 +632,7 @@ export class TennisScoring {
   }
 
   // Determina o lado da quadra baseado no número de pontos disputados
-  public getServingSide(): "left" | "right" {
+  public getServingSide(): 'left' | 'right' {
     const totalPoints = this.getTotalPointsPlayed();
 
     // Regra do tênis: ímpar → esquerda, par → direita
@@ -676,13 +641,13 @@ export class TennisScoring {
     // 1 ponto → ímpar → esquerda
     // 2 pontos → par → direita
     // etc.
-    return totalPoints % 2 === 0 ? "right" : "left";
+    return totalPoints % 2 === 0 ? 'right' : 'left';
   }
 
   // Método público para obter informações completas sobre o saque
   public getServerInfo(): {
     server: Player;
-    side: "left" | "right";
+    side: 'left' | 'right';
     totalPointsPlayed: number;
     isOddPoint: boolean;
   } {
@@ -745,7 +710,7 @@ export class TennisScoring {
     // Fim de set (implementado no método winSet)
     return {
       shouldChange: false,
-      reason: "Não é necessário trocar de lado agora",
+      reason: 'Não é necessário trocar de lado agora',
     };
   }
 
@@ -770,9 +735,7 @@ export class TennisScoring {
   }
 
   public getLastPointDetails(): PointDetails | null {
-    return this.pointsHistory.length > 0
-      ? this.pointsHistory[this.pointsHistory.length - 1]
-      : null;
+    return this.pointsHistory.length > 0 ? this.pointsHistory[this.pointsHistory.length - 1] : null;
   }
 
   public clearPointsHistory(): void {
@@ -799,18 +762,18 @@ export class TennisScoring {
 
     for (const point of this.pointsHistory) {
       // Contagem de saques
-      if (point.serve?.type === "ACE") stats.aces++;
-      if (point.serve?.type === "DOUBLE_FAULT") stats.doubleFaults++;
+      if (point.serve?.type === 'ACE') stats.aces++;
+      if (point.serve?.type === 'DOUBLE_FAULT') stats.doubleFaults++;
 
       // Contagem de resultados
       switch (point.result.type) {
-        case "WINNER":
+        case 'WINNER':
           stats.winners++;
           break;
-        case "UNFORCED_ERROR":
+        case 'UNFORCED_ERROR':
           stats.unforcedErrors++;
           break;
-        case "FORCED_ERROR":
+        case 'FORCED_ERROR':
           stats.forcedErrors++;
           break;
       }
@@ -827,12 +790,10 @@ export class TennisScoring {
   }
 
   // Método No-Ad: Permite ao recebedor escolher o lado para receber o ponto decisivo
-  public setNoAdReceivingSide(side: "left" | "right"): void {
+  public setNoAdReceivingSide(side: 'left' | 'right'): void {
     if (this.isNoAdDecidingPoint()) {
-      // A implementação da escolha do lado seria na interface
-      console.log(
-        `🎾 Ponto decisivo No-Ad: Recebedor escolheu receber do lado ${side}`,
-      );
+      // escolha do lado será processada pela interface
+      void side;
     }
   }
 

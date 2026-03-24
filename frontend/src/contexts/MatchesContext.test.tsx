@@ -107,10 +107,10 @@ describe("MatchesContext", () => {
           id: "user-001",
           email: "test@test.com",
           name: "Test User",
-          role: "annotator",
+          role: "COACH",
           clubs: [],
           activeClubId: null,
-          activeRole: "annotator",
+          activeRole: "COACH",
         });
       return null;
     });
@@ -152,7 +152,7 @@ describe("MatchesContext", () => {
       });
 
       expect(globalThis.fetch).toHaveBeenCalledWith(
-        "http://localhost:3001/matches/visible?email=test%40test.com&role=annotator",
+        "http://localhost:3001/matches/visible?email=test%40test.com&role=COACH",
       );
     });
 

@@ -77,7 +77,7 @@ vi.mock("../../components/AthleteSearchInput", () => ({
           onSelect(
             e.target.value
               ? {
-                  id: `guest_${e.target.value}`,
+                  id: `athlete_${Date.now()}`,
                   name: e.target.value,
                   email: "",
                 }

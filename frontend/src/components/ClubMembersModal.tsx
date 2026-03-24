@@ -38,32 +38,24 @@ const ROLE_ORDER: Record<string, number> = {
   GESTOR: 0,
   COACH: 1,
   ATHLETE: 2,
-  SPECTATOR: 3,
-  CLUB_STAFF: 4,
 };
 
 const ROLE_LABELS: Record<string, string> = {
   GESTOR: "Gestor",
   COACH: "Técnico",
   ATHLETE: "Atleta",
-  SPECTATOR: "Espectador",
-  CLUB_STAFF: "Equipe",
 };
 
 const ROLE_GROUP_LABELS: Record<string, string> = {
   GESTOR: "Gestores",
   COACH: "Técnicos",
   ATHLETE: "Atletas",
-  SPECTATOR: "Espectadores",
-  CLUB_STAFF: "Equipe",
 };
 
 const ROLE_COLORS: Record<string, string> = {
   GESTOR: "role-gestor",
   COACH: "role-coach",
   ATHLETE: "role-athlete",
-  SPECTATOR: "role-spectator",
-  CLUB_STAFF: "role-staff",
 };
 
 // === Helper: agrupa membros por papel ===

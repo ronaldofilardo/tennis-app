@@ -51,10 +51,10 @@ describe("MatchesContext integração com estados", () => {
             id: "user-001",
             email: "test@test.com",
             name: "Test User",
-            role: "annotator",
+            role: "COACH",
             clubs: [],
             activeClubId: null,
-            activeRole: "annotator",
+            activeRole: "COACH",
           });
         return null;
       },

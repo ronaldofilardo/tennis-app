@@ -339,7 +339,7 @@ describe("validationSchemas", () => {
     it("deve validar query válida", () => {
       const validQuery = {
         email: "user@email.com",
-        role: "player",
+        role: "ATHLETE",
       };
 
       const result = VisibleMatchesQuerySchema.safeParse(validQuery);
