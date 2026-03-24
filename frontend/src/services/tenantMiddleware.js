@@ -77,7 +77,7 @@ export function authMiddleware(req, res, options = { required: true }) {
     userId: result.payload.userId,
     email: result.payload.email,
     clubId: result.payload.clubId || req.headers["x-club-id"] || null,
-    role: result.payload.role || "PLAYER",
+    role: result.payload.role || "ATHLETE",
   };
 
   // Injeta no request para handlers subsequentes
@@ -163,7 +163,6 @@ export function withAuth(handler, options = {}) {
     try {
       await handler(req, res, auth.context);
     } catch (err) {
-      console.error("[API Error]", err);
       if (!res.headersSent) {
         res.writeHead(500, {
           ...corsHeaders,

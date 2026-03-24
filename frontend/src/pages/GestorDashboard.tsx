@@ -2,26 +2,20 @@
 // Dashboard administrativo para GESTOR do clube
 // Visão geral: estatísticas, membros, partidas e torneios do clube
 
-import React, { useState, useEffect, useCallback } from "react";
-import httpClient from "../config/httpClient";
-import { useAuth } from "../contexts/AuthContext";
-import { useNavigation } from "../contexts/NavigationContext";
-import { useToast } from "../components/Toast";
-import AthleteSearchInput from "../components/AthleteSearchInput";
-import type { AthleteResult } from "../components/AthleteSearchInput";
-import {
-  useSubscription,
-  PLAN_LIMITS,
-  type PlanType,
-} from "../hooks/useSubscription";
-import PlanGate from "../components/PlanGate";
-import BulkAthleteImport from "../components/BulkAthleteImport";
-import AddAthleteModal from "../components/AddAthleteModal";
-import EditMemberModal, {
-  type EditableMember,
-} from "../components/EditMemberModal";
-import { ClubRankings } from "../components/ClubRankings";
-import "./GestorDashboard.css";
+import React, { useState, useEffect, useCallback } from 'react';
+import httpClient from '../config/httpClient';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigation } from '../contexts/NavigationContext';
+import { useToast } from '../components/Toast';
+import AthleteSearchInput from '../components/AthleteSearchInput';
+import type { AthleteResult } from '../components/AthleteSearchInput';
+import { useSubscription, PLAN_LIMITS, type PlanType } from '../hooks/useSubscription';
+import PlanGate from '../components/PlanGate';
+import BulkAthleteImport from '../components/BulkAthleteImport';
+import AddAthleteModal from '../components/AddAthleteModal';
+import EditMemberModal, { type EditableMember } from '../components/EditMemberModal';
+import { ClubRankings } from '../components/ClubRankings';
+import './GestorDashboard.css';
 
 // === Tipos ===
 
@@ -91,61 +85,61 @@ interface FullMember {
 // === Labels ===
 
 const ROLE_LABELS: Record<string, string> = {
-  GESTOR: "Gestor",
-  COACH: "Treinador",
-  ATHLETE: "Atleta",
-  SPECTATOR: "Espectador",
-  ADMIN: "Administrador",
+  GESTOR: 'Gestor',
+  COACH: 'Treinador',
+  ATHLETE: 'Atleta',
+  SPECTATOR: 'Espectador',
+  ADMIN: 'Administrador',
 };
 
 const ROLE_ICONS: Record<string, string> = {
-  GESTOR: "👔",
-  COACH: "🎯",
-  ATHLETE: "🎾",
-  SPECTATOR: "👁️",
-  ADMIN: "🔑",
+  GESTOR: '👔',
+  COACH: '🎯',
+  ATHLETE: '🎾',
+  SPECTATOR: '👁️',
+  ADMIN: '🔑',
 };
 
 const STATUS_LABELS: Record<string, string> = {
-  NOT_STARTED: "Não Iniciada",
-  IN_PROGRESS: "Em Andamento",
-  FINISHED: "Finalizada",
-  PAUSED: "Pausada",
+  NOT_STARTED: 'Não Iniciada',
+  IN_PROGRESS: 'Em Andamento',
+  FINISHED: 'Finalizada',
+  PAUSED: 'Pausada',
 };
 
 const MATCH_STATUS_COLORS: Record<string, string> = {
-  NOT_STARTED: "badge-neutral",
-  IN_PROGRESS: "badge-live",
-  FINISHED: "badge-finished",
-  PAUSED: "badge-paused",
+  NOT_STARTED: 'badge-neutral',
+  IN_PROGRESS: 'badge-live',
+  FINISHED: 'badge-finished',
+  PAUSED: 'badge-paused',
 };
 
 const TOURNAMENT_STATUS_LABELS: Record<string, string> = {
-  DRAFT: "Rascunho",
-  REGISTRATION: "Inscrições",
-  IN_PROGRESS: "Em Andamento",
-  FINISHED: "Finalizado",
-  CANCELLED: "Cancelado",
+  DRAFT: 'Rascunho',
+  REGISTRATION: 'Inscrições',
+  IN_PROGRESS: 'Em Andamento',
+  FINISHED: 'Finalizado',
+  CANCELLED: 'Cancelado',
 };
 
 const VISIBILITY_ICONS: Record<string, string> = {
-  PUBLIC: "🌐",
-  CLUB: "🏢",
-  PLAYERS_ONLY: "🔒",
+  PUBLIC: '🌐',
+  CLUB: '🏢',
+  PLAYERS_ONLY: '🔒',
 };
 
-const INVITE_ROLES = ["COACH", "ATHLETE", "SPECTATOR"];
+const INVITE_ROLES = ['COACH', 'ATHLETE', 'SPECTATOR'];
 
 // === Componente ===
 
 type TabType =
-  | "overview"
-  | "members"
-  | "matches"
-  | "tournaments"
-  | "rankings"
-  | "billing"
-  | "settings";
+  | 'overview'
+  | 'members'
+  | 'matches'
+  | 'tournaments'
+  | 'rankings'
+  | 'billing'
+  | 'settings';
 
 interface InvoiceRow {
   id: string;
@@ -157,19 +151,19 @@ interface InvoiceRow {
 }
 
 const INVOICE_STATUS_LABELS: Record<string, string> = {
-  PENDING: "Pendente",
-  PAID: "Pago",
-  OVERDUE: "Vencida",
-  CANCELED: "Cancelada",
-  REFUNDED: "Reembolsada",
+  PENDING: 'Pendente',
+  PAID: 'Pago',
+  OVERDUE: 'Vencida',
+  CANCELED: 'Cancelada',
+  REFUNDED: 'Reembolsada',
 };
 
 const INVOICE_STATUS_COLORS: Record<string, string> = {
-  PENDING: "badge-neutral",
-  PAID: "badge-finished",
-  OVERDUE: "badge-live",
-  CANCELED: "badge-paused",
-  REFUNDED: "badge-neutral",
+  PENDING: 'badge-neutral',
+  PAID: 'badge-finished',
+  OVERDUE: 'badge-live',
+  CANCELED: 'badge-paused',
+  REFUNDED: 'badge-neutral',
 };
 
 const GestorDashboard: React.FC = () => {
@@ -177,7 +171,7 @@ const GestorDashboard: React.FC = () => {
   const navigation = useNavigation();
   const toast = useToast();
 
-  const [activeTab, setActiveTab] = useState<TabType>("overview");
+  const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [stats, setStats] = useState<ClubStats | null>(null);
   const [members, setMembers] = useState<FullMember[]>([]);
   const [loadingStats, setLoadingStats] = useState(true);
@@ -194,22 +188,18 @@ const GestorDashboard: React.FC = () => {
   const [showBulkImport, setShowBulkImport] = useState(false);
   const [showAddAthlete, setShowAddAthlete] = useState(false);
   const [showAddCoach, setShowAddCoach] = useState(false);
-  const [inviteAthlete, setInviteAthlete] = useState<AthleteResult | null>(
-    null,
-  );
-  const [inviteRole, setInviteRole] = useState("ATHLETE");
+  const [inviteAthlete, setInviteAthlete] = useState<AthleteResult | null>(null);
+  const [inviteRole, setInviteRole] = useState('ATHLETE');
   const [inviting, setInviting] = useState(false);
 
   // Pending invites state
   const [pendingCount, setPendingCount] = useState(0);
 
   // Edit member state
-  const [editingMember, setEditingMember] = useState<EditableMember | null>(
-    null,
-  );
+  const [editingMember, setEditingMember] = useState<EditableMember | null>(null);
 
   const clubId = activeClub?.clubId;
-  const isGestor = activeClub?.role === "GESTOR";
+  const isGestor = activeClub?.role === 'GESTOR';
 
   // === Fetch Stats ===
   const fetchStats = useCallback(async () => {
@@ -217,13 +207,10 @@ const GestorDashboard: React.FC = () => {
     setLoadingStats(true);
     setError(null);
     try {
-      const response = await httpClient.get<ClubStats>(
-        `/clubs/${clubId}/stats`,
-      );
+      const response = await httpClient.get<ClubStats>(`/clubs/${clubId}/stats`);
       setStats(response.data);
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Erro ao carregar estatísticas";
+      const message = err instanceof Error ? err.message : 'Erro ao carregar estatísticas';
       setError(message);
     } finally {
       setLoadingStats(false);
@@ -235,14 +222,12 @@ const GestorDashboard: React.FC = () => {
     if (!clubId) return;
     setLoadingMembers(true);
     try {
-      const response = await httpClient.get<{ members: FullMember[] }>(
-        `/clubs/${clubId}/members`,
-      );
+      const response = await httpClient.get<{ members: FullMember[] }>(`/clubs/${clubId}/members`);
       const allMembers = response.data.members || [];
       setMembers(allMembers);
-      setPendingCount(allMembers.filter((m) => m.status === "PENDING").length);
+      setPendingCount(allMembers.filter((m) => m.status === 'PENDING').length);
     } catch {
-      toast.error("Erro ao carregar membros.");
+      toast.error('Erro ao carregar membros.');
     } finally {
       setLoadingMembers(false);
     }
@@ -258,7 +243,7 @@ const GestorDashboard: React.FC = () => {
       );
       setInvoices(response.data.invoices || []);
     } catch {
-      toast.error("Erro ao carregar faturas.");
+      toast.error('Erro ao carregar faturas.');
     } finally {
       setLoadingInvoices(false);
     }
@@ -270,19 +255,19 @@ const GestorDashboard: React.FC = () => {
   }, [fetchStats]);
 
   useEffect(() => {
-    if (activeTab === "members" && members.length === 0) {
+    if (activeTab === 'members' && members.length === 0) {
       fetchMembers();
     }
   }, [activeTab, members.length, fetchMembers]);
 
   useEffect(() => {
-    if (activeTab === "matches") {
+    if (activeTab === 'matches') {
       fetchStats();
     }
   }, [activeTab, fetchStats]);
 
   useEffect(() => {
-    if (activeTab === "billing" && invoices.length === 0) {
+    if (activeTab === 'billing' && invoices.length === 0) {
       fetchInvoices();
     }
   }, [activeTab, invoices.length, fetchInvoices]);
@@ -297,18 +282,15 @@ const GestorDashboard: React.FC = () => {
         userId: inviteAthlete.id,
         role: inviteRole,
       });
-      toast.success(
-        `${inviteAthlete.name} convidado como ${ROLE_LABELS[inviteRole]}.`,
-      );
+      toast.success(`${inviteAthlete.name} convidado como ${ROLE_LABELS[inviteRole]}.`);
       setInviteAthlete(null);
-      setInviteRole("ATHLETE");
+      setInviteRole('ATHLETE');
       setShowInviteForm(false);
       // Refresh data
       fetchMembers();
       fetchStats();
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Erro ao convidar membro";
+      const message = err instanceof Error ? err.message : 'Erro ao convidar membro';
       toast.error(message);
     } finally {
       setInviting(false);
@@ -330,13 +312,8 @@ const GestorDashboard: React.FC = () => {
     return (
       <div className="gestor-dashboard">
         <div className="gestor-empty">
-          <p>
-            Acesso restrito. Apenas gestores do clube podem acessar este painel.
-          </p>
-          <button
-            className="gestor-btn-secondary"
-            onClick={() => navigation.navigateToDashboard()}
-          >
+          <p>Acesso restrito. Apenas gestores do clube podem acessar este painel.</p>
+          <button className="gestor-btn-secondary" onClick={() => navigation.navigateToDashboard()}>
             Voltar ao Dashboard
           </button>
         </div>
@@ -353,9 +330,7 @@ const GestorDashboard: React.FC = () => {
             <h2>
               Painel do <span>Gestor</span>
             </h2>
-            {activeClub && (
-              <span className="gestor-club-tag">{activeClub.clubName}</span>
-            )}
+            {activeClub && <span className="gestor-club-tag">{activeClub.clubName}</span>}
           </div>
           <div className="gestor-header-actions">
             <button
@@ -371,27 +346,24 @@ const GestorDashboard: React.FC = () => {
         <nav className="gestor-tabs">
           {(
             [
-              { key: "overview", label: "Visão Geral", icon: "📊" },
-              { key: "members", label: "Membros", icon: "👥" },
-              { key: "matches", label: "Partidas", icon: "🎾" },
-              { key: "tournaments", label: "Torneios", icon: "🏆" },
-              { key: "rankings", label: "Ranking", icon: "📈" },
-              { key: "billing", label: "Assinatura", icon: "💳" },
-              { key: "settings", label: "Config", icon: "⚙️" },
+              { key: 'overview', label: 'Visão Geral', icon: '📊' },
+              { key: 'members', label: 'Membros', icon: '👥' },
+              { key: 'matches', label: 'Partidas', icon: '🎾' },
+              { key: 'tournaments', label: 'Torneios', icon: '🏆' },
+              { key: 'rankings', label: 'Ranking', icon: '📈' },
+              { key: 'billing', label: 'Assinatura', icon: '💳' },
+              { key: 'settings', label: 'Config', icon: '⚙️' },
             ] as Array<{ key: TabType; label: string; icon: string }>
           ).map((tab) => (
             <button
               key={tab.key}
-              className={`gestor-tab ${activeTab === tab.key ? "active" : ""}`}
+              className={`gestor-tab ${activeTab === tab.key ? 'active' : ''}`}
               onClick={() => setActiveTab(tab.key)}
             >
               <span className="tab-icon">{tab.icon}</span>
               <span className="tab-label">{tab.label}</span>
-              {tab.key === "members" && pendingCount > 0 && (
-                <span
-                  className="tab-pending-badge"
-                  aria-label={`${pendingCount} pendentes`}
-                >
+              {tab.key === 'members' && pendingCount > 0 && (
+                <span className="tab-pending-badge" aria-label={`${pendingCount} pendentes`}>
                   {pendingCount}
                 </span>
               )}
@@ -418,7 +390,7 @@ const GestorDashboard: React.FC = () => {
           )}
 
           {/* === TAB: Visão Geral === */}
-          {activeTab === "overview" && stats && (
+          {activeTab === 'overview' && stats && (
             <div className="gestor-overview">
               {/* KPI Cards */}
               <div className="gestor-kpi-grid">
@@ -440,9 +412,7 @@ const GestorDashboard: React.FC = () => {
                 <div className="kpi-card">
                   <div className="kpi-icon">🟢</div>
                   <div className="kpi-value">
-                    {stats.matchesByStatus.find(
-                      (m) => m.status === "IN_PROGRESS",
-                    )?.count || 0}
+                    {stats.matchesByStatus.find((m) => m.status === 'IN_PROGRESS')?.count || 0}
                   </div>
                   <div className="kpi-label">Ao Vivo</div>
                 </div>
@@ -452,10 +422,7 @@ const GestorDashboard: React.FC = () => {
               <div className="gestor-section">
                 <div className="section-header">
                   <h3>Partidas Recentes</h3>
-                  <button
-                    className="gestor-link-btn"
-                    onClick={() => setActiveTab("matches")}
-                  >
+                  <button className="gestor-link-btn" onClick={() => setActiveTab('matches')}>
                     Ver todas →
                   </button>
                 </div>
@@ -476,15 +443,13 @@ const GestorDashboard: React.FC = () => {
                         </div>
                         <div className="match-meta">
                           <span
-                            className={`match-status-badge ${MATCH_STATUS_COLORS[match.status] || "badge-neutral"}`}
+                            className={`match-status-badge ${MATCH_STATUS_COLORS[match.status] || 'badge-neutral'}`}
                           >
                             {STATUS_LABELS[match.status] || match.status}
                           </span>
-                          {match.score && (
-                            <span className="match-score">{match.score}</span>
-                          )}
+                          {match.score && <span className="match-score">{match.score}</span>}
                           <span className="match-vis">
-                            {VISIBILITY_ICONS[match.visibility] || "🔒"}
+                            {VISIBILITY_ICONS[match.visibility] || '🔒'}
                           </span>
                         </div>
                       </div>
@@ -497,10 +462,7 @@ const GestorDashboard: React.FC = () => {
               <div className="gestor-section">
                 <div className="section-header">
                   <h3>Membros Recentes</h3>
-                  <button
-                    className="gestor-link-btn"
-                    onClick={() => setActiveTab("members")}
-                  >
+                  <button className="gestor-link-btn" onClick={() => setActiveTab('members')}>
                     Ver todos →
                   </button>
                 </div>
@@ -515,47 +477,36 @@ const GestorDashboard: React.FC = () => {
                             <code>
                               {member.user.athleteProfile?.globalId
                                 ? `[${member.user.athleteProfile.globalId.slice(0, 8).toUpperCase()}]`
-                                : "—"}
+                                : '—'}
                             </code>
                           </span>
                           <span className="member-cell-name">
                             <span className="member-avatar">
-                              {member.user.name?.charAt(0)?.toUpperCase() ||
-                                "?"}
+                              {member.user.name?.charAt(0)?.toUpperCase() || '?'}
                             </span>
                             {member.user.name}
                           </span>
                           <span className="member-cell-email">
-                            {member.user.email || (
-                              <span
-                                style={{ color: "var(--clr-text-muted, #888)" }}
-                              >
-                                —
-                              </span>
+                            {member.user.email?.includes('@') ? (
+                              member.user.email
+                            ) : (
+                              <span style={{ color: 'var(--clr-text-muted, #888)' }}>—</span>
                             )}
                           </span>
                           <span className="member-cell-cpf">
                             {member.user.athleteProfile?.cpf ? (
                               (() => {
-                                const d =
-                                  member.user.athleteProfile.cpf.replace(
-                                    /\D/g,
-                                    "",
-                                  );
+                                const d = member.user.athleteProfile.cpf.replace(/\D/g, '');
                                 return d.length === 11
                                   ? `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9, 11)}`
                                   : d;
                               })()
                             ) : (
-                              <span
-                                style={{ color: "var(--clr-text-muted, #888)" }}
-                              >
-                                —
-                              </span>
+                              <span style={{ color: 'var(--clr-text-muted, #888)' }}>—</span>
                             )}
                           </span>
                           <span className="member-role-tag">
-                            {ROLE_ICONS[member.role] || "👤"}{" "}
+                            {ROLE_ICONS[member.role] || '👤'}{' '}
                             {ROLE_LABELS[member.role] || member.role}
                           </span>
                         </div>
@@ -568,16 +519,14 @@ const GestorDashboard: React.FC = () => {
           )}
 
           {/* === TAB: Membros === */}
-          {activeTab === "members" && (
+          {activeTab === 'members' && (
             <div className="gestor-members-tab">
               <div className="section-header">
                 <h3>
-                  Membros do Clube{" "}
-                  {members.length > 0 && (
-                    <span className="count-badge">{members.length}</span>
-                  )}
+                  Membros do Clube{' '}
+                  {members.length > 0 && <span className="count-badge">{members.length}</span>}
                 </h3>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   <button
                     className="gestor-btn-primary"
                     onClick={() => {
@@ -585,18 +534,12 @@ const GestorDashboard: React.FC = () => {
                       if (showInviteForm) setShowInviteForm(false);
                     }}
                   >
-                    {showBulkImport ? "Cancelar" : "📤 Importar XLSX"}
+                    {showBulkImport ? 'Cancelar' : '📤 Importar XLSX'}
                   </button>
-                  <button
-                    className="gestor-btn-secondary"
-                    onClick={() => setShowAddAthlete(true)}
-                  >
+                  <button className="gestor-btn-secondary" onClick={() => setShowAddAthlete(true)}>
                     ➕ Cadastrar Atleta
                   </button>
-                  <button
-                    className="gestor-btn-secondary"
-                    onClick={() => setShowAddCoach(true)}
-                  >
+                  <button className="gestor-btn-secondary" onClick={() => setShowAddCoach(true)}>
                     🎯 Adicionar Técnico
                   </button>
                   <button
@@ -606,7 +549,7 @@ const GestorDashboard: React.FC = () => {
                       if (showBulkImport) setShowBulkImport(false);
                     }}
                   >
-                    {showInviteForm ? "Cancelar" : "+ Convidar Membro"}
+                    {showInviteForm ? 'Cancelar' : '+ Convidar Membro'}
                   </button>
                 </div>
               </div>
@@ -643,7 +586,7 @@ const GestorDashboard: React.FC = () => {
                     onClick={handleInviteMember}
                     disabled={!inviteAthlete || inviting}
                   >
-                    {inviting ? "Convidando..." : "Enviar Convite"}
+                    {inviting ? 'Convidando...' : 'Enviar Convite'}
                   </button>
                 </div>
               )}
@@ -668,9 +611,7 @@ const GestorDashboard: React.FC = () => {
                   Carregando membros...
                 </div>
               ) : members.length === 0 ? (
-                <p className="gestor-muted">
-                  Nenhum membro encontrado. Convide alguém!
-                </p>
+                <p className="gestor-muted">Nenhum membro encontrado. Convide alguém!</p>
               ) : (
                 <div className="gestor-members-table">
                   <div className="members-table-header">
@@ -690,80 +631,65 @@ const GestorDashboard: React.FC = () => {
                         <code>
                           {member.user.athleteProfile?.globalId
                             ? `[${member.user.athleteProfile.globalId.slice(0, 8).toUpperCase()}]`
-                            : "—"}
+                            : '—'}
                         </code>
                       </span>
                       <span className="member-cell-name">
                         <span className="member-avatar">
-                          {member.user.name?.charAt(0)?.toUpperCase() || "?"}
+                          {member.user.name?.charAt(0)?.toUpperCase() || '?'}
                         </span>
                         {member.user.name}
                       </span>
                       <span className="member-cell-email">
-                        {member.user.email ? (
+                        {member.user.email?.includes('@') ? (
                           member.user.email
                         ) : (
-                          <span
-                            style={{ color: "var(--clr-text-muted, #888)" }}
-                          >
-                            —
-                          </span>
+                          <span style={{ color: 'var(--clr-text-muted, #888)' }}>—</span>
                         )}
                       </span>
                       <span className="member-cell-cpf">
                         {member.user.athleteProfile?.cpf ? (
                           (() => {
-                            const d = member.user.athleteProfile.cpf.replace(
-                              /\D/g,
-                              "",
-                            );
+                            const d = member.user.athleteProfile.cpf.replace(/\D/g, '');
                             return d.length === 11
                               ? `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9, 11)}`
                               : d;
                           })()
                         ) : (
-                          <span
-                            style={{ color: "var(--clr-text-muted, #888)" }}
-                          >
-                            —
-                          </span>
+                          <span style={{ color: 'var(--clr-text-muted, #888)' }}>—</span>
                         )}
                       </span>
                       <span className="member-cell-birth">
                         {member.user.athleteProfile?.birthDate ? (
-                          new Date(
-                            member.user.athleteProfile.birthDate,
-                          ).toLocaleDateString("pt-BR", { timeZone: "UTC" })
+                          new Date(member.user.athleteProfile.birthDate).toLocaleDateString(
+                            'pt-BR',
+                            { timeZone: 'UTC' },
+                          )
                         ) : (
-                          <span
-                            style={{ color: "var(--clr-text-muted, #888)" }}
-                          >
-                            —
-                          </span>
+                          <span style={{ color: 'var(--clr-text-muted, #888)' }}>—</span>
                         )}
                       </span>
                       <span className="member-cell-role">
                         <span className="member-role-tag">
-                          {ROLE_ICONS[member.role] || "👤"}{" "}
+                          {ROLE_ICONS[member.role] || '👤'}{' '}
                           {ROLE_LABELS[member.role] || member.role}
                         </span>
                       </span>
                       <span className="member-cell-status">
                         <span
-                          className={`status-dot ${member.status === "ACTIVE" ? "active" : "inactive"}`}
+                          className={`status-dot ${member.status === 'ACTIVE' ? 'active' : 'inactive'}`}
                         />
-                        {member.status === "ACTIVE"
-                          ? "Ativo"
-                          : member.status === "PENDING"
-                            ? "Pendente"
+                        {member.status === 'ACTIVE'
+                          ? 'Ativo'
+                          : member.status === 'PENDING'
+                            ? 'Pendente'
                             : member.status}
                       </span>
                       <span className="member-cell-date">
-                        {new Date(member.joinedAt).toLocaleDateString("pt-BR")}
+                        {new Date(member.joinedAt).toLocaleDateString('pt-BR')}
                       </span>
                       <span className="member-cell-actions">
-                        {(member.role === "ATHLETE" ||
-                          member.role === "COACH") &&
+                        {(member.role === 'ATHLETE' || member.role === 'COACH') &&
                           member.clubId === clubId && (
                             <button
                               type="button"
@@ -783,11 +709,11 @@ const GestorDashboard: React.FC = () => {
           )}
 
           {/* === TAB: Partidas === */}
-          {activeTab === "matches" && stats && (
+          {activeTab === 'matches' && stats && (
             <div className="gestor-matches-tab">
               <div className="section-header">
                 <h3>Partidas do Clube</h3>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   <button
                     className="gestor-btn-primary"
                     onClick={() => navigation.navigateToNewMatch()}
@@ -808,9 +734,7 @@ const GestorDashboard: React.FC = () => {
               <div className="status-summary">
                 {stats.matchesByStatus.map((m) => (
                   <div key={m.status} className="status-pill">
-                    <span className="status-pill-label">
-                      {STATUS_LABELS[m.status] || m.status}
-                    </span>
+                    <span className="status-pill-label">{STATUS_LABELS[m.status] || m.status}</span>
                     <span className="status-pill-count">{m.count}</span>
                   </div>
                 ))}
@@ -831,12 +755,12 @@ const GestorDashboard: React.FC = () => {
                     >
                       <div className="match-card-header">
                         <span
-                          className={`match-status-badge ${MATCH_STATUS_COLORS[match.status] || "badge-neutral"}`}
+                          className={`match-status-badge ${MATCH_STATUS_COLORS[match.status] || 'badge-neutral'}`}
                         >
                           {STATUS_LABELS[match.status] || match.status}
                         </span>
                         <span className="match-vis">
-                          {VISIBILITY_ICONS[match.visibility] || "🔒"}
+                          {VISIBILITY_ICONS[match.visibility] || '🔒'}
                         </span>
                       </div>
                       <div className="match-card-players">
@@ -844,15 +768,11 @@ const GestorDashboard: React.FC = () => {
                         <span className="match-vs">vs</span>
                         <span className="player-name">{match.playerP2}</span>
                       </div>
-                      {match.score && (
-                        <div className="match-card-score">{match.score}</div>
-                      )}
+                      {match.score && <div className="match-card-score">{match.score}</div>}
                       <div className="match-card-footer">
                         <span className="match-format">{match.format}</span>
                         <span className="match-date">
-                          {new Date(match.createdAt).toLocaleDateString(
-                            "pt-BR",
-                          )}
+                          {new Date(match.createdAt).toLocaleDateString('pt-BR')}
                         </span>
                       </div>
                     </div>
@@ -863,13 +783,13 @@ const GestorDashboard: React.FC = () => {
           )}
 
           {/* === TAB: Torneios === */}
-          {activeTab === "tournaments" && stats && (
+          {activeTab === 'tournaments' && stats && (
             <div className="gestor-tournaments-tab">
               <div className="section-header">
                 <h3>Torneios do Clube</h3>
                 <button
                   className="gestor-btn-primary"
-                  onClick={() => navigation.replace("/tournaments")}
+                  onClick={() => navigation.replace('/tournaments')}
                 >
                   Gerenciar Torneios →
                 </button>
@@ -878,8 +798,7 @@ const GestorDashboard: React.FC = () => {
               {/* Tournament Status Summary */}
               {stats.tournamentsByStatus.length === 0 ? (
                 <p className="gestor-muted">
-                  Nenhum torneio criado. Acesse a página de torneios para criar
-                  um.
+                  Nenhum torneio criado. Acesse a página de torneios para criar um.
                 </p>
               ) : (
                 <div className="tournament-status-grid">
@@ -897,12 +816,10 @@ const GestorDashboard: React.FC = () => {
           )}
 
           {/* === TAB: Ranking === */}
-          {activeTab === "rankings" && clubId && (
-            <ClubRankings clubId={clubId} />
-          )}
+          {activeTab === 'rankings' && clubId && <ClubRankings clubId={clubId} />}
 
           {/* === TAB: Assinatura / Billing === */}
-          {activeTab === "billing" && (
+          {activeTab === 'billing' && (
             <div className="gestor-billing-tab">
               <div className="section-header">
                 <h3>Assinatura do Clube</h3>
@@ -916,10 +833,7 @@ const GestorDashboard: React.FC = () => {
               ) : subscription.error ? (
                 <div className="gestor-error">
                   <p>{subscription.error}</p>
-                  <button
-                    className="gestor-btn-secondary"
-                    onClick={subscription.refresh}
-                  >
+                  <button className="gestor-btn-secondary" onClick={subscription.refresh}>
                     Tentar novamente
                   </button>
                 </div>
@@ -934,18 +848,14 @@ const GestorDashboard: React.FC = () => {
                     </div>
                     <div className="kpi-card">
                       <div className="kpi-icon">
-                        {subscription.isActive
-                          ? "✅"
-                          : subscription.isPastDue
-                            ? "⚠️"
-                            : "❌"}
+                        {subscription.isActive ? '✅' : subscription.isPastDue ? '⚠️' : '❌'}
                       </div>
                       <div className="kpi-value">
                         {subscription.isActive
-                          ? "Ativo"
+                          ? 'Ativo'
                           : subscription.isPastDue
-                            ? "Pendente"
-                            : "Inativo"}
+                            ? 'Pendente'
+                            : 'Inativo'}
                       </div>
                       <div className="kpi-label">Status</div>
                     </div>
@@ -954,7 +864,7 @@ const GestorDashboard: React.FC = () => {
                       <div className="kpi-value">
                         {subscription.athleteUsage
                           ? `${subscription.athleteUsage.current}/${subscription.athleteUsage.max}`
-                          : "—"}
+                          : '—'}
                       </div>
                       <div className="kpi-label">Atletas</div>
                     </div>
@@ -963,7 +873,7 @@ const GestorDashboard: React.FC = () => {
                       <div className="kpi-value">
                         {subscription.daysRemaining !== null
                           ? `${subscription.daysRemaining}d`
-                          : "∞"}
+                          : '∞'}
                       </div>
                       <div className="kpi-label">Dias Restantes</div>
                     </div>
@@ -976,22 +886,20 @@ const GestorDashboard: React.FC = () => {
                       <div className="quota-bar-container">
                         <div className="quota-bar">
                           <div
-                            className={`quota-bar-fill ${subscription.athleteUsage.percentage > 90 ? "quota-danger" : subscription.athleteUsage.percentage > 70 ? "quota-warning" : ""}`}
+                            className={`quota-bar-fill ${subscription.athleteUsage.percentage > 90 ? 'quota-danger' : subscription.athleteUsage.percentage > 70 ? 'quota-warning' : ''}`}
                             style={{
                               width: `${Math.min(subscription.athleteUsage.percentage, 100)}%`,
                             }}
                           />
                         </div>
                         <span className="quota-text">
-                          {subscription.athleteUsage.current} de{" "}
-                          {subscription.athleteUsage.max} atletas (
-                          {Math.round(subscription.athleteUsage.percentage)}%)
+                          {subscription.athleteUsage.current} de {subscription.athleteUsage.max}{' '}
+                          atletas ({Math.round(subscription.athleteUsage.percentage)}%)
                         </span>
                       </div>
                       {!subscription.canAddAthlete && (
                         <p className="gestor-warning">
-                          Limite de atletas atingido. Faça upgrade para
-                          adicionar mais.
+                          Limite de atletas atingido. Faça upgrade para adicionar mais.
                         </p>
                       )}
                     </div>
@@ -1001,59 +909,41 @@ const GestorDashboard: React.FC = () => {
                   <div className="gestor-section">
                     <h4>Planos Disponíveis</h4>
                     <div className="plan-comparison-grid">
-                      {(["FREE", "PREMIUM", "ENTERPRISE"] as PlanType[]).map(
-                        (plan) => {
-                          const config = PLAN_LIMITS[plan];
-                          const isCurrent = plan === subscription.planType;
-                          return (
-                            <div
-                              key={plan}
-                              className={`plan-card ${isCurrent ? "plan-current" : ""}`}
-                            >
-                              <div className="plan-card-name">
-                                {config.label}
-                              </div>
-                              <div className="plan-card-athletes">
-                                Até{" "}
-                                {config.maxAthletes === 999999
-                                  ? "Ilimitados"
-                                  : config.maxAthletes}{" "}
-                                atletas
-                              </div>
-                              <ul className="plan-card-features">
-                                {config.features.map((f) => (
-                                  <li key={f}>✓ {f.replace(/_/g, " ")}</li>
-                                ))}
-                              </ul>
-                              {isCurrent ? (
-                                <span className="plan-card-badge">
-                                  Plano Atual
-                                </span>
-                              ) : (
-                                <button className="gestor-btn-secondary plan-upgrade-btn">
-                                  {PLAN_LIMITS[subscription.planType] &&
-                                  (
-                                    [
-                                      "FREE",
-                                      "PREMIUM",
-                                      "ENTERPRISE",
-                                    ] as PlanType[]
-                                  ).indexOf(plan) >
-                                    (
-                                      [
-                                        "FREE",
-                                        "PREMIUM",
-                                        "ENTERPRISE",
-                                      ] as PlanType[]
-                                    ).indexOf(subscription.planType)
-                                    ? "Upgrade"
-                                    : "Mudar"}
-                                </button>
-                              )}
+                      {(['FREE', 'PREMIUM', 'ENTERPRISE'] as PlanType[]).map((plan) => {
+                        const config = PLAN_LIMITS[plan];
+                        const isCurrent = plan === subscription.planType;
+                        return (
+                          <div
+                            key={plan}
+                            className={`plan-card ${isCurrent ? 'plan-current' : ''}`}
+                          >
+                            <div className="plan-card-name">{config.label}</div>
+                            <div className="plan-card-athletes">
+                              Até{' '}
+                              {config.maxAthletes === 999999 ? 'Ilimitados' : config.maxAthletes}{' '}
+                              atletas
                             </div>
-                          );
-                        },
-                      )}
+                            <ul className="plan-card-features">
+                              {config.features.map((f) => (
+                                <li key={f}>✓ {f.replace(/_/g, ' ')}</li>
+                              ))}
+                            </ul>
+                            {isCurrent ? (
+                              <span className="plan-card-badge">Plano Atual</span>
+                            ) : (
+                              <button className="gestor-btn-secondary plan-upgrade-btn">
+                                {PLAN_LIMITS[subscription.planType] &&
+                                (['FREE', 'PREMIUM', 'ENTERPRISE'] as PlanType[]).indexOf(plan) >
+                                  (['FREE', 'PREMIUM', 'ENTERPRISE'] as PlanType[]).indexOf(
+                                    subscription.planType,
+                                  )
+                                  ? 'Upgrade'
+                                  : 'Mudar'}
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -1061,10 +951,7 @@ const GestorDashboard: React.FC = () => {
                   <div className="gestor-section">
                     <div className="section-header">
                       <h4>Faturas</h4>
-                      <button
-                        className="gestor-link-btn"
-                        onClick={fetchInvoices}
-                      >
+                      <button className="gestor-link-btn" onClick={fetchInvoices}>
                         Atualizar
                       </button>
                     </div>
@@ -1086,27 +973,18 @@ const GestorDashboard: React.FC = () => {
                         </div>
                         {invoices.map((inv) => (
                           <div key={inv.id} className="members-table-row">
-                            <span>{inv.description || "Assinatura"}</span>
+                            <span>{inv.description || 'Assinatura'}</span>
                             <span>R$ {(inv.amount / 100).toFixed(2)}</span>
                             <span>
                               <span
-                                className={`match-status-badge ${INVOICE_STATUS_COLORS[inv.status] || "badge-neutral"}`}
+                                className={`match-status-badge ${INVOICE_STATUS_COLORS[inv.status] || 'badge-neutral'}`}
                               >
-                                {INVOICE_STATUS_LABELS[inv.status] ||
-                                  inv.status}
+                                {INVOICE_STATUS_LABELS[inv.status] || inv.status}
                               </span>
                             </span>
+                            <span>{new Date(inv.dueDate).toLocaleDateString('pt-BR')}</span>
                             <span>
-                              {new Date(inv.dueDate).toLocaleDateString(
-                                "pt-BR",
-                              )}
-                            </span>
-                            <span>
-                              {inv.paidAt
-                                ? new Date(inv.paidAt).toLocaleDateString(
-                                    "pt-BR",
-                                  )
-                                : "—"}
+                              {inv.paidAt ? new Date(inv.paidAt).toLocaleDateString('pt-BR') : '—'}
                             </span>
                           </div>
                         ))}
@@ -1119,7 +997,7 @@ const GestorDashboard: React.FC = () => {
           )}
 
           {/* === TAB: Config === */}
-          {activeTab === "settings" && (
+          {activeTab === 'settings' && (
             <div className="gestor-settings-tab">
               <div className="section-header">
                 <h3>Configurações do Clube</h3>
@@ -1128,27 +1006,21 @@ const GestorDashboard: React.FC = () => {
               <div className="gestor-section">
                 <h4>Código de Convite</h4>
                 <p className="gestor-muted">
-                  Compartilhe este código para que atletas se juntem ao seu
-                  clube.
+                  Compartilhe este código para que atletas se juntem ao seu clube.
                 </p>
                 {activeClub && (
                   <div className="invite-code-display">
                     <code className="invite-code-value">
                       {/* invite code is fetched from club data */}
-                      {(activeClub as unknown as Record<string, string>)
-                        .inviteCode || "Gerando..."}
+                      {(activeClub as unknown as Record<string, string>).inviteCode || 'Gerando...'}
                     </code>
                     <button
                       className="gestor-btn-secondary"
                       onClick={() => {
-                        const code = (
-                          activeClub as unknown as Record<string, string>
-                        ).inviteCode;
+                        const code = (activeClub as unknown as Record<string, string>).inviteCode;
                         if (code) {
-                          navigator.clipboard.writeText(
-                            `${window.location.origin}/join/${code}`,
-                          );
-                          toast.success("Link copiado!");
+                          navigator.clipboard.writeText(`${window.location.origin}/join/${code}`);
+                          toast.success('Link copiado!');
                         }
                       }}
                     >

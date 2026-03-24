@@ -129,6 +129,7 @@ export async function createMatch(matchData, testPrisma) {
     visibleTo,
     clubId,
     createdByUserId,
+    openForAnnotation = false,
   } = validation.data;
 
   const prismaClient = testPrisma || prisma;
@@ -152,11 +153,7 @@ export async function createMatch(matchData, testPrisma) {
     if (user1?.email) p1Email = user1.email;
     if (user2?.email) p2Email = user2.email;
   } catch (err) {
-    console.warn(
-      "[createMatch] Erro ao buscar emails dos jogadores:",
-      err.message,
-    );
-    // Continua mesmo que falhe o lookup - usar o nome como fallback
+    // falha no lookup de emails — usa nome como fallback
   }
 
   // Inclui o email do apontador e dos jogadores em playersEmails, sem duplicidade
@@ -178,6 +175,7 @@ export async function createMatch(matchData, testPrisma) {
       playersEmails,
       visibility: visibility || "PLAYERS_ONLY",
       status: "NOT_STARTED",
+      openForAnnotation: openForAnnotation ?? false,
       clubId: clubId || null,
       createdByUserId: createdByUserId || null,
       completedSets: JSON.stringify([]),
@@ -200,6 +198,7 @@ export async function createMatch(matchData, testPrisma) {
     apontadorEmail: newMatch.apontadorEmail,
     playersEmails: newMatch.playersEmails,
     visibility: newMatch.visibility,
+    openForAnnotation: newMatch.openForAnnotation,
     visibleTo: visibleTo || "both",
     clubId: newMatch.clubId || null,
     status: newMatch.status,
@@ -298,6 +297,8 @@ export async function updateMatch(id, updatePayload) {
     updateData.completedSets = JSON.stringify(
       payloadValidation.data.completedSets,
     );
+  if (payloadValidation.data.openForAnnotation !== undefined)
+    updateData.openForAnnotation = payloadValidation.data.openForAnnotation;
 
   const updatedMatch = await prisma.match.update({
     where: { id: idValidation.data },
@@ -318,21 +319,13 @@ export async function updateMatchState(id, statePayload, testPrisma) {
   const idValidation = MatchIdSchema.safeParse(id);
   if (!idValidation.success) {
     const errorMsg = validateAndFormatZodError(idValidation.error);
-    console.warn(
-      "[updateMatchState] ID inválido, aceitando de forma resiliente:",
-      errorMsg,
-    );
-    // Não rejeitar para não quebrar fluxo existente — apenas logar
+    void errorMsg;
+    // Aceitar de forma resiliente para não quebrar fluxo existente
   }
 
   const payloadValidation = MatchStateUpdateSchema.safeParse(statePayload);
   if (!payloadValidation.success) {
-    console.warn(
-      "[updateMatchState] Payload inválido, aceitando de forma resiliente:",
-      payloadValidation.error,
-    );
-    // Em vez de rejeitar, aceitar o payload como está para não quebrar fluxo existente
-    // mas logar o problema para monitoramento
+    // Aceitar payload como está para não quebrar fluxo existente
   }
 
   const { matchState } = statePayload;
@@ -348,11 +341,7 @@ export async function updateMatchState(id, statePayload, testPrisma) {
       state = {};
     }
   } catch (e) {
-    console.error(
-      `[updateMatchState] Erro ao fazer parse do matchState para partida ${id}:`,
-      e,
-    );
-    // Em caso de payload inválido, não derrubar a API: manter estado vazio
+    // parse falhou: usar estado vazio sem derrubar a API
     state = {};
   }
 
@@ -369,10 +358,6 @@ export async function updateMatchState(id, statePayload, testPrisma) {
       ? JSON.parse(currentMatch.matchState)
       : {};
   } catch (e) {
-    console.warn(
-      `[updateMatchState] Erro ao fazer parse do estado atual da partida ${id}:`,
-      e,
-    );
     currentState = {};
   }
 
@@ -398,10 +383,6 @@ export async function updateMatchState(id, statePayload, testPrisma) {
     status = "IN_PROGRESS";
   }
   // Se já estava IN_PROGRESS ou FINISHED, manter o status atual
-
-  console.log(
-    `[updateMatchState] Atualizando partida ${id}: status ${currentMatch?.status} -> ${status}`,
-  );
 
   const updatedMatch = await prismaClient.match.update({
     where: { id },
@@ -442,10 +423,6 @@ export async function getMatchState(id) {
   try {
     matchState = match.matchState ? JSON.parse(match.matchState) : null;
   } catch (e) {
-    console.warn(
-      `[getMatchState] Erro ao fazer parse do matchState da partida ${match.id}:`,
-      e,
-    );
     matchState = {};
   }
   if (matchState && !matchState.startedAt) {
@@ -510,15 +487,11 @@ export async function getVisibleMatches(queryParams, testPrisma) {
       orderBy: { createdAt: "desc" },
     });
   } catch (e) {
-    console.error("[getVisibleMatches] Erro ao buscar partidas do banco:", e);
     return [];
   }
 
   // Aplica filtro de visibilidade (se necessário)
   const { email, role } = queryValidation.data;
-  console.log(
-    `[getVisibleMatches] Filtrando ${matches.length} partidas para email: ${email} e role: ${role}`,
-  );
   const filtered = matches.filter((match) => {
     let matchRole = undefined;
     let playersEmails = match.playersEmails || [];
@@ -530,11 +503,8 @@ export async function getVisibleMatches(queryParams, testPrisma) {
             : match.matchState;
         if (parsed && parsed.role) matchRole = parsed.role;
       }
-    } catch (e) {
-      console.warn(
-        `[getVisibleMatches] Erro ao fazer parse do matchState da partida ${match.id}:`,
-        e,
-      );
+    } catch {
+      // parse falhou: ignorar matchState do filtro
     }
     // Retorna se o e-mail do usuário está em playersEmails OU é o apontador da partida
     if (!email) return false;
@@ -549,28 +519,18 @@ export async function getVisibleMatches(queryParams, testPrisma) {
     }
     return true;
   });
-  console.log(`[getVisibleMatches] Após filtro: ${filtered.length} partidas`);
-
   // Retorna status conforme está salvo no banco, garantindo robustez
   return filtered.map((match) => {
     let parsedState = null;
     try {
       parsedState = match.matchState ? JSON.parse(match.matchState) : null;
-    } catch (e) {
-      console.warn(
-        `[getVisibleMatches] Erro ao fazer parse do matchState da partida ${match.id}:`,
-        e,
-      );
+    } catch {
       parsedState = {};
     }
     let completedSets = [];
     try {
       completedSets = JSON.parse(match.completedSets || "[]");
-    } catch (e) {
-      console.warn(
-        `[getVisibleMatches] Erro ao fazer parse do completedSets da partida ${match.id}:`,
-        e,
-      );
+    } catch {
       completedSets = [];
     }
 
@@ -643,32 +603,68 @@ export async function getMatchStats(id) {
           typeof match.matchState === "string"
             ? JSON.parse(match.matchState)
             : match.matchState;
-      } catch (parseErr) {
-        console.warn(
-          `[getMatchStats] Erro ao fazer parse do matchState da partida ${id}:`,
-          parseErr,
-        );
+      } catch {
         matchState = {};
       }
       if (Array.isArray(matchState.pointsHistory)) {
         pointsHistory = matchState.pointsHistory;
       } else {
-        if (matchState.pointsHistory !== undefined) {
-          console.warn(
-            `[getMatchStats] pointsHistory mal formatado para partida ${id}:`,
-            matchState.pointsHistory,
-          );
-        }
         pointsHistory = [];
       }
     }
     return calculateMatchStats(pointsHistory);
-  } catch (error) {
-    console.warn(
-      `[getMatchStats] Erro inesperado ao calcular estatísticas para partida ${id}:`,
-      error,
-    );
-    // Nunca lança erro 500, retorna estatísticas vazias
+  } catch {
+    // retorna estatísticas vazias se houver erro
     return calculateMatchStats([]);
   }
+}
+
+/**
+ * Busca partidas marcadas como abertas para anotação (openForAnnotation=true)
+ * que ainda não foram finalizadas.
+ * Qualquer usuário autenticado (não SPECTATOR) pode listar e anotar.
+ */
+export async function getMatchesOpenForAnnotation(testPrisma) {
+  const prismaClient = testPrisma || prisma;
+  const matches = await prismaClient.match.findMany({
+    where: {
+      openForAnnotation: true,
+      status: { not: "FINISHED" },
+    },
+    select: {
+      id: true,
+      sportType: true,
+      format: true,
+      courtType: true,
+      nickname: true,
+      playerP1: true,
+      playerP2: true,
+      status: true,
+      createdAt: true,
+      openForAnnotation: true,
+      visibility: true,
+      clubId: true,
+      club: { select: { id: true, name: true } },
+      createdBy: { select: { id: true, name: true, email: true } },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return matches.map((match) => ({
+    id: match.id,
+    sportType: match.sportType,
+    format: match.format,
+    courtType: match.courtType || null,
+    nickname: match.nickname || null,
+    players: { p1: match.playerP1, p2: match.playerP2 },
+    status: match.status,
+    createdAt: match.createdAt.toISOString(),
+    openForAnnotation: match.openForAnnotation,
+    visibility: match.visibility,
+    clubId: match.clubId || null,
+    clubName: match.club?.name || null,
+    createdBy: match.createdBy
+      ? { id: match.createdBy.id, name: match.createdBy.name }
+      : null,
+  }));
 }

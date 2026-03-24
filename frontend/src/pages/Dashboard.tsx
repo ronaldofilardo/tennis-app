@@ -11,6 +11,8 @@ import type { MatchFilter } from "../components/FilterChips";
 import LiveMatchesCarousel from "../components/LiveMatchesCarousel";
 import PendingInvitesBanner from "../components/PendingInvitesBanner";
 import { ClubRankings } from "../components/ClubRankings";
+import OpenMatchCard from "../components/OpenMatchCard";
+import type { OpenMatch } from "../components/OpenMatchCard";
 import { useAuth } from "../contexts/AuthContext";
 import { API_URL } from "../config/api";
 import { resolvePlayerName } from "../data/players";
@@ -73,11 +75,44 @@ const Dashboard: React.FC<DashboardProps> = ({
     null,
   );
   const [matchStates, setMatchStates] = useState<Record<string, any>>({});
+  const [openMatches, setOpenMatches] = useState<OpenMatch[]>([]);
+  const [openMatchesLoading, setOpenMatchesLoading] = useState(false);
 
   // ── New mobile-first state ──────────────────────────────
   const [activeTab, setActiveTab] = useState<TabId>("home");
   const [activeFilter, setActiveFilter] = useState<MatchFilter>("all");
+  // ── Fetch open-for-annotation matches ────────────────────────────
+  React.useEffect(() => {
+    if (!authUser) return;
+    setOpenMatchesLoading(true);
+    const _token = localStorage.getItem("racket_token") ?? "";
+    fetch(`${API_URL}/matches/open-for-annotation`, {
+      headers: { Authorization: `Bearer ${_token}` },
+      credentials: "include",
+    })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data: OpenMatch[]) => setOpenMatches(Array.isArray(data) ? data : []))
+      .catch(() => setOpenMatches([]))
+      .finally(() => setOpenMatchesLoading(false));
+  }, [authUser]);
 
+  const handleAnnotateOpenMatch = async (matchId: string) => {
+    const _token2 = localStorage.getItem("racket_token") ?? "";
+    await fetch(`${API_URL}/matches/${matchId}/sessions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${_token2}`,
+      },
+      credentials: "include",
+    });
+    setOpenMatches((prev) => prev.filter((m) => m.id !== matchId));
+    if (onContinueMatch) {
+      onContinueMatch({ id: matchId } as any);
+    } else if (onStartMatch) {
+      onStartMatch({ id: matchId } as any);
+    }
+  };
   const fetchMatchState = async (matchId: string | number) => {
     const res = await fetch(`${API_URL}/matches/${matchId}/state`);
     if (!res.ok) throw new Error("Falha ao buscar state");
@@ -162,8 +197,8 @@ const Dashboard: React.FC<DashboardProps> = ({
         setMatchStates((prev) => ({ ...prev, [matchIdStr]: data }));
         return data;
       }
-    } catch (error) {
-      console.error("Erro ao buscar estado da partida:", error);
+    } catch {
+      // silently fail — estado será obtido na próxima requisição
     }
     return null;
   };
@@ -376,6 +411,22 @@ const Dashboard: React.FC<DashboardProps> = ({
           <h3>Nenhuma partida ainda</h3>
           <p>Crie uma nova partida para começar a jogar.</p>
         </div>
+      )}
+
+      {/* ── Partidas abertas para anotação ── */}
+      {!loading && activeTab === "home" && (openMatchesLoading || openMatches.length > 0) && (
+        <section className="open-matches-section">
+          <h3 className="open-matches-title">🎾 Partidas aguardando anotador</h3>
+          {openMatchesLoading ? (
+            <p className="open-matches-loading">Carregando...</p>
+          ) : (
+            <div className="open-matches-list">
+              {openMatches.map((m) => (
+                <OpenMatchCard key={m.id} match={m} onAnnotate={handleAnnotateOpenMatch} />
+              ))}
+            </div>
+          )}
+        </section>
       )}
 
       {/* ── Live Matches Carousel (pinned at top) ── */}

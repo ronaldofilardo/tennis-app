@@ -68,14 +68,7 @@ export function requireAuth(req, res) {
  * Hierarquia de roles (da mais alta para a mais baixa).
  * Usado por requireRole para verificar role mínima.
  */
-const ROLE_HIERARCHY = [
-  "ADMIN",
-  "GESTOR",
-  "CLUB_STAFF",
-  "COACH",
-  "ATHLETE",
-  "SPECTATOR",
-];
+const ROLE_HIERARCHY = ["ADMIN", "GESTOR", "COACH", "ATHLETE", "SPECTATOR"];
 
 /**
  * Exige autenticação + uma das roles permitidas.

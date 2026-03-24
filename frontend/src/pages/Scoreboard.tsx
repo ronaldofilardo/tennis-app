@@ -77,8 +77,8 @@ const Scoreboard: React.FC<ScoreboardProps> = ({
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ status: "IN_PROGRESS" }),
           });
-        } catch (error) {
-          console.error("Erro ao atualizar status da partida:", error);
+        } catch {
+          // falha silenciosa — não impede a partida de começar
         }
       }
     };
@@ -101,8 +101,8 @@ const Scoreboard: React.FC<ScoreboardProps> = ({
             winner: newState.winner,
           }),
         });
-      } catch (error) {
-        console.error("Erro ao finalizar partida:", error);
+      } catch {
+        // falha silenciosa — UI já processou a finalização
       }
 
       const score = `${newState.sets.PLAYER_1}x${newState.sets.PLAYER_2}`;

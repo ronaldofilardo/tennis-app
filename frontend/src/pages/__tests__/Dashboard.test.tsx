@@ -182,7 +182,7 @@ describe("Dashboard", () => {
   ];
 
   const mockCurrentUser = {
-    role: "annotator",
+    role: "COACH",
     email: "user@example.com",
     name: "Test User",
   };

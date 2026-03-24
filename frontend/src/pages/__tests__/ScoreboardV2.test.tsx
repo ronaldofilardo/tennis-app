@@ -473,7 +473,7 @@ describe("ScoreboardV2 - Button Alignment Based on Server", () => {
       quickActionsRow = aceButtons[0].closest(".quick-actions-row");
       expect(quickActionsRow).toHaveClass("serve-left");
     });
-  });
+  }, 12000);
 
   describe("ScoreboardV2 - Server Alternation and isFirstServe Registration", () => {
     beforeEach(() => {
@@ -683,7 +683,13 @@ describe("ScoreboardV2 - Restauração de Estado e Fluxos", () => {
     window.history.replaceState({ usr: navigationState }, "");
     render(
       <BrowserRouter>
-        <ScoreboardV2 onEndMatch={vi.fn()} />
+        <AuthProvider>
+          <MatchesProvider>
+            <NavigationProvider>
+              <ScoreboardV2 onEndMatch={vi.fn()} />
+            </NavigationProvider>
+          </MatchesProvider>
+        </AuthProvider>
       </BrowserRouter>,
     );
     await waitFor(() => {

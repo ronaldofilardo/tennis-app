@@ -50,8 +50,7 @@ export function safeParseMatchState(matchStateString) {
 
   try {
     return JSON.parse(matchStateString);
-  } catch (e) {
-    console.warn("[safeParseMatchState] Erro ao fazer parse do matchState:", e);
+  } catch {
     return {};
   }
 }
@@ -62,11 +61,7 @@ export function safeParseCompletedSets(completedSetsString) {
 
   try {
     return JSON.parse(completedSetsString);
-  } catch (e) {
-    console.warn(
-      "[safeParseCompletedSets] Erro ao fazer parse do completedSets:",
-      e
-    );
+  } catch {
     return [];
   }
 }
@@ -78,13 +73,13 @@ export function determineMatchStatus(match, parsedState) {
   // Só recalcula se o status parecer inconsistente com o estado
   if (parsedState && status === "NOT_STARTED") {
     const isFinished = Boolean(
-      parsedState.isFinished || parsedState.winner || parsedState.endedAt
+      parsedState.isFinished || parsedState.winner || parsedState.endedAt,
     );
     const inProgressIndicators = Boolean(
       parsedState.startedAt ||
-        parsedState.server ||
-        parsedState.currentGame ||
-        parsedState.currentSetState
+      parsedState.server ||
+      parsedState.currentGame ||
+      parsedState.currentSetState,
     );
     if (isFinished) {
       status = "FINISHED";
@@ -100,7 +95,7 @@ export function determineMatchStatus(match, parsedState) {
 export function formatMatchResponse(
   match,
   parsedState = null,
-  completedSets = null
+  completedSets = null,
 ) {
   const state = parsedState || safeParseMatchState(match.matchState);
   const sets = completedSets || safeParseCompletedSets(match.completedSets);
@@ -138,14 +133,13 @@ export function createTimeoutHandler(res) {
 // Função compartilhada para lidar com CORS preflight
 export function handleCors(res) {
   Object.entries(corsHeaders).forEach(([key, value]) =>
-    res.setHeader(key, value)
+    res.setHeader(key, value),
   );
 }
 
 // Função compartilhada para tratamento de erros
 export function handleApiError(error, res, timeout, context = "") {
   clearTimeout(timeout);
-  console.error(`❌ Erro na API${context}:`, error);
 
   const statusCode = (error && error.statusCode) || 500;
   const errorResponse = {

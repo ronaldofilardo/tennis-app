@@ -1,6 +1,6 @@
 // tests/phase0-hardening.test.ts
 // Testes de regressão para Fase 0 — Hardening da Fundação
-// Cobre: enums Prisma, authMiddleware, guard admin, validação matchState, CLUB_STAFF
+// Cobre: enums Prisma, authMiddleware, guard admin, validação matchState
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
@@ -11,14 +11,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 // Replicas das funções do authMiddleware.js para testes unitários
 // (evitamos import direto porque o módulo depende de verifyToken com crypto)
 
-const ROLE_HIERARCHY = [
-  "ADMIN",
-  "GESTOR",
-  "CLUB_STAFF",
-  "COACH",
-  "ATHLETE",
-  "SPECTATOR",
-];
+const ROLE_HIERARCHY = ["ADMIN", "GESTOR", "COACH", "ATHLETE", "SPECTATOR"];
 
 function extractContextFromAuth(
   authHeader: string | undefined,
@@ -129,10 +122,8 @@ describe("Auth Middleware — checkRoleAccess", () => {
     expect(checkRoleAccess("ATHLETE", ["ADMIN"])).toBe(false);
   });
 
-  it("CLUB_STAFF tem acesso quando incluído na lista", () => {
-    expect(
-      checkRoleAccess("CLUB_STAFF", ["GESTOR", "CLUB_STAFF", "ADMIN"]),
-    ).toBe(true);
+  it("COACH tem acesso quando incluído na lista", () => {
+    expect(checkRoleAccess("COACH", ["GESTOR", "COACH", "ADMIN"])).toBe(true);
   });
 
   it("undefined role retorna false", () => {
@@ -161,12 +152,12 @@ describe("Auth Middleware — checkClubAccess (cross-tenant)", () => {
     expect(checkClubAccess("ATHLETE", "club-X", "club-Y")).toBe(false);
   });
 
-  it("CLUB_STAFF acessa seu próprio clube", () => {
-    expect(checkClubAccess("CLUB_STAFF", "club-A", "club-A")).toBe(true);
+  it("COACH acessa seu próprio clube", () => {
+    expect(checkClubAccess("COACH", "club-A", "club-A")).toBe(true);
   });
 
-  it("CLUB_STAFF NÃO acessa outro clube", () => {
-    expect(checkClubAccess("CLUB_STAFF", "club-A", "club-B")).toBe(false);
+  it("COACH NÃO acessa outro clube", () => {
+    expect(checkClubAccess("COACH", "club-A", "club-B")).toBe(false);
   });
 
   it("undefined clubId NÃO acessa nenhum clube", () => {
@@ -175,8 +166,8 @@ describe("Auth Middleware — checkClubAccess (cross-tenant)", () => {
 });
 
 describe("Auth Middleware — ROLE_HIERARCHY", () => {
-  it("contém exatamente 6 papéis", () => {
-    expect(ROLE_HIERARCHY).toHaveLength(6);
+  it("contém exatamente 5 papéis", () => {
+    expect(ROLE_HIERARCHY).toHaveLength(5);
   });
 
   it("ADMIN é o primeiro (mais privilegiado)", () => {
@@ -187,16 +178,12 @@ describe("Auth Middleware — ROLE_HIERARCHY", () => {
     expect(ROLE_HIERARCHY[ROLE_HIERARCHY.length - 1]).toBe("SPECTATOR");
   });
 
-  it("CLUB_STAFF aparece após GESTOR e antes de COACH", () => {
-    const staffIdx = ROLE_HIERARCHY.indexOf("CLUB_STAFF");
-    const gestorIdx = ROLE_HIERARCHY.indexOf("GESTOR");
+  it("COACH aparece após GESTOR e antes de ATHLETE", () => {
     const coachIdx = ROLE_HIERARCHY.indexOf("COACH");
-    expect(staffIdx).toBeGreaterThan(gestorIdx);
-    expect(staffIdx).toBeLessThan(coachIdx);
-  });
-
-  it("inclui o novo papel CLUB_STAFF", () => {
-    expect(ROLE_HIERARCHY).toContain("CLUB_STAFF");
+    const gestorIdx = ROLE_HIERARCHY.indexOf("GESTOR");
+    const athleteIdx = ROLE_HIERARCHY.indexOf("ATHLETE");
+    expect(coachIdx).toBeGreaterThan(gestorIdx);
+    expect(coachIdx).toBeLessThan(athleteIdx);
   });
 });
 
@@ -350,38 +337,31 @@ describe("MatchStateUpdateSchema — validação de payload", () => {
 });
 
 // ============================================================
-// 4. VALID_CLUB_ROLES — inclui CLUB_STAFF
+// 4. VALID_CLUB_ROLES — papéis de clube
 // ============================================================
 
 describe("VALID_CLUB_ROLES — integridade dos papéis de clube", () => {
-  // Replica do authService.js
-  const VALID_CLUB_ROLES = [
-    "GESTOR",
-    "CLUB_STAFF",
-    "COACH",
-    "ATHLETE",
-    "SPECTATOR",
-  ];
-
-  it("inclui CLUB_STAFF (novo papel adicionado na Fase 0)", () => {
-    expect(VALID_CLUB_ROLES).toContain("CLUB_STAFF");
-  });
+  // Replica do authService.js — SPECTATOR foi movido para platformRole (não é mais papel de clube)
+  const VALID_CLUB_ROLES = ["GESTOR", "COACH", "ATHLETE"];
 
   it("NÃO inclui ADMIN (papel de plataforma, não de clube)", () => {
     expect(VALID_CLUB_ROLES).not.toContain("ADMIN");
   });
 
-  it("contém exatamente 5 papéis de clube", () => {
-    expect(VALID_CLUB_ROLES).toHaveLength(5);
+  it("NÃO inclui SPECTATOR (papel de plataforma independente de clube)", () => {
+    expect(VALID_CLUB_ROLES).not.toContain("SPECTATOR");
   });
 
-  it("todos os papéis de ROLE_HIERARCHY exceto ADMIN são papéis de clube", () => {
-    const clubRolesFromHierarchy = ROLE_HIERARCHY.filter((r) => r !== "ADMIN");
-    expect(clubRolesFromHierarchy.sort()).toEqual([...VALID_CLUB_ROLES].sort());
+  it("contém exatamente 3 papéis de clube", () => {
+    expect(VALID_CLUB_ROLES).toHaveLength(3);
   });
 
-  it("CLUB_STAFF é aceito como role válida para addClubMember", () => {
-    const role = "CLUB_STAFF";
+  it("VALID_CLUB_ROLES contém apenas GESTOR, COACH e ATHLETE", () => {
+    expect([...VALID_CLUB_ROLES].sort()).toEqual(["ATHLETE", "COACH", "GESTOR"]);
+  });
+
+  it("COACH é aceito como role válida para addClubMember", () => {
+    const role = "COACH";
     expect(VALID_CLUB_ROLES.includes(role)).toBe(true);
   });
 
@@ -402,14 +382,7 @@ describe("Prisma Enums — valores esperados no schema", () => {
   // Os valores de enum definidos no schema.prisma devem coincidir com
   // os valores usados no código. Testamos a consistência.
 
-  const UserRoleValues = [
-    "ADMIN",
-    "GESTOR",
-    "CLUB_STAFF",
-    "COACH",
-    "ATHLETE",
-    "SPECTATOR",
-  ];
+  const UserRoleValues = ["ADMIN", "GESTOR", "COACH", "ATHLETE", "SPECTATOR"];
   const MatchStatusValues = ["WAITING", "LIVE", "FINISHED", "CANCELLED"];
   const MembershipStatusValues = ["ACTIVE", "INACTIVE", "SUSPENDED", "PENDING"];
   const PlanTypeValues = ["FREE", "BASIC", "PREMIUM", "ENTERPRISE"];
@@ -435,9 +408,8 @@ describe("Prisma Enums — valores esperados no schema", () => {
   ];
   const OrganizerRoleValues = ["DIRECTOR", "REFEREE", "ASSISTANT"];
 
-  it("UserRole contém todos os 6 papéis incluindo CLUB_STAFF", () => {
-    expect(UserRoleValues).toHaveLength(6);
-    expect(UserRoleValues).toContain("CLUB_STAFF");
+  it("UserRole contém todos os 5 papéis", () => {
+    expect(UserRoleValues).toHaveLength(5);
   });
 
   it("MatchStatus contém WAITING, LIVE, FINISHED, CANCELLED", () => {
@@ -517,21 +489,9 @@ describe("Prisma Enums — valores esperados no schema", () => {
 // ============================================================
 
 describe("Consistência — código vs enums Prisma", () => {
-  const UserRoleEnum = [
-    "ADMIN",
-    "GESTOR",
-    "CLUB_STAFF",
-    "COACH",
-    "ATHLETE",
-    "SPECTATOR",
-  ];
-  const VALID_CLUB_ROLES = [
-    "GESTOR",
-    "CLUB_STAFF",
-    "COACH",
-    "ATHLETE",
-    "SPECTATOR",
-  ];
+  const UserRoleEnum = ["ADMIN", "GESTOR", "COACH", "ATHLETE", "SPECTATOR"];
+  // SPECTATOR foi movido para platformRole — não é mais papel de clube
+  const VALID_CLUB_ROLES = ["GESTOR", "COACH", "ATHLETE"];
 
   it("VALID_CLUB_ROLES é subconjunto de UserRole (sem ADMIN)", () => {
     VALID_CLUB_ROLES.forEach((role) => {
@@ -543,25 +503,25 @@ describe("Consistência — código vs enums Prisma", () => {
     expect([...ROLE_HIERARCHY].sort()).toEqual([...UserRoleEnum].sort());
   });
 
-  it("isAdmin verifica exatamente ADMIN (não GESTOR ou CLUB_STAFF)", () => {
+  it("isAdmin verifica exatamente ADMIN (não GESTOR ou COACH)", () => {
     const isAdmin = (role: string) => role === "ADMIN";
     expect(isAdmin("ADMIN")).toBe(true);
     expect(isAdmin("GESTOR")).toBe(false);
-    expect(isAdmin("CLUB_STAFF")).toBe(false);
+    expect(isAdmin("COACH")).toBe(false);
   });
 
   it("isGestor verifica exatamente GESTOR", () => {
     const isGestor = (role: string) => role === "GESTOR";
     expect(isGestor("GESTOR")).toBe(true);
     expect(isGestor("ADMIN")).toBe(false);
-    expect(isGestor("CLUB_STAFF")).toBe(false);
+    expect(isGestor("COACH")).toBe(false);
   });
 
-  it("CLUB_STAFF é tratado separadamente de GESTOR", () => {
+  it("COACH é tratado separadamente de GESTOR", () => {
     const isGestor = (role: string) => role === "GESTOR";
-    const isStaff = (role: string) => role === "CLUB_STAFF";
-    expect(isGestor("CLUB_STAFF")).toBe(false);
-    expect(isStaff("GESTOR")).toBe(false);
+    const isCoach = (role: string) => role === "COACH";
+    expect(isGestor("COACH")).toBe(false);
+    expect(isCoach("GESTOR")).toBe(false);
   });
 });
 

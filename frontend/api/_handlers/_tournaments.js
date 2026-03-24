@@ -102,6 +102,15 @@ export default async function handler(req, res) {
       try {
         if (!["ADMIN", "COACH"].includes(ctx.role))
           return sendJson(res, 403, { error: "Insufficient permissions" });
+        // Torneio finalizado/cancelado é imutável
+        const existing = await prisma.tournament.findUnique({
+          where: { id: tournamentId },
+          select: { status: true },
+        });
+        if (existing && ["FINISHED", "CANCELLED"].includes(existing.status))
+          return sendJson(res, 409, {
+            error: "Tournament already finished or cancelled",
+          });
         const {
           name,
           description,
@@ -156,6 +165,11 @@ export default async function handler(req, res) {
     if (req.method === "POST") {
       if (action === "add-entry") {
         try {
+          // SPECTATOR não pode inscrever atletas
+          if (ctx.role === "SPECTATOR")
+            return sendJson(res, 403, {
+              error: "Spectators cannot add entries",
+            });
           const { athleteId, categoryId, seed } = req.body || {};
           if (!athleteId)
             return sendJson(res, 400, { error: "athleteId is required" });
@@ -164,6 +178,8 @@ export default async function handler(req, res) {
             select: {
               status: true,
               maxPlayers: true,
+              clubId: true,
+              isOpenToExternalAthletes: true,
               _count: { select: { entries: true } },
             },
           });
@@ -178,6 +194,17 @@ export default async function handler(req, res) {
             tournament._count.entries >= tournament.maxPlayers
           )
             return sendJson(res, 400, { error: "Tournament is full" });
+          // Verificar se atleta externo pode se inscrever
+          if (!tournament.isOpenToExternalAthletes && tournament.clubId) {
+            const athlete = await prisma.athleteProfile.findUnique({
+              where: { id: athleteId },
+              select: { clubId: true },
+            });
+            if (athlete && athlete.clubId !== tournament.clubId)
+              return sendJson(res, 403, {
+                error: "Tournament does not accept external athletes",
+              });
+          }
           const entry = await prisma.tournamentEntry.create({
             data: {
               tournamentId,
@@ -292,6 +319,7 @@ export default async function handler(req, res) {
         courtType,
         maxPlayers,
         isInternal = false,
+        isOpenToExternalAthletes = false,
         registrationType = "INVITE_ONLY",
       } = req.body || {};
       if (!name || !format)
@@ -307,6 +335,7 @@ export default async function handler(req, res) {
           courtType: courtType || null,
           maxPlayers: maxPlayers ? parseInt(maxPlayers) : null,
           isInternal,
+          isOpenToExternalAthletes: Boolean(isOpenToExternalAthletes),
           registrationType,
           status: "DRAFT",
           clubId: ctx.clubId || null,

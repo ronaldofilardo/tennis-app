@@ -13,7 +13,7 @@ const mockMatches = [
     winner: null,
     completedSets: "[]",
     createdAt: new Date(),
-    matchState: '{"visibleTo":"play@email.com","role":"player"}',
+    matchState: '{"visibleTo":"play@email.com","role":"ATHLETE"}',
     apontadorEmail: "play@email.com",
     playersEmails: ["A", "B"],
   },
@@ -28,7 +28,7 @@ const mockMatches = [
     winner: null,
     completedSets: "[]",
     createdAt: new Date(),
-    matchState: '{"visibleTo":"play@email.com","role":"admin"}',
+    matchState: '{"visibleTo":"play@email.com","role":"ADMIN"}',
     apontadorEmail: "admin@email.com",
     playersEmails: ["A", "C"],
   },
@@ -43,7 +43,7 @@ const mockMatches = [
     winner: "B",
     completedSets: "[]",
     createdAt: new Date(),
-    matchState: '{"visibleTo":"other@email.com","role":"player"}',
+    matchState: '{"visibleTo":"other@email.com","role":"ATHLETE"}',
     apontadorEmail: "other@email.com",
     playersEmails: ["B", "C"],
   },
@@ -78,15 +78,15 @@ describe("getVisibleMatches com filtro de role", () => {
     const result = await matchService.getVisibleMatches(
       {
         email: "play@email.com",
-        role: "player",
+        role: "ATHLETE",
       },
-      mockPrisma
+      mockPrisma,
     );
     // Com validação desabilitada, retorna todas as partidas visíveis para o usuário
     expect(result.length).toBeGreaterThan(0);
     // Verifica que pelo menos uma tem o role correto
     const hasCorrectRole = result.some(
-      (m) => m.matchState && m.matchState.role === "player"
+      (m) => m.matchState && m.matchState.role === "ATHLETE",
     );
     expect(hasCorrectRole).toBe(true);
   });
@@ -95,9 +95,9 @@ describe("getVisibleMatches com filtro de role", () => {
     const result = await matchService.getVisibleMatches(
       {
         email: "admin@email.com",
-        role: "admin",
+        role: "ADMIN",
       },
-      mockPrisma
+      mockPrisma,
     );
     // Com validação desabilitada, retorna todas as partidas visíveis para o usuário
     expect(Array.isArray(result)).toBe(true);
@@ -109,7 +109,7 @@ describe("getVisibleMatches com filtro de role", () => {
       {
         email: "play@email.com",
       },
-      mockPrisma
+      mockPrisma,
     );
     // Retorna todas as partidas visíveis para o usuário
     expect(Array.isArray(result)).toBe(true);
@@ -122,7 +122,7 @@ describe("getVisibleMatches com filtro de role", () => {
         email: "play@email.com",
         role: "player",
       },
-      mockPrisma
+      mockPrisma,
     );
     // Com validação desabilitada, ainda filtra por email nos playersEmails
     const ids = result.map((m) => m.id);

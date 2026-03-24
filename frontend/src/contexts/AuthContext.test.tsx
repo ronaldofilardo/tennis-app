@@ -43,20 +43,20 @@ const mockAnnotatorUser: AuthUser = {
   id: "user-001",
   email: "play@email.com",
   name: "Annotator Test",
-  role: "annotator",
+  role: "COACH",
   clubs: [],
   activeClubId: null,
-  activeRole: "annotator",
+  activeRole: "COACH",
 };
 
 const mockPlayerUser: AuthUser = {
   id: "user-002",
   email: "player@test.com",
   name: "Test Player",
-  role: "player",
+  role: "ATHLETE",
   clubs: [],
   activeClubId: null,
-  activeRole: "player",
+  activeRole: "ATHLETE",
 };
 
 const mockAnnotatorLoginResponse = {
@@ -69,7 +69,7 @@ const mockAnnotatorLoginResponse = {
       name: "Annotator Test",
       clubs: [],
       activeClubId: null,
-      activeRole: "annotator",
+      activeRole: "COACH",
     },
   },
 };
@@ -84,7 +84,7 @@ const mockPlayerLoginResponse = {
       name: "Test Player",
       clubs: [],
       activeClubId: null,
-      activeRole: "player",
+      activeRole: "ATHLETE",
     },
   },
 };

@@ -109,6 +109,7 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isResuming, setIsResuming] = useState(false);
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+  const [openForAnnotation, setOpenForAnnotation] = useState(false);
 
   // Monta o payload base da partida a partir do estado do formulário
   const buildMatchPayload = useCallback(
@@ -121,12 +122,9 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
       visibility: visibility || "PLAYERS_ONLY",
       visibleTo: visibleTo || "both",
       apontadorEmail: currentUser?.email || "",
-      player1Id: selectedAthlete1?.id?.startsWith("guest_")
-        ? undefined
-        : selectedAthlete1?.id,
-      player2Id: selectedAthlete2?.id?.startsWith("guest_")
-        ? undefined
-        : selectedAthlete2?.id,
+      player1Id: selectedAthlete1?.id,
+      player2Id: selectedAthlete2?.id,
+      openForAnnotation,
     }),
     [
       sport,
@@ -138,6 +136,7 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
       currentUser,
       selectedAthlete1,
       selectedAthlete2,
+      openForAnnotation,
     ],
   );
 
@@ -229,12 +228,9 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
         visibleTo: visibleToValue || "both", // Legado
         apontadorEmail: currentUser?.email || "",
         // Novos campos multi-tenancy
-        player1Id: selectedAthlete1?.id?.startsWith("guest_")
-          ? undefined
-          : selectedAthlete1?.id,
-        player2Id: selectedAthlete2?.id?.startsWith("guest_")
-          ? undefined
-          : selectedAthlete2?.id,
+        player1Id: selectedAthlete1?.id,
+        player2Id: selectedAthlete2?.id,
+        openForAnnotation,
       };
 
       // ── Suporte offline ───────────────────────────────────────────────────
@@ -361,13 +357,8 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
                   setSelectedAthlete1(null);
                 }
               }}
-              allowGuest
               excludeUserId={currentUser?.id}
-              excludeAthleteId={
-                selectedAthlete2?.id?.startsWith("guest_")
-                  ? undefined
-                  : selectedAthlete2?.id
-              }
+              excludeAthleteId={selectedAthlete2?.id}
             />
             <span>vs</span>
             <AthleteSearchInput
@@ -385,13 +376,8 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
                   setSelectedAthlete2(null);
                 }
               }}
-              allowGuest
               excludeUserId={currentUser?.id}
-              excludeAthleteId={
-                selectedAthlete1?.id?.startsWith("guest_")
-                  ? undefined
-                  : selectedAthlete1?.id
-              }
+              excludeAthleteId={selectedAthlete1?.id}
             />
           </div>
         </div>
@@ -485,6 +471,26 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
             <p className="resume-check-hint">
               Após clicar em &ldquo;Iniciar Partida&rdquo;, você poderá inserir
               o placar atual antes de continuar.
+            </p>
+          )}
+        </div>
+
+        {/* Checkbox: Abrir para anotação por qualquer usuário */}
+        <div className="form-group resume-check-group">
+          <label className="resume-check-label" htmlFor="open-annotation-check">
+            <input
+              id="open-annotation-check"
+              type="checkbox"
+              checked={openForAnnotation}
+              onChange={(e) => setOpenForAnnotation(e.target.checked)}
+              className="resume-check-input"
+            />
+            <span>Abrir para anotação por qualquer usuário</span>
+          </label>
+          {openForAnnotation && (
+            <p className="resume-check-hint">
+              A partida aparecerá no painel de outros usuários como disponível
+              para anotação.
             </p>
           )}
         </div>

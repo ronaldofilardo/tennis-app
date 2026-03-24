@@ -2,15 +2,13 @@
 // Dashboard administrativo global — ADMIN only
 // Visão geral: KPIs plataforma, lista de clubes, lista de usuários
 
-import React, { useState, useEffect, useCallback } from "react";
-import httpClient from "../config/httpClient";
-import { useAuth } from "../contexts/AuthContext";
-import { useNavigation } from "../contexts/NavigationContext";
-import { useToast } from "../components/Toast";
-import ClubMembersModal, {
-  type ClubMember,
-} from "../components/ClubMembersModal";
-import "./AdminDashboard.css";
+import React, { useState, useEffect, useCallback } from 'react';
+import httpClient from '../config/httpClient';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigation } from '../contexts/NavigationContext';
+import { useToast } from '../components/Toast';
+import ClubMembersModal, { type ClubMember } from '../components/ClubMembersModal';
+import './AdminDashboard.css';
 
 // === Tipos ===
 
@@ -71,6 +69,8 @@ interface AdminUser {
   email: string;
   name: string;
   isActive: boolean;
+  platformRole: string;
+  primaryClub: string | null;
   createdAt: string;
   updatedAt: string;
   clubCount: number;
@@ -114,48 +114,67 @@ interface PaginatedMatches {
 // === Labels ===
 
 const ROLE_LABELS: Record<string, string> = {
-  GESTOR: "Gestor",
-  COACH: "Treinador",
-  ATHLETE: "Atleta",
-  SPECTATOR: "Espectador",
-  ADMIN: "Administrador",
+  GESTOR: 'Gestor',
+  COACH: 'Treinador',
+  ATHLETE: 'Atleta',
+  SPECTATOR: 'Espectador',
+  ADMIN: 'Administrador',
 };
 
 const ROLE_ICONS: Record<string, string> = {
-  GESTOR: "👔",
-  COACH: "🎯",
-  ATHLETE: "🎾",
-  SPECTATOR: "👁️",
-  ADMIN: "🔑",
+  GESTOR: '👔',
+  COACH: '🎯',
+  ATHLETE: '🎾',
+  SPECTATOR: '👁️',
+  ADMIN: '🔑',
 };
 
 const PLAN_LABELS: Record<string, string> = {
-  FREE: "Gratuito",
-  PREMIUM: "Premium",
-  ENTERPRISE: "Enterprise",
+  FREE: 'Gratuito',
+  PREMIUM: 'Premium',
+  ENTERPRISE: 'Enterprise',
 };
 
 const PLAN_COLORS: Record<string, string> = {
-  FREE: "plan-free",
-  PREMIUM: "plan-premium",
-  ENTERPRISE: "plan-enterprise",
+  FREE: 'plan-free',
+  PREMIUM: 'plan-premium',
+  ENTERPRISE: 'plan-enterprise',
 };
 
 const MATCH_STATUS_LABELS: Record<string, string> = {
-  NOT_STARTED: "Não iniciada",
-  IN_PROGRESS: "Em andamento",
-  FINISHED: "Finalizada",
+  NOT_STARTED: 'Não iniciada',
+  IN_PROGRESS: 'Em andamento',
+  FINISHED: 'Finalizada',
 };
 
 const MATCH_STATUS_COLORS: Record<string, string> = {
-  NOT_STARTED: "ms-not-started",
-  IN_PROGRESS: "ms-in-progress",
-  FINISHED: "ms-finished",
+  NOT_STARTED: 'ms-not-started',
+  IN_PROGRESS: 'ms-in-progress',
+  FINISHED: 'ms-finished',
 };
+
+const PLATFORM_ROLE_LABELS: Record<string, string> = {
+  ADMIN: 'Administrador',
+  SCORER: 'Anotador',
+  INDEPENDENT_ATHLETE: 'Atleta Avulso',
+  SPECTATOR: 'Espectador',
+  MEMBER: 'Membro',
+};
+
+const PLATFORM_ROLE_COLORS: Record<string, string> = {
+  ADMIN: 'pr-admin',
+  SCORER: 'pr-scorer',
+  INDEPENDENT_ATHLETE: 'pr-independent',
+  SPECTATOR: 'pr-spectator',
+  MEMBER: 'pr-member',
+};
+
+/** Tipos de usuário independentes de clube — não devem exibir clube de origem */
+const CLUB_INDEPENDENT_ROLES = new Set(['SCORER', 'INDEPENDENT_ATHLETE', 'SPECTATOR']);
 
 // === Componente ===
 
-type TabType = "overview" | "clubs" | "users" | "matches";
+type TabType = 'overview' | 'clubs' | 'users' | 'matches';
 
 const PAGE_SIZE = 20;
 
@@ -170,12 +189,12 @@ interface CreateClubForm {
 }
 
 const INITIAL_CREATE_FORM: CreateClubForm = {
-  name: "",
-  slug: "",
-  planType: "FREE",
-  gestorName: "",
-  gestorEmail: "",
-  gestorPassword: "",
+  name: '',
+  slug: '',
+  planType: 'FREE',
+  gestorName: '',
+  gestorEmail: '',
+  gestorPassword: '',
   alsoCoach: false,
 };
 
@@ -184,7 +203,7 @@ const AdminDashboard: React.FC = () => {
   const navigation = useNavigation();
   const toast = useToast();
 
-  const [activeTab, setActiveTab] = useState<TabType>("overview");
+  const [activeTab, setActiveTab] = useState<TabType>('overview');
 
   // Stats state
   const [stats, setStats] = useState<AdminStats | null>(null);
@@ -196,21 +215,21 @@ const AdminDashboard: React.FC = () => {
   const [clubsTotal, setClubsTotal] = useState(0);
   const [clubsOffset, setClubsOffset] = useState(0);
   const [loadingClubs, setLoadingClubs] = useState(false);
-  const [clubSearch, setClubSearch] = useState("");
+  const [clubSearch, setClubSearch] = useState('');
 
   // Users state
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [usersTotal, setUsersTotal] = useState(0);
   const [usersOffset, setUsersOffset] = useState(0);
   const [loadingUsers, setLoadingUsers] = useState(false);
-  const [userSearch, setUserSearch] = useState("");
+  const [userSearch, setUserSearch] = useState('');
 
   // Matches tab state
   const [allMatches, setAllMatches] = useState<AdminMatch[]>([]);
   const [matchesTotal, setMatchesTotal] = useState(0);
   const [matchesOffset, setMatchesOffset] = useState(0);
   const [loadingMatches, setLoadingMatches] = useState(false);
-  const [matchStatusFilter, setMatchStatusFilter] = useState("");
+  const [matchStatusFilter, setMatchStatusFilter] = useState('');
 
   // Club members modal state
   const [selectedClub, setSelectedClub] = useState<AdminClub | null>(null);
@@ -219,25 +238,23 @@ const AdminDashboard: React.FC = () => {
 
   // Create club modal state
   const [showCreateClub, setShowCreateClub] = useState(false);
-  const [createClubForm, setCreateClubForm] =
-    useState<CreateClubForm>(INITIAL_CREATE_FORM);
+  const [createClubForm, setCreateClubForm] = useState<CreateClubForm>(INITIAL_CREATE_FORM);
   const [creatingClub, setCreatingClub] = useState(false);
 
   // Sync passwords state
   const [syncingPasswords, setSyncingPasswords] = useState(false);
 
-  const isAdmin = currentUser?.activeRole === "ADMIN";
+  const isAdmin = currentUser?.activeRole === 'ADMIN';
 
   // === Fetch Stats ===
   const fetchStats = useCallback(async () => {
     setLoadingStats(true);
     setError(null);
     try {
-      const response = await httpClient.get<AdminStats>("/admin/stats");
+      const response = await httpClient.get<AdminStats>('/admin/stats');
       setStats(response.data);
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Erro ao carregar estatísticas";
+      const message = err instanceof Error ? err.message : 'Erro ao carregar estatísticas';
       setError(message);
     } finally {
       setLoadingStats(false);
@@ -246,22 +263,20 @@ const AdminDashboard: React.FC = () => {
 
   // === Fetch Clubs ===
   const fetchClubs = useCallback(
-    async (offset = 0, search = "") => {
+    async (offset = 0, search = '') => {
       setLoadingClubs(true);
       try {
         const params = new URLSearchParams({
           limit: String(PAGE_SIZE),
           offset: String(offset),
         });
-        if (search) params.set("search", search);
-        const response = await httpClient.get<PaginatedClubs>(
-          `/admin/clubs?${params.toString()}`,
-        );
+        if (search) params.set('search', search);
+        const response = await httpClient.get<PaginatedClubs>(`/admin/clubs?${params.toString()}`);
         setClubs(response.data.clubs || []);
         setClubsTotal(response.data.total || 0);
         setClubsOffset(offset);
       } catch {
-        toast.error("Erro ao carregar clubes.");
+        toast.error('Erro ao carregar clubes.');
       } finally {
         setLoadingClubs(false);
       }
@@ -271,22 +286,20 @@ const AdminDashboard: React.FC = () => {
 
   // === Fetch Users ===
   const fetchUsers = useCallback(
-    async (offset = 0, search = "") => {
+    async (offset = 0, search = '') => {
       setLoadingUsers(true);
       try {
         const params = new URLSearchParams({
           limit: String(PAGE_SIZE),
           offset: String(offset),
         });
-        if (search) params.set("search", search);
-        const response = await httpClient.get<PaginatedUsers>(
-          `/admin/users?${params.toString()}`,
-        );
+        if (search) params.set('search', search);
+        const response = await httpClient.get<PaginatedUsers>(`/admin/users?${params.toString()}`);
         setUsers(response.data.users || []);
         setUsersTotal(response.data.total || 0);
         setUsersOffset(offset);
       } catch {
-        toast.error("Erro ao carregar usuários.");
+        toast.error('Erro ao carregar usuários.');
       } finally {
         setLoadingUsers(false);
       }
@@ -296,14 +309,14 @@ const AdminDashboard: React.FC = () => {
 
   // === Fetch All Matches ===
   const fetchAllMatches = useCallback(
-    async (offset = 0, status = "") => {
+    async (offset = 0, status = '') => {
       setLoadingMatches(true);
       try {
         const params = new URLSearchParams({
           limit: String(PAGE_SIZE),
           offset: String(offset),
         });
-        if (status) params.set("status", status);
+        if (status) params.set('status', status);
         const response = await httpClient.get<PaginatedMatches>(
           `/admin/matches/all?${params.toString()}`,
         );
@@ -311,7 +324,7 @@ const AdminDashboard: React.FC = () => {
         setMatchesTotal(response.data.total || 0);
         setMatchesOffset(offset);
       } catch {
-        toast.error("Erro ao carregar partidas.");
+        toast.error('Erro ao carregar partidas.');
       } finally {
         setLoadingMatches(false);
       }
@@ -326,13 +339,13 @@ const AdminDashboard: React.FC = () => {
 
   // Load tab data when switching
   useEffect(() => {
-    if (activeTab === "clubs" && clubs.length === 0) {
+    if (activeTab === 'clubs' && clubs.length === 0) {
       fetchClubs(0, clubSearch);
     }
-    if (activeTab === "users" && users.length === 0) {
+    if (activeTab === 'users' && users.length === 0) {
       fetchUsers(0, userSearch);
     }
-    if (activeTab === "matches" && allMatches.length === 0) {
+    if (activeTab === 'matches' && allMatches.length === 0) {
       fetchAllMatches(0, matchStatusFilter);
     }
   }, [
@@ -360,7 +373,7 @@ const AdminDashboard: React.FC = () => {
         );
         setClubMembers(response.data.members ?? []);
       } catch {
-        toast.error("Erro ao carregar membros do clube.");
+        toast.error('Erro ao carregar membros do clube.');
       } finally {
         setLoadingMembers(false);
       }
@@ -392,39 +405,36 @@ const AdminDashboard: React.FC = () => {
       !createClubForm.gestorEmail.trim() ||
       !createClubForm.gestorPassword
     ) {
-      toast.error("Preencha todos os campos obrigatórios.");
+      toast.error('Preencha todos os campos obrigatórios.');
       return;
     }
     setCreatingClub(true);
     try {
-      await httpClient.post("/admin/clubs", createClubForm);
+      await httpClient.post('/admin/clubs', createClubForm);
       toast.success(`Clube "${createClubForm.name}" criado com sucesso!`);
       setShowCreateClub(false);
       setCreateClubForm(INITIAL_CREATE_FORM);
       fetchClubs(0, clubSearch);
       fetchStats();
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Erro ao criar clube.";
+      const msg = err instanceof Error ? err.message : 'Erro ao criar clube.';
       toast.error(msg);
     } finally {
       setCreatingClub(false);
     }
   };
 
-  const handleCreateClubFieldChange = (
-    field: keyof CreateClubForm,
-    value: string | boolean,
-  ) => {
+  const handleCreateClubFieldChange = (field: keyof CreateClubForm, value: string | boolean) => {
     setCreateClubForm((prev) => {
       const updated = { ...prev, [field]: value };
       // Auto-derivar slug a partir do nome
-      if (field === "name" && typeof value === "string") {
+      if (field === 'name' && typeof value === 'string') {
         updated.slug = value
           .toLowerCase()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/(^-|-$)/g, "");
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
       }
       return updated;
     });
@@ -434,22 +444,21 @@ const AdminDashboard: React.FC = () => {
   const handleSyncPasswords = async () => {
     if (
       !window.confirm(
-        "Isso irá recalcular a senha de TODOS os atletas com data de nascimento para o formato DDMMAAAA.\n\nContinuar?",
+        'Isso irá recalcular a senha de TODOS os atletas com data de nascimento para o formato DDMMAAAA.\n\nContinuar?',
       )
     )
       return;
     setSyncingPasswords(true);
     try {
       const resp = await httpClient.post<{ updated: number; skipped: number }>(
-        "/admin/athletes/sync-passwords",
+        '/admin/athletes/sync-passwords',
         {},
       );
       toast.success(
         `Senhas sincronizadas: ${resp.data.updated} atletas atualizados, ${resp.data.skipped} ignorados.`,
       );
     } catch (err: unknown) {
-      const msg =
-        err instanceof Error ? err.message : "Erro ao sincronizar senhas.";
+      const msg = err instanceof Error ? err.message : 'Erro ao sincronizar senhas.';
       toast.error(msg);
     } finally {
       setSyncingPasswords(false);
@@ -471,14 +480,8 @@ const AdminDashboard: React.FC = () => {
     return (
       <div className="admin-dashboard">
         <div className="admin-empty">
-          <p>
-            🔒 Acesso restrito. Apenas administradores da plataforma podem
-            acessar este painel.
-          </p>
-          <button
-            className="admin-btn-secondary"
-            onClick={() => navigation.navigateToDashboard()}
-          >
+          <p>🔒 Acesso restrito. Apenas administradores da plataforma podem acessar este painel.</p>
+          <button className="admin-btn-secondary" onClick={() => navigation.navigateToDashboard()}>
             Voltar ao Dashboard
           </button>
         </div>
@@ -503,12 +506,9 @@ const AdminDashboard: React.FC = () => {
             disabled={syncingPasswords}
             title="Recalcula a senha de todos os atletas para DDMMAAAA (data de nascimento)"
           >
-            {syncingPasswords ? "Sincronizando..." : "🔑 Sync Senhas Atletas"}
+            {syncingPasswords ? 'Sincronizando...' : '🔑 Sync Senhas Atletas'}
           </button>
-          <button
-            className="admin-btn-secondary"
-            onClick={() => navigation.navigateToDashboard()}
-          >
+          <button className="admin-btn-secondary" onClick={() => navigation.navigateToDashboard()}>
             ← Dashboard
           </button>
         </div>
@@ -518,10 +518,10 @@ const AdminDashboard: React.FC = () => {
       <nav className="admin-tabs">
         {(
           [
-            { key: "overview", label: "Visão Geral", icon: "📊" },
-            { key: "clubs", label: "Clubes", icon: "🏢" },
-            { key: "users", label: "Usuários", icon: "👥" },
-            { key: "matches", label: "Partidas", icon: "🎾" },
+            { key: 'overview', label: 'Visão Geral', icon: '📊' },
+            { key: 'clubs', label: 'Clubes', icon: '🏢' },
+            { key: 'users', label: 'Usuários', icon: '👥' },
+            { key: 'matches', label: 'Partidas', icon: '🎾' },
           ] as Array<{
             key: TabType;
             label: string;
@@ -531,7 +531,7 @@ const AdminDashboard: React.FC = () => {
         ).map((tab) => (
           <button
             key={tab.key}
-            className={`admin-tab ${activeTab === tab.key ? "active" : ""}`}
+            className={`admin-tab ${activeTab === tab.key ? 'active' : ''}`}
             onClick={() => setActiveTab(tab.key)}
           >
             <span className="tab-icon">{tab.icon}</span>
@@ -562,7 +562,7 @@ const AdminDashboard: React.FC = () => {
         )}
 
         {/* === TAB: Visão Geral === */}
-        {activeTab === "overview" && stats && (
+        {activeTab === 'overview' && stats && (
           <div className="admin-overview">
             {/* KPI Cards */}
             <div className="admin-kpi-grid">
@@ -598,14 +598,9 @@ const AdminDashboard: React.FC = () => {
               <h3>Clubes por Plano</h3>
               <div className="plan-breakdown">
                 {(stats.clubsByPlan ?? []).map((p) => (
-                  <div
-                    key={p.plan}
-                    className={`plan-card ${PLAN_COLORS[p.plan] || ""}`}
-                  >
+                  <div key={p.plan} className={`plan-card ${PLAN_COLORS[p.plan] || ''}`}>
                     <div className="plan-count">{p.count}</div>
-                    <div className="plan-label">
-                      {PLAN_LABELS[p.plan] || p.plan}
-                    </div>
+                    <div className="plan-label">{PLAN_LABELS[p.plan] || p.plan}</div>
                   </div>
                 ))}
               </div>
@@ -622,12 +617,8 @@ const AdminDashboard: React.FC = () => {
                   );
                   return (
                     <div key={r.role} className="role-row">
-                      <span className="role-icon">
-                        {ROLE_ICONS[r.role] || "👤"}
-                      </span>
-                      <span className="role-name">
-                        {ROLE_LABELS[r.role] || r.role}
-                      </span>
+                      <span className="role-icon">{ROLE_ICONS[r.role] || '👤'}</span>
+                      <span className="role-name">{ROLE_LABELS[r.role] || r.role}</span>
                       <span className="role-count">{r.count}</span>
                       <div className="role-bar">
                         <div
@@ -647,10 +638,7 @@ const AdminDashboard: React.FC = () => {
             <div className="admin-section">
               <div className="section-header">
                 <h3>Top 10 Clubes por Membros</h3>
-                <button
-                  className="admin-link-btn"
-                  onClick={() => setActiveTab("clubs")}
-                >
+                <button className="admin-link-btn" onClick={() => setActiveTab('clubs')}>
                   Ver todos →
                 </button>
               </div>
@@ -665,15 +653,11 @@ const AdminDashboard: React.FC = () => {
                         <span className="top-club-name">{club.name}</span>
                         <span className="top-club-slug">/{club.slug}</span>
                       </div>
-                      <span
-                        className={`plan-badge ${PLAN_COLORS[club.planType] || ""}`}
-                      >
+                      <span className={`plan-badge ${PLAN_COLORS[club.planType] || ''}`}>
                         {PLAN_LABELS[club.planType] || club.planType}
                       </span>
                       <div className="top-club-stats">
-                        <span title="Membros">
-                          👥 {club.memberCount} membros
-                        </span>
+                        <span title="Membros">👥 {club.memberCount} membros</span>
                       </div>
                     </div>
                   ))}
@@ -694,18 +678,14 @@ const AdminDashboard: React.FC = () => {
                     <div key={club.id} className="recent-club-card">
                       <div className="recent-club-header">
                         <span className="recent-club-name">{club.name}</span>
-                        <span
-                          className={`plan-badge ${PLAN_COLORS[club.planType] || ""}`}
-                        >
+                        <span className={`plan-badge ${PLAN_COLORS[club.planType] || ''}`}>
                           {PLAN_LABELS[club.planType] || club.planType}
                         </span>
                       </div>
                       <div className="recent-club-meta">
                         <span>/{club.slug}</span>
                         <span>👥 {club.memberCount}</span>
-                        <span>
-                          {new Date(club.createdAt).toLocaleDateString("pt-BR")}
-                        </span>
+                        <span>{new Date(club.createdAt).toLocaleDateString('pt-BR')}</span>
                       </div>
                     </div>
                   ))}
@@ -716,19 +696,14 @@ const AdminDashboard: React.FC = () => {
         )}
 
         {/* === TAB: Clubes === */}
-        {activeTab === "clubs" && (
+        {activeTab === 'clubs' && (
           <div className="admin-clubs-tab">
             <div className="section-header">
               <h3>
-                Todos os Clubes{" "}
-                {clubsTotal > 0 && (
-                  <span className="count-badge">{clubsTotal}</span>
-                )}
+                Todos os Clubes{' '}
+                {clubsTotal > 0 && <span className="count-badge">{clubsTotal}</span>}
               </h3>
-              <button
-                className="admin-btn-primary"
-                onClick={() => setShowCreateClub(true)}
-              >
+              <button className="admin-btn-primary" onClick={() => setShowCreateClub(true)}>
                 + Criar Clube
               </button>
             </div>
@@ -740,7 +715,7 @@ const AdminDashboard: React.FC = () => {
                 placeholder="Buscar por nome ou slug..."
                 value={clubSearch}
                 onChange={(e) => setClubSearch(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleClubSearch()}
+                onKeyDown={(e) => e.key === 'Enter' && handleClubSearch()}
                 className="admin-search-input"
               />
               <button className="admin-btn-primary" onClick={handleClubSearch}>
@@ -774,23 +749,20 @@ const AdminDashboard: React.FC = () => {
                       role="button"
                       tabIndex={0}
                       onKeyDown={(e) =>
-                        (e.key === "Enter" || e.key === " ") &&
-                        handleShowMembers(club)
+                        (e.key === 'Enter' || e.key === ' ') && handleShowMembers(club)
                       }
                       aria-label={`Ver membros de ${club.name}`}
                     >
                       <span className="cell-name">{club.name}</span>
                       <span className="cell-slug">/{club.slug}</span>
                       <span>
-                        <span
-                          className={`plan-badge ${PLAN_COLORS[club.planType] || ""}`}
-                        >
+                        <span className={`plan-badge ${PLAN_COLORS[club.planType] || ''}`}>
                           {PLAN_LABELS[club.planType] || club.planType}
                         </span>
                       </span>
                       <span className="cell-number">{club.memberCount}</span>
                       <span className="cell-date">
-                        {new Date(club.createdAt).toLocaleDateString("pt-BR")}
+                        {new Date(club.createdAt).toLocaleDateString('pt-BR')}
                       </span>
                     </div>
                   ))}
@@ -802,9 +774,7 @@ const AdminDashboard: React.FC = () => {
                     <button
                       className="admin-btn-secondary"
                       disabled={clubsPage <= 1}
-                      onClick={() =>
-                        fetchClubs(clubsOffset - PAGE_SIZE, clubSearch)
-                      }
+                      onClick={() => fetchClubs(clubsOffset - PAGE_SIZE, clubSearch)}
                     >
                       ← Anterior
                     </button>
@@ -814,9 +784,7 @@ const AdminDashboard: React.FC = () => {
                     <button
                       className="admin-btn-secondary"
                       disabled={clubsPage >= clubsTotalPages}
-                      onClick={() =>
-                        fetchClubs(clubsOffset + PAGE_SIZE, clubSearch)
-                      }
+                      onClick={() => fetchClubs(clubsOffset + PAGE_SIZE, clubSearch)}
                     >
                       Próxima →
                     </button>
@@ -828,14 +796,12 @@ const AdminDashboard: React.FC = () => {
         )}
 
         {/* === TAB: Usuários === */}
-        {activeTab === "users" && (
+        {activeTab === 'users' && (
           <div className="admin-users-tab">
             <div className="section-header">
               <h3>
-                Todos os Usuários{" "}
-                {usersTotal > 0 && (
-                  <span className="count-badge">{usersTotal}</span>
-                )}
+                Todos os Usuários{' '}
+                {usersTotal > 0 && <span className="count-badge">{usersTotal}</span>}
               </h3>
             </div>
 
@@ -846,7 +812,7 @@ const AdminDashboard: React.FC = () => {
                 placeholder="Buscar por nome ou e-mail..."
                 value={userSearch}
                 onChange={(e) => setUserSearch(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleUserSearch()}
+                onKeyDown={(e) => e.key === 'Enter' && handleUserSearch()}
                 className="admin-search-input"
               />
               <button className="admin-btn-primary" onClick={handleUserSearch}>
@@ -868,6 +834,8 @@ const AdminDashboard: React.FC = () => {
                   <div className="admin-table-header users-grid">
                     <span>Nome</span>
                     <span>E-mail</span>
+                    <span>Tipo</span>
+                    <span>Clube de Origem</span>
                     <span>Status</span>
                     <span>Clubes</span>
                     <span>Criado em</span>
@@ -876,20 +844,30 @@ const AdminDashboard: React.FC = () => {
                     <div key={user.id} className="admin-table-row users-grid">
                       <span className="cell-name">
                         <span className="user-avatar">
-                          {user.name?.charAt(0)?.toUpperCase() || "?"}
+                          {user.name?.charAt(0)?.toUpperCase() || '?'}
                         </span>
                         {user.name}
                       </span>
                       <span className="cell-email">{user.email}</span>
-                      <span className="cell-status">
+                      <span className="cell-platform-role">
                         <span
-                          className={`status-dot ${user.isActive ? "active" : "inactive"}`}
-                        />
-                        {user.isActive ? "Ativo" : "Inativo"}
+                          className={`platform-role-badge ${PLATFORM_ROLE_COLORS[user.platformRole] ?? 'pr-member'}`}
+                        >
+                          {PLATFORM_ROLE_LABELS[user.platformRole] ?? user.platformRole}
+                        </span>
+                      </span>
+                      <span className="cell-primary-club">
+                        {CLUB_INDEPENDENT_ROLES.has(user.platformRole)
+                          ? '—'
+                          : (user.primaryClub ?? '—')}
+                      </span>
+                      <span className="cell-status">
+                        <span className={`status-dot ${user.isActive ? 'active' : 'inactive'}`} />
+                        {user.isActive ? 'Ativo' : 'Inativo'}
                       </span>
                       <span className="cell-number">{user.clubCount}</span>
                       <span className="cell-date">
-                        {new Date(user.createdAt).toLocaleDateString("pt-BR")}
+                        {new Date(user.createdAt).toLocaleDateString('pt-BR')}
                       </span>
                     </div>
                   ))}
@@ -901,9 +879,7 @@ const AdminDashboard: React.FC = () => {
                     <button
                       className="admin-btn-secondary"
                       disabled={usersPage <= 1}
-                      onClick={() =>
-                        fetchUsers(usersOffset - PAGE_SIZE, userSearch)
-                      }
+                      onClick={() => fetchUsers(usersOffset - PAGE_SIZE, userSearch)}
                     >
                       ← Anterior
                     </button>
@@ -913,9 +889,7 @@ const AdminDashboard: React.FC = () => {
                     <button
                       className="admin-btn-secondary"
                       disabled={usersPage >= usersTotalPages}
-                      onClick={() =>
-                        fetchUsers(usersOffset + PAGE_SIZE, userSearch)
-                      }
+                      onClick={() => fetchUsers(usersOffset + PAGE_SIZE, userSearch)}
                     >
                       Próxima →
                     </button>
@@ -927,14 +901,12 @@ const AdminDashboard: React.FC = () => {
         )}
 
         {/* === TAB: Partidas === */}
-        {activeTab === "matches" && (
+        {activeTab === 'matches' && (
           <div className="admin-matches-tab">
             <div className="section-header">
               <h3>
-                Todas as Partidas{" "}
-                {matchesTotal > 0 && (
-                  <span className="count-badge">{matchesTotal}</span>
-                )}
+                Todas as Partidas{' '}
+                {matchesTotal > 0 && <span className="count-badge">{matchesTotal}</span>}
               </h3>
             </div>
 
@@ -983,10 +955,7 @@ const AdminDashboard: React.FC = () => {
                     <span>Data</span>
                   </div>
                   {allMatches.map((match) => (
-                    <div
-                      key={match.id}
-                      className="admin-table-row matches-grid"
-                    >
+                    <div key={match.id} className="admin-table-row matches-grid">
                       <span className="cell-name match-players">
                         <span>{match.playerP1}</span>
                         <span className="match-vs">vs</span>
@@ -994,7 +963,7 @@ const AdminDashboard: React.FC = () => {
                       </span>
                       <span>
                         <span
-                          className={`match-status-badge ${MATCH_STATUS_COLORS[match.status] || ""}`}
+                          className={`match-status-badge ${MATCH_STATUS_COLORS[match.status] || ''}`}
                         >
                           {MATCH_STATUS_LABELS[match.status] || match.status}
                         </span>
@@ -1002,14 +971,10 @@ const AdminDashboard: React.FC = () => {
                       <span className="cell-score">
                         {match.score || <span className="cell-muted">—</span>}
                       </span>
-                      <span className="cell-muted">
-                        {match.clubName || "—"}
-                      </span>
-                      <span className="cell-muted">
-                        {match.createdByName || "—"}
-                      </span>
+                      <span className="cell-muted">{match.clubName || '—'}</span>
+                      <span className="cell-muted">{match.createdByName || '—'}</span>
                       <span className="cell-date">
-                        {new Date(match.createdAt).toLocaleDateString("pt-BR")}
+                        {new Date(match.createdAt).toLocaleDateString('pt-BR')}
                       </span>
                     </div>
                   ))}
@@ -1021,12 +986,7 @@ const AdminDashboard: React.FC = () => {
                     <button
                       className="admin-btn-secondary"
                       disabled={matchesPage <= 1}
-                      onClick={() =>
-                        fetchAllMatches(
-                          matchesOffset - PAGE_SIZE,
-                          matchStatusFilter,
-                        )
-                      }
+                      onClick={() => fetchAllMatches(matchesOffset - PAGE_SIZE, matchStatusFilter)}
                     >
                       ← Anterior
                     </button>
@@ -1036,12 +996,7 @@ const AdminDashboard: React.FC = () => {
                     <button
                       className="admin-btn-secondary"
                       disabled={matchesPage >= matchesTotalPages}
-                      onClick={() =>
-                        fetchAllMatches(
-                          matchesOffset + PAGE_SIZE,
-                          matchStatusFilter,
-                        )
-                      }
+                      onClick={() => fetchAllMatches(matchesOffset + PAGE_SIZE, matchStatusFilter)}
                     >
                       Próxima →
                     </button>
@@ -1074,10 +1029,7 @@ const AdminDashboard: React.FC = () => {
           <div className="admin-modal">
             <div className="admin-modal-header">
               <h3>Criar Novo Clube</h3>
-              <button
-                className="admin-modal-close"
-                onClick={() => setShowCreateClub(false)}
-              >
+              <button className="admin-modal-close" onClick={() => setShowCreateClub(false)}>
                 ✕
               </button>
             </div>
@@ -1089,9 +1041,7 @@ const AdminDashboard: React.FC = () => {
                   <input
                     type="text"
                     value={createClubForm.name}
-                    onChange={(e) =>
-                      handleCreateClubFieldChange("name", e.target.value)
-                    }
+                    onChange={(e) => handleCreateClubFieldChange('name', e.target.value)}
                     placeholder="Ex: Clube Harmonia"
                     className="admin-modal-input"
                   />
@@ -1101,9 +1051,7 @@ const AdminDashboard: React.FC = () => {
                   <input
                     type="text"
                     value={createClubForm.slug}
-                    onChange={(e) =>
-                      handleCreateClubFieldChange("slug", e.target.value)
-                    }
+                    onChange={(e) => handleCreateClubFieldChange('slug', e.target.value)}
                     placeholder="clube-harmonia"
                     className="admin-modal-input"
                   />
@@ -1112,9 +1060,7 @@ const AdminDashboard: React.FC = () => {
                   Plano
                   <select
                     value={createClubForm.planType}
-                    onChange={(e) =>
-                      handleCreateClubFieldChange("planType", e.target.value)
-                    }
+                    onChange={(e) => handleCreateClubFieldChange('planType', e.target.value)}
                     className="admin-modal-input"
                   >
                     <option value="FREE">Gratuito</option>
@@ -1131,9 +1077,7 @@ const AdminDashboard: React.FC = () => {
                   <input
                     type="text"
                     value={createClubForm.gestorName}
-                    onChange={(e) =>
-                      handleCreateClubFieldChange("gestorName", e.target.value)
-                    }
+                    onChange={(e) => handleCreateClubFieldChange('gestorName', e.target.value)}
                     placeholder="Nome do gestor"
                     className="admin-modal-input"
                   />
@@ -1143,9 +1087,7 @@ const AdminDashboard: React.FC = () => {
                   <input
                     type="email"
                     value={createClubForm.gestorEmail}
-                    onChange={(e) =>
-                      handleCreateClubFieldChange("gestorEmail", e.target.value)
-                    }
+                    onChange={(e) => handleCreateClubFieldChange('gestorEmail', e.target.value)}
                     placeholder="gestor@clube.com"
                     className="admin-modal-input"
                   />
@@ -1155,12 +1097,7 @@ const AdminDashboard: React.FC = () => {
                   <input
                     type="password"
                     value={createClubForm.gestorPassword}
-                    onChange={(e) =>
-                      handleCreateClubFieldChange(
-                        "gestorPassword",
-                        e.target.value,
-                      )
-                    }
+                    onChange={(e) => handleCreateClubFieldChange('gestorPassword', e.target.value)}
                     placeholder="Mínimo 6 caracteres"
                     className="admin-modal-input"
                   />
@@ -1169,9 +1106,7 @@ const AdminDashboard: React.FC = () => {
                   <input
                     type="checkbox"
                     checked={createClubForm.alsoCoach}
-                    onChange={(e) =>
-                      handleCreateClubFieldChange("alsoCoach", e.target.checked)
-                    }
+                    onChange={(e) => handleCreateClubFieldChange('alsoCoach', e.target.checked)}
                   />
                   <span>Também exerce função de Técnico</span>
                 </label>
@@ -1190,7 +1125,7 @@ const AdminDashboard: React.FC = () => {
                 onClick={handleCreateClub}
                 disabled={creatingClub}
               >
-                {creatingClub ? "Criando..." : "Criar Clube"}
+                {creatingClub ? 'Criando...' : 'Criar Clube'}
               </button>
             </div>
           </div>

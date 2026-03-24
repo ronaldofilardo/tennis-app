@@ -62,9 +62,9 @@ describe("AddAthleteModal", () => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
 
-    it("exibe os três botões de papel: Atleta, Técnico, Espectador", () => {
+    it("exibe os dois botões de papel: Atleta e Técnico", () => {
       render(<AddAthleteModal {...defaultProps} />);
-      // Causa: getByText(/Atleta/) também achava o h2 "Cadastrar Atleta / Técnico"
+      // Espectador foi movido para platformRole — não é mais papel de clube
       expect(
         screen.getByRole("button", { name: /Atleta/i }),
       ).toBeInTheDocument();
@@ -72,8 +72,8 @@ describe("AddAthleteModal", () => {
         screen.getByRole("button", { name: /Técnico/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /Espectador/i }),
-      ).toBeInTheDocument();
+        screen.queryByRole("button", { name: /Espectador/i }),
+      ).not.toBeInTheDocument();
     });
 
     it("exibe botões Cancelar e Cadastrar", () => {
@@ -175,12 +175,7 @@ describe("AddAthleteModal", () => {
       expect(tecnicoBtn.className).toContain("active");
     });
 
-    it("muda papel ao clicar em Espectador", () => {
-      render(<AddAthleteModal {...defaultProps} />);
-      const espectadorBtn = screen.getByRole("button", { name: /Espectador/i });
-      fireEvent.click(espectadorBtn);
-      expect(espectadorBtn.className).toContain("active");
-    });
+
   });
 
   // ── Seção de Responsáveis ─────────────────────────────────
@@ -197,11 +192,7 @@ describe("AddAthleteModal", () => {
       expect(screen.queryByText(/Responsáveis/i)).not.toBeInTheDocument();
     });
 
-    it("oculta seção de Responsáveis quando papel=SPECTATOR", () => {
-      render(<AddAthleteModal {...defaultProps} />);
-      fireEvent.click(screen.getByRole("button", { name: /Espectador/i }));
-      expect(screen.queryByText(/Responsáveis/i)).not.toBeInTheDocument();
-    });
+
   });
 
   // ── Submit bem-sucedido ───────────────────────────────────

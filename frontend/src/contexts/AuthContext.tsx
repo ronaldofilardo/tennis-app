@@ -13,14 +13,7 @@ const authLog = logger.createModuleLogger("AuthContext");
 
 // === Tipos ===
 
-export type UserRole =
-  | "ADMIN"
-  | "GESTOR"
-  | "COACH"
-  | "ATHLETE"
-  | "SPECTATOR"
-  | "annotator"
-  | "player";
+export type UserRole = "ADMIN" | "GESTOR" | "COACH" | "ATHLETE" | "SPECTATOR";
 
 export interface ClubMembership {
   clubId: string;
@@ -239,7 +232,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         id: data.user.id,
         email: data.user.email,
         name: data.user.name,
-        role: (data.user.activeRole || firstClub?.role || "PLAYER") as UserRole,
+        role: (data.user.activeRole ||
+          firstClub?.role ||
+          "ATHLETE") as UserRole,
         clubs: data.user.clubs.map((c) => ({
           ...c,
           role: c.role as UserRole,
@@ -247,7 +242,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         activeClubId: data.user.activeClubId || firstClub?.clubId || null,
         activeRole: (data.user.activeRole ||
           firstClub?.role ||
-          "PLAYER") as UserRole,
+          "ATHLETE") as UserRole,
         planType: data.user.planType || firstClub?.planType || "FREE",
         subscriptionStatus:
           data.user.subscriptionStatus ||
