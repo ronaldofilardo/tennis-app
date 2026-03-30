@@ -47,16 +47,34 @@
   font-weight: 600;
 }
 
-/* Mobile: lista vertical */
+/* Mobile: lista vertical (até 767px) */
 .live-carousel {
   display: flex;
   flex-direction: column;
   gap: 12px;
   padding: 0 0 8px;
+  overflow: visible;
 }
 
-/* Tablet/desktop: scroll horizontal */
-@media (min-width: 640px) {
+/* Individual live card — mobile sempre full width */
+.live-card {
+  width: 100% !important;
+  scroll-snap-align: start;
+  background: var(--clr-surface, #181d27);
+  border: 1px solid rgba(244, 63, 94, 0.25);
+  border-radius: 12px;
+  padding: 12px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Tablet/desktop (768px+): scroll horizontal */
+@media (min-width: 768px) {
   .live-carousel {
     flex-direction: row;
     overflow-x: auto;
@@ -73,25 +91,8 @@
 
   .live-card {
     flex-shrink: 0;
-    width: 260px;
+    width: 260px !important;
   }
-}
-
-/* Individual live card — compact */
-.live-card {
-  width: 100%;
-  scroll-snap-align: start;
-  background: var(--clr-surface, #181d27);
-  border: 1px solid rgba(244, 63, 94, 0.25);
-  border-radius: 12px;
-  padding: 12px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition:
-    transform 0.15s,
-    box-shadow 0.15s;
-  -webkit-tap-highlight-color: transparent;
 }
 
 .live-card:active {
