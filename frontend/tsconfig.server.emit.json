@@ -17,7 +17,8 @@
   "include": [
     "src/services/authService.ts",
     "src/services/businessLogic.ts",
-    "src/services/tenantMiddleware.ts"
+    "src/services/tenantMiddleware.ts",
+    "src/schemas/contracts.ts"
   ],
   "exclude": ["**/*.test.ts", "**/*.test.js"]
 }
