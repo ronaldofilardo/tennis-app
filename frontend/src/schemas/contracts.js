@@ -1,32 +1,26 @@
-// frontend/src/schemas/contracts.js
-// Versão compilada de contracts.ts — gerada para uso em Node.js ESM sem transpilação TypeScript.
-// NÃO edite manualmente; edite contracts.ts e rode: tsc -p tsconfig.server.emit.json
-
 import { z } from "zod";
-
 // Tipos base
 const PlayerSchema = z.enum(["PLAYER_1", "PLAYER_2"]);
 const GamePointSchema = z.union([
-  z.enum(["0", "15", "30", "40", "AD"]),
-  z.number(),
+    z.enum(["0", "15", "30", "40", "AD"]),
+    z.number(),
 ]);
 const TennisFormatSchema = z.enum([
-  "BEST_OF_3",
-  "BEST_OF_5",
-  "SINGLE_SET",
-  "PRO_SET",
-  "MATCH_TIEBREAK",
-  "SHORT_SET",
-  "NO_AD",
-  "FAST4",
-  "BEST_OF_3_MATCH_TB",
-  "SHORT_SET_NO_AD",
-  "NO_LET_TENNIS",
+    "BEST_OF_3",
+    "BEST_OF_5",
+    "SINGLE_SET",
+    "PRO_SET",
+    "MATCH_TIEBREAK",
+    "SHORT_SET",
+    "NO_AD",
+    "FAST4",
+    "BEST_OF_3_MATCH_TB",
+    "SHORT_SET_NO_AD",
+    "NO_LET_TENNIS",
 ]);
-
 // Schema para TennisConfig (mais flexível para testes)
 export const TennisConfigSchema = z
-  .object({
+    .object({
     format: TennisFormatSchema,
     setsToWin: z.number().int().positive().optional(),
     gamesPerSet: z.number().int().positive().optional(),
@@ -37,33 +31,30 @@ export const TennisConfigSchema = z
     useNoAd: z.boolean().optional(),
     useAlternateTiebreakSides: z.boolean().optional(),
     useNoLet: z.boolean().optional(),
-  })
-  .catchall(z.unknown()); // Permite campos extras
-
+})
+    .catchall(z.unknown()); // Permite campos extras
 // Schema para GameState (mais flexível)
 export const GameStateSchema = z
-  .object({
+    .object({
     points: z.record(PlayerSchema, GamePointSchema),
     server: PlayerSchema,
     isTiebreak: z.boolean(),
     isMatchTiebreak: z.boolean().optional(),
     winner: PlayerSchema.optional(),
     isNoAdDecidingPoint: z.boolean().optional(),
-  })
-  .catchall(z.unknown()); // Permite campos extras
-
+})
+    .catchall(z.unknown()); // Permite campos extras
 // Schema para SetState
 export const SetStateSchema = z.object({
-  games: z.record(PlayerSchema, z.number().int().nonnegative()),
-  tiebreakScore: z
-    .record(PlayerSchema, z.number().int().nonnegative())
-    .optional(),
-  winner: PlayerSchema.optional(),
+    games: z.record(PlayerSchema, z.number().int().nonnegative()),
+    tiebreakScore: z
+        .record(PlayerSchema, z.number().int().nonnegative())
+        .optional(),
+    winner: PlayerSchema.optional(),
 });
-
 // Schema para MatchState (mais flexível)
 export const MatchStateSchema = z
-  .object({
+    .object({
     sets: z.record(PlayerSchema, z.number().int().nonnegative()),
     currentSet: z.number().int().positive(),
     currentSetState: SetStateSchema,
@@ -73,130 +64,121 @@ export const MatchStateSchema = z
     isFinished: z.boolean(),
     config: TennisConfigSchema,
     completedSets: z
-      .array(
-        z.object({
-          setNumber: z.number().int().positive(),
-          games: z.record(PlayerSchema, z.number().int().nonnegative()),
-          winner: PlayerSchema,
-          tiebreakScore: z
+        .array(z.object({
+        setNumber: z.number().int().positive(),
+        games: z.record(PlayerSchema, z.number().int().nonnegative()),
+        winner: PlayerSchema,
+        tiebreakScore: z
             .record(PlayerSchema, z.number().int().nonnegative())
             .optional(),
-        }),
-      )
-      .optional(),
+    }))
+        .optional(),
     startedAt: z.string().optional(),
     endedAt: z.string().optional(),
     durationSeconds: z.number().int().nonnegative().optional(),
     viewLog: z
-      .array(
-        z
-          .object({
-            viewedAt: z.string(),
-            startedAt: z.string().optional(),
-            endedAt: z.string().optional(),
-            durationSeconds: z.number().int().nonnegative().optional(),
-          })
-          .catchall(z.unknown()),
-      )
-      .optional(),
-  })
-  .catchall(z.unknown()); // Permite campos extras
-
+        .array(z
+        .object({
+        viewedAt: z.string(),
+        startedAt: z.string().optional(),
+        endedAt: z.string().optional(),
+        durationSeconds: z.number().int().nonnegative().optional(),
+    })
+        .catchall(z.unknown()))
+        .optional(),
+})
+    .catchall(z.unknown()); // Permite campos extras
 // Schema para PointDetails (mais flexível)
 const ServeTypeSchema = z.enum([
-  "ACE",
-  "FAULT_FIRST",
-  "DOUBLE_FAULT",
-  "SERVICE_WINNER",
+    "ACE",
+    "FAULT_FIRST",
+    "DOUBLE_FAULT",
+    "SERVICE_WINNER",
 ]);
 const PointResultTypeSchema = z.enum([
-  "WINNER",
-  "UNFORCED_ERROR",
-  "FORCED_ERROR",
+    "WINNER",
+    "UNFORCED_ERROR",
+    "FORCED_ERROR",
 ]);
 const ShotTypeSchema = z.enum([
-  "FOREHAND",
-  "BACKHAND",
-  "VOLLEY",
-  "SMASH",
-  "SLICE",
-  "DROP_SHOT",
-  "LOB",
-  "PASSING_SHOT",
+    "FOREHAND",
+    "BACKHAND",
+    "VOLLEY",
+    "SMASH",
+    "SLICE",
+    "DROP_SHOT",
+    "LOB",
+    "PASSING_SHOT",
 ]);
-
 export const PointDetailsSchema = z
-  .object({
+    .object({
     serve: z
-      .object({
+        .object({
         type: ServeTypeSchema,
         isFirstServe: z.boolean(),
-      })
-      .optional(),
+    })
+        .optional(),
     result: z
-      .object({
+        .object({
         winner: PlayerSchema,
         type: PointResultTypeSchema,
         finalShot: ShotTypeSchema.optional(),
-      })
-      .catchall(z.unknown()), // Permite campos extras
+    })
+        .catchall(z.unknown()), // Permite campos extras
     rally: z
-      .object({
+        .object({
         ballExchanges: z.number().int().nonnegative(),
-      })
-      .optional(), // Opcional para validação básica
+    })
+        .optional(), // Opcional para validação básica
     timestamp: z.number(),
-  })
-  .catchall(z.unknown()); // Permite campos extras
-
+})
+    .catchall(z.unknown()); // Permite campos extras
 // Schema para PlayerStats
 export const PlayerStatsSchema = z.object({
-  pointsWon: z.number().int().nonnegative(),
-  totalServes: z.number().int().nonnegative(),
-  firstServes: z.number().int().nonnegative(),
-  secondServes: z.number().int().nonnegative(),
-  firstServeWins: z.number().int().nonnegative(),
-  secondServeWins: z.number().int().nonnegative(),
-  aces: z.number().int().nonnegative(),
-  doubleFaults: z.number().int().nonnegative(),
-  serviceWinners: z.number().int().nonnegative(),
-  servicePointsWon: z.number().int().nonnegative(),
-  returnPointsWon: z.number().int().nonnegative(),
-  winners: z.number().int().nonnegative(),
-  unforcedErrors: z.number().int().nonnegative(),
-  forcedErrors: z.number().int().nonnegative(),
-  shortRallies: z.number().int().nonnegative(),
-  longRallies: z.number().int().nonnegative(),
-  breakPoints: z.number().int().nonnegative(),
-  breakPointsSaved: z.number().int().nonnegative(),
-  firstServePercentage: z.number(),
-  firstServeWinPercentage: z.number(),
-  secondServeWinPercentage: z.number(),
-  serviceHoldPercentage: z.number(),
-  breakPointConversion: z.number(),
-  winnerToErrorRatio: z.number(),
-  returnWinPercentage: z.number(),
-  dominanceRatio: z.number(),
+    pointsWon: z.number().int().nonnegative(),
+    totalServes: z.number().int().nonnegative(),
+    firstServes: z.number().int().nonnegative(),
+    secondServes: z.number().int().nonnegative(),
+    firstServeWins: z.number().int().nonnegative(),
+    secondServeWins: z.number().int().nonnegative(),
+    aces: z.number().int().nonnegative(),
+    doubleFaults: z.number().int().nonnegative(),
+    serviceWinners: z.number().int().nonnegative(),
+    servicePointsWon: z.number().int().nonnegative(),
+    returnPointsWon: z.number().int().nonnegative(),
+    winners: z.number().int().nonnegative(),
+    unforcedErrors: z.number().int().nonnegative(),
+    forcedErrors: z.number().int().nonnegative(),
+    shortRallies: z.number().int().nonnegative(),
+    longRallies: z.number().int().nonnegative(),
+    breakPoints: z.number().int().nonnegative(),
+    breakPointsSaved: z.number().int().nonnegative(),
+    firstServePercentage: z.number(),
+    firstServeWinPercentage: z.number(),
+    secondServeWinPercentage: z.number(),
+    serviceHoldPercentage: z.number(),
+    breakPointConversion: z.number(),
+    winnerToErrorRatio: z.number(),
+    returnWinPercentage: z.number(),
+    dominanceRatio: z.number(),
 });
-
 // Schema para MatchStats
 export const MatchStatsSchema = z.object({
-  avgRallyLength: z.number(),
-  longestRally: z.number().int().nonnegative(),
-  shortestRally: z.number().int().nonnegative(),
-  totalRallies: z.number().int().nonnegative(),
+    avgRallyLength: z.number(),
+    longestRally: z.number().int().nonnegative(),
+    shortestRally: z.number().int().nonnegative(),
+    totalRallies: z.number().int().nonnegative(),
 });
-
 // Schema para API Responses (mais flexível)
 // AREA 1 & 2: Campos extensíveis para White Label / Multi-tenancy
 export const MatchApiResponseSchema = z
-  .object({
+    .object({
     id: z.string(),
     sportType: z.string(),
     format: z.string(), // Mais flexível que enum
     players: z.object({
-      p1: z.string(),
-      p2: z.string(),
+        p1: z.string(),
+        p2: z.string(),
     }),
     status: z.string(), // Mais flexível que enum
     matchState: MatchStateSchema.optional(),
@@ -204,50 +186,39 @@ export const MatchApiResponseSchema = z
     club_id: z.string().optional().nullable(),
     metadata: z.record(z.string(), z.unknown()).optional().nullable(),
     tags: z.array(z.string()).optional().nullable(),
-  })
-  .catchall(z.unknown()); // Permite campos extras
-
+})
+    .catchall(z.unknown()); // Permite campos extras
 // Funções de validação
 export function validateMatchState(data) {
-  return MatchStateSchema.safeParse(data);
+    return MatchStateSchema.safeParse(data);
 }
-
 export function validatePlayerStats(data) {
-  return PlayerStatsSchema.safeParse(data);
+    return PlayerStatsSchema.safeParse(data);
 }
-
 export function validatePointDetails(data) {
-  return PointDetailsSchema.safeParse(data);
+    return PointDetailsSchema.safeParse(data);
 }
-
 export function validateMatchStats(data) {
-  return MatchStatsSchema.safeParse(data);
+    return MatchStatsSchema.safeParse(data);
 }
-
 export function validateMatchApiResponse(data) {
-  return MatchApiResponseSchema.safeParse(data);
+    return MatchApiResponseSchema.safeParse(data);
 }
-
 // Versão do contrato (para versionamento)
 export const CONTRACT_VERSION = "1.0.0";
-
 // Schema com versionamento
 export const VersionedMatchStateSchema = MatchStateSchema.extend({
-  contractVersion: z.string().default(CONTRACT_VERSION),
+    contractVersion: z.string().default(CONTRACT_VERSION),
 });
-
 export const VersionedPlayerStatsSchema = PlayerStatsSchema.extend({
-  contractVersion: z.string().default(CONTRACT_VERSION),
+    contractVersion: z.string().default(CONTRACT_VERSION),
 });
-
 export const VersionedPointDetailsSchema = PointDetailsSchema.extend({
-  contractVersion: z.string().default(CONTRACT_VERSION),
+    contractVersion: z.string().default(CONTRACT_VERSION),
 });
-
 export const VersionedMatchStatsSchema = MatchStatsSchema.extend({
-  contractVersion: z.string().default(CONTRACT_VERSION),
+    contractVersion: z.string().default(CONTRACT_VERSION),
 });
-
 export const VersionedMatchApiResponseSchema = MatchApiResponseSchema.extend({
-  contractVersion: z.string().default(CONTRACT_VERSION),
+    contractVersion: z.string().default(CONTRACT_VERSION),
 });
