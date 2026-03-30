@@ -122,7 +122,7 @@ export const MatchCreateSchema = z.object({
   openForAnnotation: z.boolean().optional().default(false), // Permite qualquer autenticado anotar
   scheduledAt: z.string().datetime({ offset: true }).optional().nullable(), // Data/hora agendada ISO string
   venueId: z.string().optional().nullable(), // ID do local no diretório
-  metadata: z.record(z.unknown()).optional().nullable(),
+  metadata: z.record(z.string(), z.unknown()).optional().nullable(),
   tags: z.array(z.string()).optional().nullable(),
   _meta: z
     .object({

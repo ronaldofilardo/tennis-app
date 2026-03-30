@@ -57,7 +57,7 @@ const MatchDataSchema = z
     score: z.string().optional(),
     winner: z.string().nullable().optional(),
     completedSets: z.array(z.unknown()).optional(),
-    matchState: z.record(z.unknown()).nullable().optional(),
+    matchState: z.record(z.string(), z.unknown()).nullable().optional(),
     visibleTo: z.string().optional(),
     apontadorEmail: z.string().optional(),
     playersEmails: z.array(z.string()).optional(),
