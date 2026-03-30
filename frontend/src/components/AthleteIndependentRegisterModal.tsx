@@ -2,8 +2,10 @@
 // Modal de auto-cadastro para Atleta independente (sem vínculo a clube).
 // Mesmos campos do AddAthleteModal. Senha gerada automaticamente = DDMMAAAA.
 
-import React, { useState } from "react";
-import "./AddAthleteModal.css";
+import React, { useState } from 'react';
+import useConfirmClose from '../hooks/useConfirmClose';
+import ConfirmCloseDialog from './ConfirmCloseDialog';
+import './AddAthleteModal.css';
 
 interface AthleteIndependentRegisterModalProps {
   isOpen: boolean;
@@ -29,64 +31,77 @@ interface AthleteIndForm {
 }
 
 const EMPTY: AthleteIndForm = {
-  name: "",
-  email: "",
-  cpf: "",
-  birthDate: "",
-  gender: "",
-  category: "",
-  nickname: "",
-  phone: "",
-  ranking: "",
-  entity: "",
-  fatherName: "",
-  fatherCpf: "",
-  motherName: "",
-  motherCpf: "",
+  name: '',
+  email: '',
+  cpf: '',
+  birthDate: '',
+  gender: '',
+  category: '',
+  nickname: '',
+  phone: '',
+  ranking: '',
+  entity: '',
+  fatherName: '',
+  fatherCpf: '',
+  motherName: '',
+  motherCpf: '',
 };
 
 const CATEGORY_OPTIONS = [
-  "SUB-10",
-  "SUB-12",
-  "SUB-14",
-  "SUB-16",
-  "SUB-18",
-  "ADULTO",
-  "SENIOR",
-  "MASTER",
+  'SUB-10',
+  'SUB-12',
+  'SUB-14',
+  'SUB-16',
+  'SUB-18',
+  'ADULTO',
+  'SENIOR',
+  'MASTER',
 ];
 
-const AthleteIndependentRegisterModal: React.FC<
-  AthleteIndependentRegisterModalProps
-> = ({ isOpen, onClose, onSuccess }) => {
+const AthleteIndependentRegisterModal: React.FC<AthleteIndependentRegisterModalProps> = ({
+  isOpen,
+  onClose,
+  onSuccess,
+}) => {
   const [form, setForm] = useState<AthleteIndForm>(EMPTY);
   const [errors, setErrors] = useState<Partial<AthleteIndForm>>({});
   const [saving, setSaving] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [showGuardians, setShowGuardians] = useState(false);
 
+  const isFormDirty =
+    form.name !== '' ||
+    form.email !== '' ||
+    form.cpf !== '' ||
+    form.birthDate !== '' ||
+    form.nickname !== '' ||
+    form.phone !== '';
+  const { isConfirmOpen, handleOverlayClick, confirmClose, cancelClose } = useConfirmClose(
+    isFormDirty,
+    onClose,
+  );
+
   if (!isOpen) return null;
 
   const set = (field: keyof AthleteIndForm, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }));
     setApiError(null);
   };
 
   const validate = (): boolean => {
     const errs: Partial<AthleteIndForm> = {};
-    if (!form.name.trim()) errs.name = "Nome é obrigatório";
-    if (!form.birthDate) errs.birthDate = "Data de nascimento é obrigatória";
+    if (!form.name.trim()) errs.name = 'Nome é obrigatório';
+    if (!form.birthDate) errs.birthDate = 'Data de nascimento é obrigatória';
     if (!form.cpf.trim() && !form.email.trim())
-      errs.cpf = "CPF ou e-mail é obrigatório para criar a conta";
+      errs.cpf = 'CPF ou e-mail é obrigatório para criar a conta';
     if (form.cpf) {
-      const d = form.cpf.replace(/\D/g, "");
-      if (d.length !== 11) errs.cpf = "CPF deve ter 11 dígitos";
+      const d = form.cpf.replace(/\D/g, '');
+      if (d.length !== 11) errs.cpf = 'CPF deve ter 11 dígitos';
     }
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-      errs.email = "E-mail inválido";
-    if (form.ranking && isNaN(Number(form.ranking)))
-      errs.ranking = "Ranking deve ser um número";
+      errs.email = 'E-mail inválido';
+    if (form.ranking && isNaN(Number(form.ranking))) errs.ranking = 'Ranking deve ser um número';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -100,7 +115,7 @@ const AthleteIndependentRegisterModal: React.FC<
       const payload: Record<string, string | number | undefined> = {
         name: form.name.trim(),
         email: form.email.trim() || undefined,
-        cpf: form.cpf.replace(/\D/g, "") || undefined,
+        cpf: form.cpf.replace(/\D/g, '') || undefined,
         birthDate: form.birthDate,
         gender: form.gender || undefined,
         category: form.category || undefined,
@@ -109,44 +124,38 @@ const AthleteIndependentRegisterModal: React.FC<
         ranking: form.ranking ? parseInt(form.ranking, 10) : undefined,
         entity: form.entity.trim() || undefined,
         fatherName: form.fatherName.trim() || undefined,
-        fatherCpf: form.fatherCpf.replace(/\D/g, "") || undefined,
+        fatherCpf: form.fatherCpf.replace(/\D/g, '') || undefined,
         motherName: form.motherName.trim() || undefined,
-        motherCpf: form.motherCpf.replace(/\D/g, "") || undefined,
+        motherCpf: form.motherCpf.replace(/\D/g, '') || undefined,
       };
-      Object.keys(payload).forEach(
-        (k) => payload[k] === undefined && delete payload[k],
-      );
+      Object.keys(payload).forEach((k) => payload[k] === undefined && delete payload[k]);
 
-      const resp = await fetch("/api/auth/register-athlete-independent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const resp = await fetch('/api/auth/register-athlete-independent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
       const data = await resp.json();
       if (!resp.ok) {
-        setApiError(data.error || "Erro ao cadastrar. Tente novamente.");
+        setApiError(data.error || 'Erro ao cadastrar. Tente novamente.');
         return;
       }
       onSuccess(data);
       onClose();
       setForm(EMPTY);
     } catch {
-      setApiError("Erro de conexão. Tente novamente.");
+      setApiError('Erro de conexão. Tente novamente.');
     } finally {
       setSaving(false);
     }
   };
 
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) onClose();
-  };
-
   const senhaExibida = form.birthDate
     ? (() => {
-        const [yyyy, mm, dd] = form.birthDate.split("-");
-        return dd && mm && yyyy ? `${dd}${mm}${yyyy}` : "DDMMAAAA";
+        const [yyyy, mm, dd] = form.birthDate.split('-');
+        return dd && mm && yyyy ? `${dd}${mm}${yyyy}` : 'DDMMAAAA';
       })()
-    : "DDMMAAAA";
+    : 'DDMMAAAA';
 
   return (
     <div
@@ -155,14 +164,16 @@ const AthleteIndependentRegisterModal: React.FC<
       aria-modal="true"
       aria-labelledby="ath-ind-modal-title"
       onClick={handleOverlayClick}
+      style={{ position: 'relative' }}
     >
+      <ConfirmCloseDialog isOpen={isConfirmOpen} onConfirm={confirmClose} onCancel={cancelClose} />
       <div className="add-athlete-modal">
         <div className="add-athlete-header">
           <div>
             <h2 id="ath-ind-modal-title">Cadastrar como Atleta</h2>
             <p className="add-athlete-subtitle">
-              Atletas independentes podem participar de partidas e torneios sem
-              pertencer a um clube.
+              Atletas independentes podem participar de partidas e torneios sem pertencer a um
+              clube.
             </p>
           </div>
           <button
@@ -186,14 +197,12 @@ const AthleteIndependentRegisterModal: React.FC<
                   id="ai-name"
                   type="text"
                   value={form.name}
-                  onChange={(e) => set("name", e.target.value)}
+                  onChange={(e) => set('name', e.target.value)}
                   placeholder="Ex: João da Silva"
                   autoComplete="name"
                   disabled={saving}
                 />
-                {errors.name && (
-                  <span className="add-athlete-error">{errors.name}</span>
-                )}
+                {errors.name && <span className="add-athlete-error">{errors.name}</span>}
               </div>
 
               <div className="add-athlete-field">
@@ -202,7 +211,7 @@ const AthleteIndependentRegisterModal: React.FC<
                   id="ai-nickname"
                   type="text"
                   value={form.nickname}
-                  onChange={(e) => set("nickname", e.target.value)}
+                  onChange={(e) => set('nickname', e.target.value)}
                   placeholder="Ex: Joãozinho"
                   disabled={saving}
                 />
@@ -214,14 +223,12 @@ const AthleteIndependentRegisterModal: React.FC<
                   id="ai-email"
                   type="email"
                   value={form.email}
-                  onChange={(e) => set("email", e.target.value)}
+                  onChange={(e) => set('email', e.target.value)}
                   placeholder="atleta@email.com"
                   autoComplete="email"
                   disabled={saving}
                 />
-                {errors.email && (
-                  <span className="add-athlete-error">{errors.email}</span>
-                )}
+                {errors.email && <span className="add-athlete-error">{errors.email}</span>}
               </div>
 
               <div className="add-athlete-field">
@@ -230,7 +237,7 @@ const AthleteIndependentRegisterModal: React.FC<
                   id="ai-phone"
                   type="tel"
                   value={form.phone}
-                  onChange={(e) => set("phone", e.target.value)}
+                  onChange={(e) => set('phone', e.target.value)}
                   placeholder="(11) 99999-9999"
                   disabled={saving}
                 />
@@ -247,7 +254,7 @@ const AthleteIndependentRegisterModal: React.FC<
                 <select
                   id="ai-gender"
                   value={form.gender}
-                  onChange={(e) => set("gender", e.target.value)}
+                  onChange={(e) => set('gender', e.target.value)}
                   disabled={saving}
                 >
                   <option value="">Não informado</option>
@@ -263,12 +270,10 @@ const AthleteIndependentRegisterModal: React.FC<
                   id="ai-birthdate"
                   type="date"
                   value={form.birthDate}
-                  onChange={(e) => set("birthDate", e.target.value)}
+                  onChange={(e) => set('birthDate', e.target.value)}
                   disabled={saving}
                 />
-                {errors.birthDate && (
-                  <span className="add-athlete-error">{errors.birthDate}</span>
-                )}
+                {errors.birthDate && <span className="add-athlete-error">{errors.birthDate}</span>}
               </div>
 
               <div className="add-athlete-field required">
@@ -277,14 +282,12 @@ const AthleteIndependentRegisterModal: React.FC<
                   id="ai-cpf"
                   type="text"
                   value={form.cpf}
-                  onChange={(e) => set("cpf", e.target.value)}
+                  onChange={(e) => set('cpf', e.target.value)}
                   placeholder="000.000.000-00"
                   maxLength={14}
                   disabled={saving}
                 />
-                {errors.cpf && (
-                  <span className="add-athlete-error">{errors.cpf}</span>
-                )}
+                {errors.cpf && <span className="add-athlete-error">{errors.cpf}</span>}
                 <span className="add-athlete-hint">
                   Usado como identificador de login (CPF ou e-mail).
                 </span>
@@ -295,7 +298,7 @@ const AthleteIndependentRegisterModal: React.FC<
                 <select
                   id="ai-category"
                   value={form.category}
-                  onChange={(e) => set("category", e.target.value)}
+                  onChange={(e) => set('category', e.target.value)}
                   disabled={saving}
                 >
                   <option value="">Selecione</option>
@@ -313,7 +316,7 @@ const AthleteIndependentRegisterModal: React.FC<
                   id="ai-entity"
                   type="text"
                   value={form.entity}
-                  onChange={(e) => set("entity", e.target.value)}
+                  onChange={(e) => set('entity', e.target.value)}
                   placeholder="Ex: CBT, FMTE"
                   disabled={saving}
                 />
@@ -325,14 +328,12 @@ const AthleteIndependentRegisterModal: React.FC<
                   id="ai-ranking"
                   type="number"
                   value={form.ranking}
-                  onChange={(e) => set("ranking", e.target.value)}
+                  onChange={(e) => set('ranking', e.target.value)}
                   placeholder="Posição no ranking"
                   min={1}
                   disabled={saving}
                 />
-                {errors.ranking && (
-                  <span className="add-athlete-error">{errors.ranking}</span>
-                )}
+                {errors.ranking && <span className="add-athlete-error">{errors.ranking}</span>}
               </div>
             </div>
           </div>
@@ -343,21 +344,21 @@ const AthleteIndependentRegisterModal: React.FC<
               type="button"
               className="add-athlete-section-title"
               style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
                 padding: 0,
-                display: "flex",
-                alignItems: "center",
+                display: 'flex',
+                alignItems: 'center',
                 gap: 6,
-                color: "inherit",
-                fontSize: "inherit",
-                fontWeight: "inherit",
+                color: 'inherit',
+                fontSize: 'inherit',
+                fontWeight: 'inherit',
               }}
               onClick={() => setShowGuardians((v) => !v)}
               aria-expanded={showGuardians}
             >
-              {showGuardians ? "▾" : "▸"} Dados dos Responsáveis (opcional)
+              {showGuardians ? '▾' : '▸'} Dados dos Responsáveis (opcional)
             </button>
             {showGuardians && (
               <div className="add-athlete-grid" style={{ marginTop: 12 }}>
@@ -367,7 +368,7 @@ const AthleteIndependentRegisterModal: React.FC<
                     id="ai-father"
                     type="text"
                     value={form.fatherName}
-                    onChange={(e) => set("fatherName", e.target.value)}
+                    onChange={(e) => set('fatherName', e.target.value)}
                     placeholder="Nome completo do pai"
                     disabled={saving}
                   />
@@ -378,7 +379,7 @@ const AthleteIndependentRegisterModal: React.FC<
                     id="ai-fathercpf"
                     type="text"
                     value={form.fatherCpf}
-                    onChange={(e) => set("fatherCpf", e.target.value)}
+                    onChange={(e) => set('fatherCpf', e.target.value)}
                     placeholder="000.000.000-00"
                     maxLength={14}
                     disabled={saving}
@@ -390,7 +391,7 @@ const AthleteIndependentRegisterModal: React.FC<
                     id="ai-mother"
                     type="text"
                     value={form.motherName}
-                    onChange={(e) => set("motherName", e.target.value)}
+                    onChange={(e) => set('motherName', e.target.value)}
                     placeholder="Nome completo da mãe"
                     disabled={saving}
                   />
@@ -401,7 +402,7 @@ const AthleteIndependentRegisterModal: React.FC<
                     id="ai-mothercpf"
                     type="text"
                     value={form.motherCpf}
-                    onChange={(e) => set("motherCpf", e.target.value)}
+                    onChange={(e) => set('motherCpf', e.target.value)}
                     placeholder="000.000.000-00"
                     maxLength={14}
                     disabled={saving}
@@ -415,23 +416,23 @@ const AthleteIndependentRegisterModal: React.FC<
           <div
             className="add-athlete-section"
             style={{
-              background: "var(--clr-surface-2, #f5f5f5)",
+              background: 'var(--clr-surface-2, #f5f5f5)',
               borderRadius: 8,
-              padding: "12px 16px",
+              padding: '12px 16px',
             }}
           >
             <p
               style={{
                 margin: 0,
                 fontSize: 13,
-                color: "var(--clr-text-muted, #666)",
+                color: 'var(--clr-text-muted, #666)',
               }}
             >
-              🔑 <strong>Sua senha de acesso</strong> será:{" "}
+              🔑 <strong>Sua senha de acesso</strong> será:{' '}
               <code
                 style={{
-                  background: "var(--clr-surface-3, #e8e8e8)",
-                  padding: "2px 6px",
+                  background: 'var(--clr-surface-3, #e8e8e8)',
+                  padding: '2px 6px',
                   borderRadius: 4,
                   fontWeight: 700,
                 }}
@@ -439,8 +440,8 @@ const AthleteIndependentRegisterModal: React.FC<
                 {senhaExibida}
               </code>
               {form.birthDate
-                ? " (sua data de nascimento — DDMMAAAA)"
-                : " — informe sua data de nascimento acima"}
+                ? ' (sua data de nascimento — DDMMAAAA)'
+                : ' — informe sua data de nascimento acima'}
             </p>
           </div>
 
@@ -459,18 +460,14 @@ const AthleteIndependentRegisterModal: React.FC<
             >
               Cancelar
             </button>
-            <button
-              type="submit"
-              className="add-athlete-btn-save"
-              disabled={saving}
-            >
+            <button type="submit" className="add-athlete-btn-save" disabled={saving}>
               {saving ? (
                 <>
                   <span className="add-athlete-spinner" />
                   Cadastrando...
                 </>
               ) : (
-                "✅ Cadastrar"
+                '✅ Cadastrar'
               )}
             </button>
           </div>

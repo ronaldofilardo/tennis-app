@@ -1,7 +1,7 @@
 // frontend/src/services/matchService.js - Otimizado para Vercel Serverless
 
-import { PrismaClient } from "@prisma/client";
-import { calculateMatchStats } from "./statsUtils.js";
+import { PrismaClient } from '@prisma/client';
+import { calculateMatchStats } from './statsUtils.js';
 import {
   MatchCreateSchema,
   MatchUpdateSchema,
@@ -9,7 +9,7 @@ import {
   VisibleMatchesQuerySchema,
   MatchIdSchema,
   validateAndFormatZodError,
-} from "./validationSchemas.js";
+} from './validationSchemas.js';
 
 // Stub para MatchIdSchema para evitar problemas
 const MatchIdSchemaStub = {
@@ -19,34 +19,29 @@ const MatchIdSchemaStub = {
 
 // Cache de conexão Prisma otimizado para serverless
 let prisma;
-if (typeof globalThis !== "undefined" && globalThis.__prisma) {
+if (typeof globalThis !== 'undefined' && globalThis.__prisma) {
   prisma = globalThis.__prisma;
 } else {
   prisma = new PrismaClient({
-    log:
-      process.env.NODE_ENV === "development" ? ["query", "error"] : ["error"],
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error'] : ['error'],
   });
-  if (typeof globalThis !== "undefined") {
+  if (typeof globalThis !== 'undefined') {
     globalThis.__prisma = prisma;
   }
 }
 
-export async function getAllMatches(
-  clubId = null,
-  userRole = null,
-  userId = null,
-) {
+export async function getAllMatches(clubId = null, userRole = null, userId = null) {
   // Isolamento multi-tenant: filtra por clube ou mostra apenas partidas públicas.
   const whereClause = {};
-  if (userRole === "ADMIN") {
+  if (userRole === 'ADMIN') {
     // ADMIN vê todas as partidas
   } else if (clubId) {
     // Usuário comum vê partidas do seu clube + partidas públicas
-    const orConditions = [{ clubId }, { visibility: "PUBLIC" }];
+    const orConditions = [{ clubId }, { visibility: 'PUBLIC' }];
     whereClause.OR = orConditions;
   } else {
     // Sem clube: apenas partidas públicas
-    whereClause.visibility = "PUBLIC";
+    whereClause.visibility = 'PUBLIC';
   }
 
   const matches = await prisma.match.findMany({
@@ -65,13 +60,13 @@ export async function getAllMatches(
       matchState: true,
       visibility: true,
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
   });
   return matches.map((match) => {
     const parsedState = match.matchState ? JSON.parse(match.matchState) : null;
     let status = match.status;
 
-    if (parsedState && status === "NOT_STARTED") {
+    if (parsedState && status === 'NOT_STARTED') {
       const isFinished = Boolean(
         parsedState.isFinished || parsedState.winner || parsedState.endedAt,
       );
@@ -82,9 +77,9 @@ export async function getAllMatches(
         parsedState.currentSetState,
       );
       if (isFinished) {
-        status = "FINISHED";
+        status = 'FINISHED';
       } else if (inProgressIndicators) {
-        status = "IN_PROGRESS";
+        status = 'IN_PROGRESS';
       }
     }
 
@@ -96,11 +91,11 @@ export async function getAllMatches(
       status,
       score: match.score,
       winner: match.winner,
-      completedSets: JSON.parse(match.completedSets || "[]"),
+      completedSets: JSON.parse(match.completedSets || '[]'),
       createdAt: match.createdAt.toISOString(),
       matchState: parsedState,
-      visibleTo: parsedState?.visibleTo || "both",
-      visibility: match.visibility || "PLAYERS_ONLY",
+      visibleTo: parsedState?.visibleTo || 'both',
+      visibility: match.visibility || 'PLAYERS_ONLY',
     };
   });
 }
@@ -124,12 +119,14 @@ export async function createMatch(matchData, testPrisma) {
     courtType,
     players,
     nickname,
-    visibility = "PLAYERS_ONLY",
+    visibility = 'PLAYERS_ONLY',
     apontadorEmail,
     visibleTo,
     clubId,
     createdByUserId,
     openForAnnotation = false,
+    scheduledAt,
+    venueId,
   } = validation.data;
 
   const prismaClient = testPrisma || prisma;
@@ -141,11 +138,11 @@ export async function createMatch(matchData, testPrisma) {
   try {
     const [user1, user2] = await Promise.all([
       prismaClient.user.findFirst({
-        where: { name: { equals: players.p1, mode: "insensitive" } },
+        where: { name: { equals: players.p1, mode: 'insensitive' } },
         select: { email: true },
       }),
       prismaClient.user.findFirst({
-        where: { name: { equals: players.p2, mode: "insensitive" } },
+        where: { name: { equals: players.p2, mode: 'insensitive' } },
         select: { email: true },
       }),
     ]);
@@ -173,15 +170,17 @@ export async function createMatch(matchData, testPrisma) {
       playerP1: players.p1,
       playerP2: players.p2,
       playersEmails,
-      visibility: visibility || "PLAYERS_ONLY",
-      status: "NOT_STARTED",
+      visibility: visibility || 'PLAYERS_ONLY',
+      status: 'NOT_STARTED',
       openForAnnotation: openForAnnotation ?? false,
       clubId: clubId || null,
       createdByUserId: createdByUserId || null,
+      scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
+      venueId: venueId || null,
       completedSets: JSON.stringify([]),
       matchState: JSON.stringify({
         playersIds: { p1: players.p1, p2: players.p2 },
-        visibleTo: visibleTo || "both", // Legado
+        visibleTo: visibleTo || 'both', // Legado
         needsSetup: true,
         startedAt: null,
       }),
@@ -199,12 +198,14 @@ export async function createMatch(matchData, testPrisma) {
     playersEmails: newMatch.playersEmails,
     visibility: newMatch.visibility,
     openForAnnotation: newMatch.openForAnnotation,
-    visibleTo: visibleTo || "both",
+    scheduledAt: newMatch.scheduledAt ? newMatch.scheduledAt.toISOString() : null,
+    venueId: newMatch.venueId || null,
+    visibleTo: visibleTo || 'both',
     clubId: newMatch.clubId || null,
     status: newMatch.status,
     score: newMatch.score,
     winner: newMatch.winner,
-    completedSets: JSON.parse(newMatch.completedSets || "[]"),
+    completedSets: JSON.parse(newMatch.completedSets || '[]'),
     createdAt: newMatch.createdAt.toISOString(),
   };
 
@@ -238,7 +239,7 @@ export async function getMatchById(id) {
   });
 
   if (!match) {
-    const notFoundError = new Error("Partida não encontrada");
+    const notFoundError = new Error('Partida não encontrada');
     notFoundError.statusCode = 404;
     throw notFoundError;
   }
@@ -247,16 +248,13 @@ export async function getMatchById(id) {
   try {
     matchState = match.matchState ? JSON.parse(match.matchState) : null;
   } catch (e) {
-    console.warn(
-      `[getMatchById] Erro ao fazer parse do matchState da partida ${match.id}:`,
-      e,
-    );
+    console.warn(`[getMatchById] Erro ao fazer parse do matchState da partida ${match.id}:`, e);
     matchState = {};
   }
 
   let completedSets = [];
   try {
-    completedSets = JSON.parse(match.completedSets || "[]");
+    completedSets = JSON.parse(match.completedSets || '[]');
   } catch {
     completedSets = [];
   }
@@ -265,7 +263,7 @@ export async function getMatchById(id) {
     id: match.id,
     sportType: match.sportType,
     format: match.format,
-    courtType: match.courtType || "GRASS",
+    courtType: match.courtType || 'GRASS',
     players: { p1: match.playerP1, p2: match.playerP2 },
     status: match.status,
     score: match.score,
@@ -289,14 +287,11 @@ export async function updateMatch(id, updatePayload) {
   }
 
   const updateData = {};
-  if (payloadValidation.data.score !== undefined)
-    updateData.score = payloadValidation.data.score;
+  if (payloadValidation.data.score !== undefined) updateData.score = payloadValidation.data.score;
   if (payloadValidation.data.winner !== undefined)
     updateData.winner = payloadValidation.data.winner;
   if (payloadValidation.data.completedSets !== undefined)
-    updateData.completedSets = JSON.stringify(
-      payloadValidation.data.completedSets,
-    );
+    updateData.completedSets = JSON.stringify(payloadValidation.data.completedSets);
   if (payloadValidation.data.openForAnnotation !== undefined)
     updateData.openForAnnotation = payloadValidation.data.openForAnnotation;
 
@@ -310,7 +305,7 @@ export async function updateMatch(id, updatePayload) {
 
   return {
     id: updatedMatch.id,
-    message: "Partida atualizada com sucesso",
+    message: 'Partida atualizada com sucesso',
   };
 }
 
@@ -333,9 +328,9 @@ export async function updateMatchState(id, statePayload, testPrisma) {
   // Aceitar tanto objeto quanto string e garantir robustez no parse
   let state;
   try {
-    if (typeof matchState === "string") {
+    if (typeof matchState === 'string') {
       state = JSON.parse(matchState);
-    } else if (typeof matchState === "object" && matchState !== null) {
+    } else if (typeof matchState === 'object' && matchState !== null) {
       state = { ...matchState }; // Criar cópia para evitar mutação
     } else {
       state = {};
@@ -354,33 +349,26 @@ export async function updateMatchState(id, statePayload, testPrisma) {
 
   let currentState = {};
   try {
-    currentState = currentMatch?.matchState
-      ? JSON.parse(currentMatch.matchState)
-      : {};
+    currentState = currentMatch?.matchState ? JSON.parse(currentMatch.matchState) : {};
   } catch (e) {
     currentState = {};
   }
 
   // Inferir status de forma resiliente
-  let status = currentMatch?.status || "NOT_STARTED";
+  let status = currentMatch?.status || 'NOT_STARTED';
 
   // Só alterar status se houver mudanças significativas no estado
-  const isFinished = Boolean(
-    state?.isFinished || state?.winner || state?.endedAt,
-  );
+  const isFinished = Boolean(state?.isFinished || state?.winner || state?.endedAt);
   const inProgressIndicators = Boolean(
-    state?.startedAt ||
-    state?.server ||
-    state?.currentGame ||
-    state?.currentSetState,
+    state?.startedAt || state?.server || state?.currentGame || state?.currentSetState,
   );
 
   // Lógica de transição de status mais conservadora
   if (isFinished) {
-    status = "FINISHED";
-  } else if (inProgressIndicators && status === "NOT_STARTED") {
+    status = 'FINISHED';
+  } else if (inProgressIndicators && status === 'NOT_STARTED') {
     // Só mudar para IN_PROGRESS se estava NOT_STARTED
-    status = "IN_PROGRESS";
+    status = 'IN_PROGRESS';
   }
   // Se já estava IN_PROGRESS ou FINISHED, manter o status atual
 
@@ -395,7 +383,7 @@ export async function updateMatchState(id, statePayload, testPrisma) {
 
   return {
     id: updatedMatch.id,
-    message: "Estado da partida atualizado com sucesso",
+    message: 'Estado da partida atualizado com sucesso',
   };
 }
 export async function getMatchState(id) {
@@ -432,7 +420,7 @@ export async function getMatchState(id) {
   }
   let completedSets = [];
   try {
-    completedSets = JSON.parse(match.completedSets || "[]");
+    completedSets = JSON.parse(match.completedSets || '[]');
   } catch {
     completedSets = [];
   }
@@ -440,7 +428,7 @@ export async function getMatchState(id) {
     id: match.id,
     sportType: match.sportType,
     format: match.format,
-    courtType: match.courtType || "GRASS",
+    courtType: match.courtType || 'GRASS',
     players: { p1: match.playerP1, p2: match.playerP2 },
     status: match.status,
     score: match.score,
@@ -484,7 +472,7 @@ export async function getVisibleMatches(queryParams, testPrisma) {
         playersEmails: true,
         visibility: true,
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
     });
   } catch (e) {
     return [];
@@ -498,9 +486,7 @@ export async function getVisibleMatches(queryParams, testPrisma) {
     try {
       if (match.matchState) {
         const parsed =
-          typeof match.matchState === "string"
-            ? JSON.parse(match.matchState)
-            : match.matchState;
+          typeof match.matchState === 'string' ? JSON.parse(match.matchState) : match.matchState;
         if (parsed && parsed.role) matchRole = parsed.role;
       }
     } catch {
@@ -509,8 +495,7 @@ export async function getVisibleMatches(queryParams, testPrisma) {
     // Retorna se o e-mail do usuário está em playersEmails OU é o apontador da partida
     if (!email) return false;
     const isApontador = match.apontadorEmail === email;
-    const isInPlayersEmails =
-      Array.isArray(playersEmails) && playersEmails.includes(email);
+    const isInPlayersEmails = Array.isArray(playersEmails) && playersEmails.includes(email);
     if (!isApontador && !isInPlayersEmails) {
       return false;
     }
@@ -529,34 +514,33 @@ export async function getVisibleMatches(queryParams, testPrisma) {
     }
     let completedSets = [];
     try {
-      completedSets = JSON.parse(match.completedSets || "[]");
+      completedSets = JSON.parse(match.completedSets || '[]');
     } catch {
       completedSets = [];
     }
 
     // Usa o status salvo no banco, não recalcula
-    let status = match.status || "NOT_STARTED";
+    let status = match.status || 'NOT_STARTED';
 
     // Retorna TODOS os campos do match para evitar que novos campos sejam perdidos
     return {
       id: match.id,
-      sportType: match.sportType || "",
-      format: match.format || "",
+      sportType: match.sportType || '',
+      format: match.format || '',
       courtType: match.courtType || null,
       nickname: match.nickname || null,
-      players: { p1: match.playerP1 || "", p2: match.playerP2 || "" },
+      players: { p1: match.playerP1 || '', p2: match.playerP2 || '' },
       status,
-      score: match.score || "",
+      score: match.score || '',
       winner: match.winner || null,
       completedSets,
       createdAt: match.createdAt ? match.createdAt.toISOString() : undefined,
       updatedAt: match.updatedAt ? match.updatedAt.toISOString() : undefined,
       matchState: parsedState,
-      visibleTo:
-        parsedState && parsedState.visibleTo ? parsedState.visibleTo : "both",
+      visibleTo: parsedState && parsedState.visibleTo ? parsedState.visibleTo : 'both',
       apontadorEmail: match.apontadorEmail,
       playersEmails: match.playersEmails,
-      visibility: match.visibility || "PLAYERS_ONLY",
+      visibility: match.visibility || 'PLAYERS_ONLY',
     };
   });
 }
@@ -586,9 +570,7 @@ export async function getMatchStats(id) {
   });
 
   if (!match) {
-    const notFoundError = new Error(
-      "Partida não encontrada para calcular estatísticas",
-    );
+    const notFoundError = new Error('Partida não encontrada para calcular estatísticas');
     notFoundError.statusCode = 404;
     throw notFoundError;
   }
@@ -600,9 +582,7 @@ export async function getMatchStats(id) {
       let matchState;
       try {
         matchState =
-          typeof match.matchState === "string"
-            ? JSON.parse(match.matchState)
-            : match.matchState;
+          typeof match.matchState === 'string' ? JSON.parse(match.matchState) : match.matchState;
       } catch {
         matchState = {};
       }
@@ -629,7 +609,7 @@ export async function getMatchesOpenForAnnotation(testPrisma) {
   const matches = await prismaClient.match.findMany({
     where: {
       openForAnnotation: true,
-      status: { not: "FINISHED" },
+      status: { not: 'FINISHED' },
     },
     select: {
       id: true,
@@ -647,7 +627,7 @@ export async function getMatchesOpenForAnnotation(testPrisma) {
       club: { select: { id: true, name: true } },
       createdBy: { select: { id: true, name: true, email: true } },
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
   });
 
   return matches.map((match) => ({
@@ -663,8 +643,6 @@ export async function getMatchesOpenForAnnotation(testPrisma) {
     visibility: match.visibility,
     clubId: match.clubId || null,
     clubName: match.club?.name || null,
-    createdBy: match.createdBy
-      ? { id: match.createdBy.id, name: match.createdBy.name }
-      : null,
+    createdBy: match.createdBy ? { id: match.createdBy.id, name: match.createdBy.name } : null,
   }));
 }

@@ -31,5 +31,19 @@
     }
   },
   "include": ["src"],
-  "exclude": ["**/*.test.ts", "**/*.test.tsx", "src/test"]
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "src/test",
+    "src/services/authService.ts",
+    "src/services/asaasService.ts",
+    "src/services/businessLogic.ts",
+    "src/services/matchService.ts",
+    "src/services/matchStatusService.ts",
+    "src/services/statsUtils.ts",
+    "src/services/subscriptionService.ts",
+    "src/services/tenantMiddleware.ts",
+    "src/services/tournamentService.ts",
+    "src/services/validationSchemas.ts"
+  ]
 }

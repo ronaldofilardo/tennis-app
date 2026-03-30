@@ -1,12 +1,12 @@
-import React, { createContext, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import type { ReactNode } from "react";
+import React, { createContext, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import type { ReactNode } from 'react';
 
 interface NavigationContextType {
   navigateToDashboard: () => void;
   navigateToGestorDashboard: () => void;
   navigateToAdminDashboard: () => void;
-  navigateToMatch: (matchId: string, initialState?: any) => void;
+  navigateToMatch: (matchId: string, initialState?: unknown) => void;
   navigateToNewMatch: () => void;
   navigateToLogin: () => void;
   goBack: () => void;
@@ -14,25 +14,21 @@ interface NavigationContextType {
   replace: (path: string) => void;
 }
 
-const NavigationContext = createContext<NavigationContextType | undefined>(
-  undefined,
-);
+const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
 
 interface NavigationProviderProps {
   children: ReactNode;
 }
 
-export const NavigationProvider: React.FC<NavigationProviderProps> = ({
-  children,
-}) => {
+export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children }) => {
   const navigate = useNavigate();
 
   const navigateToDashboard = () => {
-    navigate("/dashboard", { replace: false });
+    navigate('/dashboard', { replace: false });
   };
 
-  const navigateToMatch = (matchId: string, initialState?: any) => {
-    const options: any = { replace: false };
+  const navigateToMatch = (matchId: string, initialState?: unknown) => {
+    const options: { replace: boolean; state?: { initialState: unknown } } = { replace: false };
     if (initialState !== undefined) {
       options.state = { initialState };
     }
@@ -40,19 +36,19 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({
   };
 
   const navigateToGestorDashboard = () => {
-    navigate("/gestor", { replace: false });
+    navigate('/gestor', { replace: false });
   };
 
   const navigateToAdminDashboard = () => {
-    navigate("/admin", { replace: false });
+    navigate('/admin', { replace: false });
   };
 
   const navigateToNewMatch = () => {
-    navigate("/match/new", { replace: false });
+    navigate('/match/new', { replace: false });
   };
 
   const navigateToLogin = () => {
-    navigate("/login", { replace: false });
+    navigate('/login', { replace: false });
   };
 
   const goBack = () => {
@@ -79,17 +75,13 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({
     replace,
   };
 
-  return (
-    <NavigationContext.Provider value={value}>
-      {children}
-    </NavigationContext.Provider>
-  );
+  return <NavigationContext.Provider value={value}>{children}</NavigationContext.Provider>;
 };
 
 export const useNavigation = (): NavigationContextType => {
   const context = useContext(NavigationContext);
   if (context === undefined) {
-    throw new Error("useNavigation must be used within a NavigationProvider");
+    throw new Error('useNavigation must be used within a NavigationProvider');
   }
   return context;
 };

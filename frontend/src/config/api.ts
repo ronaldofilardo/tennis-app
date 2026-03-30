@@ -7,7 +7,7 @@
 let API_URL = '';
 if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) {
   API_URL = import.meta.env.VITE_API_URL.replace(/\/$/, '');
-} else if (typeof window !== 'undefined') {
+} else if (typeof globalThis !== 'undefined' && 'window' in globalThis) {
   API_URL = '/api';
 } else {
   API_URL = 'http://localhost:3001';

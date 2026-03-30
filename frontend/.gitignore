@@ -34,9 +34,12 @@ vitest-*.txt
 test-output.txt
 yarn-error.log*
 
-# Environment
+# Environment — nunca commitar arquivos com credenciais reais
 .env
 .env.local
+.env.development
+.env.test
+.env.production
 .env.development.local
 .env.test.local
 .env.production.local

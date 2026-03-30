@@ -7,8 +7,8 @@ import {
   getAllPendingPointEvents,
   updatePendingMatchStatus,
   updatePointEventStatus,
-} from "./offlineDb";
-import httpClient from "../config/httpClient";
+} from './offlineDb';
+import { httpClient } from '../config/httpClient';
 
 export interface SyncResult {
   matchesSynced: number;
@@ -37,17 +37,14 @@ export async function syncOfflineQueue(): Promise<SyncResult> {
 
   for (const pending of pendingMatches) {
     try {
-      const res = await httpClient.post<{ id: string }>(
-        "/matches",
-        pending.matchData,
-      );
+      const res = await httpClient.post<{ id: string }>('/matches', pending.matchData);
       const serverId = res.data.id;
-      await updatePendingMatchStatus(pending.tempId, "SYNCED", serverId);
+      await updatePendingMatchStatus(pending.tempId, 'SYNCED', serverId);
       tempToServerId.set(pending.tempId, serverId);
       result.matchesSynced++;
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "sync error";
-      await updatePendingMatchStatus(pending.tempId, "FAILED", undefined, msg);
+      const msg = err instanceof Error ? err.message : 'sync error';
+      await updatePendingMatchStatus(pending.tempId, 'FAILED', undefined, msg);
       result.matchesFailed++;
     }
   }
@@ -71,11 +68,11 @@ export async function syncOfflineQueue(): Promise<SyncResult> {
         events: eventBatch.events,
         offlineSync: true,
       });
-      await updatePointEventStatus(eventBatch.id, "SYNCED");
+      await updatePointEventStatus(eventBatch.id, 'SYNCED');
       result.eventsSynced++;
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "sync error";
-      await updatePointEventStatus(eventBatch.id, "FAILED", msg);
+      const msg = err instanceof Error ? err.message : 'sync error';
+      await updatePointEventStatus(eventBatch.id, 'FAILED', msg);
       result.eventsFailed++;
     }
   }

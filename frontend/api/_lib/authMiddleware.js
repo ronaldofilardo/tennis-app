@@ -2,17 +2,22 @@
 // Middleware centralizado de autenticação e autorização para API routes.
 // Substitui as N cópias de extractContext() espalhadas pelos handlers.
 
-import { verifyToken } from "../../src/services/authService.js";
+import { verifyToken } from '../../src/services/authService.js';
 
 // ============================================================
 // CORS Headers reutilizáveis
 // ============================================================
 
+// Em produção configure ALLOWED_ORIGIN com o domínio real (ex: https://meuapp.vercel.app)
+// Nunca use "*" em produção — viola a política de credentials: 'include'
+const _allowedOrigin =
+  process.env.ALLOWED_ORIGIN || (process.env.NODE_ENV === 'production' ? '' : '*');
+
 export const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers":
-    "Content-Type, Authorization, X-Club-ID, X-Payload-Version",
+  'Access-Control-Allow-Origin': _allowedOrigin,
+  'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Club-ID, X-Payload-Version',
+  ...(process.env.NODE_ENV !== 'production' ? {} : { 'Access-Control-Allow-Credentials': 'true' }),
 };
 
 /**
@@ -20,7 +25,7 @@ export const corsHeaders = {
  * @param {import('http').ServerResponse} res
  */
 export function handleCors(req, res) {
-  if (req.method === "OPTIONS") {
+  if (req.method === 'OPTIONS') {
     res.writeHead(204, corsHeaders);
     res.end();
     return true;
@@ -39,8 +44,8 @@ export function handleCors(req, res) {
  */
 export function extractContext(req) {
   const auth = req.headers?.authorization;
-  if (!auth?.startsWith("Bearer ")) return null;
-  const result = verifyToken(auth.split(" ")[1]);
+  if (!auth?.startsWith('Bearer ')) return null;
+  const result = verifyToken(auth.split(' ')[1]);
   return result.valid ? result.payload : null;
 }
 
@@ -57,8 +62,8 @@ export function extractContext(req) {
 export function requireAuth(req, res) {
   const ctx = extractContext(req);
   if (!ctx) {
-    res.writeHead(401, { ...corsHeaders, "Content-Type": "application/json" });
-    res.end(JSON.stringify({ error: "Authentication required" }));
+    res.writeHead(401, { ...corsHeaders, 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Authentication required' }));
     return null;
   }
   return ctx;
@@ -68,7 +73,7 @@ export function requireAuth(req, res) {
  * Hierarquia de roles (da mais alta para a mais baixa).
  * Usado por requireRole para verificar role mínima.
  */
-const ROLE_HIERARCHY = ["ADMIN", "GESTOR", "COACH", "ATHLETE", "SPECTATOR"];
+const ROLE_HIERARCHY = ['ADMIN', 'GESTOR', 'COACH', 'ATHLETE', 'SPECTATOR'];
 
 /**
  * Exige autenticação + uma das roles permitidas.
@@ -83,10 +88,10 @@ export function requireRole(req, res, ...allowedRoles) {
   if (!ctx) return null; // 401 já enviado
 
   if (!allowedRoles.includes(ctx.role)) {
-    res.writeHead(403, { ...corsHeaders, "Content-Type": "application/json" });
+    res.writeHead(403, { ...corsHeaders, 'Content-Type': 'application/json' });
     res.end(
       JSON.stringify({
-        error: "Insufficient permissions",
+        error: 'Insufficient permissions',
         required: allowedRoles,
         current: ctx.role,
       }),
@@ -108,22 +113,20 @@ export function requireRole(req, res, ...allowedRoles) {
  */
 export function requireClubAccess(req, res, clubId, ...allowedRoles) {
   const ctx =
-    allowedRoles.length > 0
-      ? requireRole(req, res, ...allowedRoles)
-      : requireAuth(req, res);
+    allowedRoles.length > 0 ? requireRole(req, res, ...allowedRoles) : requireAuth(req, res);
 
   if (!ctx) return null; // 401 ou 403 já enviado
 
   // ADMIN tem acesso a qualquer clube
-  if (ctx.role === "ADMIN") return ctx;
+  if (ctx.role === 'ADMIN') return ctx;
 
   // Verificar se o clube do JWT corresponde ao clube solicitado
   if (ctx.clubId !== clubId) {
-    res.writeHead(403, { ...corsHeaders, "Content-Type": "application/json" });
+    res.writeHead(403, { ...corsHeaders, 'Content-Type': 'application/json' });
     res.end(
       JSON.stringify({
-        error: "Access denied to this club",
-        detail: "You can only access data from your active club",
+        error: 'Access denied to this club',
+        detail: 'You can only access data from your active club',
       }),
     );
     return null;
@@ -141,7 +144,7 @@ export function requireClubAccess(req, res, clubId, ...allowedRoles) {
 export function sendJson(res, statusCode, data) {
   res.writeHead(statusCode, {
     ...corsHeaders,
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   });
   res.end(JSON.stringify(data));
 }
@@ -153,7 +156,7 @@ export function sendJson(res, statusCode, data) {
  */
 export function methodNotAllowed(res, allowedMethods = []) {
   sendJson(res, 405, {
-    error: "Method not allowed",
+    error: 'Method not allowed',
     allowed: allowedMethods,
   });
 }

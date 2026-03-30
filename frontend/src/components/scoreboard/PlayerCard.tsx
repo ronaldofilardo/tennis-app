@@ -82,6 +82,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
   const touchStartY = useRef<number>(0);
   const touchStartX = useRef<number>(0);
   const didSwipe = useRef(false);
+  const isPointerDown = useRef(false);
 
   const colorClass = player === 'PLAYER_1' ? 'card-p1' : 'card-p2';
   const stateClass = isMatchPoint
@@ -97,10 +98,15 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
     touchStartY.current = e.clientY;
     touchStartX.current = e.clientX;
     didSwipe.current = false;
+    isPointerDown.current = true;
     setPressed(true);
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
+    // Guard: só processa movimento se o ponteiro estiver pressionado.
+    // Sem este guard, o hover após marcar um ponto dispara onSwipeDown
+    // automaticamente (touchStartY fica com o valor do press anterior).
+    if (!isPointerDown.current) return;
     const dy = e.clientY - touchStartY.current;
     const dx = e.clientX - touchStartX.current;
     // Threshold aumentado para 80px para evitar ativação acidental após marcar ponto
@@ -115,6 +121,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
   };
 
   const handlePointerUp = () => {
+    isPointerDown.current = false;
     setPressed(false);
     // tap handled by onClick for test compatibility
   };
@@ -126,6 +133,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
   };
 
   const handlePointerCancel = () => {
+    isPointerDown.current = false;
     setPressed(false);
   };
 

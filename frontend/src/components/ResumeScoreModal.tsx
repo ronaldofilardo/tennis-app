@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { TennisConfigFactory } from '../core/scoring/TennisConfigFactory';
 import type { TennisFormat, TennisConfig } from '../core/scoring/types';
+import ConfirmCloseDialog from './ConfirmCloseDialog';
 import './ResumeScoreModal.css';
 
 type Player = 'PLAYER_1' | 'PLAYER_2';
@@ -78,6 +79,7 @@ export const ResumeScoreModal: React.FC<ResumeScoreModalProps> = ({
   const [completedSets, setCompletedSets] = useState<SetEntry[]>([]);
   const [p1G, setP1G] = useState('');
   const [p2G, setP2G] = useState('');
+  const [isCancelConfirmOpen, setIsCancelConfirmOpen] = useState(false);
   const [tbP1, setTbP1] = useState('');
   const [tbP2, setTbP2] = useState('');
   const [mtbP1, setMtbP1] = useState('');
@@ -102,10 +104,7 @@ export const ResumeScoreModal: React.FC<ResumeScoreModalProps> = ({
 
   const isMatchTiebrFormat = format === 'MATCH_TIEBREAK';
   const isSet3MatchTiebr =
-    format === 'BEST_OF_3_MATCH_TB' &&
-    currentSetNum === 3 &&
-    p1Sets === 1 &&
-    p2Sets === 1;
+    format === 'BEST_OF_3_MATCH_TB' && currentSetNum === 3 && p1Sets === 1 && p2Sets === 1;
   const isMatchTiebreakActive = isMatchTiebrFormat || isSet3MatchTiebr;
 
   const p1GNum = parseInt(p1G, 10);
@@ -114,9 +113,7 @@ export const ResumeScoreModal: React.FC<ResumeScoreModalProps> = ({
 
   const setResult = useMemo<SetValidationResult | null>(
     () =>
-      !isMatchTiebreakActive && hasValidGames
-        ? validateSetScore(p1GNum, p2GNum, config)
-        : null,
+      !isMatchTiebreakActive && hasValidGames ? validateSetScore(p1GNum, p2GNum, config) : null,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [isMatchTiebreakActive, hasValidGames, p1GNum, p2GNum, config.format],
   );
@@ -258,7 +255,9 @@ export const ResumeScoreModal: React.FC<ResumeScoreModalProps> = ({
   const setHint = formatHint(config);
 
   const isSetComplete = setResult?.complete === true;
-  const isSetTiebreakWin = isSetComplete && (setResult as { complete: true; winner: Player; isTiebreak: boolean }).isTiebreak;
+  const isSetTiebreakWin =
+    isSetComplete &&
+    (setResult as { complete: true; winner: Player; isTiebreak: boolean }).isTiebreak;
   const isSetInProgress = setResult && !setResult.complete && !setResult.inTiebreak;
   const isInTiebreak = setResult && !setResult.complete && setResult.inTiebreak;
 
@@ -268,7 +267,16 @@ export const ResumeScoreModal: React.FC<ResumeScoreModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-label="Configurar placar de partida em andamento"
+      style={{ position: 'relative' }}
     >
+      <ConfirmCloseDialog
+        isOpen={isCancelConfirmOpen}
+        onConfirm={() => {
+          setIsCancelConfirmOpen(false);
+          onCancel();
+        }}
+        onCancel={() => setIsCancelConfirmOpen(false)}
+      />
       <div className="resume-modal">
         {/* Header */}
         <div className="resume-modal-header">
@@ -296,9 +304,7 @@ export const ResumeScoreModal: React.FC<ResumeScoreModalProps> = ({
                 <span className="resume-set-score">
                   {s.games.PLAYER_1} × {s.games.PLAYER_2}
                 </span>
-                <span
-                  className={`resume-set-winner ${s.winner === 'PLAYER_1' ? 'p1' : 'p2'}`}
-                >
+                <span className={`resume-set-winner ${s.winner === 'PLAYER_1' ? 'p1' : 'p2'}`}>
                   {s.winner === 'PLAYER_1' ? players.p1 : players.p2}
                 </span>
                 {s.tiebreakScore && (
@@ -314,8 +320,8 @@ export const ResumeScoreModal: React.FC<ResumeScoreModalProps> = ({
         {/* Match over warning */}
         {matchIsOver && (
           <div className="resume-match-over-warning" role="alert">
-            O placar inserido indica que a partida já foi encerrada. Remova sets para
-            registrar uma partida em andamento.
+            O placar inserido indica que a partida já foi encerrada. Remova sets para registrar uma
+            partida em andamento.
           </div>
         )}
 
@@ -378,9 +384,7 @@ export const ResumeScoreModal: React.FC<ResumeScoreModalProps> = ({
                 <div className="resume-tiebreak-section">
                   <h5>
                     Tie-break em andamento{' '}
-                    <span className="resume-optional">
-                      (primeiro a {config.tiebreakPoints})
-                    </span>
+                    <span className="resume-optional">(primeiro a {config.tiebreakPoints})</span>
                   </h5>
                   <div className="resume-score-row">
                     <div className="resume-player-score">
@@ -416,8 +420,7 @@ export const ResumeScoreModal: React.FC<ResumeScoreModalProps> = ({
               {isSetTiebreakWin && (
                 <div className="resume-tiebreak-section">
                   <h5>
-                    Placar do tie-break{' '}
-                    <span className="resume-optional">(opcional)</span>
+                    Placar do tie-break <span className="resume-optional">(opcional)</span>
                   </h5>
                   <div className="resume-score-row">
                     <div className="resume-player-score">
@@ -510,8 +513,7 @@ export const ResumeScoreModal: React.FC<ResumeScoreModalProps> = ({
               {isSetInProgress && !isMatchTiebreakActive && (
                 <div className="resume-game-score">
                   <h5>
-                    Pontuação do game atual{' '}
-                    <span className="resume-optional">(opcional)</span>
+                    Pontuação do game atual <span className="resume-optional">(opcional)</span>
                   </h5>
                   <div className="resume-score-row">
                     <div className="resume-player-score">
@@ -556,7 +558,7 @@ export const ResumeScoreModal: React.FC<ResumeScoreModalProps> = ({
               <div className="resume-server-btns">
                 <button
                   type="button"
-                  className={`resume-server-btn${server === 'PLAYER_1' ? ' active' : ''}`}
+                  className={`resume-server-btn${server === 'PLAYER_1' ? 'active' : ''}`}
                   onClick={() => setServer('PLAYER_1')}
                   aria-pressed={server === 'PLAYER_1'}
                 >
@@ -564,7 +566,7 @@ export const ResumeScoreModal: React.FC<ResumeScoreModalProps> = ({
                 </button>
                 <button
                   type="button"
-                  className={`resume-server-btn${server === 'PLAYER_2' ? ' active' : ''}`}
+                  className={`resume-server-btn${server === 'PLAYER_2' ? 'active' : ''}`}
                   onClick={() => setServer('PLAYER_2')}
                   aria-pressed={server === 'PLAYER_2'}
                 >
@@ -584,7 +586,15 @@ export const ResumeScoreModal: React.FC<ResumeScoreModalProps> = ({
 
         {/* Actions */}
         <div className="resume-modal-actions">
-          <button type="button" className="resume-cancel-btn" onClick={onCancel}>
+          <button
+            type="button"
+            className="resume-cancel-btn"
+            onClick={() => {
+              const isDirty = completedSets.length > 0 || p1G !== '' || p2G !== '';
+              if (isDirty) setIsCancelConfirmOpen(true);
+              else onCancel();
+            }}
+          >
             Cancelar
           </button>
           {!matchIsOver && (

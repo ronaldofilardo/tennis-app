@@ -5,15 +5,55 @@
 
 .athlete-header {
   margin-bottom: 12px;
+  position: relative;
 }
 
 .athlete-header-main {
   display: flex;
   align-items: center;
+  gap: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.athlete-header-left {
+  display: flex;
+  align-items: center;
   gap: 12px;
   padding: 12px 0;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Hamburger button ☰ ───────────────────────────────────── */
+
+.athlete-hamburger-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  background: var(--clr-surface-2, #1e2535);
+  color: var(--clr-text, #e8eaf0);
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: 8px;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.athlete-hamburger-btn:hover {
+  background: var(--clr-surface, #181d27);
+  border-color: var(--clr-accent, #22c55e);
+}
+
+.athlete-hamburger-btn:focus-visible {
+  outline: 2px solid var(--clr-accent, #22c55e);
+  outline-offset: 2px;
 }
 
 .athlete-avatar {

@@ -4,17 +4,17 @@
 // editarem dados do mesmo atleta simultaneamente.
 // Hoje funciona como "no-op" (server wins), mas a mecânica está pronta.
 
-import type { MatchState } from "../core/scoring/types";
+import type { MatchState } from '../core/scoring/types';
 
 /**
  * Tipos de estratégia de resolução de conflito.
  */
 export type ConflictStrategy =
-  | "SERVER_WINS" // Estado do servidor prevalece (padrão atual)
-  | "CLIENT_WINS" // Estado local prevalece
-  | "LATEST_WINS" // Timestamp mais recente prevalece
-  | "MANUAL" // Requer intervenção do usuário
-  | "MERGE"; // Tenta merge automático (futuro)
+  | 'SERVER_WINS' // Estado do servidor prevalece (padrão atual)
+  | 'CLIENT_WINS' // Estado local prevalece
+  | 'LATEST_WINS' // Timestamp mais recente prevalece
+  | 'MANUAL' // Requer intervenção do usuário
+  | 'MERGE'; // Tenta merge automático (futuro)
 
 /**
  * Resultado da resolução de conflito.
@@ -40,8 +40,7 @@ export function detectDivergentFields(
   serverState: Record<string, unknown>,
   fieldsToCheck?: string[],
 ): string[] {
-  const fields =
-    fieldsToCheck || Object.keys({ ...localState, ...serverState });
+  const fields = fieldsToCheck || Object.keys({ ...localState, ...serverState });
   const divergent: string[] = [];
 
   for (const field of fields) {
@@ -69,7 +68,7 @@ export function detectDivergentFields(
 export function resolveConflict<T extends Record<string, unknown>>(
   localState: T,
   serverState: T,
-  strategy: ConflictStrategy = "SERVER_WINS",
+  strategy: ConflictStrategy = 'SERVER_WINS',
 ): ConflictResult<T> {
   const divergentFields = detectDivergentFields(localState, serverState);
   const hadConflict = divergentFields.length > 0;
@@ -84,57 +83,54 @@ export function resolveConflict<T extends Record<string, unknown>>(
   }
 
   switch (strategy) {
-    case "SERVER_WINS":
+    case 'SERVER_WINS':
       return {
         resolvedState: serverState,
         strategy,
         hadConflict,
         divergentFields,
-        details: `Conflito resolvido: servidor prevalece. Campos: ${divergentFields.join(", ")}`,
+        details: `Conflito resolvido: servidor prevalece. Campos: ${divergentFields.join(', ')}`,
       };
 
-    case "CLIENT_WINS":
+    case 'CLIENT_WINS':
       return {
         resolvedState: localState,
         strategy,
         hadConflict,
         divergentFields,
-        details: `Conflito resolvido: cliente prevalece. Campos: ${divergentFields.join(", ")}`,
+        details: `Conflito resolvido: cliente prevalece. Campos: ${divergentFields.join(', ')}`,
       };
 
-    case "LATEST_WINS": {
-      const localTime = (localState as Record<string, unknown>)["startedAt"] as
+    case 'LATEST_WINS': {
+      const localTime = (localState as Record<string, unknown>)['startedAt'] as string | undefined;
+      const serverTime = (serverState as Record<string, unknown>)['startedAt'] as
         | string
         | undefined;
-      const serverTime = (serverState as Record<string, unknown>)[
-        "startedAt"
-      ] as string | undefined;
 
       const localTimestamp = localTime ? new Date(localTime).getTime() : 0;
       const serverTimestamp = serverTime ? new Date(serverTime).getTime() : 0;
 
-      const winner =
-        localTimestamp >= serverTimestamp ? localState : serverState;
+      const winner = localTimestamp >= serverTimestamp ? localState : serverState;
       return {
         resolvedState: winner,
         strategy,
         hadConflict,
         divergentFields,
-        details: `Conflito resolvido: timestamp mais recente prevalece (${localTimestamp >= serverTimestamp ? "local" : "server"}).`,
+        details: `Conflito resolvido: timestamp mais recente prevalece (${localTimestamp >= serverTimestamp ? 'local' : 'server'}).`,
       };
     }
 
-    case "MANUAL":
+    case 'MANUAL':
       // Em modo MANUAL, retorna serverState mas marca para revisão
       return {
         resolvedState: serverState,
         strategy,
         hadConflict,
         divergentFields,
-        details: `Conflito requer resolução manual. Campos divergentes: ${divergentFields.join(", ")}`,
+        details: `Conflito requer resolução manual. Campos divergentes: ${divergentFields.join(', ')}`,
       };
 
-    case "MERGE":
+    case 'MERGE':
       // Merge simples: usa server como base, mantém campos exclusivos do local
       const merged = { ...serverState };
       for (const field of divergentFields) {
@@ -155,7 +151,7 @@ export function resolveConflict<T extends Record<string, unknown>>(
     default:
       return {
         resolvedState: serverState,
-        strategy: "SERVER_WINS",
+        strategy: 'SERVER_WINS',
         hadConflict,
         divergentFields,
         details: `Estratégia desconhecida '${strategy}'. Fallback para SERVER_WINS.`,
@@ -170,7 +166,7 @@ export function resolveConflict<T extends Record<string, unknown>>(
 export function resolveMatchConflict(
   localState: MatchState,
   serverState: MatchState,
-  strategy: ConflictStrategy = "SERVER_WINS",
+  strategy: ConflictStrategy = 'SERVER_WINS',
 ): ConflictResult<MatchState> {
   return resolveConflict(
     localState as unknown as Record<string, unknown>,
@@ -178,5 +174,3 @@ export function resolveMatchConflict(
     strategy,
   ) as unknown as ConflictResult<MatchState>;
 }
-
-export default resolveConflict;

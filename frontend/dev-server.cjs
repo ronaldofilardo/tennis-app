@@ -85,6 +85,12 @@ const MATCH_SELECT_FULL = {
   completedSets: true,
   createdAt: true,
   updatedAt: true,
+  scheduledAt: true,
+  venueId: true,
+  createdByUserId: true,
+  visibility: true,
+  openForAnnotation: true,
+  venue: { select: { id: true, name: true, address: true, city: true } },
 };
 
 // ─── Função auxiliar: formata partida do banco para a API ────────────────────
@@ -123,6 +129,12 @@ function formatMatchFromDB(match) {
     createdAt: match.createdAt ? match.createdAt.toISOString() : null,
     updatedAt: match.updatedAt ? match.updatedAt.toISOString() : null,
     visibleTo: matchState?.visibleTo || 'both',
+    scheduledAt: match.scheduledAt ? match.scheduledAt.toISOString() : null,
+    venueId: match.venueId || null,
+    venue: match.venue || null,
+    createdByUserId: match.createdByUserId || null,
+    visibility: match.visibility || 'PLAYERS_ONLY',
+    openForAnnotation: match.openForAnnotation ?? false,
   };
 }
 
@@ -1546,6 +1558,250 @@ app.get('/api/matches/visible', async (req, res) => {
   }
 });
 
+// Partidas abertas para anotação (dashboard widget)
+app.get('/api/matches/open-for-annotation', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+    const matches = await prisma.match.findMany({
+      where: { visibility: 'PUBLIC', openForAnnotation: true, status: { not: 'FINISHED' } },
+      select: {
+        id: true,
+        sportType: true,
+        format: true,
+        playerP1: true,
+        playerP2: true,
+        status: true,
+        scheduledAt: true,
+        visibility: true,
+        club: { select: { id: true, name: true, slug: true } },
+        _count: { select: { annotationSessions: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+    });
+    res.json(matches);
+  } catch (error) {
+    console.error('[GET /api/matches/open-for-annotation] Erro:', error);
+    res.status(500).json({ error: 'Erro ao buscar partidas' });
+  }
+});
+
+// Descobrir partidas públicas abertas para anotação (página Descobrir)
+app.get('/api/matches/discover', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+    const { sportType, clubId, dateFrom, dateTo } = req.query;
+    const where = {
+      visibility: 'PUBLIC',
+      openForAnnotation: true,
+      status: { not: 'FINISHED' },
+      ...(sportType ? { sportType } : {}),
+      ...(clubId ? { clubId } : {}),
+      ...(dateFrom || dateTo
+        ? {
+            scheduledAt: {
+              ...(dateFrom ? { gte: new Date(dateFrom) } : {}),
+              ...(dateTo ? { lte: new Date(dateTo) } : {}),
+            },
+          }
+        : {}),
+    };
+    const matches = await prisma.match.findMany({
+      where,
+      select: {
+        id: true,
+        sportType: true,
+        format: true,
+        courtType: true,
+        scheduledAt: true,
+        status: true,
+        visibility: true,
+        openForAnnotation: true,
+        playerP1: true,
+        playerP2: true,
+        player1: { select: { id: true, name: true, globalId: true, clubId: true } },
+        player2: { select: { id: true, name: true, globalId: true, clubId: true } },
+        club: { select: { id: true, name: true, slug: true } },
+        homeClub: { select: { id: true, name: true, slug: true } },
+        awayClub: { select: { id: true, name: true, slug: true } },
+        createdBy: { select: { id: true, name: true } },
+        _count: { select: { annotationSessions: true } },
+      },
+      orderBy: [{ scheduledAt: 'asc' }, { createdAt: 'desc' }],
+      take: 50,
+    });
+    res.json(matches);
+  } catch (error) {
+    console.error('[GET /api/matches/discover] Erro:', error);
+    res.status(500).json({ error: 'Erro ao descobrir partidas' });
+  }
+});
+
+// Shares pendentes do usuário logado
+app.get('/api/matches/my-shares', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+    const shares = await prisma.matchDashboardShare.findMany({
+      where: {
+        status: 'PENDING',
+        OR: [{ targetUserId: ctx.userId }, ...(ctx.clubId ? [{ targetClubId: ctx.clubId }] : [])],
+      },
+      include: {
+        match: {
+          select: {
+            id: true,
+            sportType: true,
+            playerP1: true,
+            playerP2: true,
+            status: true,
+            scheduledAt: true,
+            player1: { select: { id: true, name: true } },
+            player2: { select: { id: true, name: true } },
+            club: { select: { id: true, name: true } },
+          },
+        },
+      },
+      orderBy: { notifiedAt: 'desc' },
+    });
+    res.json(shares);
+  } catch (error) {
+    console.error('[GET /api/matches/my-shares] Erro:', error);
+    res.status(500).json({ error: 'Erro ao buscar shares' });
+  }
+});
+
+// Sessões de anotação: GET lista, POST cria/retorna existente
+app.get('/api/matches/:id/sessions', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+    const sessions = await prisma.matchAnnotationSession.findMany({
+      where: { matchId: req.params.id },
+      select: { id: true, annotatorUserId: true, isActive: true, startedAt: true, endedAt: true },
+      orderBy: { startedAt: 'asc' },
+    });
+    res.json(sessions);
+  } catch (error) {
+    console.error(`[GET /api/matches/${req.params.id}/sessions] Erro:`, error);
+    res.status(500).json({ error: 'Erro ao buscar sessões' });
+  }
+});
+
+app.post('/api/matches/:id/sessions', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+    // Idempotente: retorna sessão ativa existente se já houver
+    const existing = await prisma.matchAnnotationSession.findFirst({
+      where: { matchId: req.params.id, annotatorUserId: ctx.userId, isActive: true },
+    });
+    if (existing) return res.status(200).json(existing);
+    const session = await prisma.matchAnnotationSession.create({
+      data: {
+        matchId: req.params.id,
+        annotatorUserId: ctx.userId,
+        isActive: true,
+        startedAt: new Date(),
+      },
+    });
+    res.status(201).json(session);
+  } catch (error) {
+    console.error(`[POST /api/matches/${req.params.id}/sessions] Erro:`, error);
+    res.status(500).json({ error: 'Erro ao criar sessão' });
+  }
+});
+
+app.patch('/api/matches/:id/sessions/:sessionId', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+    const { finalState } = req.body;
+    const updated = await prisma.matchAnnotationSession.update({
+      where: { id: req.params.sessionId },
+      data: {
+        endedAt: new Date(),
+        isActive: false,
+        ...(finalState ? { finalStateSnapshot: JSON.stringify(finalState) } : {}),
+      },
+    });
+    res.json(updated);
+  } catch (error) {
+    console.error(
+      `[PATCH /api/matches/${req.params.id}/sessions/${req.params.sessionId}] Erro:`,
+      error,
+    );
+    res.status(500).json({ error: 'Erro ao encerrar sessão' });
+  }
+});
+
+// Respond to a dashboard share (accept/reject)
+app.patch('/api/matches/:id/share/:shareId', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+    const { status } = req.body;
+    if (!['ACCEPTED', 'REJECTED'].includes(status)) {
+      return res.status(400).json({ error: 'Status inválido' });
+    }
+    const updated = await prisma.matchDashboardShare.update({
+      where: { id: req.params.shareId },
+      data: { status, respondedAt: new Date() },
+    });
+    res.json(updated);
+  } catch (error) {
+    console.error(`[PATCH /api/matches/${req.params.id}/share/${req.params.shareId}] Erro:`, error);
+    res.status(500).json({ error: 'Erro ao responder share' });
+  }
+});
+
+// ─── Venues ──────────────────────────────────────────────────────────────────
+
+// GET /api/venues — lista locais (busca opcional ?q=nome)
+app.get('/api/venues', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+    const q = typeof req.query.q === 'string' ? req.query.q.trim() : '';
+    const venues = await prisma.venue.findMany({
+      where: q ? { name: { contains: q, mode: 'insensitive' } } : undefined,
+      orderBy: { name: 'asc' },
+      take: 20,
+      select: { id: true, name: true, address: true, city: true },
+    });
+    res.json(venues);
+  } catch (error) {
+    console.error('[GET /api/venues] Erro:', error);
+    res.status(500).json({ error: 'Erro ao buscar locais' });
+  }
+});
+
+// POST /api/venues — cria novo local
+app.post('/api/venues', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+    const { name, address, city } = req.body || {};
+    if (!name || !name.trim())
+      return res.status(400).json({ error: 'O nome do local é obrigatório' });
+    const venue = await prisma.venue.create({
+      data: {
+        name: name.trim(),
+        address: address?.trim() || null,
+        city: city?.trim() || null,
+        createdByUserId: ctx.userId,
+      },
+      select: { id: true, name: true, address: true, city: true },
+    });
+    res.status(201).json(venue);
+  } catch (error) {
+    console.error('[POST /api/venues] Erro:', error);
+    res.status(500).json({ error: 'Erro ao criar local' });
+  }
+});
+
 // Listar todas as partidas — delega ao matchService.js
 app.get('/api/matches', async (req, res) => {
   try {
@@ -1640,6 +1896,332 @@ app.patch('/api/matches/:id/state', async (req, res) => {
   } catch (error) {
     console.error(`[PATCH /api/matches/${req.params.id}/state] Erro:`, error);
     res.status(500).json({ error: 'Erro ao atualizar estado da partida' });
+  }
+});
+
+// Partidas concluídas do usuário (criador ou jogador)
+app.get('/api/matches/my-completed', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+
+    const profile = await prisma.athleteProfile.findFirst({ where: { userId: ctx.userId } });
+
+    const matches = await prisma.match.findMany({
+      where: {
+        status: 'FINISHED',
+        OR: [
+          { createdByUserId: ctx.userId },
+          ...(profile ? [{ player1Id: profile.id }, { player2Id: profile.id }] : []),
+          { playersEmails: { has: ctx.email } },
+        ],
+      },
+      select: {
+        id: true,
+        sportType: true,
+        format: true,
+        courtType: true,
+        playerP1: true,
+        playerP2: true,
+        scheduledAt: true,
+        createdAt: true,
+        player1: { select: { id: true, name: true } },
+        player2: { select: { id: true, name: true } },
+        _count: { select: { annotationSessions: { where: { status: 'COMPLETED' } } } },
+      },
+      orderBy: { updatedAt: 'desc' },
+      take: 30,
+    });
+
+    const result = matches.map((m) => ({
+      id: m.id,
+      sportType: m.sportType,
+      format: m.format,
+      courtType: m.courtType,
+      playerP1: m.playerP1,
+      playerP2: m.playerP2,
+      scheduledAt: m.scheduledAt ? m.scheduledAt.toISOString() : null,
+      createdAt: m.createdAt ? m.createdAt.toISOString() : null,
+      player1: m.player1,
+      player2: m.player2,
+      annotationCount: m._count.annotationSessions,
+    }));
+
+    res.json(result);
+  } catch (error) {
+    console.error('[GET /api/matches/my-completed] Erro:', error);
+    res.status(500).json({ error: 'Erro ao buscar partidas concluídas' });
+  }
+});
+
+// Partidas anotadas onde o usuário logado é jogador
+app.get('/api/matches/annotated-for-me', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+
+    const profile = await prisma.athleteProfile.findFirst({ where: { userId: ctx.userId } });
+
+    const matches = await prisma.match.findMany({
+      where: {
+        annotationSessions: { some: { status: 'COMPLETED' } },
+        OR: [
+          ...(profile ? [{ player1Id: profile.id }, { player2Id: profile.id }] : []),
+          { playersEmails: { has: ctx.email } },
+          { apontadorEmail: ctx.email },
+          { dashboardShares: { some: { targetUserId: ctx.userId } } },
+        ],
+      },
+      select: {
+        id: true,
+        sportType: true,
+        format: true,
+        courtType: true,
+        playerP1: true,
+        playerP2: true,
+        scheduledAt: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+        player1: { select: { id: true, name: true } },
+        player2: { select: { id: true, name: true } },
+        club: { select: { id: true, name: true } },
+        annotationSessions: {
+          where: { status: 'COMPLETED' },
+          select: {
+            id: true,
+            annotatorUserId: true,
+            endedAt: true,
+            finalStateSnapshot: true,
+            annotator: { select: { id: true, name: true } },
+          },
+          orderBy: { endedAt: 'desc' },
+        },
+        dashboardShares: {
+          where: { targetUserId: ctx.userId },
+          orderBy: { notifiedAt: 'desc' },
+          take: 1,
+        },
+      },
+      orderBy: { updatedAt: 'desc' },
+      take: 30,
+    });
+
+    const enriched = matches.map((m) => ({
+      id: m.id,
+      sportType: m.sportType,
+      format: m.format,
+      courtType: m.courtType,
+      playerP1: m.playerP1,
+      playerP2: m.playerP2,
+      scheduledAt: m.scheduledAt,
+      status: m.status,
+      createdAt: m.createdAt,
+      player1: m.player1,
+      player2: m.player2,
+      club: m.club,
+      completedAnnotations: m.annotationSessions.map((s) => ({
+        id: s.id,
+        annotatorId: s.annotatorUserId,
+        annotatorName: s.annotator?.name ?? 'Anotador',
+        endedAt: s.endedAt,
+        hasFinalState: !!s.finalStateSnapshot,
+      })),
+      comparisonAvailable: m.annotationSessions.length >= 2,
+      myShare: m.dashboardShares[0] ?? null,
+      isNew: !m.dashboardShares[0] || m.dashboardShares[0].status === 'PENDING',
+    }));
+
+    res.json(enriched);
+  } catch (error) {
+    console.error('[GET /api/matches/annotated-for-me] Erro:', error);
+    res.status(500).json({ error: 'Erro ao buscar partidas anotadas para o usuário' });
+  }
+});
+
+// Partidas que o usuário logado anotou
+app.get('/api/matches/annotated-by-me', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+
+    const sessions = await prisma.matchAnnotationSession.findMany({
+      where: { annotatorUserId: ctx.userId, status: 'COMPLETED' },
+      include: {
+        match: {
+          select: {
+            id: true,
+            sportType: true,
+            format: true,
+            courtType: true,
+            playerP1: true,
+            playerP2: true,
+            scheduledAt: true,
+            status: true,
+            createdAt: true,
+            player1: { select: { id: true, name: true } },
+            player2: { select: { id: true, name: true } },
+            club: { select: { id: true, name: true } },
+            annotationSessions: {
+              where: { status: 'COMPLETED' },
+              select: {
+                id: true,
+                annotatorUserId: true,
+                endedAt: true,
+                annotator: { select: { id: true, name: true } },
+              },
+            },
+          },
+        },
+      },
+      orderBy: { endedAt: 'desc' },
+      take: 30,
+    });
+
+    const result = sessions.map((s) => ({
+      ...s.match,
+      mySession: {
+        id: s.id,
+        endedAt: s.endedAt,
+        hasFinalState: !!s.finalStateSnapshot,
+      },
+      completedAnnotations: s.match.annotationSessions.map((sa) => ({
+        id: sa.id,
+        annotatorId: sa.annotatorUserId,
+        annotatorName: sa.annotator?.name ?? 'Anotador',
+        endedAt: sa.endedAt,
+      })),
+      comparisonAvailable: s.match.annotationSessions.length >= 2,
+    }));
+
+    res.json(result);
+  } catch (error) {
+    console.error('[GET /api/matches/annotated-by-me] Erro:', error);
+    res.status(500).json({ error: 'Erro ao buscar anotações realizadas' });
+  }
+});
+
+// Dados de relatório de uma sessão específica
+app.get('/api/matches/:id/sessions/:sessionId/report-data', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+
+    const session = await prisma.matchAnnotationSession.findUnique({
+      where: { id: req.params.sessionId },
+      include: {
+        match: {
+          select: {
+            id: true,
+            sportType: true,
+            format: true,
+            courtType: true,
+            playerP1: true,
+            playerP2: true,
+            scheduledAt: true,
+            player1: { select: { name: true } },
+            player2: { select: { name: true } },
+            club: { select: { name: true } },
+          },
+        },
+        annotator: { select: { id: true, name: true } },
+      },
+    });
+
+    if (!session || session.matchId !== req.params.id) {
+      return res.status(404).json({ error: 'Sessão não encontrada' });
+    }
+
+    res.json({
+      session: {
+        id: session.id,
+        annotatorName: session.annotator?.name ?? 'Anotador',
+        endedAt: session.endedAt,
+        finalStateSnapshot: session.finalStateSnapshot
+          ? JSON.parse(session.finalStateSnapshot)
+          : null,
+      },
+      match: session.match,
+    });
+  } catch (error) {
+    console.error(
+      `[GET /api/matches/${req.params.id}/sessions/${req.params.sessionId}/report-data] Erro:`,
+      error,
+    );
+    res.status(500).json({ error: 'Erro ao buscar dados do relatório' });
+  }
+});
+
+// PATCH /api/matches/:id/metadata — dados editáveis pelo criador da partida
+app.patch('/api/matches/:id/metadata', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+    const match = await prisma.match.findUnique({
+      where: { id: req.params.id },
+      select: { id: true, createdByUserId: true },
+    });
+    if (!match) return res.status(404).json({ error: 'Partida não encontrada' });
+    if (match.createdByUserId !== ctx.userId && ctx.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'Apenas o criador da partida pode editar os dados' });
+    }
+    const { scheduledAt, venueId, nickname, visibility, openForAnnotation } = req.body || {};
+    const data = {};
+    if (scheduledAt !== undefined) data.scheduledAt = scheduledAt ? new Date(scheduledAt) : null;
+    if (venueId !== undefined) data.venueId = venueId || null;
+    if (nickname !== undefined) data.nickname = nickname || null;
+    if (visibility !== undefined) data.visibility = visibility;
+    if (openForAnnotation !== undefined) data.openForAnnotation = Boolean(openForAnnotation);
+    const updated = await prisma.match.update({
+      where: { id: req.params.id },
+      data,
+      select: MATCH_SELECT_FULL,
+    });
+    res.json(formatMatchFromDB(updated));
+  } catch (error) {
+    console.error(`[PATCH /api/matches/${req.params.id}/metadata] Erro:`, error);
+    res.status(500).json({ error: 'Erro ao atualizar dados da partida' });
+  }
+});
+
+// POST /api/matches/:id/claim — salva partida no histórico do usuário logado
+app.post('/api/matches/:id/claim', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+
+    const match = await prisma.match.findUnique({
+      where: { id: req.params.id },
+      select: { id: true },
+    });
+    if (!match) return res.status(404).json({ error: 'Partida não encontrada' });
+
+    const existing = await prisma.matchDashboardShare.findFirst({
+      where: { matchId: req.params.id, targetUserId: ctx.userId },
+    });
+
+    let share;
+    if (existing) {
+      share = await prisma.matchDashboardShare.update({
+        where: { id: existing.id },
+        data: { status: 'ACCEPTED', respondedAt: new Date() },
+      });
+    } else {
+      share = await prisma.matchDashboardShare.create({
+        data: {
+          matchId: req.params.id,
+          targetUserId: ctx.userId,
+          shareType: 'ANNOTATION',
+          status: 'ACCEPTED',
+          respondedAt: new Date(),
+        },
+      });
+    }
+
+    res.json({ ok: true, shareId: share.id, status: share.status });
+  } catch (error) {
+    console.error(`[POST /api/matches/${req.params.id}/claim] Erro:`, error);
+    res.status(500).json({ error: 'Erro ao salvar partida no histórico' });
   }
 });
 

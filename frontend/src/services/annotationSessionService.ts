@@ -1,8 +1,9 @@
 // frontend/src/services/annotationSessionService.ts
 // Serviço para gerenciar sessões de anotação de partidas.
-// Resolve problema C4 (split-brain placar) do plano arquitetural.
+// Multi-anotador: cada usuário tem sua própria sessão independente por partida.
+// O "lock" exclusivo foi removido — múltiplos anotadores podem anotar simultaneamente.
 
-import httpClient from "../config/httpClient";
+import { httpClient } from '../config/httpClient';
 
 export interface AnnotationSession {
   id: string;
@@ -11,7 +12,9 @@ export interface AnnotationSession {
   startedAt: string;
   endedAt: string | null;
   matchStateSnapshot: string | null;
+  finalStateSnapshot: string | null;
   isActive: boolean;
+  status: 'IN_PROGRESS' | 'COMPLETED' | 'ABANDONED';
   createdAt: string;
   annotator: { id: string; name: string; email: string };
   endorsements: Array<{
@@ -22,42 +25,40 @@ export interface AnnotationSession {
   }>;
 }
 
-export async function listSessions(
-  matchId: string,
-): Promise<AnnotationSession[]> {
+export async function listSessions(matchId: string): Promise<AnnotationSession[]> {
   const response = await httpClient.get(`/matches/${matchId}/sessions`);
-  if (!response.ok) throw new Error("Failed to list sessions");
+  if (!response.ok) throw new Error('Failed to list sessions');
   return response.data as AnnotationSession[];
 }
 
-export async function startSession(
-  matchId: string,
-): Promise<AnnotationSession> {
+/**
+ * Inicia (ou retorna) una sessão ativa para o usuário logado.
+ * O backend não desativa sessões de outros anotadores.
+ */
+export async function startSession(matchId: string): Promise<AnnotationSession> {
   const response = await httpClient.post(`/matches/${matchId}/sessions`, {});
-  if (!response.ok) throw new Error("Failed to start session");
+  if (!response.ok) throw new Error('Failed to start session');
   return response.data as AnnotationSession;
 }
 
+/**
+ * Encerra a sessão e salva o snapshot final para comparativo.
+ */
 export async function endSession(
   matchId: string,
   sessionId: string,
+  finalState?: unknown,
 ): Promise<AnnotationSession> {
   const response = await httpClient.patch(
     `/matches/${matchId}/sessions/${sessionId}`,
-    {},
+    finalState ? { finalState } : {},
   );
-  if (!response.ok) throw new Error("Failed to end session");
+  if (!response.ok) throw new Error('Failed to end session');
   return response.data as AnnotationSession;
 }
 
-export async function endorseSession(
-  matchId: string,
-  sessionId: string,
-): Promise<unknown> {
-  const response = await httpClient.post(
-    `/matches/${matchId}/sessions/${sessionId}/endorse`,
-    {},
-  );
-  if (!response.ok) throw new Error("Failed to endorse session");
+export async function endorseSession(matchId: string, sessionId: string): Promise<unknown> {
+  const response = await httpClient.post(`/matches/${matchId}/sessions/${sessionId}/endorse`, {});
+  if (!response.ok) throw new Error('Failed to endorse session');
   return response.data;
 }

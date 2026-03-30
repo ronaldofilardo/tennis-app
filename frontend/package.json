@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "prisma generate && tsc && node ./node_modules/vite/bin/vite.js build",
+    "build": "prisma generate && tsc && tsc -p tsconfig.server.json && tsc -p tsconfig.server.emit.json && node ./node_modules/vite/bin/vite.js build",
+    "build:server": "tsc -p tsconfig.server.emit.json",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\"",
@@ -24,6 +25,7 @@
     "db:seed": "node prisma/seed.js",
     "migrate:roles": "node scripts/migrate-roles.js",
     "dev-server": "node dev-server.cjs",
+    "dev:full": "concurrently --names \"VITE,API\" --prefix-colors \"cyan,yellow\" --kill-others-on-fail \"vite\" \"node dev-server.cjs\"",
     "test-server": "node test-server.cjs",
     "test:mutation": "stryker run"
   },

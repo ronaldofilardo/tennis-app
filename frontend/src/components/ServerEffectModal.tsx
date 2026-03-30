@@ -1,8 +1,11 @@
 // frontend/src/components/ServerEffectModal.tsx
 
-import React, { useState, useEffect } from "react";
-import type { Player } from "../core/scoring/types";
-import "./ServerEffectModal.css";
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import type { Player } from '../core/scoring/types';
+import useConfirmClose from '../hooks/useConfirmClose';
+import ConfirmCloseDialog from './ConfirmCloseDialog';
+import './ServerEffectModal.css';
 
 interface ServerEffectModalProps {
   isOpen: boolean;
@@ -11,11 +14,11 @@ interface ServerEffectModalProps {
   onCancel: () => void;
   fontScale?: number;
   /** "winner" = modal de Ace/sacada (padrão) | "error" = modal de erro Out/Net */
-  context?: "winner" | "error";
+  context?: 'winner' | 'error';
   /** Tipo do erro — presente quando context="error" */
-  errorType?: "out" | "net";
+  errorType?: 'out' | 'net';
   /** Qual saque errou — presente quando context="error" */
-  serveStep?: "first" | "second";
+  serveStep?: 'first' | 'second';
 }
 
 const ServerEffectModal: React.FC<ServerEffectModalProps> = ({
@@ -24,9 +27,9 @@ const ServerEffectModal: React.FC<ServerEffectModalProps> = ({
   onConfirm,
   onCancel,
   fontScale = 1,
-  context = "winner",
+  context = 'winner',
   errorType,
-  serveStep = "first",
+  serveStep = 'first',
 }) => {
   const [efeito, setEfeito] = useState<string | undefined>();
   const [direcao, setDirecao] = useState<string | undefined>();
@@ -42,28 +45,35 @@ const ServerEffectModal: React.FC<ServerEffectModalProps> = ({
     onConfirm(efeito, direcao);
   };
 
-  const efeitosFixos = ["TopSpin", "Slice", "Flat"];
-  const direcoesFixas = ["Aberto", "Centro", "Fechado"];
+  const efeitosFixos = ['TopSpin', 'Slice', 'Flat'];
+  const direcoesFixas = ['Aberto', 'Centro', 'Fechado'];
 
-  const isError = context === "error";
-  const errorLabel = errorType === "net" ? "Net" : "Out";
-  const serveLabel = serveStep === "second" ? "2º Saque" : "1º Saque";
+  const isError = context === 'error';
+  const errorLabel = errorType === 'net' ? 'Net' : 'Out';
+  const serveLabel = serveStep === 'second' ? '2º Saque' : '1º Saque';
 
   const confirmLabel = isError
-    ? serveStep === "second"
-      ? "Registrar Dupla Falta"
-      : "Registrar e Continuar"
-    : "Confirmar Ponto";
+    ? serveStep === 'second'
+      ? 'Registrar Dupla Falta'
+      : 'Registrar e Continuar'
+    : 'Confirmar Ponto';
+
+  const isFormDirty = efeito !== undefined || direcao !== undefined;
+  const { isConfirmOpen, handleOverlayClick, confirmClose, cancelClose } = useConfirmClose(
+    isFormDirty,
+    onCancel,
+  );
 
   if (!isOpen) return null;
 
-  return (
-    <div className="server-effect-modal-overlay" onClick={onCancel}>
+  return createPortal(
+    <div className="server-effect-modal-overlay" onClick={handleOverlayClick}>
+      <ConfirmCloseDialog isOpen={isConfirmOpen} onConfirm={confirmClose} onCancel={cancelClose} />
       <div
-        className={`server-effect-modal${isError ? " server-effect-modal--error" : ""}`}
+        className={`server-effect-modal${isError ? 'server-effect-modal--error' : ''}`}
         data-testid="server-effect-modal"
         onClick={(e) => e.stopPropagation()}
-        style={{ "--sb-scale": String(fontScale) } as React.CSSProperties}
+        style={{ '--sb-scale': String(fontScale) } as React.CSSProperties}
       >
         <div className="modal-header">
           {isError ? (
@@ -77,10 +87,8 @@ const ServerEffectModal: React.FC<ServerEffectModalProps> = ({
             <>
               <h3>🎾 Efeito do Saque</h3>
               <div className="winner-display">
-                Ponto para:{" "}
-                <strong>
-                  {playerInFocus === "PLAYER_1" ? "Jogador 1" : "Jogador 2"}
-                </strong>
+                Ponto para:{' '}
+                <strong>{playerInFocus === 'PLAYER_1' ? 'Jogador 1' : 'Jogador 2'}</strong>
               </div>
             </>
           )}
@@ -92,7 +100,7 @@ const ServerEffectModal: React.FC<ServerEffectModalProps> = ({
               {efeitosFixos.map((e) => (
                 <button
                   key={e}
-                  className={efeito === e ? "active" : ""}
+                  className={efeito === e ? 'active' : ''}
                   onClick={() => setEfeito(e)}
                 >
                   {e}
@@ -107,7 +115,7 @@ const ServerEffectModal: React.FC<ServerEffectModalProps> = ({
               {direcoesFixas.map((d) => (
                 <button
                   key={d}
-                  className={direcao === d ? "active" : ""}
+                  className={direcao === d ? 'active' : ''}
                   onClick={() => setDirecao(d)}
                 >
                   {d}
@@ -117,23 +125,16 @@ const ServerEffectModal: React.FC<ServerEffectModalProps> = ({
           </div>
         </div>
         <div className="modal-actions">
-          <button
-            className="confirm-btn"
-            onClick={handleConfirm}
-            aria-label="Confirm ServerEffect"
-          >
+          <button className="confirm-btn" onClick={handleConfirm} aria-label="Confirm ServerEffect">
             {confirmLabel}
           </button>
-          <button
-            className="cancel-btn"
-            onClick={onCancel}
-            aria-label="Cancel ServerEffect"
-          >
+          <button className="cancel-btn" onClick={onCancel} aria-label="Cancel ServerEffect">
             Cancelar
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 

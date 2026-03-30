@@ -1,24 +1,32 @@
-import React, { useState, useMemo, useCallback } from "react";
-import MatchStatsModal from "../components/MatchStatsModal";
-import type { MatchStatsData as MatchStatsModalData } from "../components/MatchStatsModal";
-import AthleteHeader from "../components/AthleteHeader";
-import type { AthleteStats } from "../components/AthleteHeader";
-import BottomTabBar from "../components/BottomTabBar";
-import type { TabId } from "../components/BottomTabBar";
-import FloatingActionButton from "../components/FloatingActionButton";
-import FilterChips from "../components/FilterChips";
-import type { MatchFilter } from "../components/FilterChips";
-import LiveMatchesCarousel from "../components/LiveMatchesCarousel";
-import PendingInvitesBanner from "../components/PendingInvitesBanner";
-import { ClubRankings } from "../components/ClubRankings";
-import OpenMatchCard from "../components/OpenMatchCard";
-import type { OpenMatch } from "../components/OpenMatchCard";
-import { useAuth } from "../contexts/AuthContext";
-import { API_URL } from "../config/api";
-import { resolvePlayerName } from "../data/players";
-import { useToast } from "../components/Toast";
-import { createLogger } from "../services/logger";
-import "./Dashboard.css";
+import React, { useReducer, useMemo, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import MatchStatsModal from '../components/MatchStatsModal';
+import AthleteHeader from '../components/AthleteHeader';
+
+import type { DashboardView } from '../components/HamburgerMenuDropdown';
+import FilterChips from '../components/FilterChips';
+import type { MatchFilter } from '../components/FilterChips';
+import LiveMatchesCarousel from '../components/LiveMatchesCarousel';
+import PendingInvitesBanner from '../components/PendingInvitesBanner';
+import NewMatchMenu from '../components/NewMatchMenu';
+import '../components/NewMatchMenu.css';
+import { useAuth } from '../contexts/AuthContext';
+import { httpClient } from '../config/httpClient';
+
+import { useToast } from '../components/Toast';
+
+import CompletedMatchCard from '../components/CompletedMatchCard';
+import EditMatchModal from '../components/EditMatchModal';
+import type { EditableMatch } from '../components/EditMatchModal';
+import DashboardMatchCard from '../components/dashboard/DashboardMatchCard';
+import DashboardProfilePanel from '../components/dashboard/DashboardProfilePanel';
+import DashboardAnnotatedSection from '../components/dashboard/DashboardAnnotatedSection';
+import DashboardOpenMatchesSection from '../components/dashboard/DashboardOpenMatchesSection';
+import DashboardEmptyStates from '../components/dashboard/DashboardEmptyStates';
+import { useDashboardData } from '../hooks/useDashboardData';
+import { useDashboardMatchActions } from '../hooks/useDashboardMatchActions';
+import { computeAthleteStats } from './dashboardHelpers';
+import './Dashboard.css';
 
 type DashboardMatchPlayers = { p1: string; p2: string };
 type DashboardMatch = {
@@ -27,7 +35,7 @@ type DashboardMatch = {
   sportType?: string;
   sport?: string;
   format?: string;
-  courtType?: "GRASS" | "CLAY" | "HARD";
+  courtType?: 'GRASS' | 'CLAY' | 'HARD';
   nickname?: string | null;
   status?: string;
   score?: string;
@@ -37,11 +45,20 @@ type DashboardMatch = {
     winner: string;
   }>;
   visibleTo?: string;
+  // Campos adicionados para edição
+  createdByUserId?: string | null;
+  scheduledAt?: string | null;
+  venueId?: string | null;
+  venue?: { id: string; name: string; city?: string | null } | null;
+  visibility?: string;
+  openForAnnotation?: boolean;
+  matchState?: Record<string, unknown> | null;
 };
 
 interface DashboardProps {
   onNewMatchClick: () => void;
-  onContinueMatch?: (match: DashboardMatch, initialState?: any) => void;
+  onDiscoverMatches?: () => void;
+  onContinueMatch?: (match: DashboardMatch, initialState?: unknown) => void;
   onStartMatch?: (match: DashboardMatch) => void;
   matches: DashboardMatch[];
   loading: boolean;
@@ -50,8 +67,70 @@ interface DashboardProps {
   players?: Array<{ id: string; email?: string; name: string }>;
 }
 
+// ── Dashboard UI State Reducer ────────────────────────────────────────────────
+interface DashboardUIState {
+  isNewMatchMenuOpen: boolean;
+  isHamburgerOpen: boolean;
+  activeDashboardView: DashboardView;
+  activeFilter: MatchFilter;
+  editingMatch: DashboardMatch | null;
+  localMatchOverrides: Record<string, Partial<DashboardMatch>>;
+}
+
+type DashboardUIAction =
+  | { type: 'TOGGLE_NEW_MATCH_MENU' }
+  | { type: 'CLOSE_NEW_MATCH_MENU' }
+  | { type: 'TOGGLE_HAMBURGER' }
+  | { type: 'CLOSE_HAMBURGER' }
+  | { type: 'SELECT_VIEW'; view: DashboardView }
+  | { type: 'OPEN_NEW_MATCH_FROM_MENU' }
+  | { type: 'SET_FILTER'; filter: MatchFilter }
+  | { type: 'SET_EDITING_MATCH'; match: DashboardMatch | null }
+  | { type: 'UPDATE_MATCH_OVERRIDE'; matchId: string; overrides: Partial<DashboardMatch> };
+
+function dashboardUIReducer(state: DashboardUIState, action: DashboardUIAction): DashboardUIState {
+  switch (action.type) {
+    case 'TOGGLE_NEW_MATCH_MENU':
+      return { ...state, isNewMatchMenuOpen: !state.isNewMatchMenuOpen };
+    case 'CLOSE_NEW_MATCH_MENU':
+      return { ...state, isNewMatchMenuOpen: false };
+    case 'TOGGLE_HAMBURGER':
+      return { ...state, isHamburgerOpen: !state.isHamburgerOpen };
+    case 'CLOSE_HAMBURGER':
+      return { ...state, isHamburgerOpen: false };
+    case 'SELECT_VIEW':
+      return { ...state, activeDashboardView: action.view, isHamburgerOpen: false };
+    case 'OPEN_NEW_MATCH_FROM_MENU':
+      return { ...state, isHamburgerOpen: false, isNewMatchMenuOpen: true };
+    case 'SET_FILTER':
+      return { ...state, activeFilter: action.filter };
+    case 'SET_EDITING_MATCH':
+      return { ...state, editingMatch: action.match };
+    case 'UPDATE_MATCH_OVERRIDE':
+      return {
+        ...state,
+        localMatchOverrides: {
+          ...state.localMatchOverrides,
+          [action.matchId]: action.overrides,
+        },
+      };
+    default:
+      return state;
+  }
+}
+
+const initialDashboardUIState: DashboardUIState = {
+  isNewMatchMenuOpen: false,
+  isHamburgerOpen: false,
+  activeDashboardView: 'none',
+  activeFilter: 'all',
+  editingMatch: null,
+  localMatchOverrides: {},
+};
+
 const Dashboard: React.FC<DashboardProps> = ({
   onNewMatchClick,
+  onDiscoverMatches,
   onContinueMatch,
   onStartMatch,
   matches,
@@ -61,176 +140,116 @@ const Dashboard: React.FC<DashboardProps> = ({
 }) => {
   // AREA 4 & 7: Toast e Logger
   const toast = useToast();
-  const dashLog = createLogger("Dashboard");
-  const { currentUser: authUser } = useAuth();
+  const navigate = useNavigate();
+  const { currentUser: authUser, logout, switchClub } = useAuth();
   const activeClubId = authUser?.activeClubId ?? null;
-  const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
-  const [selectedMatch, setSelectedMatch] = useState<DashboardMatch | null>(
-    null,
-  );
-  const [matchStats, setMatchStats] = useState<MatchStatsModalData | null>(
-    null,
-  );
-  const [loadingMatchId, setLoadingMatchId] = useState<string | number | null>(
-    null,
-  );
-  const [matchStates, setMatchStates] = useState<Record<string, any>>({});
-  const [openMatches, setOpenMatches] = useState<OpenMatch[]>([]);
-  const [openMatchesLoading, setOpenMatchesLoading] = useState(false);
 
-  // ── New mobile-first state ──────────────────────────────
-  const [activeTab, setActiveTab] = useState<TabId>("home");
-  const [activeFilter, setActiveFilter] = useState<MatchFilter>("all");
-  // ── Fetch open-for-annotation matches ────────────────────────────
-  React.useEffect(() => {
-    if (!authUser) return;
-    setOpenMatchesLoading(true);
-    const _token = localStorage.getItem("racket_token") ?? "";
-    fetch(`${API_URL}/matches/open-for-annotation`, {
-      headers: { Authorization: `Bearer ${_token}` },
-      credentials: "include",
-    })
-      .then((r) => (r.ok ? r.json() : []))
-      .then((data: OpenMatch[]) => setOpenMatches(Array.isArray(data) ? data : []))
-      .catch(() => setOpenMatches([]))
-      .finally(() => setOpenMatchesLoading(false));
-  }, [authUser]);
+  // ── Match stats/actions via custom hook ─────────────────
+  const {
+    isStatsModalOpen,
+    setIsStatsModalOpen,
+    selectedMatch,
+    matchStats,
+    loadingMatchId,
+    openStatsForMatch,
+    fetchMatchStateForContinue,
+    modalPlayerNames,
+  } = useDashboardMatchActions(toast.error);
+
+  // ── Data fetched via custom hook ────────────────────────
+  const {
+    openMatches,
+    openMatchesLoading,
+    annotatedMatches,
+    setAnnotatedMatches,
+    annotatedByMe,
+    setAnnotatedByMe,
+    annotatedLoading,
+    completedMatches,
+    setCompletedMatches,
+    completedLoading,
+    setOpenMatches,
+    refetchCompleted,
+  } = useDashboardData(authUser);
+
+  // ── UI state via reducer ───────────────────────────────
+  const [uiState, dispatchUI] = useReducer(dashboardUIReducer, initialDashboardUIState);
+  const {
+    isNewMatchMenuOpen,
+    isHamburgerOpen,
+    activeDashboardView,
+    activeFilter,
+    editingMatch,
+    localMatchOverrides,
+  } = uiState;
+  const newMatchBtnRef = useRef<HTMLButtonElement>(null);
+
+  const handleViewReport = useCallback(
+    (sessionId: string, matchId: string) => {
+      navigate(`/match-report/${matchId}/${sessionId}`);
+    },
+    [navigate],
+  );
+
+  const handleViewComparison = useCallback(
+    (matchId: string) => {
+      navigate(`/comparison/${matchId}`);
+    },
+    [navigate],
+  );
+
+  const handleDismissAnnotation = useCallback((matchId: string) => {
+    setAnnotatedMatches((prev) => prev.filter((m) => m.id !== matchId));
+    setAnnotatedByMe((prev) => prev.filter((m) => m.id !== matchId));
+  }, []);
+
+  const handleClaimMatch = useCallback(
+    async (matchId: string) => {
+      try {
+        await httpClient.post(`/matches/${matchId}/claim`, undefined, { timeout: 8_000 });
+        setAnnotatedMatches((prev) =>
+          prev.map((m) =>
+            m.id === matchId
+              ? { ...m, myShare: { id: m.myShare?.id ?? matchId, status: 'ACCEPTED' } }
+              : m,
+          ),
+        );
+        refetchCompleted();
+      } catch {
+        /* silent */
+      }
+    },
+    [refetchCompleted, setAnnotatedMatches],
+  );
 
   const handleAnnotateOpenMatch = async (matchId: string) => {
-    const _token2 = localStorage.getItem("racket_token") ?? "";
-    await fetch(`${API_URL}/matches/${matchId}/sessions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${_token2}`,
-      },
-      credentials: "include",
-    });
+    try {
+      await httpClient.post(`/matches/${matchId}/sessions`, undefined, { timeout: 8_000 });
+    } catch {
+      /* prossegue mesmo com falha na criação de sessão */
+    }
     setOpenMatches((prev) => prev.filter((m) => m.id !== matchId));
     if (onContinueMatch) {
-      onContinueMatch({ id: matchId } as any);
+      onContinueMatch({ id: matchId } as DashboardMatch);
     } else if (onStartMatch) {
-      onStartMatch({ id: matchId } as any);
+      onStartMatch({ id: matchId } as DashboardMatch);
     }
-  };
-  const fetchMatchState = async (matchId: string | number) => {
-    const res = await fetch(`${API_URL}/matches/${matchId}/state`);
-    if (!res.ok) throw new Error("Falha ao buscar state");
-    let data = null;
-    try {
-      const text = await res.text();
-      data = text ? JSON.parse(text) : null;
-    } catch (e) {
-      throw new Error("Resposta inválida do servidor (state)");
-    }
-    if (!data) throw new Error("Dados de state não encontrados");
-    setSelectedMatch({
-      id: data.id,
-      players: data.players,
-      sportType: data.sportType,
-      sport: data.sport,
-      format: data.format,
-      courtType: data.courtType,
-      nickname: data.nickname || null,
-      status: data.status,
-      score: data.score,
-      completedSets: data.completedSets,
-      visibleTo: data.visibleTo,
-    });
-  };
-
-  const fetchMatchStats = async (matchId: string | number) => {
-    const res = await fetch(`${API_URL}/matches/${matchId}/stats`);
-    if (!res.ok) throw new Error("Falha ao buscar stats");
-    let stats = null;
-    try {
-      const text = await res.text();
-      stats = text ? JSON.parse(text) : null;
-    } catch (e) {
-      throw new Error("Resposta inválida do servidor (stats)");
-    }
-    if (!stats) throw new Error("Estatísticas não encontradas");
-    setMatchStats(stats);
   };
 
   // Só mostra partidas em que o usuário é apontador ou está em playersEmails
-  const canViewMatch = (match: any) => {
+  const canViewMatch = (match: DashboardMatch) => {
     if (!currentUser) return false;
     const email = currentUser.email;
     if (!email) return false;
     // Se for apontador
     if (match.apontadorEmail === email) return true;
     // Se estiver em playersEmails
-    if (
-      Array.isArray(match.playersEmails) &&
-      match.playersEmails.includes(email)
-    )
-      return true;
+    if (Array.isArray(match.playersEmails) && match.playersEmails.includes(email)) return true;
     return false;
   };
 
-  const openStatsForMatch = async (matchId: string | number) => {
-    setLoadingMatchId(matchId);
-    try {
-      await fetchMatchState(matchId);
-      setIsStatsModalOpen(true);
-      await fetchMatchStats(matchId);
-    } catch (err) {
-      dashLog.error("Erro ao carregar estatísticas", err);
-      // AREA 4: Toast substitui alert() nativo
-      toast.error("Não foi possível carregar as estatísticas.", "Erro");
-    } finally {
-      setLoadingMatchId(null);
-    }
-  };
-
-  const fetchMatchStateForContinue = async (matchId: string | number) => {
-    const matchIdStr = matchId.toString();
-    if (matchStates[matchIdStr]) return matchStates[matchIdStr];
-
-    try {
-      const res = await fetch(`${API_URL}/matches/${matchId}/state`);
-      if (!res.ok) throw new Error("Falha ao buscar state");
-      const text = await res.text();
-      const data = text ? JSON.parse(text) : null;
-      if (data) {
-        setMatchStates((prev) => ({ ...prev, [matchIdStr]: data }));
-        return data;
-      }
-    } catch {
-      // silently fail — estado será obtido na próxima requisição
-    }
-    return null;
-  };
-
-  const modalPlayerNames =
-    selectedMatch && typeof selectedMatch.players === "object"
-      ? {
-          p1: resolvePlayerName(
-            (selectedMatch.players as DashboardMatchPlayers).p1,
-          ),
-          p2: resolvePlayerName(
-            (selectedMatch.players as DashboardMatchPlayers).p2,
-          ),
-        }
-      : { p1: "Jogador 1", p2: "Jogador 2" };
-
-  const FORMAT_LABELS: Record<string, string> = {
-    BEST_OF_3: "Melhor de 3 · Tie-break todos os sets",
-    BEST_OF_3_MATCH_TB: "Melhor de 3 · Match tie-break no 3º set",
-    BEST_OF_5: "Melhor de 5 · Tie-break todos os sets",
-    SINGLE_SET: "Set único · Tie-break em 6-6",
-    PRO_SET: "Pro Set (8 games) · Tie-break em 8-8",
-    MATCH_TIEBREAK: "Match Tiebreak (10 pts)",
-    SHORT_SET: "Set curto (4 games) · Tie-break em 4-4",
-    NO_AD: "Melhor de 3 · No-Ad",
-    FAST4: "Fast4 · No-Ad · Tie-break em 3-3",
-    SHORT_SET_NO_AD: "Set curto (4 games) · No-Ad",
-    NO_LET_TENNIS: "Melhor de 3 · No-Let",
-  };
-
-  const visibleMatches = (Array.isArray(matches) ? matches : []).filter(
-    (match) => canViewMatch(match),
+  const visibleMatches = (Array.isArray(matches) ? matches : []).filter((match) =>
+    canViewMatch(match),
   );
 
   // ── Computed: match counts by status ────────────────────
@@ -238,8 +257,8 @@ const Dashboard: React.FC<DashboardProps> = ({
     const counts = { all: 0, live: 0, finished: 0, pending: 0 };
     visibleMatches.forEach((m) => {
       counts.all++;
-      if (m.status === "IN_PROGRESS") counts.live++;
-      else if (m.status === "FINISHED") counts.finished++;
+      if (m.status === 'IN_PROGRESS') counts.live++;
+      else if (m.status === 'FINISHED') counts.finished++;
       else counts.pending++;
     });
     return counts;
@@ -247,7 +266,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   // ── Computed: live matches for carousel ─────────────────
   const liveMatches = useMemo(
-    () => visibleMatches.filter((m) => m.status === "IN_PROGRESS"),
+    () => visibleMatches.filter((m) => m.status === 'IN_PROGRESS'),
     [visibleMatches],
   );
 
@@ -255,18 +274,16 @@ const Dashboard: React.FC<DashboardProps> = ({
   const filteredMatches = useMemo(() => {
     let filtered = visibleMatches;
 
-    if (activeFilter === "live") {
-      filtered = filtered.filter((m) => m.status === "IN_PROGRESS");
-    } else if (activeFilter === "finished") {
-      filtered = filtered.filter((m) => m.status === "FINISHED");
-    } else if (activeFilter === "pending") {
-      filtered = filtered.filter(
-        (m) => m.status !== "IN_PROGRESS" && m.status !== "FINISHED",
-      );
+    if (activeFilter === 'live') {
+      filtered = filtered.filter((m) => m.status === 'IN_PROGRESS');
+    } else if (activeFilter === 'finished') {
+      filtered = filtered.filter((m) => m.status === 'FINISHED');
+    } else if (activeFilter === 'pending') {
+      filtered = filtered.filter((m) => m.status !== 'IN_PROGRESS' && m.status !== 'FINISHED');
     } else {
       // "all" — exclude live from main list if they're in the carousel
       if (liveMatches.length > 0) {
-        filtered = filtered.filter((m) => m.status !== "IN_PROGRESS");
+        filtered = filtered.filter((m) => m.status !== 'IN_PROGRESS');
       }
     }
 
@@ -274,90 +291,14 @@ const Dashboard: React.FC<DashboardProps> = ({
   }, [visibleMatches, activeFilter, liveMatches.length]);
 
   // ── Computed: athlete quick stats ───────────────────────
-  const athleteStats = useMemo((): AthleteStats => {
-    const finished = visibleMatches.filter((m) => m.status === "FINISHED");
-    const email = currentUser?.email || "";
-
-    let wins = 0;
-    let losses = 0;
-
-    finished.forEach((match) => {
-      const ms = (match as any).matchState;
-      if (!ms || typeof ms !== "object") return;
-      const winner = ms.winner || ms.matchWinner;
-      const players =
-        match.players && typeof match.players === "object"
-          ? match.players
-          : null;
-      if (!winner || !players) return;
-
-      const isP1 =
-        resolvePlayerName(players.p1) === resolvePlayerName(email) ||
-        players.p1 === email;
-      if ((winner === "PLAYER_1" && isP1) || (winner === "PLAYER_2" && !isP1)) {
-        wins++;
-      } else {
-        losses++;
-      }
-    });
-
-    const totalMatches = finished.length;
-    const winRate =
-      totalMatches > 0 ? Math.round((wins / totalMatches) * 100) : 0;
-
-    // Calculate streak
-    let currentStreak = 0;
-    let streakType: "win" | "loss" = "win";
-
-    // Sort by date descending for streak calculation
-    const sortedFinished = [...finished].sort((a, b) => {
-      const aMs = (a as any).matchState;
-      const bMs = (b as any).matchState;
-      const aDate = aMs?.endedAt || aMs?.startedAt || "";
-      const bDate = bMs?.endedAt || bMs?.startedAt || "";
-      return bDate.localeCompare(aDate);
-    });
-
-    for (const match of sortedFinished) {
-      const ms = (match as any).matchState;
-      if (!ms) break;
-      const winner = ms.winner || ms.matchWinner;
-      const players =
-        match.players && typeof match.players === "object"
-          ? match.players
-          : null;
-      if (!winner || !players) break;
-
-      const isP1 = players.p1 === email;
-      const isWin =
-        (winner === "PLAYER_1" && isP1) || (winner === "PLAYER_2" && !isP1);
-
-      if (currentStreak === 0) {
-        streakType = isWin ? "win" : "loss";
-        currentStreak = 1;
-      } else if (
-        (isWin && streakType === "win") ||
-        (!isWin && streakType === "loss")
-      ) {
-        currentStreak++;
-      } else {
-        break;
-      }
-    }
-
-    return {
-      wins,
-      losses,
-      totalMatches,
-      winRate,
-      currentStreak,
-      streakType,
-    };
-  }, [visibleMatches, currentUser?.email]);
+  const athleteStats = useMemo(
+    () => computeAthleteStats(visibleMatches, currentUser?.email || ''),
+    [visibleMatches, currentUser?.email],
+  );
 
   // ── Handle live match click (continue) ──────────────────
   const handleLiveMatchClick = useCallback(
-    async (match: any) => {
+    async (match: DashboardMatch) => {
       if (onContinueMatch) {
         const initialState = await fetchMatchStateForContinue(match.id);
         onContinueMatch(match, initialState);
@@ -366,10 +307,17 @@ const Dashboard: React.FC<DashboardProps> = ({
     [onContinueMatch],
   );
 
-  // ── Tab change handler ──────────────────────────────────
-  const handleTabChange = useCallback((tab: TabId) => {
-    setActiveTab(tab);
-    // Future: navigate to different views/routes for stats, tournaments, profile
+  // ── Hamburger menu handlers ──────────────────────────────
+  const handleMenuToggle = useCallback(() => {
+    dispatchUI({ type: 'TOGGLE_HAMBURGER' });
+  }, []);
+
+  const handleMenuClose = useCallback(() => {
+    dispatchUI({ type: 'CLOSE_HAMBURGER' });
+  }, []);
+
+  const handleSelectView = useCallback((view: DashboardView) => {
+    dispatchUI({ type: 'SELECT_VIEW', view });
   }, []);
 
   return (
@@ -379,23 +327,47 @@ const Dashboard: React.FC<DashboardProps> = ({
         <h2>
           Minhas <span>Partidas</span>
         </h2>
-        <div className="dashboard-actions">
-          <button onClick={onNewMatchClick} className="new-match-button">
+        <div className="dashboard-actions" style={{ position: 'relative' }}>
+          <button
+            ref={newMatchBtnRef}
+            onClick={() => dispatchUI({ type: 'TOGGLE_NEW_MATCH_MENU' })}
+            className="new-match-button"
+            aria-haspopup="true"
+            aria-expanded={isNewMatchMenuOpen}
+          >
             + Nova Partida
           </button>
+          {isNewMatchMenuOpen && (
+            <NewMatchMenu
+              onCreateMatch={onNewMatchClick}
+              onDiscoverMatches={() => {
+                dispatchUI({ type: 'CLOSE_NEW_MATCH_MENU' });
+                if (onDiscoverMatches) onDiscoverMatches();
+              }}
+              onClose={() => dispatchUI({ type: 'CLOSE_NEW_MATCH_MENU' })}
+              anchorRef={newMatchBtnRef as React.RefObject<HTMLElement>}
+            />
+          )}
         </div>
       </header>
 
-      {/* ── Mobile: Athlete Header with KPIs ── */}
+      {/* ── Mobile: Athlete Header with KPIs + Hamburger ── */}
       <AthleteHeader
-        name={currentUser?.name || currentUser?.email || "Atleta"}
+        name={currentUser?.name || currentUser?.email || 'Atleta'}
         email={currentUser?.email}
         clubName={undefined}
         stats={athleteStats}
+        isMenuOpen={isHamburgerOpen}
+        onMenuToggle={handleMenuToggle}
+        onMenuClose={handleMenuClose}
+        onSelectView={handleSelectView}
+        onNewMatch={() => dispatchUI({ type: 'OPEN_NEW_MATCH_FROM_MENU' })}
+        pendingCount={openMatches.length}
+        liveCount={liveMatches.length}
       />
 
       {/* ── Convites de clube pendentes (atleta confirma) ── */}
-      {currentUser?.role === "ATHLETE" && <PendingInvitesBanner />}
+      {currentUser?.role === 'ATHLETE' && <PendingInvitesBanner />}
 
       {loading && (
         <div className="dashboard-loading">
@@ -405,516 +377,165 @@ const Dashboard: React.FC<DashboardProps> = ({
       )}
       {error && <div className="dashboard-error">⚠ {error}</div>}
 
-      {!loading && !error && visibleMatches.length === 0 && (
-        <div className="dashboard-empty">
-          <span className="dashboard-empty-icon">🎾</span>
-          <h3>Nenhuma partida ainda</h3>
-          <p>Crie uma nova partida para começar a jogar.</p>
-        </div>
-      )}
+      <DashboardEmptyStates
+        loading={loading}
+        error={error}
+        activeDashboardView={activeDashboardView}
+        liveMatchesCount={liveMatches.length}
+        openMatchesCount={openMatches.length}
+        openMatchesLoading={openMatchesLoading}
+        onMenuToggle={handleMenuToggle}
+      />
 
       {/* ── Partidas abertas para anotação ── */}
-      {!loading && activeTab === "home" && (openMatchesLoading || openMatches.length > 0) && (
-        <section className="open-matches-section">
-          <h3 className="open-matches-title">🎾 Partidas aguardando anotador</h3>
-          {openMatchesLoading ? (
-            <p className="open-matches-loading">Carregando...</p>
-          ) : (
-            <div className="open-matches-list">
-              {openMatches.map((m) => (
-                <OpenMatchCard key={m.id} match={m} onAnnotate={handleAnnotateOpenMatch} />
-              ))}
-            </div>
-          )}
-        </section>
-      )}
-
-      {/* ── Live Matches Carousel (pinned at top) ── */}
-      {!loading && activeTab === "home" && liveMatches.length > 0 && (
-        <LiveMatchesCarousel
-          matches={liveMatches}
-          onMatchClick={handleLiveMatchClick}
-        />
-      )}
-
-      {/* ── Filter Chips ── */}
       {!loading &&
-        !error &&
-        visibleMatches.length > 0 &&
-        activeTab === "home" && (
-          <FilterChips
-            activeFilter={activeFilter}
-            onFilterChange={setActiveFilter}
-            counts={matchCounts}
+        activeDashboardView === 'pending' &&
+        (openMatchesLoading || openMatches.length > 0) && (
+          <DashboardOpenMatchesSection
+            openMatches={openMatches}
+            openMatchesLoading={openMatchesLoading}
+            onAnnotate={handleAnnotateOpenMatch}
           />
         )}
 
+      {/* ── Partidas Anotadas ── */}
+      {!loading &&
+        activeDashboardView === 'history' &&
+        (annotatedLoading || annotatedMatches.length > 0 || annotatedByMe.length > 0) && (
+          <DashboardAnnotatedSection
+            annotatedMatches={annotatedMatches}
+            annotatedByMe={annotatedByMe}
+            annotatedLoading={annotatedLoading}
+            onViewReport={handleViewReport}
+            onViewComparison={handleViewComparison}
+            onDismiss={handleDismissAnnotation}
+            onClaim={handleClaimMatch}
+          />
+        )}
+
+      {/* ── Meu Histórico ── */}
+      {!loading &&
+        activeDashboardView === 'history' &&
+        (completedLoading || completedMatches.length > 0) && (
+          <section className="completed-section">
+            <h3 className="completed-section__title">🏆 Meu Histórico</h3>
+            {completedLoading ? (
+              <p className="completed-section__loading">Carregando...</p>
+            ) : (
+              <div className="completed-section__list">
+                {completedMatches.map((m) => (
+                  <CompletedMatchCard key={m.id} match={m} onViewStats={openStatsForMatch} />
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+      {/* ── Live Matches Carousel (pinned at top) ── */}
+      {!loading && activeDashboardView === 'live' && liveMatches.length > 0 && (
+        <LiveMatchesCarousel matches={liveMatches} onMatchClick={handleLiveMatchClick} />
+      )}
+
+      {/* ── Filter Chips ── */}
+      {!loading && !error && visibleMatches.length > 0 && activeDashboardView === 'history' && (
+        <FilterChips
+          activeFilter={activeFilter}
+          onFilterChange={(filter) => dispatchUI({ type: 'SET_FILTER', filter })}
+          counts={matchCounts}
+        />
+      )}
+
       {/* ── Match list section title ── */}
-      {!loading && activeTab === "home" && filteredMatches.length > 0 && (
+      {!loading && activeDashboardView === 'history' && filteredMatches.length > 0 && (
         <span className="dashboard-section-title">
-          {activeFilter === "all"
-            ? "Histórico"
-            : activeFilter === "live"
-              ? "Ao Vivo"
-              : activeFilter === "finished"
-                ? "Finalizadas"
-                : "Aguardando"}
+          {activeFilter === 'all'
+            ? 'Histórico'
+            : activeFilter === 'live'
+              ? 'Ao Vivo'
+              : activeFilter === 'finished'
+                ? 'Finalizadas'
+                : 'Aguardando'}
         </span>
       )}
 
-      {/* ── Ranking tab ── */}
-      {activeTab === "ranking" &&
-        (activeClubId ? (
-          <ClubRankings clubId={activeClubId} />
-        ) : (
-          <div className="dashboard-empty">
-            <span className="dashboard-empty-icon">📈</span>
-            <h3>Ranking</h3>
-            <p>Faça parte de um clube para ver o ranking intraclubes.</p>
-          </div>
-        ))}
-
-      {/* ── Stats tab placeholder ── */}
-      {activeTab === "stats" && (
-        <div className="dashboard-empty">
-          <span className="dashboard-empty-icon">📊</span>
-          <h3>Estatísticas</h3>
-          <p>Em breve: suas estatísticas agregadas e evolução de desempenho.</p>
-        </div>
-      )}
-
-      {/* ── Tournaments tab placeholder ── */}
-      {activeTab === "tournaments" && (
-        <div className="dashboard-empty">
-          <span className="dashboard-empty-icon">🏆</span>
-          <h3>Torneios</h3>
-          <p>Em breve: seus torneios e inscrições.</p>
-        </div>
-      )}
-
-      {/* ── Profile tab placeholder ── */}
-      {activeTab === "profile" && (
-        <div className="dashboard-empty">
-          <span className="dashboard-empty-icon">👤</span>
-          <h3>Meu Perfil</h3>
-          <p>Em breve: editar perfil, preferências e conquistas.</p>
-        </div>
+      {/* ── Profile view ── */}
+      {activeDashboardView === 'profile' && (
+        <DashboardProfilePanel
+          authUser={authUser}
+          athleteStats={athleteStats}
+          annotatedByMeCount={annotatedByMe.length}
+          completedMatchesCount={completedMatches.length}
+          onSwitchClub={switchClub}
+          onLogout={logout}
+        />
       )}
 
       {/* ── Match Cards List ── */}
-      {activeTab === "home" && (
+      {activeDashboardView === 'history' && (
         <div className="match-list">
-          {filteredMatches.map((match) => {
-            const p1Name = resolvePlayerName(
-              match.players && typeof match.players === "object"
-                ? match.players.p1
-                : "",
-            );
-            const p2Name = resolvePlayerName(
-              match.players && typeof match.players === "object"
-                ? match.players.p2
-                : "",
-            );
-            const canView = canViewMatch(match);
-
-            // ── matchState helpers ─────────────────────────────
-            const possibleState = match as unknown as { matchState?: unknown };
-            const ms =
-              possibleState.matchState &&
-              typeof possibleState.matchState === "object"
-                ? (possibleState.matchState as Record<string, unknown>)
-                : null;
-
-            // viewLog
-            const viewLog = Array.isArray(ms?.["viewLog"])
-              ? (ms!["viewLog"] as Array<Record<string, unknown>>)
-              : null;
-            const lastView = viewLog?.length
-              ? viewLog[viewLog.length - 1]
-              : null;
-            const lastStartedAt =
-              typeof lastView?.["startedAt"] === "string"
-                ? String(lastView["startedAt"])
-                : null;
-            const lastEndedAt =
-              typeof lastView?.["endedAt"] === "string"
-                ? String(lastView["endedAt"])
-                : null;
-
-            // ── Live score data ────────────────────────────────
-            const currentGame =
-              ms?.currentGame && typeof ms.currentGame === "object"
-                ? (ms.currentGame as Record<string, unknown>)
-                : null;
-            const isTiebreak = Boolean(currentGame?.["isTiebreak"]);
-            const isMatchTiebreak = Boolean(currentGame?.["isMatchTiebreak"]);
-            const currentSetState =
-              ms?.currentSetState && typeof ms.currentSetState === "object"
-                ? (ms.currentSetState as Record<string, unknown>)
-                : null;
-            const currentSetGames = currentSetState?.["games"] as
-              | Record<string, number>
-              | undefined;
-            const setsObj =
-              ms?.sets && typeof ms.sets === "object"
-                ? (ms.sets as Record<string, number>)
-                : undefined;
-            const pointsObj = currentGame?.["points"] as
-              | Record<string, string>
-              | undefined;
-
-            // ── Completed sets for partials ────────────────────
-            const buildPartials = (source: unknown[]): string[] => {
-              return source.flatMap((set) => {
-                if (!set || typeof set !== "object") return [];
-                const s = set as Record<string, unknown>;
-                const games = s["games"] as Record<string, number> | undefined;
-                const tbs = s["tiebreakScore"] as
-                  | Record<string, number>
-                  | undefined;
-                const g1 = games?.PLAYER_1 ?? 0;
-                const g2 = games?.PLAYER_2 ?? 0;
-                if (tbs) {
-                  const tb1 = tbs.PLAYER_1 ?? 0;
-                  const tb2 = tbs.PLAYER_2 ?? 0;
-                  return s["winner"] === "PLAYER_1"
-                    ? [`${g1}/${g2}(${tb1})`]
-                    : [`${g2}/${g1}(${tb2})`];
-                }
-                return [`${g1}/${g2}`];
-              });
-            };
-
-            let completedSetsArr: unknown[] = [];
-            const possibleState2 = match as unknown as {
-              completedSets?: unknown;
-            };
-            if (Array.isArray(possibleState2.completedSets))
-              completedSetsArr = possibleState2.completedSets;
-            else if (Array.isArray(ms?.["completedSets"]))
-              completedSetsArr = ms!["completedSets"] as unknown[];
-
-            const setsPartials = buildPartials(completedSetsArr);
-
-            // Live: add current set partial
-            if (match.status === "IN_PROGRESS" && currentSetState) {
-              const g1 = currentSetGames?.PLAYER_1 ?? 0;
-              const g2 = currentSetGames?.PLAYER_2 ?? 0;
-              const p1 = pointsObj?.PLAYER_1 ?? "0";
-              const p2 = pointsObj?.PLAYER_2 ?? "0";
-              setsPartials.push(
-                isTiebreak
-                  ? `${g1}(${p1})/${g2}(${p2}) TB`
-                  : `${g1}(${p1})/${g2}(${p2})`,
-              );
-            }
-
-            // ── Time helpers ───────────────────────────────────
-            const started =
-              typeof ms?.["startedAt"] === "string"
-                ? String(ms["startedAt"])
-                : lastStartedAt;
-            const ended =
-              typeof ms?.["endedAt"] === "string"
-                ? String(ms["endedAt"])
-                : lastEndedAt;
-            let durationSec: number | null = null;
-            if (typeof ms?.["durationSeconds"] === "number")
-              durationSec = Number(ms["durationSeconds"]);
-            if (durationSec == null && started && ended) {
-              durationSec = Math.max(
-                0,
-                Math.floor(
-                  (new Date(ended).getTime() - new Date(started).getTime()) /
-                    1000,
-                ),
-              );
-            }
-            const timeLabel = started
-              ? new Date(started).toLocaleString("pt-BR", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
-              : null;
-            const durLabel =
-              durationSec != null
-                ? new Date(durationSec * 1000).toISOString().substr(11, 5)
-                : null;
-
-            // ── Card class ─────────────────────────────────────
-            const cardClass = [
-              "match-card",
-              match.status === "IN_PROGRESS"
-                ? "card--live"
-                : match.status === "FINISHED"
-                  ? "card--finished"
-                  : "card--pending",
-            ].join(" ");
-
-            // ── Court badge ────────────────────────────────────
-            const courtMap: Record<string, { label: string; icon: string }> = {
-              CLAY: { label: "Saibro", icon: "🟤" },
-              HARD: { label: "Dura", icon: "🔵" },
-              GRASS: { label: "Grama", icon: "🟢" },
-            };
-            const ct = match.courtType ? courtMap[match.courtType] : null;
-
-            // ── Status badge ───────────────────────────────────
-            const statusInfo =
-              match.status === "IN_PROGRESS"
-                ? { cls: "badge--live", label: "Ao Vivo" }
-                : match.status === "FINISHED"
-                  ? { cls: "badge--finished", label: "Finalizada" }
-                  : { cls: "badge--pending", label: "Aguardando" };
-
-            return (
-              <div
-                key={match.id}
-                className={cardClass}
-                onClick={async () => {
-                  if (match.status === "NOT_STARTED" && onStartMatch) {
-                    onStartMatch(match);
-                  } else if (
-                    match.status === "IN_PROGRESS" &&
-                    onContinueMatch
-                  ) {
-                    const initialState = await fetchMatchStateForContinue(
-                      match.id,
-                    );
-                    onContinueMatch(match, initialState);
-                  }
-                }}
-              >
-                {/* ── Top row: sport + court | status ── */}
-                <div className="card-top">
-                  <div className="card-top-left">
-                    <span className="card-sport-label">
-                      {(
-                        match.sportType ||
-                        match.sport ||
-                        "Sport"
-                      ).toUpperCase()}
-                    </span>
-                    {ct && (
-                      <span
-                        className={`court-type-badge court-type-badge--${match.courtType!.toLowerCase()}`}
-                      >
-                        {ct.icon} {ct.label}
-                      </span>
-                    )}
-                  </div>
-                  <div className="card-top-right">
-                    <span className={`status-badge ${statusInfo.cls}`}>
-                      {match.status === "IN_PROGRESS" && (
-                        <span className="live-dot" />
-                      )}
-                      {statusInfo.label}
-                    </span>
-                    {match.visibility && (
-                      <span
-                        className="visibility-badge"
-                        title={
-                          match.visibility === "PUBLIC"
-                            ? "Pública"
-                            : match.visibility === "CLUB"
-                              ? "Clube"
-                              : "Apenas Jogadores"
-                        }
-                        style={{
-                          marginLeft: "8px",
-                          fontSize: "0.9rem",
-                          display: "inline-block",
-                        }}
-                      >
-                        {match.visibility === "PUBLIC"
-                          ? "🌐"
-                          : match.visibility === "CLUB"
-                            ? "🏢"
-                            : "🔒"}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* ── Players ── */}
-                <div className="card-players">
-                  <div className="card-player">
-                    <span className="player-name">{p1Name}</span>
-                  </div>
-                  <span className="card-vs">vs</span>
-                  <div className="card-player player--right">
-                    <span className="player-name">{p2Name}</span>
-                  </div>
-                </div>
-
-                {/* ── Live score (IN_PROGRESS only) ── */}
-                {match.status === "IN_PROGRESS" && ms && (
-                  <div
-                    className="card-live-score"
-                    data-testid={`live-status-${match.id}`}
-                  >
-                    <div className="live-score-header">
-                      <span className="live-score-label">Ao Vivo</span>
-                      {isTiebreak && (
-                        <span className="live-score-tiebreak">
-                          {isMatchTiebreak ? "Match Tiebreak" : "Tiebreak"}
-                        </span>
-                      )}
-                    </div>
-                    <div className="live-score-row">
-                      <div className="live-stat">
-                        <span className="live-stat-label">Sets</span>
-                        <span
-                          className="live-stat-value"
-                          data-testid={`live-status-sets-${match.id}`}
-                        >
-                          {setsObj?.PLAYER_1 ?? 0}
-                          <span
-                            className="live-stat-sep"
-                            style={{
-                              fontSize: ".7rem",
-                              color: "var(--clr-text-muted)",
-                              margin: "0 3px",
-                            }}
-                          >
-                            -
-                          </span>
-                          {setsObj?.PLAYER_2 ?? 0}
-                        </span>
-                      </div>
-                      <div className="live-stat">
-                        <span className="live-stat-label">Games</span>
-                        <span
-                          className="live-stat-value"
-                          data-testid={`live-status-games-${match.id}`}
-                        >
-                          {currentSetGames?.PLAYER_1 ?? 0}
-                          <span
-                            style={{
-                              fontSize: ".7rem",
-                              color: "var(--clr-text-muted)",
-                              margin: "0 3px",
-                            }}
-                          >
-                            -
-                          </span>
-                          {currentSetGames?.PLAYER_2 ?? 0}
-                        </span>
-                      </div>
-                      <div className="live-stat">
-                        <span className="live-stat-label">Pontos</span>
-                        <span
-                          className="live-stat-value"
-                          data-testid={`live-status-points-${match.id}`}
-                        >
-                          {pointsObj?.PLAYER_1 ?? "0"}
-                          <span
-                            style={{
-                              fontSize: ".7rem",
-                              color: "var(--clr-text-muted)",
-                              margin: "0 3px",
-                            }}
-                          >
-                            -
-                          </span>
-                          {pointsObj?.PLAYER_2 ?? "0"}
-                        </span>
-                      </div>
-                    </div>
-                    {setsPartials.length > 0 && (
-                      <div
-                        className="live-partials"
-                        data-testid={`live-status-partials-${match.id}`}
-                      >
-                        {setsPartials.join("  ·  ")}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* ── Finished: parciais ── */}
-                {match.status === "FINISHED" && setsPartials.length > 0 && (
-                  <div
-                    className="card-finished-score"
-                    data-testid={`match-card-partials-${match.id}`}
-                  >
-                    <span className="card-partials">
-                      {setsPartials.join("  ·  ")}
-                    </span>
-                  </div>
-                )}
-
-                {/* ── Footer: format + time | stats button ── */}
-                <div className="card-footer">
-                  <div className="card-footer-meta">
-                    {match.nickname && (
-                      <span className="card-nickname">🏷 {match.nickname}</span>
-                    )}
-                    <span className="card-format">
-                      {match.format
-                        ? FORMAT_LABELS[match.format] || match.format
-                        : ""}
-                    </span>
-                    {timeLabel && (
-                      <span className="card-time">
-                        🕐 {timeLabel}
-                        {durLabel ? ` · ${durLabel}` : ""}
-                      </span>
-                    )}
-                  </div>
-                  <button
-                    className="stats-button"
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      if (!canView) {
-                        // AREA 4: Toast substitui alert() nativo
-                        toast.warning(
-                          "Você não tem permissão para ver o resultado desta partida.",
-                          "Acesso Restrito",
-                        );
-                        return;
-                      }
-                      await openStatsForMatch(match.id);
-                    }}
-                    title={canView ? "Abrir relatório" : "Acesso restrito"}
-                    disabled={
-                      !canView ||
-                      (loadingMatchId !== null && loadingMatchId !== match.id)
-                    }
-                  >
-                    {loadingMatchId === match.id ? "⏳" : "📊 Relatório"}
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+          {filteredMatches.map((rawMatch) => (
+            <DashboardMatchCard
+              key={rawMatch.id}
+              rawMatch={rawMatch}
+              localMatchOverrides={localMatchOverrides}
+              authUserId={authUser?.id}
+              loadingMatchId={loadingMatchId}
+              canView={canViewMatch(rawMatch)}
+              onStartMatch={onStartMatch}
+              onContinueMatch={onContinueMatch}
+              onEditMatch={(match) => dispatchUI({ type: 'SET_EDITING_MATCH', match })}
+              onViewStats={openStatsForMatch}
+              fetchMatchStateForContinue={fetchMatchStateForContinue}
+              onToastWarning={toast.warning}
+            />
+          ))}
         </div>
       )}
 
       <MatchStatsModal
         isOpen={isStatsModalOpen}
         onClose={() => setIsStatsModalOpen(false)}
-        matchId={selectedMatch?.id?.toString() || ""}
+        matchId={selectedMatch?.id?.toString() || ''}
         playerNames={modalPlayerNames}
         stats={matchStats}
         nickname={selectedMatch?.nickname || null}
       />
 
-      {/* ── FAB: New Match (mobile only, via CSS) ── */}
-      <FloatingActionButton onClick={onNewMatchClick} />
-
-      {/* ── Bottom Tab Bar (mobile only, via CSS) ── */}
-      <BottomTabBar
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        badges={
-          liveMatches.length > 0
-            ? [{ tabId: "home" as TabId, count: liveMatches.length }]
-            : []
-        }
-      />
+      {/* ── EditMatchModal ── */}
+      {editingMatch && (
+        <EditMatchModal
+          match={
+            {
+              id: String(editingMatch.id),
+              nickname: editingMatch.nickname,
+              scheduledAt: editingMatch.scheduledAt,
+              venueId: editingMatch.venueId,
+              venue: editingMatch.venue,
+              visibility: editingMatch.visibility,
+              openForAnnotation: editingMatch.openForAnnotation,
+              createdByUserId: editingMatch.createdByUserId,
+              ...(localMatchOverrides[String(editingMatch.id)] ?? {}),
+            } as EditableMatch
+          }
+          isOpen={true}
+          onClose={() => dispatchUI({ type: 'SET_EDITING_MATCH', match: null })}
+          onSaved={(updated) => {
+            dispatchUI({
+              type: 'UPDATE_MATCH_OVERRIDE',
+              matchId: String(editingMatch.id),
+              overrides: {
+                nickname: (updated as EditableMatch).nickname,
+                scheduledAt: (updated as EditableMatch).scheduledAt,
+                venueId: (updated as EditableMatch).venueId,
+                venue: (updated as EditableMatch).venue as DashboardMatch['venue'],
+                visibility: (updated as EditableMatch).visibility,
+                openForAnnotation: (updated as EditableMatch).openForAnnotation,
+              },
+            });
+            dispatchUI({ type: 'SET_EDITING_MATCH', match: null });
+          }}
+        />
+      )}
     </div>
   );
 };

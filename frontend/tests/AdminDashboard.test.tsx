@@ -15,6 +15,7 @@ vi.mock('../src/pages/AdminDashboard.css', () => ({}));
 const mockHttpGet = vi.fn();
 vi.mock('../src/config/httpClient', () => ({
   default: { get: (...args: unknown[]) => mockHttpGet(...args) },
+  httpClient: { get: (...args: unknown[]) => mockHttpGet(...args) },
 }));
 
 // ── Mock do AuthContext ──────────────────────────────────────

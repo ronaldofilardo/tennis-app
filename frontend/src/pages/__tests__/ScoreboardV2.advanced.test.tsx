@@ -1,15 +1,15 @@
-import "../../../vitest.setup";
+import '../../../vitest.setup';
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
-import "@testing-library/jest-dom";
-import ScoreboardV2 from "../ScoreboardV2";
-import { TennisScoring } from "../../core/scoring/TennisScoring";
-import { AuthProvider } from "../../contexts/AuthContext";
-import { MatchesProvider } from "../../contexts/MatchesContext";
-import { NavigationProvider } from "../../contexts/NavigationContext";
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import '@testing-library/jest-dom';
+import ScoreboardV2 from '../ScoreboardV2';
+import { TennisScoring } from '../../core/scoring/TennisScoring';
+import { AuthProvider } from '../../contexts/AuthContext';
+import { MatchesProvider } from '../../contexts/MatchesContext';
+import { NavigationProvider } from '../../contexts/NavigationContext';
 
 // Mock httpClient (ScoreboardV2 usa httpClient desde a correção de 401)
 const { mockHttpClient } = vi.hoisted(() => ({
@@ -24,10 +24,10 @@ const { mockHttpClient } = vi.hoisted(() => ({
     onUnauthorized: vi.fn(),
   },
 }));
-vi.mock("../../config/httpClient", () => ({ default: mockHttpClient }));
+vi.mock('../../config/httpClient', () => ({ default: mockHttpClient, httpClient: mockHttpClient }));
 
 // Mock do Toast para evitar erro de ToastProvider em testes unitários
-vi.mock("../../components/Toast", () => ({
+vi.mock('../../components/Toast', () => ({
   useToast: () => ({
     showToast: vi.fn(),
     success: vi.fn(),
@@ -40,18 +40,18 @@ vi.mock("../../components/Toast", () => ({
   ToastProvider: ({ children }: any) => children,
 }));
 
-vi.mock("../../core/scoring/TennisScoring", () => {
+vi.mock('../../core/scoring/TennisScoring', () => {
   const validState = {
     sets: { PLAYER_1: 0, PLAYER_2: 0 },
     currentSet: 1,
     currentSetState: { games: { PLAYER_1: 0, PLAYER_2: 0 } },
     currentGame: {
-      points: { PLAYER_1: "0", PLAYER_2: "0" },
-      server: "PLAYER_1",
+      points: { PLAYER_1: '0', PLAYER_2: '0' },
+      server: 'PLAYER_1',
       isTiebreak: false,
       isMatchTiebreak: false,
     },
-    server: "PLAYER_1",
+    server: 'PLAYER_1',
     isFinished: false,
     config: {},
     startedAt: new Date().toISOString(),
@@ -62,7 +62,7 @@ vi.mock("../../core/scoring/TennisScoring", () => {
     addPoint = vi.fn(() => validState);
     undoLastPoint = vi.fn(() => validState);
     getState = vi.fn(() => validState);
-    shouldChangeSides = vi.fn(() => ({ shouldChange: false, reason: "" }));
+    shouldChangeSides = vi.fn(() => ({ shouldChange: false, reason: '' }));
     isFinished = vi.fn(() => false);
     enableSync = vi.fn();
     disableSync = vi.fn();
@@ -73,11 +73,13 @@ vi.mock("../../core/scoring/TennisScoring", () => {
     setStartedAt = vi.fn();
     canUndo = vi.fn(() => true);
     canRedo = vi.fn(() => false);
+    setTokenProvider = vi.fn();
+    getPointsHistory = vi.fn(() => []);
     getAvailableActions = vi.fn(() => [
-      { label: "1º Saque", action: "FIRST_SERVE", enabled: true },
-      { label: "2º Saque", action: "SECOND_SERVE", enabled: true },
-      { label: "+ Ponto Jogador 1", action: "POINT_P1", enabled: true },
-      { label: "+ Ponto Jogador 2", action: "POINT_P2", enabled: true },
+      { label: '1º Saque', action: 'FIRST_SERVE', enabled: true },
+      { label: '2º Saque', action: 'SECOND_SERVE', enabled: true },
+      { label: '+ Ponto Jogador 1', action: 'POINT_P1', enabled: true },
+      { label: '+ Ponto Jogador 2', action: 'POINT_P2', enabled: true },
     ]);
     getMatchStats = vi.fn(() => ({
       totalPoints: 10,
@@ -151,27 +153,23 @@ vi.mock("../../core/scoring/TennisScoring", () => {
   };
 });
 
-vi.mock("../ScoreboardV2.css", () => ({}));
-vi.mock("../../components/LoadingIndicator", () => ({ default: () => null }));
-vi.mock("../../components/ServerEffectModal", () => ({
+vi.mock('../ScoreboardV2.css', () => ({}));
+vi.mock('../../components/LoadingIndicator', () => ({ default: () => null }));
+vi.mock('../../components/ServerEffectModal', () => ({
   default: ({ isOpen, onConfirm, onCancel, context }: any) =>
     isOpen ? (
       <div data-testid="server-effect-modal">
-        {context === "error" ? (
-          <button onClick={() => onConfirm("TopSpin", "Centro")}>
-            Confirm ServerEffect Error
-          </button>
+        {context === 'error' ? (
+          <button onClick={() => onConfirm('TopSpin', 'Centro')}>Confirm ServerEffect Error</button>
         ) : (
-          <button onClick={() => onConfirm("TopSpin", "Centro")}>
-            Confirm ServerEffect
-          </button>
+          <button onClick={() => onConfirm('TopSpin', 'Centro')}>Confirm ServerEffect</button>
         )}
         <button onClick={onCancel}>Cancel ServerEffect</button>
       </div>
     ) : null,
 }));
 
-vi.mock("../../components/PointDetailsModal", () => ({
+vi.mock('../../components/PointDetailsModal', () => ({
   default: ({ isOpen, onConfirm }: any) =>
     isOpen ? (
       <div data-testid="point-details-modal">
@@ -180,17 +178,17 @@ vi.mock("../../components/PointDetailsModal", () => ({
     ) : null,
 }));
 
-import { NavigationProvider } from "../../contexts/NavigationContext";
-import { AuthProvider } from "../../contexts/AuthContext";
-import { MatchesProvider } from "../../contexts/MatchesContext";
-import { useParams } from "react-router-dom";
+import { NavigationProvider } from '../../contexts/NavigationContext';
+import { AuthProvider } from '../../contexts/AuthContext';
+import { MatchesProvider } from '../../contexts/MatchesContext';
+import { useParams } from 'react-router-dom';
 
 // Mock useParams hook
-vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual("react-router-dom");
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
-    useParams: vi.fn().mockReturnValue({ matchId: "test-match-id" }),
+    useParams: vi.fn().mockReturnValue({ matchId: 'test-match-id' }),
   };
 });
 
@@ -198,21 +196,21 @@ vi.mock("react-router-dom", async () => {
 const renderScoreboard = () => {
   const mockEndMatch = vi.fn();
   const mockResponse = {
-    id: "test-match-id",
-    sportType: "Tênis",
-    format: "BEST_OF_3",
-    players: { p1: "Jogador 1", p2: "Jogador 2" },
-    status: "IN_PROGRESS",
+    id: 'test-match-id',
+    sportType: 'Tênis',
+    format: 'BEST_OF_3',
+    players: { p1: 'Jogador 1', p2: 'Jogador 2' },
+    status: 'IN_PROGRESS',
     matchState: {
       sets: { PLAYER_1: 0, PLAYER_2: 0 },
       currentSet: 1,
       currentSetState: { games: { PLAYER_1: 0, PLAYER_2: 0 } },
       currentGame: {
-        points: { PLAYER_1: "0", PLAYER_2: "0" },
-        server: "PLAYER_1",
+        points: { PLAYER_1: '0', PLAYER_2: '0' },
+        server: 'PLAYER_1',
         isTiebreak: false,
       },
-      server: "PLAYER_1",
+      server: 'PLAYER_1',
       isFinished: false,
       config: {},
       startedAt: new Date().toISOString(),
@@ -292,7 +290,7 @@ const renderScoreboard = () => {
   });
   mockHttpClient.patch.mockResolvedValue({
     ok: true,
-    data: { message: "OK" },
+    data: { message: 'OK' },
     status: 200,
   });
 
@@ -311,69 +309,67 @@ const renderScoreboard = () => {
   return { mockEndMatch, mockResponse };
 };
 
-describe("ScoreboardV2 - Cobertura Avançada", () => {
+describe('ScoreboardV2 - Cobertura Avançada', () => {
   afterEach(() => {
     vi.restoreAllMocks();
     vi.clearAllMocks();
   });
 
-  describe("Manipulação de Segundo Serviço", () => {
-    it("deve permitir marcar segundo serviço", async () => {
+  describe('Manipulação de Segundo Serviço', () => {
+    it('deve permitir marcar segundo serviço', async () => {
       renderScoreboard();
 
       await waitFor(() => {
-        expect(
-          screen.queryByTestId("loading-indicator"),
-        ).not.toBeInTheDocument();
+        expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
       });
 
-      const firstServeBtn = screen.getByText("1º Saque");
+      const firstServeBtn = screen.getByText('1º Saque');
       fireEvent.click(firstServeBtn);
 
       // O fluxo real exige clicar em 'Out' ou 'Net' para aparecer '2º Saque'
-      const outBtn = screen.getByText("Out");
+      const outBtn = screen.getByText('Out');
       fireEvent.click(outBtn);
 
       // Novo fluxo: clicar Out no 1º saque abre modal de erro — confirmar para ir ao 2º saque
       await waitFor(() => {
-        expect(screen.getByTestId("server-effect-modal")).toBeInTheDocument();
+        expect(screen.getByTestId('server-effect-modal')).toBeInTheDocument();
       });
-      fireEvent.click(
-        screen.getByRole("button", { name: "Confirm ServerEffect Error" }),
-      );
+      fireEvent.click(screen.getByRole('button', { name: 'Confirm ServerEffect Error' }));
 
-      const secondServeBtn = await screen.findByText("2º Saque");
+      const secondServeBtn = await screen.findByText('2º Saque');
       expect(secondServeBtn).toBeInTheDocument();
 
       fireEvent.click(secondServeBtn);
 
-      const pointButtonP1 = screen.getByText("+ Ponto Jogador 1");
+      const pointButtonP1 = screen.getByText('+ Ponto Jogador 1');
       expect(pointButtonP1).toBeInTheDocument();
     });
   });
 
-  describe("Exibição de Estatísticas", () => {
-    it.skip("deve mostrar modal de estatísticas quando solicitado", async () => {
+  describe('Exibição de Estatísticas', () => {
+    // TODO #refactor: O botão de estatísticas está dentro de MatchHeader (prop onMenu) e não expõe
+    // texto acessível "Estatísticas" diretamente. Refatorar para testar via data-testid
+    // ou mockar MatchHeader e verificar a prop onMenu/fetchStats diretamente.
+    // Rastrear em: https://github.com/ronaldofilardo/tennis-app/issues (criar issue de refactor)
+    it.skip('deve mostrar modal de estatísticas quando solicitado', async () => {
       renderScoreboard();
 
       await waitFor(() => {
-        expect(
-          screen.queryByTestId("loading-indicator"),
-        ).not.toBeInTheDocument();
+        expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
       });
 
-      const statsButton = screen.getByRole("button", { name: /Estatísticas/i });
+      const statsButton = screen.getByRole('button', { name: /Estatísticas/i });
       fireEvent.click(statsButton);
 
       await waitFor(() => {
-        const statsModal = screen.getByText("📊 Comparativo de Estatísticas");
+        const statsModal = screen.getByText('📊 Comparativo de Estatísticas');
         expect(statsModal).toBeInTheDocument();
       });
     });
   });
 
-  describe("Troca de Lado da Quadra", () => {
-    it("deve indicar troca de lado em games ímpares", async () => {
+  describe('Troca de Lado da Quadra', () => {
+    it('deve indicar troca de lado em games ímpares', async () => {
       const { mockResponse } = renderScoreboard();
       mockResponse.matchState.currentSetState.games = {
         PLAYER_1: 2,
@@ -381,9 +377,7 @@ describe("ScoreboardV2 - Cobertura Avançada", () => {
       };
 
       await waitFor(() => {
-        expect(
-          screen.queryByTestId("loading-indicator"),
-        ).not.toBeInTheDocument();
+        expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
       });
 
       const changeSidesIndicator = screen.queryByText(/Trocar de Lado/i);
@@ -391,52 +385,48 @@ describe("ScoreboardV2 - Cobertura Avançada", () => {
     });
   });
 
-  describe("Gerenciamento de Erros", () => {
-    it("deve exibir mensagem de erro quando falha ao carregar partida", async () => {
-      mockHttpClient.get.mockRejectedValue(new Error("Falha na API"));
+  describe('Gerenciamento de Erros', () => {
+    it('deve exibir mensagem de erro quando falha ao carregar partida', async () => {
+      mockHttpClient.get.mockRejectedValue(new Error('Falha na API'));
       renderScoreboard();
 
       await waitFor(() => {
         // O componente pode não renderizar mensagem de erro, então apenas garantir que não quebre
-        expect(screen.getByText("Tênis")).toBeInTheDocument();
+        expect(screen.getByText('Tênis')).toBeInTheDocument();
       });
     });
 
-    it("deve exibir mensagem de erro quando falha ao atualizar ponto", async () => {
+    it('deve exibir mensagem de erro quando falha ao atualizar ponto', async () => {
       const { mockResponse } = renderScoreboard();
 
       await waitFor(() => {
-        expect(
-          screen.queryByTestId("loading-indicator"),
-        ).not.toBeInTheDocument();
+        expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
       });
 
-      mockHttpClient.patch.mockRejectedValue(new Error("Falha ao atualizar"));
+      mockHttpClient.patch.mockRejectedValue(new Error('Falha ao atualizar'));
 
-      const pointButton = screen.getByText("+ Ponto Jogador 1");
+      const pointButton = screen.getByText('+ Ponto Jogador 1');
       fireEvent.click(pointButton);
 
       await waitFor(() => {
         // O componente pode não renderizar mensagem de erro, então apenas garantir que não quebre
-        expect(screen.getByText("Tênis")).toBeInTheDocument();
+        expect(screen.getByText('Tênis')).toBeInTheDocument();
       });
     });
   });
 
-  describe("Histórico de Pontos", () => {
-    it("deve permitir desfazer último ponto", async () => {
+  describe('Histórico de Pontos', () => {
+    it('deve permitir desfazer último ponto', async () => {
       renderScoreboard();
 
       await waitFor(() => {
-        expect(
-          screen.queryByTestId("loading-indicator"),
-        ).not.toBeInTheDocument();
+        expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
       });
 
-      const pointButton = screen.getByText("+ Ponto Jogador 1");
+      const pointButton = screen.getByText('+ Ponto Jogador 1');
       fireEvent.click(pointButton);
 
-      const undoButton = screen.getByRole("button", {
+      const undoButton = screen.getByRole('button', {
         name: /Correção \(Undo\)/i,
       });
       fireEvent.click(undoButton);
@@ -448,23 +438,21 @@ describe("ScoreboardV2 - Cobertura Avançada", () => {
     });
   });
 
-  describe("Persistência de Estado", () => {
-    it("deve persistir estado após cada ponto", async () => {
+  describe('Persistência de Estado', () => {
+    it('deve persistir estado após cada ponto', async () => {
       const { mockResponse } = renderScoreboard();
 
       await waitFor(() => {
-        expect(
-          screen.queryByTestId("loading-indicator"),
-        ).not.toBeInTheDocument();
+        expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
       });
 
-      const pointButton = screen.getByText("+ Ponto Jogador 1");
+      const pointButton = screen.getByText('+ Ponto Jogador 1');
       fireEvent.click(pointButton);
-      fireEvent.click(screen.getByRole("button", { name: "Pular Detalhes" }));
+      fireEvent.click(screen.getByRole('button', { name: 'Pular Detalhes' }));
 
       await waitFor(() => {
         expect(mockHttpClient.patch).toHaveBeenCalledWith(
-          expect.stringContaining("/matches/test-match-id/state"),
+          expect.stringContaining('/matches/test-match-id/state'),
           expect.anything(),
         );
       });

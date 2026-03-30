@@ -11,16 +11,16 @@
 //   - ASAAS_API_URL: URL da API (sandbox: https://sandbox.asaas.com/api/v3)
 //   - ASAAS_WEBHOOK_TOKEN: Token de autenticação dos webhooks
 
-const ASAAS_API_URL =
-  process.env.ASAAS_API_URL || "https://sandbox.asaas.com/api/v3";
-const ASAAS_API_KEY = process.env.ASAAS_API_KEY || "";
+const ASAAS_API_URL = process.env.ASAAS_API_URL || 'https://sandbox.asaas.com/api/v3';
+const ASAAS_API_KEY = process.env.ASAAS_API_KEY ?? '';
 
 /**
  * Verifica se a integração Asaas está configurada.
+ * Requer uma chave não vazia com ao menos 10 caracteres.
  * @returns {boolean}
  */
 export function isAsaasConfigured() {
-  return !!ASAAS_API_KEY;
+  return typeof ASAAS_API_KEY === 'string' && ASAAS_API_KEY.trim().length >= 10;
 }
 
 /**
@@ -31,15 +31,13 @@ export function isAsaasConfigured() {
  */
 async function asaasRequest(endpoint, options = {}) {
   if (!isAsaasConfigured()) {
-    throw new Error(
-      "ASAAS_NOT_CONFIGURED: Set ASAAS_API_KEY environment variable",
-    );
+    throw new Error('ASAAS_NOT_CONFIGURED: Set ASAAS_API_KEY environment variable');
   }
 
   const response = await fetch(`${ASAAS_API_URL}${endpoint}`, {
     ...options,
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       access_token: ASAAS_API_KEY,
       ...options.headers,
     },
@@ -47,9 +45,7 @@ async function asaasRequest(endpoint, options = {}) {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(
-      `ASAAS_API_ERROR: ${response.status} - ${JSON.stringify(error)}`,
-    );
+    throw new Error(`ASAAS_API_ERROR: ${response.status} - ${JSON.stringify(error)}`);
   }
 
   return response.json();
@@ -75,8 +71,8 @@ export async function createCustomer({ name, email, cpfCnpj, phone }) {
     };
   }
 
-  return asaasRequest("/customers", {
-    method: "POST",
+  return asaasRequest('/customers', {
+    method: 'POST',
     body: JSON.stringify({
       name,
       email,
@@ -97,9 +93,7 @@ export async function findCustomerByEmail(email) {
     return null;
   }
 
-  const result = await asaasRequest(
-    `/customers?email=${encodeURIComponent(email)}`,
-  );
+  const result = await asaasRequest(`/customers?email=${encodeURIComponent(email)}`);
   return result.data?.[0] || null;
 }
 
@@ -115,16 +109,16 @@ export async function findCustomerByEmail(email) {
  */
 export async function createAsaasSubscription({
   customerId,
-  billingType = "UNDEFINED", // BOLETO, CREDIT_CARD, PIX, UNDEFINED (cliente escolhe)
+  billingType = 'UNDEFINED', // BOLETO, CREDIT_CARD, PIX, UNDEFINED (cliente escolhe)
   value,
-  cycle = "MONTHLY",
+  cycle = 'MONTHLY',
   description,
   nextDueDate,
 }) {
   if (!isAsaasConfigured()) {
     return {
       id: `sub_stub_${Date.now()}`,
-      status: "ACTIVE",
+      status: 'ACTIVE',
       customerId,
       value,
       cycle,
@@ -133,11 +127,10 @@ export async function createAsaasSubscription({
   }
 
   const dueDate =
-    nextDueDate ||
-    new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+    nextDueDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-  return asaasRequest("/subscriptions", {
-    method: "POST",
+  return asaasRequest('/subscriptions', {
+    method: 'POST',
     body: JSON.stringify({
       customer: customerId,
       billingType,
@@ -160,7 +153,7 @@ export async function cancelAsaasSubscription(subscriptionId) {
   }
 
   return asaasRequest(`/subscriptions/${subscriptionId}`, {
-    method: "DELETE",
+    method: 'DELETE',
   });
 }
 
@@ -199,7 +192,7 @@ export async function getPaymentDetails(paymentId) {
 
   // Buscar QR Code Pix se disponível
   let pixQrCode = null;
-  if (payment.billingType === "PIX") {
+  if (payment.billingType === 'PIX') {
     try {
       const pix = await asaasRequest(`/payments/${paymentId}/pixQrCode`);
       pixQrCode = pix;
@@ -225,7 +218,7 @@ export async function getPaymentDetails(paymentId) {
  * @param {string} billingCycle — MONTHLY, QUARTERLY, YEARLY
  * @returns {{ value: number, cycle: string, description: string }}
  */
-export function mapPlanToAsaas(planType, billingCycle = "MONTHLY") {
+export function mapPlanToAsaas(planType, billingCycle = 'MONTHLY') {
   const plans = {
     FREE: { MONTHLY: 0, QUARTERLY: 0, YEARLY: 0 },
     PREMIUM: { MONTHLY: 299, QUARTERLY: 799, YEARLY: 2990 },
@@ -233,16 +226,16 @@ export function mapPlanToAsaas(planType, billingCycle = "MONTHLY") {
   };
 
   const cycleMap = {
-    MONTHLY: "MONTHLY",
-    QUARTERLY: "QUARTERLY",
-    YEARLY: "YEARLY",
+    MONTHLY: 'MONTHLY',
+    QUARTERLY: 'QUARTERLY',
+    YEARLY: 'YEARLY',
   };
 
   const value = plans[planType]?.[billingCycle] || 0;
 
   return {
     value,
-    cycle: cycleMap[billingCycle] || "MONTHLY",
+    cycle: cycleMap[billingCycle] || 'MONTHLY',
     description: `RacketApp - Plano ${planType} (${billingCycle})`,
   };
 }

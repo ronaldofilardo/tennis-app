@@ -120,6 +120,8 @@ export const MatchCreateSchema = z.object({
   createdByUserId: z.string().optional().nullable(), // User que criou
   club_id: z.string().optional().nullable(),
   openForAnnotation: z.boolean().optional().default(false), // Permite qualquer autenticado anotar
+  scheduledAt: z.string().datetime({ offset: true }).optional().nullable(), // Data/hora agendada ISO string
+  venueId: z.string().optional().nullable(), // ID do local no diretório
   metadata: z.record(z.unknown()).optional().nullable(),
   tags: z.array(z.string()).optional().nullable(),
   _meta: z

@@ -1,25 +1,26 @@
 // frontend/src/App.tsx (Refatorado com Multi-tenancy, JWT Auth e Torneios)
 
-import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-import "./App.css";
-import Dashboard from "./pages/Dashboard";
-import MatchSetup from "./pages/MatchSetup";
-import ScoreboardV2 from "./pages/ScoreboardV2";
-import AuthPage from "./pages/AuthPage";
-import TournamentDashboard from "./pages/TournamentDashboard";
-import GestorDashboard from "./pages/GestorDashboard";
-import AdminDashboard from "./pages/AdminDashboard";
-import JoinClubPage from "./pages/JoinClub";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import { MatchesProvider, useMatches } from "./contexts/MatchesContext";
-import {
-  NavigationProvider,
-  useNavigation,
-} from "./contexts/NavigationContext";
-import { ToastProvider } from "./components/Toast";
-import ClubSelector from "./components/ClubSelector";
-import OfflineBanner from "./components/OfflineBanner";
+import React from 'react';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import './App.css';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { MatchesProvider, useMatches } from './contexts/MatchesContext';
+import { NavigationProvider, useNavigation } from './contexts/NavigationContext';
+import { ToastProvider } from './components/Toast';
+import ClubSelector from './components/ClubSelector';
+import OfflineBanner from './components/OfflineBanner';
+import LoadingIndicator from './components/LoadingIndicator';
+
+const Dashboard = React.lazy(() => import('./pages/Dashboard'));
+const MatchSetup = React.lazy(() => import('./pages/MatchSetup'));
+const ScoreboardV2 = React.lazy(() => import('./pages/ScoreboardV2'));
+const AuthPage = React.lazy(() => import('./pages/AuthPage'));
+const TournamentDashboard = React.lazy(() => import('./pages/TournamentDashboard'));
+const GestorDashboard = React.lazy(() => import('./pages/GestorDashboard'));
+const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
+const JoinClubPage = React.lazy(() => import('./pages/JoinClub'));
+const MatchDiscovery = React.lazy(() => import('./pages/MatchDiscovery'));
+const MatchReport = React.lazy(() => import('./pages/MatchReport'));
 
 function App() {
   return (
@@ -48,9 +49,11 @@ const AppContent: React.FC = () => {
     navigateToLogin,
   } = useNavigation();
 
-  const isGestor = activeClub?.role === "GESTOR";
+  const navigate = useNavigate();
 
-  const isAdmin = activeClub?.role === "ADMIN";
+  const isGestor = activeClub?.role === 'GESTOR';
+
+  const isAdmin = activeClub?.role === 'ADMIN';
 
   return (
     <div className="app-container">
@@ -59,28 +62,12 @@ const AppContent: React.FC = () => {
       <header className="app-header">
         <h1>RacketApp</h1>
         {isAuthenticated && (
-          <div
-            style={{
-              marginLeft: "auto",
-              display: "flex",
-              gap: 12,
-              alignItems: "center",
-            }}
-          >
+          <div className="ml-auto flex items-center gap-3">
             <ClubSelector variant="dropdown" />
             {isAdmin && (
               <button
                 onClick={navigateToAdminDashboard}
-                style={{
-                  background: "rgba(239,68,68,0.12)",
-                  color: "#ef4444",
-                  border: "1px solid rgba(239,68,68,0.25)",
-                  padding: "4px 12px",
-                  borderRadius: 8,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
+                className="cursor-pointer rounded-lg border border-red-500/25 bg-red-500/10 px-3 py-1 text-xs font-semibold text-red-500"
               >
                 🔑 Admin
               </button>
@@ -88,24 +75,13 @@ const AppContent: React.FC = () => {
             {isGestor && (
               <button
                 onClick={navigateToGestorDashboard}
-                style={{
-                  background: "rgba(234,179,8,0.12)",
-                  color: "#eab308",
-                  border: "1px solid rgba(234,179,8,0.25)",
-                  padding: "4px 12px",
-                  borderRadius: 8,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
+                className="cursor-pointer rounded-lg border border-yellow-500/25 bg-yellow-500/10 px-3 py-1 text-xs font-semibold text-yellow-500"
               >
                 👔 Painel Gestor
               </button>
             )}
             {currentUser && (
-              <span style={{ fontSize: 12 }}>
-                {currentUser.name || currentUser.email}
-              </span>
+              <span className="text-xs">{currentUser.name || currentUser.email}</span>
             )}
             <button
               onClick={() => {
@@ -120,131 +96,144 @@ const AppContent: React.FC = () => {
       </header>
 
       <main>
-        <Routes>
-          {/* Rota de Auth (Login/Registro) */}
-          <Route path="/login" element={<AuthPage />} />
+        <React.Suspense fallback={<LoadingIndicator />}>
+          <Routes>
+            {/* Rota de Auth (Login/Registro) */}
+            <Route path="/login" element={<AuthPage />} />
 
-          {/* Dashboard — ADMIN e GESTOR são redirecionados */}
-          <Route
-            path="/dashboard"
-            element={
-              isAuthenticated ? (
-                isAdmin ? (
-                  <Navigate to="/admin" replace />
-                ) : isGestor ? (
-                  <Navigate to="/gestor" replace />
+            {/* Dashboard — ADMIN e GESTOR são redirecionados */}
+            <Route
+              path="/dashboard"
+              element={
+                isAuthenticated ? (
+                  isAdmin ? (
+                    <Navigate to="/admin" replace />
+                  ) : isGestor ? (
+                    <Navigate to="/gestor" replace />
+                  ) : (
+                    <Dashboard
+                      onNewMatchClick={navigateToNewMatch}
+                      onDiscoverMatches={() => navigate('/partidas')}
+                      onContinueMatch={(match, initialState) =>
+                        navigateToMatch(match.id.toString(), initialState)
+                      }
+                      onStartMatch={(match) => navigateToMatch(match.id.toString())}
+                      matches={matches}
+                      loading={loading}
+                      error={error}
+                      currentUser={currentUser}
+                    />
+                  )
                 ) : (
-                  <Dashboard
-                    onNewMatchClick={navigateToNewMatch}
-                    onContinueMatch={(match, initialState) =>
-                      navigateToMatch(match.id.toString(), initialState)
-                    }
-                    onStartMatch={(match) =>
-                      navigateToMatch(match.id.toString())
-                    }
-                    matches={matches}
-                    loading={loading}
-                    error={error}
-                    currentUser={currentUser}
+                  <Navigate to="/login" />
+                )
+              }
+            />
+
+            {/* Criar Partida */}
+            <Route
+              path="/match/new"
+              element={
+                isAuthenticated ? (
+                  <MatchSetup
+                    onBackToDashboard={navigateToDashboard}
+                    onMatchCreated={(matchData) => {
+                      addMatch(matchData);
+                      navigateToMatch(matchData.id);
+                    }}
                   />
-                )
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-
-          {/* Criar Partida */}
-          <Route
-            path="/match/new"
-            element={
-              isAuthenticated ? (
-                <MatchSetup
-                  onBackToDashboard={navigateToDashboard}
-                  onMatchCreated={(matchData) => {
-                    addMatch(matchData);
-                    navigateToMatch(matchData.id);
-                  }}
-                />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-
-          {/* Placar */}
-          <Route
-            path="/match/:matchId"
-            element={
-              isAuthenticated ? (
-                <ScoreboardV2 onEndMatch={navigateToDashboard} />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-
-          {/* Painel do Gestor */}
-          <Route
-            path="/gestor"
-            element={
-              isAuthenticated ? (
-                isGestor ? (
-                  <GestorDashboard />
                 ) : (
-                  <Navigate to={isAdmin ? "/admin" : "/dashboard"} />
+                  <Navigate to="/login" />
                 )
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
+              }
+            />
 
-          {/* Painel Admin — acesso restrito a ADMIN */}
-          <Route
-            path="/admin"
-            element={
-              isAuthenticated && isAdmin ? (
-                <AdminDashboard />
-              ) : (
-                <Navigate to={isAuthenticated ? "/dashboard" : "/login"} />
-              )
-            }
-          />
+            {/* Placar */}
+            <Route
+              path="/match/:matchId"
+              element={
+                isAuthenticated ? (
+                  <ScoreboardV2 onEndMatch={navigateToDashboard} />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
 
-          {/* Torneios */}
-          <Route
-            path="/tournaments"
-            element={
-              isAuthenticated ? (
-                <TournamentDashboard />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
+            {/* Painel do Gestor */}
+            <Route
+              path="/gestor"
+              element={
+                isAuthenticated ? (
+                  isGestor ? (
+                    <GestorDashboard />
+                  ) : (
+                    <Navigate to={isAdmin ? '/admin' : '/dashboard'} />
+                  )
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
 
-          {/* Entrar no Clube via convite (público) */}
-          <Route path="/join/:code" element={<JoinClubPage />} />
+            {/* Painel Admin — acesso restrito a ADMIN */}
+            <Route
+              path="/admin"
+              element={
+                isAuthenticated && isAdmin ? (
+                  <AdminDashboard />
+                ) : (
+                  <Navigate to={isAuthenticated ? '/dashboard' : '/login'} />
+                )
+              }
+            />
 
-          {/* Rota Padrão */}
-          <Route
-            path="*"
-            element={
-              <Navigate
-                to={
-                  isAuthenticated
-                    ? isAdmin
-                      ? "/admin"
-                      : isGestor
-                        ? "/gestor"
-                        : "/dashboard"
-                    : "/login"
-                }
-              />
-            }
-          />
-        </Routes>
+            {/* Torneios */}
+            <Route
+              path="/tournaments"
+              element={isAuthenticated ? <TournamentDashboard /> : <Navigate to="/login" />}
+            />
+
+            {/* Entrar no Clube via convite (público) */}
+            <Route path="/join/:code" element={<JoinClubPage />} />
+
+            {/* Descobrir partidas */}
+            <Route
+              path="/partidas"
+              element={
+                isAuthenticated ? (
+                  <MatchDiscovery onBack={() => navigate(-1)} />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+
+            {/* Relatório de partida anotada */}
+            <Route
+              path="/match-report/:matchId/:sessionId"
+              element={isAuthenticated ? <MatchReport /> : <Navigate to="/login" />}
+            />
+
+            {/* Rota Padrão */}
+            <Route
+              path="*"
+              element={
+                <Navigate
+                  to={
+                    isAuthenticated
+                      ? isAdmin
+                        ? '/admin'
+                        : isGestor
+                          ? '/gestor'
+                          : '/dashboard'
+                      : '/login'
+                  }
+                />
+              }
+            />
+          </Routes>
+        </React.Suspense>
       </main>
     </div>
   );

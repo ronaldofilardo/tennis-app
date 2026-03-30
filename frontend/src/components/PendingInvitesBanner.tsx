@@ -2,9 +2,9 @@
 // Exibe convites de clube pendentes para o atleta confirmar.
 // Consumido no Dashboard → aba "home".
 
-import React, { useState, useEffect, useCallback } from "react";
-import httpClient from "../config/httpClient";
-import { useToast } from "./Toast";
+import React, { useState, useEffect, useCallback } from 'react';
+import { httpClient } from '../config/httpClient';
+import { useToast } from './Toast';
 
 interface PendingInvite {
   id: string;
@@ -25,7 +25,7 @@ const PendingInvitesBanner: React.FC = () => {
 
   const fetchInvites = useCallback(async () => {
     try {
-      const res = await httpClient.get<PendingInvite[]>("/clubs/my-invites");
+      const res = await httpClient.get<PendingInvite[]>('/clubs/my-invites');
       setInvites(res.data);
     } catch {
       // silencioso — não atrapalhar o flow principal
@@ -39,14 +39,11 @@ const PendingInvitesBanner: React.FC = () => {
   const handleConfirm = async (invite: PendingInvite) => {
     setConfirming(invite.id);
     try {
-      await httpClient.patch(
-        `/clubs/${invite.clubId}/members/${invite.id}/confirm`,
-        {},
-      );
+      await httpClient.patch(`/clubs/${invite.clubId}/members/${invite.id}/confirm`, {});
       toast.success(`Você confirmou sua entrada no clube ${invite.club.name}!`);
       setInvites((prev) => prev.filter((i) => i.id !== invite.id));
     } catch {
-      toast.error("Não foi possível confirmar. Tente novamente.");
+      toast.error('Não foi possível confirmar. Tente novamente.');
     } finally {
       setConfirming(null);
     }
@@ -55,16 +52,12 @@ const PendingInvitesBanner: React.FC = () => {
   if (invites.length === 0) return null;
 
   return (
-    <div
-      className="pending-invites-banner"
-      role="region"
-      aria-label="Convites de clube pendentes"
-    >
+    <div className="pending-invites-banner" role="region" aria-label="Convites de clube pendentes">
       <div className="pending-invites-title">
         <span className="pending-invites-icon">📬</span>
         <strong>
           {invites.length === 1
-            ? "1 convite de clube aguardando"
+            ? '1 convite de clube aguardando'
             : `${invites.length} convites de clube aguardando`}
         </strong>
       </div>
@@ -74,12 +67,9 @@ const PendingInvitesBanner: React.FC = () => {
             <div className="pending-invite-club">
               <span className="pending-invite-logo-placeholder">🏟️</span>
               <div className="pending-invite-info">
-                <span className="pending-invite-club-name">
-                  {invite.club.name}
-                </span>
+                <span className="pending-invite-club-name">{invite.club.name}</span>
                 <span className="pending-invite-date">
-                  Adicionado em{" "}
-                  {new Date(invite.joinedAt).toLocaleDateString("pt-BR")}
+                  Adicionado em {new Date(invite.joinedAt).toLocaleDateString('pt-BR')}
                 </span>
               </div>
             </div>
@@ -89,7 +79,7 @@ const PendingInvitesBanner: React.FC = () => {
               disabled={confirming === invite.id}
               aria-label={`Confirmar entrada no clube ${invite.club.name}`}
             >
-              {confirming === invite.id ? "Confirmando…" : "Confirmar"}
+              {confirming === invite.id ? 'Confirmando…' : 'Confirmar'}
             </button>
           </div>
         ))}

@@ -7,9 +7,9 @@
   inset: 0;
   background: rgba(0, 0, 0, 0.82);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 2000;
   padding: 16px;
   overflow-y: auto;
   animation: pdFadeIn 0.2s ease-out;
@@ -42,7 +42,7 @@
   display: flex;
   flex-direction: column;
   margin: auto;
-  font-family: var(--font-main, "Inter", sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
   color: var(--text-primary, #f8fafc);
   overflow: hidden;
 }
@@ -142,7 +142,7 @@
   color: var(--text-secondary, #94a3b8);
   line-height: 1.2;
   user-select: none;
-  font-family: var(--font-main, "Inter", sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .pd-btn:hover:not(:disabled) {
@@ -205,7 +205,7 @@
   transition:
     background var(--transition-fast, 150ms ease),
     box-shadow var(--transition-fast, 150ms ease);
-  font-family: var(--font-main, "Inter", sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
   letter-spacing: 0.01em;
 }
 
@@ -235,7 +235,7 @@
     background var(--transition-fast, 150ms ease),
     border-color var(--transition-fast, 150ms ease),
     color var(--transition-fast, 150ms ease);
-  font-family: var(--font-main, "Inter", sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .pd-btn-skip:hover {
@@ -258,7 +258,7 @@
     background var(--transition-fast, 150ms ease),
     border-color var(--transition-fast, 150ms ease);
   width: 100%;
-  font-family: var(--font-main, "Inter", sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .pd-btn-cancel:hover {

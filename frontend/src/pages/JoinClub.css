@@ -1,0 +1,125 @@
+/* JoinClub.css */
+
+.join-club-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--court-bg, #0a0f14);
+}
+
+.join-club-card {
+  max-width: 420px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 40px 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.join-club-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+  object-fit: cover;
+  margin-bottom: 8px;
+}
+
+.join-club-logo-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+  background: var(--accent-gold, #eab308);
+  color: #000;
+  font-size: 36px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.join-club-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary, #f8fafc);
+  margin: 0;
+}
+
+.join-club-subtitle {
+  font-size: 15px;
+  color: var(--text-secondary, #8fb8a4);
+  margin: 0;
+}
+
+.join-club-member-count {
+  font-size: 14px;
+  color: var(--text-muted, #4a5e54);
+  margin: 4px 0 12px;
+}
+
+.join-club-description {
+  font-size: 14px;
+  color: var(--text-secondary, #8fb8a4);
+  margin-bottom: 16px;
+}
+
+.join-club-already-member {
+  font-size: 15px;
+  color: var(--success-green, #22c55e);
+  font-weight: 600;
+  margin: 12px 0;
+}
+
+.join-club-login-note {
+  font-size: 13px;
+  color: var(--text-muted, #4a5e54);
+  margin: 0;
+}
+
+.join-club-loading {
+  font-size: 15px;
+  color: var(--text-secondary, #8fb8a4);
+  padding: 24px;
+}
+
+.join-club-error-icon {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.join-club-btn-primary {
+  margin-top: 8px;
+  padding: 12px 32px;
+  background: var(--accent-gold, #eab308);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.join-club-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.join-club-btn-secondary {
+  margin-top: 8px;
+  padding: 10px 24px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary, #f8fafc);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+}

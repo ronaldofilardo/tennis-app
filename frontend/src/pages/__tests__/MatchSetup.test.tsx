@@ -1,12 +1,12 @@
-import "../../../vitest.setup";
-import React from "react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
-import MatchSetup from "../MatchSetup";
+import '../../../vitest.setup';
+import React from 'react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import MatchSetup from '../MatchSetup';
 
 // Mock do CSS
-vi.mock("../MatchSetup.css", () => ({}));
+vi.mock('../MatchSetup.css', () => ({}));
 
 // vi.hoisted garante inicialização antes do hoisting do vi.mock
 const { mockHttpClient, mockToastError } = vi.hoisted(() => ({
@@ -21,17 +21,17 @@ const { mockHttpClient, mockToastError } = vi.hoisted(() => ({
 }));
 
 // Mock do httpClient (usado por MatchSetup e AuthProvider)
-vi.mock("../../config/httpClient", () => ({ default: mockHttpClient }));
+vi.mock('../../config/httpClient', () => ({ default: mockHttpClient, httpClient: mockHttpClient }));
 
 // Mock do themeProvider (necessário para AuthProvider)
-vi.mock("../../config/themeProvider", () => ({
+vi.mock('../../config/themeProvider', () => ({
   loadClubTheme: vi.fn().mockResolvedValue({}),
   applyClubTheme: vi.fn(),
   resetTheme: vi.fn(),
 }));
 
 // Mock do logger
-vi.mock("../../services/logger", () => ({
+vi.mock('../../services/logger', () => ({
   createLogger: () => ({
     info: vi.fn(),
     warn: vi.fn(),
@@ -51,7 +51,7 @@ vi.mock("../../services/logger", () => ({
 }));
 
 // Mock do Toast
-vi.mock("../../components/Toast", () => ({
+vi.mock('../../components/Toast', () => ({
   useToast: () => ({
     showToast: vi.fn(),
     success: vi.fn(),
@@ -64,8 +64,19 @@ vi.mock("../../components/Toast", () => ({
   ToastProvider: ({ children }: any) => children,
 }));
 
+// Mock do VenueSelect
+vi.mock('../../components/VenueSelect', () => ({
+  default: ({ onChange, placeholder }: any) => (
+    <input
+      placeholder={placeholder ?? 'Buscar ou criar local...'}
+      aria-label="Local da partida"
+      onChange={() => onChange({ venueId: null, venueName: '' })}
+    />
+  ),
+}));
+
 // Mock do AthleteSearchInput — simula seleção via onChange para facilitar testes
-vi.mock("../../components/AthleteSearchInput", () => ({
+vi.mock('../../components/AthleteSearchInput', () => ({
   default: ({ id, label, placeholder, onSelect }: any) => (
     <div>
       <label htmlFor={id}>{label}</label>
@@ -79,7 +90,7 @@ vi.mock("../../components/AthleteSearchInput", () => ({
               ? {
                   id: `athlete_${Date.now()}`,
                   name: e.target.value,
-                  email: "",
+                  email: '',
                 }
               : null,
           )
@@ -91,7 +102,7 @@ vi.mock("../../components/AthleteSearchInput", () => ({
 
 // Mock do alert global
 const mockAlert = vi.fn();
-vi.stubGlobal("alert", mockAlert);
+vi.stubGlobal('alert', mockAlert);
 
 const defaultProps = {
   onMatchCreated: vi.fn(),
@@ -99,9 +110,9 @@ const defaultProps = {
   players: [],
 };
 
-import { AuthProvider } from "../../contexts/AuthContext";
-import { MatchesProvider } from "../../contexts/MatchesContext";
-import { NavigationProvider } from "../../contexts/NavigationContext";
+import { AuthProvider } from '../../contexts/AuthContext';
+import { MatchesProvider } from '../../contexts/MatchesContext';
+import { NavigationProvider } from '../../contexts/NavigationContext';
 
 const renderMatchSetup = (props = {}) => {
   return render(
@@ -119,49 +130,56 @@ const renderMatchSetup = (props = {}) => {
 
 const mockMatchResponse = {
   data: {
-    id: "test-match-id",
-    sportType: "TENNIS",
-    format: "BEST_OF_3",
-    players: { p1: "Jogador 1", p2: "Jogador 2" },
-    status: "NOT_STARTED",
+    id: 'test-match-id',
+    sportType: 'TENNIS',
+    format: 'BEST_OF_3',
+    players: { p1: 'Jogador 1', p2: 'Jogador 2' },
+    status: 'NOT_STARTED',
   },
 };
 
-describe("MatchSetup - Match Creation Flow", () => {
+describe('MatchSetup - Match Creation Flow', () => {
   beforeEach(() => {
     (global as any).resetGlobalMocks();
     mockHttpClient.post.mockReset();
     mockHttpClient.post.mockResolvedValue(mockMatchResponse);
   });
 
-  describe("Match creation and navigation", () => {
-    it("creates match and navigates without showing alert", async () => {
+  describe('Match creation and navigation', () => {
+    it('creates match and navigates without showing alert', async () => {
       const mockOnMatchCreated = vi.fn();
       renderMatchSetup({ onMatchCreated: mockOnMatchCreated });
 
       // Preenche os campos usando o AthleteSearchInput mockado
-      const [player1Input, player2Input] =
-        screen.getAllByPlaceholderText("Buscar atleta...");
+      const [player1Input, player2Input] = screen.getAllByPlaceholderText('Buscar atleta...');
 
-      fireEvent.change(player1Input, { target: { value: "Jogador 1" } });
-      fireEvent.change(player2Input, { target: { value: "Jogador 2" } });
+      fireEvent.change(player1Input, { target: { value: 'Jogador 1' } });
+      fireEvent.change(player2Input, { target: { value: 'Jogador 2' } });
+
+      // Preenche data e horário (obrigatórios)
+      fireEvent.change(screen.getByLabelText('Data da partida'), {
+        target: { value: '2025-12-01' },
+      });
+      fireEvent.change(screen.getByLabelText('Horário da partida'), {
+        target: { value: '10:00' },
+      });
 
       // Submit form
-      const submitButton = screen.getByRole("button", {
-        name: "Iniciar Partida",
+      const submitButton = screen.getByRole('button', {
+        name: 'Iniciar Partida',
       });
       fireEvent.click(submitButton);
 
       // Wait for API call
       await waitFor(() => {
         expect(mockHttpClient.post).toHaveBeenCalledWith(
-          "/matches",
+          '/matches',
           expect.objectContaining({
-            sportType: "TENNIS",
-            format: "BEST_OF_3",
-            players: { p1: "Jogador 1", p2: "Jogador 2" },
+            sportType: 'TENNIS',
+            format: 'BEST_OF_3',
+            players: { p1: 'Jogador 1', p2: 'Jogador 2' },
             nickname: null,
-            visibility: "PLAYERS_ONLY",
+            visibility: 'PLAYERS_ONLY',
           }),
         );
       });
@@ -173,77 +191,88 @@ describe("MatchSetup - Match Creation Flow", () => {
       expect(mockAlert).not.toHaveBeenCalled();
     });
 
-    it("handles API errors gracefully", async () => {
-      mockHttpClient.post.mockRejectedValue(new Error("API Error"));
+    it('handles API errors gracefully', async () => {
+      mockHttpClient.post.mockRejectedValue(new Error('API Error'));
       renderMatchSetup();
 
       // Preenche os campos usando o AthleteSearchInput mockado
-      const [player1Input2, player2Input2] =
-        screen.getAllByPlaceholderText("Buscar atleta...");
+      const [player1Input2, player2Input2] = screen.getAllByPlaceholderText('Buscar atleta...');
 
-      fireEvent.change(player1Input2, { target: { value: "Jogador 1" } });
-      fireEvent.change(player2Input2, { target: { value: "Jogador 2" } });
+      fireEvent.change(player1Input2, { target: { value: 'Jogador 1' } });
+      fireEvent.change(player2Input2, { target: { value: 'Jogador 2' } });
+
+      // Preenche data e horário (obrigatórios)
+      fireEvent.change(screen.getByLabelText('Data da partida'), {
+        target: { value: '2025-12-01' },
+      });
+      fireEvent.change(screen.getByLabelText('Horário da partida'), {
+        target: { value: '10:00' },
+      });
 
       // Submit form
-      const submitButton = screen.getByRole("button", {
-        name: "Iniciar Partida",
+      const submitButton = screen.getByRole('button', {
+        name: 'Iniciar Partida',
       });
       fireEvent.click(submitButton);
 
       // Wait for error handling
       await waitFor(() => {
         expect(mockToastError).toHaveBeenCalledWith(
-          "Falha ao criar a partida. Verifique o console do navegador e do backend.",
+          'Falha ao criar a partida. Verifique o console do navegador e do backend.',
           expect.anything(),
         );
       });
     });
 
-    it("validates required player fields", async () => {
+    it('validates required player fields', async () => {
       renderMatchSetup();
 
       // Try to submit without players
-      const submitButton = screen.getByRole("button", {
-        name: "Iniciar Partida",
+      const submitButton = screen.getByRole('button', {
+        name: 'Iniciar Partida',
       });
       fireEvent.click(submitButton);
 
       // Should show error and not call API
       await waitFor(() => {
-        expect(
-          screen.getByText("Os nomes dos jogadores são obrigatórios."),
-        ).toBeInTheDocument();
+        expect(screen.getByText('Os nomes dos jogadores são obrigatórios.')).toBeInTheDocument();
       });
       expect(mockHttpClient.post).not.toHaveBeenCalled();
     });
   });
 
-  describe("Form validation", () => {
-    it("requires both players to be selected", async () => {
+  describe('Form validation', () => {
+    it('requires both players to be selected', async () => {
       renderMatchSetup();
 
-      const submitButton = screen.getByRole("button", {
-        name: "Iniciar Partida",
+      const submitButton = screen.getByRole('button', {
+        name: 'Iniciar Partida',
       });
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(
-          screen.getByText("Os nomes dos jogadores são obrigatórios."),
-        ).toBeInTheDocument();
+        expect(screen.getByText('Os nomes dos jogadores são obrigatórios.')).toBeInTheDocument();
       });
     });
 
-    it("allows form submission when both players are selected", async () => {
+    it('allows form submission when both players are selected', async () => {
       renderMatchSetup();
 
-      const [p1, p2] = screen.getAllByPlaceholderText("Buscar atleta...");
+      const [p1, p2] = screen.getAllByPlaceholderText('Buscar atleta...');
 
-      fireEvent.change(p1, { target: { value: "Jogador 1" } });
-      fireEvent.change(p2, { target: { value: "Jogador 2" } });
+      fireEvent.change(p1, { target: { value: 'Jogador 1' } });
+      fireEvent.change(p2, { target: { value: 'Jogador 2' } });
 
-      const submitButton = screen.getByRole("button", {
-        name: "Iniciar Partida",
+      // Preenche data e horário (obrigatórios)
+      fireEvent.change(screen.getByLabelText('Data da partida'), {
+        target: { value: '2025-12-01' },
+      });
+      fireEvent.change(screen.getByLabelText('Horário da partida'), {
+        target: { value: '10:00' },
+      });
+
+      const submitButton = screen.getByRole('button', {
+        name: 'Iniciar Partida',
       });
       fireEvent.click(submitButton);
 
@@ -253,12 +282,12 @@ describe("MatchSetup - Match Creation Flow", () => {
     });
   });
 
-  describe("Back navigation", () => {
-    it("calls onBackToDashboard when back button is clicked", () => {
+  describe('Back navigation', () => {
+    it('calls onBackToDashboard when back button is clicked', () => {
       const mockOnBack = vi.fn();
       renderMatchSetup({ onBackToDashboard: mockOnBack });
 
-      const backButton = screen.getByRole("button", { name: "← Voltar" });
+      const backButton = screen.getByRole('button', { name: '← Voltar' });
       fireEvent.click(backButton);
 
       expect(mockOnBack).toHaveBeenCalledTimes(1);

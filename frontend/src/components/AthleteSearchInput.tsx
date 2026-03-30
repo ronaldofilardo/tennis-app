@@ -1,9 +1,9 @@
 // frontend/src/components/AthleteSearchInput.tsx
 // Componente de busca de atletas com autocomplete — Fase 2
 
-import React, { useState, useRef, useEffect, useCallback } from "react";
-import httpClient from "../config/httpClient";
-import "./AthleteSearchInput.css";
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { httpClient } from '../config/httpClient';
+import './AthleteSearchInput.css';
 
 export interface AthleteResult {
   id: string;
@@ -44,17 +44,17 @@ const MIN_SEARCH_LENGTH = 2;
 
 const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
   label,
-  placeholder = "Buscar atleta por nome ou código...",
+  placeholder = 'Buscar atleta por nome ou código...',
   value,
   onSelect,
   onQueryChange,
-  className = "",
+  className = '',
   disabled = false,
   id,
   excludeUserId,
   excludeAthleteId,
 }) => {
-  const [query, setQuery] = useState(value?.name || "");
+  const [query, setQuery] = useState(value?.name || '');
   const [results, setResults] = useState<AthleteResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -91,15 +91,12 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
   // Fechar dropdown ao clicar fora
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const searchAthletes = useCallback(
@@ -108,10 +105,10 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
       try {
         const excludeParam = excludeUserId
           ? `&excludeUserId=${encodeURIComponent(excludeUserId)}`
-          : "";
+          : '';
         const excludeAthleteParam = excludeAthleteId
           ? `&excludeAthleteId=${encodeURIComponent(excludeAthleteId)}`
-          : "";
+          : '';
         const response = await httpClient.get<{
           athletes: AthleteResult[];
         }>(
@@ -120,9 +117,7 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
 
         // A API retorna { athletes: [...] } — normaliza arrays legados
         const raw = response.data as any;
-        const list: AthleteResult[] = Array.isArray(raw)
-          ? raw
-          : (raw?.athletes ?? []);
+        const list: AthleteResult[] = Array.isArray(raw) ? raw : (raw?.athletes ?? []);
 
         setResults(list);
         setIsOpen(true);
@@ -173,21 +168,21 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
     const totalOptions = results.length;
 
     switch (e.key) {
-      case "ArrowDown":
+      case 'ArrowDown':
         e.preventDefault();
         setHighlightIndex((prev) => (prev < totalOptions - 1 ? prev + 1 : 0));
         break;
-      case "ArrowUp":
+      case 'ArrowUp':
         e.preventDefault();
         setHighlightIndex((prev) => (prev > 0 ? prev - 1 : totalOptions - 1));
         break;
-      case "Enter":
+      case 'Enter':
         e.preventDefault();
         if (highlightIndex >= 0 && highlightIndex < results.length) {
           handleSelect(results[highlightIndex]);
         }
         break;
-      case "Escape":
+      case 'Escape':
         setIsOpen(false);
         break;
     }
@@ -203,10 +198,7 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
   };
 
   return (
-    <div
-      ref={containerRef}
-      className={`athlete-search ${className} ${value ? "has-value" : ""}`}
-    >
+    <div ref={containerRef} className={`athlete-search ${className} ${value ? 'has-value' : ''}`}>
       {label && (
         <label htmlFor={id} className="athlete-search-label">
           {label}
@@ -238,7 +230,7 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
             type="button"
             className="athlete-search-clear"
             onClick={() => {
-              setQuery("");
+              setQuery('');
               onSelect(null);
               inputRef.current?.focus();
             }}
@@ -262,7 +254,7 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
               key={athlete.id}
               role="option"
               aria-selected={highlightIndex === idx}
-              className={`athlete-result-item ${highlightIndex === idx ? "highlighted" : ""}`}
+              className={`athlete-result-item ${highlightIndex === idx ? 'highlighted' : ''}`}
               onClick={() => handleSelect(athlete)}
               onMouseEnter={() => setHighlightIndex(idx)}
             >
@@ -274,28 +266,20 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
                 )}
                 <span className="athlete-result-name">{athlete.name}</span>
                 {athlete.nickname && (
-                  <span className="athlete-result-nickname">
-                    ({athlete.nickname})
-                  </span>
+                  <span className="athlete-result-nickname">({athlete.nickname})</span>
                 )}
               </div>
               <div className="athlete-result-meta">
                 {athlete.clubName && (
-                  <span
-                    className={`athlete-result-club ${athlete.isOwnClub ? "own" : ""}`}
-                  >
+                  <span className={`athlete-result-club ${athlete.isOwnClub ? 'own' : ''}`}>
                     {athlete.clubName}
                   </span>
                 )}
                 {athlete.category && (
-                  <span className="athlete-result-category">
-                    {athlete.category}
-                  </span>
+                  <span className="athlete-result-category">{athlete.category}</span>
                 )}
                 {athlete.ranking != null && (
-                  <span className="athlete-result-ranking">
-                    #{athlete.ranking}
-                  </span>
+                  <span className="athlete-result-ranking">#{athlete.ranking}</span>
                 )}
               </div>
             </li>
@@ -303,14 +287,9 @@ const AthleteSearchInput: React.FC<AthleteSearchInputProps> = ({
         </ul>
       )}
 
-      {isOpen &&
-        results.length === 0 &&
-        !isLoading &&
-        query.length >= MIN_SEARCH_LENGTH && (
-          <div className="athlete-search-empty">
-            Nenhum atleta encontrado para "{query}"
-          </div>
-        )}
+      {isOpen && results.length === 0 && !isLoading && query.length >= MIN_SEARCH_LENGTH && (
+        <div className="athlete-search-empty">Nenhum atleta encontrado para "{query}"</div>
+      )}
     </div>
   );
 };

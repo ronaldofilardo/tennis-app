@@ -47,6 +47,10 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    // Bundle atual ~880 kB (pré-compressão). TODO: lazy-loading de rotas quando crescer
+    chunkSizeWarningLimit: 1000,
+  },
   server: {
     host: '0.0.0.0',
     port: 5173,

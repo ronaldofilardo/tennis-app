@@ -1,29 +1,20 @@
 // frontend/src/components/ClubSelector.tsx
 // Componente de seleção de clube para usuários com múltiplos clubes
 
-import React, { useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
-import type { ClubMembership } from "../contexts/AuthContext";
-import "./ClubSelector.css";
+import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import type { ClubMembership } from '../contexts/AuthContext';
+import { ROLE_LABELS } from '../types/roles';
+import './ClubSelector.css';
 
 interface ClubSelectorProps {
   /** Mostra versão compacta (dropdown) ou cards */
-  variant?: "dropdown" | "cards";
+  variant?: 'dropdown' | 'cards';
   /** Callback quando um clube é selecionado */
   onClubSelected?: (club: ClubMembership) => void;
 }
 
-const ROLE_LABELS: Record<string, string> = {
-  ADMIN: "Administrador",
-  COACH: "Treinador",
-  PLAYER: "Atleta",
-  SPECTATOR: "Espectador",
-};
-
-const ClubSelector: React.FC<ClubSelectorProps> = ({
-  variant = "dropdown",
-  onClubSelected,
-}) => {
+const ClubSelector: React.FC<ClubSelectorProps> = ({ variant = 'dropdown', onClubSelected }) => {
   const { currentUser, activeClub, switchClub, loading } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -33,9 +24,7 @@ const ClubSelector: React.FC<ClubSelectorProps> = ({
       return (
         <div className="club-badge">
           <span className="club-badge-name">{activeClub.clubName}</span>
-          <span className="club-badge-role">
-            {ROLE_LABELS[activeClub.role] || activeClub.role}
-          </span>
+          <span className="club-badge-role">{ROLE_LABELS[activeClub.role] || activeClub.role}</span>
         </div>
       );
     }
@@ -53,7 +42,7 @@ const ClubSelector: React.FC<ClubSelectorProps> = ({
   };
 
   // === Modo Dropdown (header) ===
-  if (variant === "dropdown") {
+  if (variant === 'dropdown') {
     return (
       <div className="club-selector-dropdown">
         <button
@@ -61,13 +50,11 @@ const ClubSelector: React.FC<ClubSelectorProps> = ({
           onClick={() => setIsOpen(!isOpen)}
           disabled={loading}
         >
-          <span className="club-trigger-name">
-            {activeClub?.clubName || "Selecionar clube"}
-          </span>
+          <span className="club-trigger-name">{activeClub?.clubName || 'Selecionar clube'}</span>
           <span className="club-trigger-role">
-            {activeClub ? ROLE_LABELS[activeClub.role] || activeClub.role : ""}
+            {activeClub ? ROLE_LABELS[activeClub.role] || activeClub.role : ''}
           </span>
-          <span className="club-trigger-arrow">{isOpen ? "▲" : "▼"}</span>
+          <span className="club-trigger-arrow">{isOpen ? '▲' : '▼'}</span>
         </button>
 
         {isOpen && (
@@ -75,14 +62,12 @@ const ClubSelector: React.FC<ClubSelectorProps> = ({
             {currentUser.clubs.map((club) => (
               <button
                 key={club.clubId}
-                className={`club-option ${club.clubId === currentUser.activeClubId ? "active" : ""}`}
+                className={`club-option ${club.clubId === currentUser.activeClubId ? 'active' : ''}`}
                 onClick={() => handleSelect(club)}
                 disabled={loading}
               >
                 <span className="club-option-name">{club.clubName}</span>
-                <span className="club-option-role">
-                  {ROLE_LABELS[club.role] || club.role}
-                </span>
+                <span className="club-option-role">{ROLE_LABELS[club.role] || club.role}</span>
               </button>
             ))}
           </div>
@@ -99,14 +84,12 @@ const ClubSelector: React.FC<ClubSelectorProps> = ({
         {currentUser.clubs.map((club) => (
           <button
             key={club.clubId}
-            className={`club-card ${club.clubId === currentUser.activeClubId ? "active" : ""}`}
+            className={`club-card ${club.clubId === currentUser.activeClubId ? 'active' : ''}`}
             onClick={() => handleSelect(club)}
             disabled={loading}
           >
             <span className="club-card-name">{club.clubName}</span>
-            <span className="club-card-role">
-              {ROLE_LABELS[club.role] || club.role}
-            </span>
+            <span className="club-card-role">{ROLE_LABELS[club.role] || club.role}</span>
           </button>
         ))}
       </div>

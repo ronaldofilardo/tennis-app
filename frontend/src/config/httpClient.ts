@@ -3,7 +3,7 @@
 // Camada de abstração sobre fetch que injeta automaticamente headers
 // de identificação de tenant, autenticação e versionamento de payload.
 
-import { API_URL } from "./api";
+import { API_URL } from './api';
 
 // === Tipos ===
 
@@ -17,7 +17,7 @@ export interface AuthConfig {
   refreshToken?: string | null;
 }
 
-export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export interface HttpRequestConfig {
   method?: HttpMethod;
@@ -43,27 +43,22 @@ export interface HttpResponse<T = unknown> {
 // === Erros tipados ===
 
 export type HttpErrorType =
-  | "NETWORK_ERROR"
-  | "TIMEOUT_ERROR"
-  | "AUTH_ERROR"
-  | "PERMISSION_ERROR"
-  | "VALIDATION_ERROR"
-  | "SERVER_ERROR"
-  | "UNKNOWN_ERROR";
+  | 'NETWORK_ERROR'
+  | 'TIMEOUT_ERROR'
+  | 'AUTH_ERROR'
+  | 'PERMISSION_ERROR'
+  | 'VALIDATION_ERROR'
+  | 'SERVER_ERROR'
+  | 'UNKNOWN_ERROR';
 
 export class HttpError extends Error {
   public readonly type: HttpErrorType;
   public readonly status: number;
   public readonly responseData: unknown;
 
-  constructor(
-    message: string,
-    type: HttpErrorType,
-    status: number,
-    responseData?: unknown,
-  ) {
+  constructor(message: string, type: HttpErrorType, status: number, responseData?: unknown) {
     super(message);
-    this.name = "HttpError";
+    this.name = 'HttpError';
     this.type = type;
     this.status = status;
     this.responseData = responseData;
@@ -71,22 +66,22 @@ export class HttpError extends Error {
 
   /** Erro de rede (sem conexão) */
   get isNetworkError(): boolean {
-    return this.type === "NETWORK_ERROR";
+    return this.type === 'NETWORK_ERROR';
   }
 
   /** Token expirado ou inválido */
   get isAuthError(): boolean {
-    return this.type === "AUTH_ERROR";
+    return this.type === 'AUTH_ERROR';
   }
 
   /** Sem permissão (RBAC) */
   get isPermissionError(): boolean {
-    return this.type === "PERMISSION_ERROR";
+    return this.type === 'PERMISSION_ERROR';
   }
 
   /** Erro do servidor (5xx) */
   get isServerError(): boolean {
-    return this.type === "SERVER_ERROR";
+    return this.type === 'SERVER_ERROR';
   }
 }
 
@@ -97,13 +92,9 @@ export type RequestInterceptor = (
   config: HttpRequestConfig,
 ) => HttpRequestConfig | Promise<HttpRequestConfig>;
 
-export type ResponseInterceptor = (
-  response: HttpResponse,
-) => HttpResponse | Promise<HttpResponse>;
+export type ResponseInterceptor = (response: HttpResponse) => HttpResponse | Promise<HttpResponse>;
 
-export type ErrorInterceptor = (
-  error: HttpError,
-) => HttpError | Promise<HttpError>;
+export type ErrorInterceptor = (error: HttpError) => HttpError | Promise<HttpError>;
 
 // === Singleton do HttpClient ===
 
@@ -112,7 +103,7 @@ class HttpClient {
 
   private _tenantConfig: TenantConfig = {
     clubId: null,
-    tenantVersion: "1.0",
+    tenantVersion: '1.0',
   };
 
   private _authConfig: AuthConfig = {
@@ -163,27 +154,21 @@ class HttpClient {
   public addRequestInterceptor(interceptor: RequestInterceptor): () => void {
     this._requestInterceptors.push(interceptor);
     return () => {
-      this._requestInterceptors = this._requestInterceptors.filter(
-        (i) => i !== interceptor,
-      );
+      this._requestInterceptors = this._requestInterceptors.filter((i) => i !== interceptor);
     };
   }
 
   public addResponseInterceptor(interceptor: ResponseInterceptor): () => void {
     this._responseInterceptors.push(interceptor);
     return () => {
-      this._responseInterceptors = this._responseInterceptors.filter(
-        (i) => i !== interceptor,
-      );
+      this._responseInterceptors = this._responseInterceptors.filter((i) => i !== interceptor);
     };
   }
 
   public addErrorInterceptor(interceptor: ErrorInterceptor): () => void {
     this._errorInterceptors.push(interceptor);
     return () => {
-      this._errorInterceptors = this._errorInterceptors.filter(
-        (i) => i !== interceptor,
-      );
+      this._errorInterceptors = this._errorInterceptors.filter((i) => i !== interceptor);
     };
   }
 
@@ -193,7 +178,7 @@ class HttpClient {
     path: string,
     config?: HttpRequestConfig,
   ): Promise<HttpResponse<T>> {
-    return this.request<T>(path, { ...config, method: "GET" });
+    return this.request<T>(path, { ...config, method: 'GET' });
   }
 
   public async post<T = unknown>(
@@ -201,7 +186,7 @@ class HttpClient {
     body?: unknown,
     config?: HttpRequestConfig,
   ): Promise<HttpResponse<T>> {
-    return this.request<T>(path, { ...config, method: "POST", body });
+    return this.request<T>(path, { ...config, method: 'POST', body });
   }
 
   public async patch<T = unknown>(
@@ -209,7 +194,7 @@ class HttpClient {
     body?: unknown,
     config?: HttpRequestConfig,
   ): Promise<HttpResponse<T>> {
-    return this.request<T>(path, { ...config, method: "PATCH", body });
+    return this.request<T>(path, { ...config, method: 'PATCH', body });
   }
 
   public async put<T = unknown>(
@@ -217,14 +202,14 @@ class HttpClient {
     body?: unknown,
     config?: HttpRequestConfig,
   ): Promise<HttpResponse<T>> {
-    return this.request<T>(path, { ...config, method: "PUT", body });
+    return this.request<T>(path, { ...config, method: 'PUT', body });
   }
 
   public async delete<T = unknown>(
     path: string,
     config?: HttpRequestConfig,
   ): Promise<HttpResponse<T>> {
-    return this.request<T>(path, { ...config, method: "DELETE" });
+    return this.request<T>(path, { ...config, method: 'DELETE' });
   }
 
   // === Request principal ===
@@ -233,7 +218,7 @@ class HttpClient {
     path: string,
     config: HttpRequestConfig = {},
   ): Promise<HttpResponse<T>> {
-    const url = path.startsWith("http") ? path : `${API_URL}${path}`;
+    const url = path.startsWith('http') ? path : `${API_URL}${path}`;
 
     // Aplicar interceptores de request
     let finalConfig = { ...config };
@@ -243,7 +228,7 @@ class HttpClient {
 
     // Montar headers com injeção automática de tenant e auth
     const headers: Record<string, string> = {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       ...this._buildTenantHeaders(finalConfig),
       ...this._buildAuthHeaders(finalConfig),
       ...this._buildVersionHeaders(finalConfig),
@@ -256,20 +241,17 @@ class HttpClient {
 
     if (finalConfig.timeout && !finalConfig.signal) {
       abortController = new AbortController();
-      timeoutId = setTimeout(
-        () => abortController!.abort(),
-        finalConfig.timeout,
-      );
+      timeoutId = setTimeout(() => abortController!.abort(), finalConfig.timeout);
     }
 
     try {
       const fetchOptions: RequestInit = {
-        method: finalConfig.method || "GET",
+        method: finalConfig.method || 'GET',
         headers,
         signal: finalConfig.signal || abortController?.signal,
       };
 
-      if (finalConfig.body && finalConfig.method !== "GET") {
+      if (finalConfig.body && finalConfig.method !== 'GET') {
         fetchOptions.body = JSON.stringify(
           this._wrapPayload(finalConfig.body, finalConfig.payloadVersion),
         );
@@ -325,13 +307,13 @@ class HttpClient {
       }
 
       // Classificar erro de rede vs timeout
-      if (error instanceof DOMException && error.name === "AbortError") {
-        throw new HttpError(`Request timeout para ${url}`, "TIMEOUT_ERROR", 0);
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        throw new HttpError(`Request timeout para ${url}`, 'TIMEOUT_ERROR', 0);
       }
 
       throw new HttpError(
         `Erro de rede ao acessar ${url}: ${(error as Error).message}`,
-        "NETWORK_ERROR",
+        'NETWORK_ERROR',
         0,
       );
     }
@@ -339,19 +321,17 @@ class HttpClient {
 
   // === Helpers internos ===
 
-  private _buildTenantHeaders(
-    config: HttpRequestConfig,
-  ): Record<string, string> {
+  private _buildTenantHeaders(config: HttpRequestConfig): Record<string, string> {
     if (config.skipTenantHeaders) return {};
 
     const headers: Record<string, string> = {};
 
     if (this._tenantConfig.clubId) {
-      headers["X-Club-ID"] = this._tenantConfig.clubId;
+      headers['X-Club-ID'] = this._tenantConfig.clubId;
     }
 
     if (this._tenantConfig.tenantVersion) {
-      headers["X-Tenant-Version"] = this._tenantConfig.tenantVersion;
+      headers['X-Tenant-Version'] = this._tenantConfig.tenantVersion;
     }
 
     return headers;
@@ -363,17 +343,15 @@ class HttpClient {
     const headers: Record<string, string> = {};
 
     if (this._authConfig.token) {
-      headers["Authorization"] = `Bearer ${this._authConfig.token}`;
+      headers['Authorization'] = `Bearer ${this._authConfig.token}`;
     }
 
     return headers;
   }
 
-  private _buildVersionHeaders(
-    config: HttpRequestConfig,
-  ): Record<string, string> {
+  private _buildVersionHeaders(config: HttpRequestConfig): Record<string, string> {
     return {
-      "X-Payload-Version": config.payloadVersion || "1.0",
+      'X-Payload-Version': config.payloadVersion || '1.0',
     };
   }
 
@@ -384,11 +362,11 @@ class HttpClient {
    */
   private _wrapPayload(body: unknown, version?: string): unknown {
     // Por enquanto, apenas adiciona _meta ao payload se for objeto
-    if (body && typeof body === "object" && !Array.isArray(body)) {
+    if (body && typeof body === 'object' && !Array.isArray(body)) {
       return {
         ...(body as Record<string, unknown>),
         _meta: {
-          payloadVersion: version || "1.0",
+          payloadVersion: version || '1.0',
           clientTimestamp: new Date().toISOString(),
           clubId: this._tenantConfig.clubId,
         },
@@ -397,49 +375,20 @@ class HttpClient {
     return body;
   }
 
-  private _classifyError(
-    status: number,
-    data: unknown,
-    url: string,
-  ): HttpError {
+  private _classifyError(status: number, data: unknown, url: string): HttpError {
     if (status === 401) {
-      return new HttpError(
-        `Autenticação necessária para ${url}`,
-        "AUTH_ERROR",
-        status,
-        data,
-      );
+      return new HttpError(`Autenticação necessária para ${url}`, 'AUTH_ERROR', status, data);
     }
     if (status === 403) {
-      return new HttpError(
-        `Sem permissão para acessar ${url}`,
-        "PERMISSION_ERROR",
-        status,
-        data,
-      );
+      return new HttpError(`Sem permissão para acessar ${url}`, 'PERMISSION_ERROR', status, data);
     }
     if (status === 422 || status === 400) {
-      return new HttpError(
-        `Dados inválidos em ${url}`,
-        "VALIDATION_ERROR",
-        status,
-        data,
-      );
+      return new HttpError(`Dados inválidos em ${url}`, 'VALIDATION_ERROR', status, data);
     }
     if (status >= 500) {
-      return new HttpError(
-        `Erro do servidor em ${url}`,
-        "SERVER_ERROR",
-        status,
-        data,
-      );
+      return new HttpError(`Erro do servidor em ${url}`, 'SERVER_ERROR', status, data);
     }
-    return new HttpError(
-      `Erro HTTP ${status} em ${url}`,
-      "UNKNOWN_ERROR",
-      status,
-      data,
-    );
+    return new HttpError(`Erro HTTP ${status} em ${url}`, 'UNKNOWN_ERROR', status, data);
   }
 
   private async _safeParseJson(response: Response): Promise<unknown> {
@@ -453,7 +402,7 @@ class HttpClient {
 
   /** Reset para testes */
   public _reset(): void {
-    this._tenantConfig = { clubId: null, tenantVersion: "1.0" };
+    this._tenantConfig = { clubId: null, tenantVersion: '1.0' };
     this._authConfig = { token: null, refreshToken: null };
     this._requestInterceptors = [];
     this._responseInterceptors = [];
@@ -465,5 +414,3 @@ class HttpClient {
 // === Export singleton ===
 
 export const httpClient = HttpClient.getInstance();
-
-export default httpClient;

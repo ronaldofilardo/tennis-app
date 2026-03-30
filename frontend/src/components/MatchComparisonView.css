@@ -1,0 +1,213 @@
+/* frontend/src/components/MatchComparisonView.css */
+
+.comparison-view {
+  background: #1e1e2e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  color: #e2e8f0;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.comparison-view--loading,
+.comparison-view--error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 120px;
+  color: #94a3b8;
+  font-size: 14px;
+  flex-direction: column;
+}
+
+.comparison-view__spinner {
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(99, 179, 237, 0.2);
+  border-top-color: #63b3ed;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .comparison-view__spinner {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+
+/* Header */
+.comparison-view__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.comparison-view__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0 0 4px;
+}
+
+.comparison-view__meta {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.comparison-view__badge--consensus {
+  color: #4ade80;
+  font-weight: 600;
+}
+
+.comparison-view__badge--divergent {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.comparison-view__close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.comparison-view__close-btn:hover,
+.comparison-view__close-btn:focus-visible {
+  background: rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.4);
+}
+
+/* Table */
+.comparison-view__table-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 420px;
+  overflow-y: auto;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.comparison-view__row {
+  display: flex;
+  align-items: center;
+}
+
+.comparison-view__row--head {
+  background: rgba(255, 255, 255, 0.04);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.comparison-view__row--divergent {
+  background: rgba(251, 191, 36, 0.05);
+  border-left: 3px solid rgba(251, 191, 36, 0.5);
+}
+
+.comparison-view__cell {
+  padding: 8px 10px;
+  font-size: 13px;
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+  text-align: center;
+}
+
+.comparison-view__cell--index {
+  min-width: 52px;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.comparison-view__cell--session {
+  flex: 1;
+  font-weight: 600;
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.comparison-view__cell--status {
+  min-width: 80px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.comparison-view__winner--player_1 {
+  color: #63b3ed;
+}
+
+.comparison-view__winner--player_2 {
+  color: #a78bfa;
+}
+
+.comparison-view__empty {
+  text-align: center;
+  padding: 24px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* Footer */
+.comparison-view__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.comparison-view__last-updated {
+  font-size: 12px;
+  color: #64748b;
+  margin: 0;
+}
+
+.comparison-view__refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.comparison-view__refresh-btn:hover,
+.comparison-view__refresh-btn:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.3);
+}

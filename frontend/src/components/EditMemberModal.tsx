@@ -3,9 +3,11 @@
 // Atleta: edita AthleteProfile (nome, apelido, telefone, sexo, nascimento, categoria, ranking).
 // Técnico: edita User (nome, email).
 
-import React, { useState, useEffect } from 'react';
-import httpClient from '../config/httpClient';
+import React, { useState, useEffect, useRef } from 'react';
+import { httpClient } from '../config/httpClient';
 import { useToast } from './Toast';
+import useConfirmClose from '../hooks/useConfirmClose';
+import ConfirmCloseDialog from './ConfirmCloseDialog';
 import './AddAthleteModal.css';
 
 export interface EditableMember {
@@ -79,21 +81,63 @@ const EditMemberModal: React.FC<EditMemberModalProps> = ({
   const [gender, setGender] = useState('');
   const [ranking, setRanking] = useState('');
 
+  // Track initial values to detect dirty state
+  const initialRef = useRef({
+    name: '',
+    email: '',
+    cpf: '',
+    birthDate: '',
+    nickname: '',
+    phone: '',
+    category: '',
+    gender: '',
+    ranking: '',
+  });
+
   const isCoach = member?.role === 'COACH';
   const isAthlete = member?.role === 'ATHLETE';
+
+  const isFormDirty =
+    name !== initialRef.current.name ||
+    email !== initialRef.current.email ||
+    cpf !== initialRef.current.cpf ||
+    birthDate !== initialRef.current.birthDate ||
+    nickname !== initialRef.current.nickname ||
+    phone !== initialRef.current.phone ||
+    category !== initialRef.current.category ||
+    gender !== initialRef.current.gender ||
+    ranking !== initialRef.current.ranking;
+
+  const { isConfirmOpen, handleOverlayClick, confirmClose, cancelClose } = useConfirmClose(
+    isFormDirty,
+    onClose,
+  );
 
   useEffect(() => {
     if (!isOpen || !member) return;
 
     if (isCoach) {
-      setName(member.user.name ?? '');
-      setEmail(member.user.email?.includes('@') ? member.user.email : '');
-      setCpf(member.user.athleteProfile?.cpf ?? '');
-      setBirthDate(
-        member.user.athleteProfile?.birthDate
-          ? String(member.user.athleteProfile.birthDate).substring(0, 10)
-          : '',
-      );
+      const initName = member.user.name ?? '';
+      const initEmail = member.user.email?.includes('@') ? member.user.email : '';
+      const initCpf = member.user.athleteProfile?.cpf ?? '';
+      const initBirthDate = member.user.athleteProfile?.birthDate
+        ? String(member.user.athleteProfile.birthDate).substring(0, 10)
+        : '';
+      setName(initName);
+      setEmail(initEmail);
+      setCpf(initCpf);
+      setBirthDate(initBirthDate);
+      initialRef.current = {
+        name: initName,
+        email: initEmail,
+        cpf: initCpf,
+        birthDate: initBirthDate,
+        nickname: '',
+        phone: '',
+        category: '',
+        gender: '',
+        ranking: '',
+      };
     } else if (isAthlete) {
       const profileId = member.user.athleteProfile?.id;
       if (profileId) {
@@ -102,19 +146,39 @@ const EditMemberModal: React.FC<EditMemberModalProps> = ({
           .get<AthleteFullProfile>(`/athletes/${profileId}`)
           .then((res) => {
             const p = res.data;
-            setName(p.name ?? '');
-            setNickname(p.nickname ?? '');
-            setBirthDate(p.birthDate ? String(p.birthDate).substring(0, 10) : '');
-            setPhone(p.phone ?? '');
-            setCategory(p.category ?? '');
-            setGender(p.gender ?? '');
-            setRanking(p.ranking != null ? String(p.ranking) : '');
+            const initName = p.name ?? '';
+            const initNickname = p.nickname ?? '';
+            const initBirthDate = p.birthDate ? String(p.birthDate).substring(0, 10) : '';
+            const initPhone = p.phone ?? '';
+            const initCategory = p.category ?? '';
+            const initGender = p.gender ?? '';
+            const initRanking = p.ranking != null ? String(p.ranking) : '';
+            setName(initName);
+            setNickname(initNickname);
+            setBirthDate(initBirthDate);
+            setPhone(initPhone);
+            setCategory(initCategory);
+            setGender(initGender);
+            setRanking(initRanking);
+            initialRef.current = {
+              name: initName,
+              email: '',
+              cpf: '',
+              birthDate: initBirthDate,
+              nickname: initNickname,
+              phone: initPhone,
+              category: initCategory,
+              gender: initGender,
+              ranking: initRanking,
+            };
           })
           .catch(() => toast.error('Erro ao carregar dados do atleta'))
           .finally(() => setLoadingProfile(false));
       } else {
         // Atleta convidado sem AthleteProfile ligado
-        setName(member.user.name ?? '');
+        const initName = member.user.name ?? '';
+        setName(initName);
+        initialRef.current = { ...initialRef.current, name: initName };
       }
     }
   }, [isOpen, member]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -165,10 +229,6 @@ const EditMemberModal: React.FC<EditMemberModalProps> = ({
     }
   };
 
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) onClose();
-  };
-
   return (
     <div
       className="add-athlete-overlay"
@@ -176,7 +236,9 @@ const EditMemberModal: React.FC<EditMemberModalProps> = ({
       aria-modal="true"
       aria-labelledby="edit-member-title"
       onClick={handleOverlayClick}
+      style={{ position: 'relative' }}
     >
+      <ConfirmCloseDialog isOpen={isConfirmOpen} onConfirm={confirmClose} onCancel={cancelClose} />
       <div className="add-athlete-modal">
         {/* Header */}
         <div className="add-athlete-header">

@@ -104,6 +104,23 @@ enum InvoiceStatus {
   REFUNDED
 }
 
+enum AnnotationSessionStatus {
+  IN_PROGRESS
+  COMPLETED
+  ABANDONED
+}
+
+enum DashboardShareStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum DashboardShareType {
+  ANNOTATION
+  COMPARISON
+}
+
 // ============================================================
 // FASE 1: Identidade e Multi-tenancy
 // ============================================================
@@ -125,6 +142,8 @@ model Club {
 
   memberships  ClubMembership[]
   matches      Match[]
+  homeMatches  Match[]          @relation("MatchHomeClub")
+  awayMatches  Match[]          @relation("MatchAwayClub")
   tournaments  Tournament[]
   subscription Subscription?
   invoices     Invoice[]
@@ -198,6 +217,7 @@ model User {
   memberships    ClubMembership[]
   athleteProfile AthleteProfile?
   createdMatches Match[]               @relation("MatchCreator")
+  createdVenues  Venue[]               @relation("VenueCreator")
   tournaments    TournamentOrganizer[]
   annotationSessions MatchAnnotationSession[] @relation("AnnotationSessions")
   endorsements       AnnotationEndorsement[]  @relation("Endorsements")
@@ -391,12 +411,16 @@ model Match {
   // === Novos campos de identidade ===
   createdByUserId String? // User que criou a partida
   clubId          String? // Clube dono (null = partida pública/avulsa)
+  homeClubId      String? // Clube do atleta 1 (derivado de player1.clubId)
+  awayClubId      String? // Clube do atleta 2 (derivado de player2.clubId)
   player1Id       String? // AthleteProfile do jogador 1
   player2Id       String? // AthleteProfile do jogador 2
   tournamentId    String? // Torneio vinculado (null = partida avulsa)
   categoryId      String? // Categoria do torneio
   roundNumber     Int? // Rodada no torneio (1 = final, 2 = semifinal, etc)
   bracketPosition Int? // Posição no chaveamento
+  scheduledAt     DateTime? // Data/hora agendada da partida
+  venueId         String? // Local da partida (diretório central)
 
   // === Visibilidade ===
   visibility          MatchVisibility @default(PLAYERS_ONLY)
@@ -413,34 +437,58 @@ model Match {
 
   // === Relações ===
   createdBy  User?               @relation("MatchCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  venue      Venue?              @relation(fields: [venueId], references: [id], onDelete: SetNull)
   club       Club?               @relation(fields: [clubId], references: [id], onDelete: SetNull)
+  homeClub   Club?               @relation("MatchHomeClub", fields: [homeClubId], references: [id], onDelete: SetNull)
+  awayClub   Club?               @relation("MatchAwayClub", fields: [awayClubId], references: [id], onDelete: SetNull)
   player1    AthleteProfile?     @relation("MatchPlayer1", fields: [player1Id], references: [id], onDelete: SetNull)
   player2    AthleteProfile?     @relation("MatchPlayer2", fields: [player2Id], references: [id], onDelete: SetNull)
   tournament Tournament?         @relation("TournamentMatches", fields: [tournamentId], references: [id], onDelete: SetNull)
   category   TournamentCategory? @relation("CategoryMatches", fields: [categoryId], references: [id], onDelete: SetNull)
-  annotationSessions MatchAnnotationSession[]
+  annotationSessions  MatchAnnotationSession[]
+  comparisons         MatchAnnotationComparison[]
+  dashboardShares     MatchDashboardShare[]
 
   @@index([clubId])
   @@index([status])
   @@index([tournamentId])
   @@index([createdByUserId])
+  @@index([venueId])
   @@map("matches")
+}
+
+/// Diretório central de locais de partida — acessível a qualquer usuário autenticado.
+model Venue {
+  id              String   @id @default(cuid())
+  name            String
+  address         String?
+  city            String?
+  createdByUserId String?
+  createdAt       DateTime @default(now())
+
+  createdBy User?   @relation("VenueCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  matches   Match[]
+
+  @@index([name])
+  @@map("venues")
 }
 
 // ============================================================
 // FASE 4: Sessões de Anotação (evita split-brain placar)
 // ============================================================
 
-/// Sessão de anotação de uma partida. Apenas UMA sessão pode estar ativa por vez.
-/// Resolve o problema de split-brain: último ponto de verdade é a sessão ativa.
+/// Sessão de anotação de uma partida. Múltiplas sessões podem estar ativas por vez (multi-anotador).
+/// Cada anotador tem sua própria sessão independente, vinculada ao matchId.
 model MatchAnnotationSession {
-  id                   String    @id @default(cuid())
+  id                   String                  @id @default(cuid())
   matchId              String
   annotatorUserId      String    // Quem está anotando
   startedAt            DateTime  @default(now())
   endedAt              DateTime? // null = sessão ativa
   matchStateSnapshot   String?   // JSON — snapshot do matchState no início da sessão
+  finalStateSnapshot   String?   // JSON — snapshot ao encerrar (para comparativo)
   isActive             Boolean   @default(true)
+  status               AnnotationSessionStatus @default(IN_PROGRESS)
   createdAt            DateTime  @default(now())
 
   match     Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
@@ -466,5 +514,46 @@ model AnnotationEndorsement {
 
   @@unique([sessionId, endorsedByUserId])
   @@map("annotation_endorsements")
+}
+
+// ============================================================
+// FASE COMMUNITY: Comparativo de anotações e compartilhamento
+// ============================================================
+
+/// Comparativo gerado a partir de múltiplas sessões de anotação finalizadas.
+/// Consolida ponto-a-ponto com indicação de consenso vs divergência por anotador.
+model MatchAnnotationComparison {
+  id        String   @id @default(cuid())
+  matchId   String
+  payload   Json     // { points: [{ index, consensus, sessions: { userId: pointData } }] }
+  status    String   @default("PENDING") // PENDING | PUBLISHED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  match Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@index([matchId])
+  @@map("match_annotation_comparisons")
+}
+
+/// Compartilhamento de resultado de partida com stakeholders (clubes e atletas).
+/// Criado automaticamente ao finalizar uma partida pública.
+model MatchDashboardShare {
+  id            String               @id @default(cuid())
+  matchId       String
+  targetUserId  String?  // null = destinado a clube
+  targetClubId  String?  // null = destinado a usuário individual
+  shareType     DashboardShareType   @default(ANNOTATION)
+  status        DashboardShareStatus @default(PENDING)
+  notifiedAt    DateTime             @default(now())
+  respondedAt   DateTime?
+
+  match Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@index([matchId])
+  @@index([targetUserId])
+  @@index([targetClubId])
+  @@index([status])
+  @@map("match_dashboard_shares")
 }
 

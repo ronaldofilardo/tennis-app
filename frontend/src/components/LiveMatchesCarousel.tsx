@@ -1,6 +1,6 @@
-import React from "react";
-import { resolvePlayerName } from "../data/players";
-import "./LiveMatchesCarousel.css";
+import React from 'react';
+import { resolvePlayerName } from '../data/players';
+import './LiveMatchesCarousel.css';
 
 interface LiveMatch {
   id: string | number;
@@ -14,10 +14,7 @@ interface LiveMatchesCarouselProps {
   onMatchClick: (match: LiveMatch) => void;
 }
 
-const LiveMatchesCarousel: React.FC<LiveMatchesCarouselProps> = ({
-  matches,
-  onMatchClick,
-}) => {
+const LiveMatchesCarousel: React.FC<LiveMatchesCarouselProps> = ({ matches, onMatchClick }) => {
   if (matches.length === 0) return null;
 
   return (
@@ -29,41 +26,33 @@ const LiveMatchesCarousel: React.FC<LiveMatchesCarouselProps> = ({
       </div>
 
       <div
-        className={`live-carousel${matches.length === 1 ? " live-carousel--single" : ""}`}
+        className={`live-carousel${matches.length === 1 ? 'live-carousel--single' : ''}`}
         data-testid="live-carousel"
       >
         {matches.map((match) => {
           const p1Name =
-            match.players && typeof match.players === "object"
+            match.players && typeof match.players === 'object'
               ? resolvePlayerName(match.players.p1)
-              : "Jogador 1";
+              : 'Jogador 1';
           const p2Name =
-            match.players && typeof match.players === "object"
+            match.players && typeof match.players === 'object'
               ? resolvePlayerName(match.players.p2)
-              : "Jogador 2";
+              : 'Jogador 2';
 
           const ms =
-            match.matchState && typeof match.matchState === "object"
-              ? match.matchState
-              : null;
+            match.matchState && typeof match.matchState === 'object' ? match.matchState : null;
           const setsObj =
-            ms?.sets && typeof ms.sets === "object"
-              ? (ms.sets as Record<string, number>)
-              : null;
+            ms?.sets && typeof ms.sets === 'object' ? (ms.sets as Record<string, number>) : null;
           const currentGame =
-            ms?.currentGame && typeof ms.currentGame === "object"
+            ms?.currentGame && typeof ms.currentGame === 'object'
               ? (ms.currentGame as Record<string, unknown>)
               : null;
           const currentSetState =
-            ms?.currentSetState && typeof ms.currentSetState === "object"
+            ms?.currentSetState && typeof ms.currentSetState === 'object'
               ? (ms.currentSetState as Record<string, unknown>)
               : null;
-          const currentSetGames = currentSetState?.games as
-            | Record<string, number>
-            | undefined;
-          const pointsObj = currentGame?.points as
-            | Record<string, string>
-            | undefined;
+          const currentSetGames = currentSetState?.games as Record<string, number> | undefined;
+          const pointsObj = currentGame?.points as Record<string, string> | undefined;
           const isTiebreak = Boolean(currentGame?.isTiebreak);
           const isMatchTiebreak = Boolean(currentGame?.isMatchTiebreak);
 
@@ -74,17 +63,13 @@ const LiveMatchesCarousel: React.FC<LiveMatchesCarouselProps> = ({
           const partials = completedSets
             .map((set) => {
               const games = set.games as Record<string, number> | undefined;
-              const tbs = set.tiebreakScore as
-                | Record<string, number>
-                | undefined;
+              const tbs = set.tiebreakScore as Record<string, number> | undefined;
               const g1 = games?.PLAYER_1 ?? 0;
               const g2 = games?.PLAYER_2 ?? 0;
               if (tbs) {
                 const tb1 = tbs.PLAYER_1 ?? 0;
                 const tb2 = tbs.PLAYER_2 ?? 0;
-                return set.winner === "PLAYER_1"
-                  ? `${g1}/${g2}(${tb1})`
-                  : `${g2}/${g1}(${tb2})`;
+                return set.winner === 'PLAYER_1' ? `${g1}/${g2}(${tb1})` : `${g2}/${g1}(${tb2})`;
               }
               return `${g1}/${g2}`;
             })
@@ -110,23 +95,18 @@ const LiveMatchesCarousel: React.FC<LiveMatchesCarouselProps> = ({
                   {setsObj?.PLAYER_2 ?? 0}
                 </span>
                 <span className="live-card-score-game">
-                  {currentSetGames?.PLAYER_1 ?? 0}-
-                  {currentSetGames?.PLAYER_2 ?? 0}
+                  {currentSetGames?.PLAYER_1 ?? 0}-{currentSetGames?.PLAYER_2 ?? 0}
                 </span>
                 <span className="live-card-score-game">
-                  ({pointsObj?.PLAYER_1 ?? "0"}-{pointsObj?.PLAYER_2 ?? "0"})
+                  ({pointsObj?.PLAYER_1 ?? '0'}-{pointsObj?.PLAYER_2 ?? '0'})
                 </span>
                 {(isTiebreak || isMatchTiebreak) && (
-                  <span className="live-card-tiebreak">
-                    {isMatchTiebreak ? "MTB" : "TB"}
-                  </span>
+                  <span className="live-card-tiebreak">{isMatchTiebreak ? 'MTB' : 'TB'}</span>
                 )}
               </div>
 
               {partials.length > 0 && (
-                <div className="live-card-partials">
-                  {partials.join("  ·  ")}
-                </div>
+                <div className="live-card-partials">{partials.join('  ·  ')}</div>
               )}
             </div>
           );
@@ -136,4 +116,4 @@ const LiveMatchesCarousel: React.FC<LiveMatchesCarouselProps> = ({
   );
 };
 
-export default LiveMatchesCarousel;
+export default React.memo(LiveMatchesCarousel);

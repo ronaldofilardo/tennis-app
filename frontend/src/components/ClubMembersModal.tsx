@@ -2,8 +2,9 @@
 // Modal para exibir membros de um clube na visão Admin
 // Ordem de exibição: Gestor → Técnicos → Atletas → Espectadores
 
-import React from "react";
-import "./ClubMembersModal.css";
+import React from 'react';
+import { ROLE_LABELS } from '../types/roles';
+import './ClubMembersModal.css';
 
 // === Tipos ===
 
@@ -40,36 +41,30 @@ const ROLE_ORDER: Record<string, number> = {
   ATHLETE: 2,
 };
 
-const ROLE_LABELS: Record<string, string> = {
-  GESTOR: "Gestor",
-  COACH: "Técnico",
-  ATHLETE: "Atleta",
-};
+// ROLE_LABELS importado de types/roles — centralizado para evitar duplicação
 
 const ROLE_GROUP_LABELS: Record<string, string> = {
-  GESTOR: "Gestores",
-  COACH: "Técnicos",
-  ATHLETE: "Atletas",
+  GESTOR: 'Gestores',
+  COACH: 'Técnicos',
+  ATHLETE: 'Atletas',
 };
 
 const ROLE_COLORS: Record<string, string> = {
-  GESTOR: "role-gestor",
-  COACH: "role-coach",
-  ATHLETE: "role-athlete",
+  GESTOR: 'role-gestor',
+  COACH: 'role-coach',
+  ATHLETE: 'role-athlete',
 };
 
 // === Helper: agrupa membros por papel ===
 
-function groupMembersByRole(
-  members: ClubMember[],
-): Array<{ role: string; items: ClubMember[] }> {
-  const groups: Record<string, ClubMember[]> = {};
-
-  for (const member of members) {
-    const role = member.role;
-    if (!groups[role]) groups[role] = [];
-    groups[role].push(member);
-  }
+function groupMembersByRole(members: ClubMember[]): Array<{ role: string; items: ClubMember[] }> {
+  const groups = members.reduce<Record<string, ClubMember[]>>(
+    (acc, member) => ({
+      ...acc,
+      [member.role]: [...(acc[member.role] ?? []), member],
+    }),
+    {},
+  );
 
   return Object.entries(groups)
     .sort(([a], [b]) => {
@@ -111,16 +106,12 @@ const ClubMembersModal: React.FC<ClubMembersModalProps> = ({
               <h3>{clubName}</h3>
               {!loading && (
                 <span className="club-members-modal__subtitle">
-                  {members.length} {members.length === 1 ? "membro" : "membros"}
+                  {members.length} {members.length === 1 ? 'membro' : 'membros'}
                 </span>
               )}
             </div>
           </div>
-          <button
-            className="club-members-modal__close"
-            onClick={onClose}
-            aria-label="Fechar"
-          >
+          <button className="club-members-modal__close" onClick={onClose} aria-label="Fechar">
             ✕
           </button>
         </div>
@@ -142,25 +133,18 @@ const ClubMembersModal: React.FC<ClubMembersModalProps> = ({
               {groups.map(({ role, items }) => (
                 <div key={role} className="club-members-modal__group">
                   <div className="club-members-modal__group-label">
-                    <span
-                      className={`club-members-modal__role-badge ${ROLE_COLORS[role] ?? ""}`}
-                    >
+                    <span className={`club-members-modal__role-badge ${ROLE_COLORS[role] ?? ''}`}>
                       {ROLE_LABELS[role] ?? role}
                     </span>
                     <span className="club-members-modal__group-title">
                       {ROLE_GROUP_LABELS[role] ?? role}
                     </span>
-                    <span className="club-members-modal__group-count">
-                      {items.length}
-                    </span>
+                    <span className="club-members-modal__group-count">{items.length}</span>
                   </div>
 
                   <div className="club-members-modal__list">
                     {items.map((member) => (
-                      <div
-                        key={member.id}
-                        className="club-members-modal__member"
-                      >
+                      <div key={member.id} className="club-members-modal__member">
                         <div className="club-members-modal__avatar">
                           {member.user.name.charAt(0).toUpperCase()}
                         </div>
@@ -168,25 +152,21 @@ const ClubMembersModal: React.FC<ClubMembersModalProps> = ({
                           <span className="club-members-modal__member-name">
                             {member.user.name}
                             {member.isGuest && (
-                              <span className="club-members-modal__guest-tag">
-                                Convidado
-                              </span>
+                              <span className="club-members-modal__guest-tag">Convidado</span>
                             )}
                           </span>
                           <span className="club-members-modal__member-email">
-                            {member.user.email ?? "Sem e-mail"}
+                            {member.user.email ?? 'Sem e-mail'}
                           </span>
                         </div>
                         <div className="club-members-modal__member-meta">
                           <span
-                            className={`club-members-modal__status ${member.status === "ACTIVE" ? "status-active" : "status-pending"}`}
+                            className={`club-members-modal__status ${member.status === 'ACTIVE' ? 'status-active' : 'status-pending'}`}
                           >
-                            {member.status === "ACTIVE" ? "Ativo" : "Pendente"}
+                            {member.status === 'ACTIVE' ? 'Ativo' : 'Pendente'}
                           </span>
                           <span className="club-members-modal__joined">
-                            {new Date(member.joinedAt).toLocaleDateString(
-                              "pt-BR",
-                            )}
+                            {new Date(member.joinedAt).toLocaleDateString('pt-BR')}
                           </span>
                         </div>
                       </div>

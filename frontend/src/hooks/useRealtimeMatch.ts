@@ -1,18 +1,12 @@
 // frontend/src/hooks/useRealtimeMatch.ts
-import { useState, useEffect, useCallback } from "react";
-import {
-  RealtimeMatchService,
-  RealtimeMatchState,
-} from "../services/RealtimeMatchService";
+import { useState, useEffect, useCallback } from 'react';
+import { RealtimeMatchService, RealtimeMatchState } from '../services/RealtimeMatchService';
 
 interface UseRealtimeMatchOptions {
   onError?: (error: Error) => void;
 }
 
-export function useRealtimeMatch(
-  matchId: string,
-  options: UseRealtimeMatchOptions = {},
-) {
+export function useRealtimeMatch(matchId: string, options: UseRealtimeMatchOptions = {}) {
   const [state, setState] = useState<RealtimeMatchState | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -57,10 +51,11 @@ export function useRealtimeMatch(
         const updatedState = await service.updateMatchState(matchId, newState);
         setState(updatedState);
         setError(null);
-      } catch (err: any) {
-        setError(err);
-        onError?.(err);
-        throw err;
+      } catch (err: unknown) {
+        const error = err instanceof Error ? err : new Error(String(err));
+        setError(error);
+        onError?.(error);
+        throw error;
       } finally {
         setIsLoading(false);
       }
