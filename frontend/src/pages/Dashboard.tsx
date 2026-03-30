@@ -361,7 +361,7 @@ const Dashboard: React.FC<DashboardProps> = ({
         onMenuToggle={handleMenuToggle}
         onMenuClose={handleMenuClose}
         onSelectView={handleSelectView}
-        onNewMatch={() => dispatchUI({ type: 'OPEN_NEW_MATCH_FROM_MENU' })}
+        onNewMatch={onNewMatchClick}
         pendingCount={openMatches.length}
         liveCount={liveMatches.length}
       />
