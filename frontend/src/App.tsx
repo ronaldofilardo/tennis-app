@@ -1,7 +1,7 @@
 // frontend/src/App.tsx (Refatorado com Multi-tenancy, JWT Auth e Torneios)
 
-import React from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import React, { useState, useCallback } from 'react';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { MatchesProvider, useMatches } from './contexts/MatchesContext';
@@ -10,6 +10,7 @@ import { ToastProvider } from './components/Toast';
 import ClubSelector from './components/ClubSelector';
 import OfflineBanner from './components/OfflineBanner';
 import LoadingIndicator from './components/LoadingIndicator';
+import BottomTabBar, { type TabId } from './components/BottomTabBar';
 
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
 const MatchSetup = React.lazy(() => import('./pages/MatchSetup'));
@@ -50,10 +51,38 @@ const AppContent: React.FC = () => {
   } = useNavigation();
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const isGestor = activeClub?.role === 'GESTOR';
-
   const isAdmin = activeClub?.role === 'ADMIN';
+  const showBottomTabBar = isAuthenticated && !isAdmin && !isGestor;
+
+  // Derive active tab from current route
+  const activeTab: TabId = (() => {
+    const path = location.pathname;
+    if (path.startsWith('/tournaments')) return 'tournaments';
+    if (path === '/dashboard') return 'home';
+    return 'home';
+  })();
+
+  const handleTabChange = useCallback(
+    (tab: TabId) => {
+      switch (tab) {
+        case 'home':
+          navigate('/dashboard');
+          break;
+        case 'tournaments':
+          navigate('/tournaments');
+          break;
+        case 'profile':
+          navigate('/dashboard');
+          break;
+        default:
+          navigate('/dashboard');
+      }
+    },
+    [navigate],
+  );
 
   return (
     <div className="app-container">
@@ -235,6 +264,11 @@ const AppContent: React.FC = () => {
           </Routes>
         </React.Suspense>
       </main>
+
+      {/* ── Mobile bottom navigation ── */}
+      {showBottomTabBar && (
+        <BottomTabBar activeTab={activeTab} onTabChange={handleTabChange} />
+      )}
     </div>
   );
 };

@@ -14,6 +14,19 @@
   animation: menu-enter 0.15s ease-out;
 }
 
+/* Mobile: full-width centralizado */
+@media (max-width: 480px) {
+  .new-match-menu {
+    position: fixed;
+    top: auto;
+    bottom: calc(56px + env(safe-area-inset-bottom, 0px) + 16px);
+    left: 16px;
+    right: 16px;
+    min-width: auto;
+    z-index: 1100;
+  }
+}
+
 @keyframes menu-enter {
   from {
     opacity: 0;

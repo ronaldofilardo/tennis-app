@@ -114,7 +114,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-width: 220px;
+  min-width: 0;
+  width: 100%;
 }
 .live-status-content {
   display: flex;
