@@ -934,8 +934,8 @@ export default async function handler(req, res) {
       }
 
       // ── Auto-derivar homeClubId / awayClubId dos atletas ──────────────────
-      let derivedHomeClubId: string | undefined;
-      let derivedAwayClubId: string | undefined;
+      let derivedHomeClubId;
+      let derivedAwayClubId;
       if (player1Id) {
         const p1 = await prisma.athleteProfile.findUnique({
           where: { id: player1Id },
