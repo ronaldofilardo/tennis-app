@@ -19,6 +19,10 @@ vi.mock('../src/config/httpClient', () => ({
     get: (...args: unknown[]) => mockHttpGet(...args),
     patch: (...args: unknown[]) => mockHttpPatch(...args),
   },
+  httpClient: {
+    get: (...args: unknown[]) => mockHttpGet(...args),
+    patch: (...args: unknown[]) => mockHttpPatch(...args),
+  },
 }));
 
 // ── Mock do Toast ────────────────────────────────────────────

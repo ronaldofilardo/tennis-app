@@ -112,6 +112,48 @@
   padding-left: 28px;
 }
 
+/* ── Data, hora e local ──────────────────────────────────── */
+
+.match-datetime-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.match-date-input {
+  flex: 1;
+  background: #1a1a2e;
+  border: 1px solid #2a2a3e;
+  border-radius: 8px;
+  color: #e2e8f0;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  outline: none;
+  transition: border-color 150ms ease;
+}
+
+.match-time-input {
+  width: 110px;
+  background: #1a1a2e;
+  border: 1px solid #2a2a3e;
+  border-radius: 8px;
+  color: #e2e8f0;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  outline: none;
+  transition: border-color 150ms ease;
+}
+
+.match-date-input:focus,
+.match-time-input:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.25);
+}
+
+.required-mark {
+  color: #f87171;
+  margin-left: 2px;
+}
+
 /* ── Form actions ────────────────────────────────────────── */
 
 .form-actions {
@@ -457,4 +499,9 @@
   .start-match-button {
     transition: none;
   }
+}
+
+.form-error {
+  color: var(--clr-error, #ef4444);
+  margin: 8px 0;
 }

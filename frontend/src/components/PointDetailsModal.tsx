@@ -1,5 +1,7 @@
 // frontend/src/components/PointDetailsModal.tsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { ErrorBoundary } from './ErrorBoundary';
 import type {
   Player,
   RallyDetails,
@@ -12,7 +14,7 @@ import type {
   RallyGolpeEsp,
   RallySubtipo1,
   RallySubtipo2,
-} from "../core/scoring/types";
+} from '../core/scoring/types';
 import {
   getValidSituacoes,
   getValidTipos,
@@ -33,8 +35,10 @@ import {
   EFEITO_LABELS,
   DIRECAO_LABELS,
   GOLPE_ESP_LABELS,
-} from "../core/scoring/pointFlowRules";
-import "./PointDetailsModal.css";
+} from '../core/scoring/pointFlowRules';
+import useConfirmClose from '../hooks/useConfirmClose';
+import ConfirmCloseDialog from './ConfirmCloseDialog';
+import './PointDetailsModal.css';
 
 interface PointDetailsModalProps {
   isOpen: boolean;
@@ -72,11 +76,11 @@ function BtnGroup<T extends string>({
 }) {
   if (!options.length) return null;
   return (
-    <div className={`pd-btn-group${disabled ? " disabled" : ""}`}>
+    <div className={`pd-btn-group${disabled ? 'disabled' : ''}`}>
       {options.map((opt) => (
         <button
           key={opt}
-          className={`pd-btn${selected === opt ? " active" : ""}`}
+          className={`pd-btn${selected === opt ? 'active' : ''}`}
           disabled={disabled}
           onClick={() => onSelect(opt)}
           type="button"
@@ -99,6 +103,13 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
 }) => {
   const [sel, setSel] = useState<Sel>({});
 
+  // Sempre pede confirmação ao clicar fora — o ponto já foi atribuído
+  const isFormDirty = true;
+  const { isConfirmOpen, handleOverlayClick, confirmClose, cancelClose } = useConfirmClose(
+    isFormDirty,
+    onCancel,
+  );
+
   useEffect(() => {
     if (isOpen) setSel({});
   }, [isOpen, playerWinner]);
@@ -106,8 +117,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
   if (!isOpen) return null;
 
   // Vencedor derivado automaticamente do botao clicado
-  const vencedor: RallyVencedor =
-    playerWinner === currentServer ? "sacador" : "devolvedor";
+  const vencedor: RallyVencedor = playerWinner === currentServer ? 'sacador' : 'devolvedor';
   const winnerName = playerNames[playerWinner];
 
   // Nova ordem para ERROS: situação → resultado → golpe → (sub1?) → (sub2/onde errou?) → ...
@@ -120,15 +130,11 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
   // Golpe: disponível assim que o resultado for selecionado (erros e winner)
   const golpeReady = !!sel.tipo;
   const golpeOpts =
-    golpeReady && sel.situacao && sel.tipo
-      ? getValidGolpes(vencedor, sel.situacao, sel.tipo)
-      : [];
+    golpeReady && sel.situacao && sel.tipo ? getValidGolpes(vencedor, sel.situacao, sel.tipo) : [];
 
   // Sub1/Sub2: aparecem DEPOIS do golpe (apenas em casos de erro)
   const needsSub1 =
-    sel.situacao && sel.tipo
-      ? requiresSubtipo1(vencedor, sel.situacao, sel.tipo)
-      : false;
+    sel.situacao && sel.tipo ? requiresSubtipo1(vencedor, sel.situacao, sel.tipo) : false;
   // requiresSubtipo2 recebe golpe para decidir sub2 em passada (VBH/VFH sim, Smash não)
   const needsSub2 =
     sel.situacao && sel.tipo
@@ -140,20 +146,16 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
   const sub2Ready = needsSub1 ? !!sel.sub1 : sub1Ready;
   const sub2Opts = needsSub2 && sub2Ready ? getValidSubtipo2() : [];
 
-  const subtipoComplete =
-    (!needsSub1 || !!sel.sub1) && (!needsSub2 || !!sel.sub2);
+  const subtipoComplete = (!needsSub1 || !!sel.sub1) && (!needsSub2 || !!sel.sub2);
 
   // Efeito: após golpe + sub1/sub2 completos
   const needsEfeito =
-    sel.situacao && sel.tipo
-      ? requiresEfeito(vencedor, sel.situacao, sel.tipo)
-      : false;
+    sel.situacao && sel.tipo ? requiresEfeito(vencedor, sel.situacao, sel.tipo) : false;
   const efeitoReady = !!sel.golpe && subtipoComplete;
   const efeitoOpts = needsEfeito && efeitoReady ? getValidEfeitos() : [];
 
   // Direção: após efeito (se necessário) ou após golpe+subtipo completos
-  const direcaoReady =
-    !!sel.golpe && subtipoComplete && (!needsEfeito || !!sel.efeito);
+  const direcaoReady = !!sel.golpe && subtipoComplete && (!needsEfeito || !!sel.efeito);
   const direcaoOpts =
     direcaoReady && sel.situacao && sel.tipo
       ? getValidDirecoes(vencedor, sel.situacao, sel.tipo, sel.efeito)
@@ -177,10 +179,9 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
   // Nova ordem para erros: situação → resultado → golpe → sub1 → sub2 → efeito → direção
   function update<K extends keyof Sel>(field: K, value: Sel[K]) {
     setSel((prev) => {
-      if (field === "situacao") return { situacao: value as RallySituacao };
-      if (field === "tipo")
-        return { situacao: prev.situacao, tipo: value as RallyTipo };
-      if (field === "golpe")
+      if (field === 'situacao') return { situacao: value as RallySituacao };
+      if (field === 'tipo') return { situacao: prev.situacao, tipo: value as RallyTipo };
+      if (field === 'golpe')
         // Golpe vem antes de sub1/sub2 para erros; reseta tudo que vem depois
         return {
           ...prev,
@@ -191,7 +192,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
           direcao: undefined,
           golpe_esp: undefined,
         };
-      if (field === "sub1")
+      if (field === 'sub1')
         return {
           ...prev,
           sub1: value as RallySubtipo1,
@@ -200,7 +201,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
           direcao: undefined,
           golpe_esp: undefined,
         };
-      if (field === "sub2")
+      if (field === 'sub2')
         return {
           ...prev,
           sub2: value as RallySubtipo2,
@@ -208,14 +209,14 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
           direcao: undefined,
           golpe_esp: undefined,
         };
-      if (field === "efeito")
+      if (field === 'efeito')
         return {
           ...prev,
           efeito: value as RallyEfeito,
           direcao: undefined,
           golpe_esp: undefined,
         };
-      if (field === "direcao")
+      if (field === 'direcao')
         return {
           ...prev,
           direcao: value as RallyDirecao,
@@ -237,31 +238,26 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
       ...(sel.golpe_esp ? { golpe_esp: sel.golpe_esp } : {}),
       ...(sel.sub1 ? { subtipo1: sel.sub1 } : {}),
       ...(sel.sub2 ? { subtipo2: sel.sub2 } : {}),
-    } as import("../core/scoring/types").RallyDetails;
+    } as import('../core/scoring/types').RallyDetails;
     onConfirm(details);
   }
 
   let stepNum = 1;
 
-  return (
-    <div
-      className="point-details-overlay"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onCancel();
-      }}
-    >
+  return createPortal(
+    <div className="point-details-overlay" onClick={handleOverlayClick}>
+      <ConfirmCloseDialog isOpen={isConfirmOpen} onConfirm={confirmClose} onCancel={cancelClose} />
       <div
         className="point-details-modal"
         role="dialog"
         aria-modal="true"
-        style={{ "--sb-scale": String(fontScale) } as React.CSSProperties}
+        style={{ '--sb-scale': String(fontScale) } as React.CSSProperties}
       >
         {/* Header */}
         <div className="pd-header">
           <h3>Detalhes do Ponto</h3>
           <span className={`pd-winner-badge ${vencedor}`}>
-            {vencedor === "sacador" ? "🎾 Sacador" : "↩️ Devolvedor"} —{" "}
-            {winnerName}
+            {vencedor === 'sacador' ? '🎾 Sacador' : '↩️ Devolvedor'} — {winnerName}
           </span>
         </div>
 
@@ -269,110 +265,104 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
         <div className="pd-body">
           {/* 1. Situacao — sempre */}
           <div className="pd-section">
-            <div className="pd-section-label">
-              {stepNum++}. Situação do Ponto
-            </div>
+            <div className="pd-section-label">{stepNum++}. Situação do Ponto</div>
             <BtnGroup
               options={situacaoOpts}
               labels={SITUACAO_LABELS}
               selected={sel.situacao}
               disabled={false}
-              onSelect={(v) => update("situacao", v)}
+              onSelect={(v) => update('situacao', v)}
             />
           </div>
 
           {/* 2. Tipo — sempre */}
-          <div className={`pd-section${!sel.situacao ? " disabled" : ""}`}>
+          <div className={`pd-section${!sel.situacao ? 'disabled' : ''}`}>
             <div className="pd-section-label">{stepNum++}. Resultado</div>
             <BtnGroup
               options={tipoOpts}
               labels={TIPO_LABELS}
               selected={sel.tipo}
               disabled={!sel.situacao}
-              onSelect={(v) => update("tipo", v)}
+              onSelect={(v) => update('tipo', v)}
             />
           </div>
 
           {/* 3. Golpe — logo após resultado (erros E winner) */}
-          <div className={`pd-section${!golpeReady ? " disabled" : ""}`}>
+          <div className={`pd-section${!golpeReady ? 'disabled' : ''}`}>
             <div className="pd-section-label">{stepNum++}. Golpe</div>
             <BtnGroup
               options={golpeOpts}
               labels={GOLPE_LABELS}
               selected={sel.golpe}
               disabled={!golpeReady}
-              onSelect={(v) => update("golpe", v)}
+              onSelect={(v) => update('golpe', v)}
             />
           </div>
 
           {/* 4. Tipo de Erro (Rede) — sacador|rede|erro, após golpe */}
           {needsSub1 && (
-            <div className={`pd-section${!sub1Ready ? " disabled" : ""}`}>
-              <div className="pd-section-label">
-                {stepNum++}. Tipo de Erro (Rede)
-              </div>
+            <div className={`pd-section${!sub1Ready ? 'disabled' : ''}`}>
+              <div className="pd-section-label">{stepNum++}. Tipo de Erro (Rede)</div>
               <BtnGroup
                 options={sub1Opts}
                 labels={SUBTIPO1_LABELS}
                 selected={sel.sub1}
                 disabled={!sub1Ready}
-                onSelect={(v) => update("sub1", v)}
+                onSelect={(v) => update('sub1', v)}
               />
             </div>
           )}
 
           {/* 4/5. Onde Errou? — Out/Net — apenas erros com VBH/VFH, após golpe */}
           {needsSub2 && (
-            <div className={`pd-section${!sub2Ready ? " disabled" : ""}`}>
+            <div className={`pd-section${!sub2Ready ? 'disabled' : ''}`}>
               <div className="pd-section-label">{stepNum++}. Onde Errou?</div>
               <BtnGroup
                 options={sub2Opts}
                 labels={SUBTIPO2_LABELS}
                 selected={sel.sub2}
                 disabled={!sub2Ready}
-                onSelect={(v) => update("sub2", v)}
+                onSelect={(v) => update('sub2', v)}
               />
             </div>
           )}
 
           {/* Efeito — apenas quando requerido */}
           {needsEfeito && (
-            <div className={`pd-section${!efeitoReady ? " disabled" : ""}`}>
+            <div className={`pd-section${!efeitoReady ? 'disabled' : ''}`}>
               <div className="pd-section-label">{stepNum++}. Efeito</div>
               <BtnGroup
                 options={efeitoOpts}
                 labels={EFEITO_LABELS}
                 selected={sel.efeito}
                 disabled={!efeitoReady}
-                onSelect={(v) => update("efeito", v)}
+                onSelect={(v) => update('efeito', v)}
               />
             </div>
           )}
 
           {/* Direção */}
-          <div className={`pd-section${!direcaoReady ? " disabled" : ""}`}>
+          <div className={`pd-section${!direcaoReady ? 'disabled' : ''}`}>
             <div className="pd-section-label">{stepNum++}. Direção</div>
             <BtnGroup
               options={direcaoOpts}
               labels={DIRECAO_LABELS}
               selected={sel.direcao}
               disabled={!direcaoReady}
-              onSelect={(v) => update("direcao", v)}
+              onSelect={(v) => update('direcao', v)}
             />
           </div>
 
           {/* Golpe Especial — omitido quando efeito=flat ou golpe=Smash (arquivo sem opções) */}
           {golpeEspOpts.length > 0 && (
-            <div className={`pd-section${!sel.direcao ? " disabled" : ""}`}>
-              <div className="pd-section-label">
-                {stepNum++}. Golpe Especial
-              </div>
+            <div className={`pd-section${!sel.direcao ? 'disabled' : ''}`}>
+              <div className="pd-section-label">{stepNum++}. Golpe Especial</div>
               <BtnGroup
                 options={golpeEspOpts}
                 labels={GOLPE_ESP_LABELS}
                 selected={sel.golpe_esp}
                 disabled={!sel.direcao}
-                onSelect={(v) => update("golpe_esp", v)}
+                onSelect={(v) => update('golpe_esp', v)}
               />
             </div>
           )}
@@ -395,8 +385,15 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 
-export default PointDetailsModal;
+const PointDetailsModalWithBoundary: React.FC<PointDetailsModalProps> = (props) => (
+  <ErrorBoundary>
+    <PointDetailsModal {...props} />
+  </ErrorBoundary>
+);
+
+export default PointDetailsModalWithBoundary;

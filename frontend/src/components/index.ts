@@ -1,11 +1,40 @@
-/**
- * Barrel file para componentes.
- *
- * Organização:
- * - `./ui/`       → Componentes base genéricos (Toast, Loading, ErrorBoundary, etc.)
- * - `./scoreboard/` → Componentes do placar ao vivo
- * - `./*`         → Componentes de domínio/negócio
- */
+// Barrel file — re-exports all public components
 
-// Re-exportar todos os componentes UI base
-export * from './ui';
+export { default as AddAthleteModal } from './AddAthleteModal';
+export { default as AnnotatedMatchCard } from './AnnotatedMatchCard';
+export { default as AnnotationSessionPanel } from './AnnotationSessionPanel';
+export { default as AthleteHeader } from './AthleteHeader';
+export { default as AthleteIndependentRegisterModal } from './AthleteIndependentRegisterModal';
+export { default as AthleteSearchInput } from './AthleteSearchInput';
+export { default as BottomTabBar } from './BottomTabBar';
+export { default as BracketViewer } from './BracketViewer';
+export { default as BulkAthleteImport } from './BulkAthleteImport';
+export { default as ClubMembersModal } from './ClubMembersModal';
+export { default as ClubRankings } from './ClubRankings';
+export { default as ClubSelector } from './ClubSelector';
+export { default as CompletedMatchCard } from './CompletedMatchCard';
+export { default as ConfirmCloseDialog } from './ConfirmCloseDialog';
+export { default as EditMatchModal } from './EditMatchModal';
+export { default as EditMemberModal } from './EditMemberModal';
+export { ErrorBoundary } from './ErrorBoundary';
+export { default as FilterChips } from './FilterChips';
+export { default as FloatingActionButton } from './FloatingActionButton';
+export { default as HamburgerMenuDropdown } from './HamburgerMenuDropdown';
+export { default as LiveMatchesCarousel } from './LiveMatchesCarousel';
+export { default as LoadingIndicator } from './LoadingIndicator';
+export { default as MatchComparisonView } from './MatchComparisonView';
+export { default as MatchStatsModal } from './MatchStatsModal';
+export { default as NewMatchMenu } from './NewMatchMenu';
+export { default as OfflineBanner } from './OfflineBanner';
+export { default as OpenMatchCard } from './OpenMatchCard';
+export { default as PendingInvitesBanner } from './PendingInvitesBanner';
+export { default as PlanGate } from './PlanGate';
+export { default as PointDetailsModal } from './PointDetailsModal';
+export { default as ResumeScoreModal } from './ResumeScoreModal';
+export { default as RulesGuide } from './RulesGuide';
+export { default as ScorerRegisterModal } from './ScorerRegisterModal';
+export { default as ServerEffectModal } from './ServerEffectModal';
+export { default as StatComparisonRow } from './StatComparisonRow';
+export { default as Toast } from './Toast';
+export { default as TournamentModal } from './TournamentModal';
+export { default as VenueSelect } from './VenueSelect';

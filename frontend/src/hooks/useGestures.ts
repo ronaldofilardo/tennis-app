@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback } from 'react';
 
 interface UseShakeOptions {
   threshold?: number;
@@ -6,22 +6,30 @@ interface UseShakeOptions {
 }
 
 /**
+ * Interface para DeviceMotionEvent com API de permissão do iOS 13+.
+ * A API requestPermission não faz parte do spec W3C e existe apenas em iOS Safari.
+ * Por isso não está no tipo DOM padrão — necessário extends manual.
+ */
+interface DeviceMotionEventIOS extends DeviceMotionEvent {
+  requestPermission?: () => Promise<'granted' | 'denied'>;
+}
+interface DeviceMotionEventIOSConstructor extends EventTarget {
+  new (type: string, eventInitDict?: DeviceMotionEventInit): DeviceMotionEventIOS;
+  requestPermission?: () => Promise<'granted' | 'denied'>;
+}
+
+/**
  * Detecta shake do celular via DeviceMotionEvent e chama `onShake`.
  * Threshold padrão: 18 m/s² (aceleração total).
  */
-export function useShakeDetection({
-  threshold = 18,
-  onShake,
-}: UseShakeOptions) {
+export function useShakeDetection({ threshold = 18, onShake }: UseShakeOptions) {
   const lastShake = useRef<number>(0);
 
   useEffect(() => {
     const handleMotion = (e: DeviceMotionEvent) => {
       const acc = e.accelerationIncludingGravity;
       if (!acc) return;
-      const total = Math.sqrt(
-        (acc.x ?? 0) ** 2 + (acc.y ?? 0) ** 2 + (acc.z ?? 0) ** 2,
-      );
+      const total = Math.sqrt((acc.x ?? 0) ** 2 + (acc.y ?? 0) ** 2 + (acc.z ?? 0) ** 2);
       const now = Date.now();
       if (total > threshold && now - lastShake.current > 1200) {
         lastShake.current = now;
@@ -31,19 +39,20 @@ export function useShakeDetection({
 
     // Solicitar permissão em iOS 13+
     const requestAndAttach = async () => {
-      if (typeof (DeviceMotionEvent as any).requestPermission === "function") {
+      const DeviceMotionEventIOS = DeviceMotionEvent as unknown as DeviceMotionEventIOSConstructor;
+      if (typeof DeviceMotionEventIOS.requestPermission === 'function') {
         try {
-          const perm = await (DeviceMotionEvent as any).requestPermission();
-          if (perm !== "granted") return;
+          const perm = await DeviceMotionEventIOS.requestPermission();
+          if (perm !== 'granted') return;
         } catch {
           return;
         }
       }
-      window.addEventListener("devicemotion", handleMotion);
+      window.addEventListener('devicemotion', handleMotion);
     };
 
     requestAndAttach();
-    return () => window.removeEventListener("devicemotion", handleMotion);
+    return () => window.removeEventListener('devicemotion', handleMotion);
   }, [threshold, onShake]);
 }
 
@@ -75,11 +84,7 @@ export function usePinchDetection(onPinch: () => void) {
     (e: PointerEvent) => {
       if (!pointers.current.has(e.pointerId)) return;
       pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      if (
-        pointers.current.size === 2 &&
-        initialDist.current !== null &&
-        !triggered.current
-      ) {
+      if (pointers.current.size === 2 && initialDist.current !== null && !triggered.current) {
         const current = getDist();
         if (current !== null && Math.abs(current - initialDist.current) > 40) {
           triggered.current = true;
@@ -98,10 +103,10 @@ export function usePinchDetection(onPinch: () => void) {
   const attachRef = useCallback(
     (el: HTMLElement | null) => {
       if (!el) return;
-      el.addEventListener("pointerdown", onPointerDown);
-      el.addEventListener("pointermove", onPointerMove);
-      el.addEventListener("pointerup", onPointerUp);
-      el.addEventListener("pointercancel", onPointerUp);
+      el.addEventListener('pointerdown', onPointerDown);
+      el.addEventListener('pointermove', onPointerMove);
+      el.addEventListener('pointerup', onPointerUp);
+      el.addEventListener('pointercancel', onPointerUp);
     },
     [onPointerDown, onPointerMove, onPointerUp],
   );

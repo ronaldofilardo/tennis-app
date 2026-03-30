@@ -1,0 +1,228 @@
+/* AnnotatedMatchCard — componente de card de partida anotada */
+
+.annotated-match-card {
+  background: #1e1e2e;
+  border: 1px solid #2a2a3e;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.annotated-match-card:hover {
+  border-color: #3a3a5e;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Header */
+.annotated-match-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.annotated-match-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.annotated-match-card__badge--new {
+  background: #4ade80;
+  color: #0f0f1a;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 2px 7px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+
+.annotated-match-card__badge--claimed {
+  font-size: 11px;
+  font-weight: 600;
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.12);
+  padding: 3px 9px;
+  border-radius: 20px;
+  margin-right: auto;
+}
+
+.annotated-match-card__sport {
+  font-size: 13px;
+  font-weight: 600;
+  color: #a78bfa;
+}
+
+.annotated-match-card__format {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.annotated-match-card__date {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.annotated-match-card__dismiss {
+  background: none;
+  border: none;
+  color: #4b5563;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    color 150ms ease,
+    background 150ms ease;
+  flex-shrink: 0;
+}
+
+.annotated-match-card__dismiss:hover {
+  color: #9ca3af;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.annotated-match-card__dismiss:focus-visible {
+  outline: 2px solid #7c3aed;
+  outline-offset: 2px;
+}
+
+/* Players */
+.annotated-match-card__players {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 15px;
+}
+
+.annotated-match-card__player {
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.annotated-match-card__vs {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.annotated-match-card__club {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* Annotation info */
+.annotated-match-card__annotation-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.annotated-match-card__annotation-info strong {
+  color: #c4b5fd;
+  font-weight: 600;
+}
+
+.annotated-match-card__pencil-icon {
+  color: #7c3aed;
+  flex-shrink: 0;
+}
+
+/* Ended at */
+.annotated-match-card__ended-at {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.annotated-match-card__ended-at time {
+  color: #9ca3af;
+}
+
+.annotated-match-card__my-session-info {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.annotated-match-card__my-session-info time {
+  color: #9ca3af;
+}
+
+/* Actions */
+.annotated-match-card__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.annotated-match-card__btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 150ms ease;
+}
+
+.annotated-match-card__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.annotated-match-card__btn:focus-visible {
+  outline: 2px solid #7c3aed;
+  outline-offset: 2px;
+}
+
+.annotated-match-card__btn--primary {
+  background: #7c3aed;
+  color: #fff;
+}
+
+.annotated-match-card__btn--primary:hover:not(:disabled) {
+  background: #6d28d9;
+}
+
+.annotated-match-card__btn--ghost {
+  background: transparent;
+  color: #9ca3af;
+  border: 1px solid #374151;
+}
+
+.annotated-match-card__btn--ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .annotated-match-card__players {
+    font-size: 14px;
+  }
+
+  .annotated-match-card__btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .annotated-match-card,
+  .annotated-match-card__btn,
+  .annotated-match-card__dismiss {
+    transition: none;
+  }
+}

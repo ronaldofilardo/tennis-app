@@ -21,6 +21,8 @@ export class TennisScoring {
   private history: MatchState[] = []; // Histórico de estados para undo
   private historyPointsLengths: number[] = []; // Tamanho de pointsHistory em cada snapshot de history
   private pointsHistory: PointDetails[] = []; // Histórico detalhado dos pontos
+  /** Prover de token injetado externamente — NEM localStorage NEM import direto */
+  private _tokenProvider: (() => string | null) | null = null;
 
   constructor(server: Player, format: TennisFormat = 'BEST_OF_3') {
     if (!TennisScoring.isValidPlayer(server)) {
@@ -32,7 +34,7 @@ export class TennisScoring {
     this.historyPointsLengths = [];
   }
 
-  private static isValidPlayer(player: any): player is Player {
+  private static isValidPlayer(player: unknown): player is Player {
     return player === 'PLAYER_1' || player === 'PLAYER_2';
   }
 
@@ -40,6 +42,15 @@ export class TennisScoring {
   public enableSync(matchId: string): void {
     this.matchId = matchId;
     this.syncEnabled = true;
+  }
+
+  /**
+   * Injeta um provider de token de autenticação.
+   * O scoring engine não deve depender de localStorage — quem instancia
+   * é responsável por fornecer o token atual (ex: httpClient.getAuthConfig().token).
+   */
+  public setTokenProvider(provider: () => string | null): void {
+    this._tokenProvider = provider;
   }
 
   public disableSync(): void {
@@ -527,8 +538,7 @@ export class TennisScoring {
       // Sempre usa o endpoint autenticado
       const url = `${API_URL}/matches/${this.matchId}/state`;
 
-      const token =
-        typeof localStorage !== 'undefined' ? localStorage.getItem('racket_token') : null;
+      const token = this._tokenProvider ? this._tokenProvider() : null; // sem fallback para localStorage — token deve ser injetado
 
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',

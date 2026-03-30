@@ -1,19 +1,13 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-} from "react";
-import type { ReactNode } from "react";
-import { logger } from "../services/logger";
-import httpClient from "../config/httpClient";
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import type { ReactNode } from 'react';
+import { logger } from '../services/logger';
+import { httpClient } from '../config/httpClient';
 
-const authLog = logger.createModuleLogger("AuthContext");
+const authLog = logger.createModuleLogger('AuthContext');
 
 // === Tipos ===
 
-export type UserRole = "ADMIN" | "GESTOR" | "COACH" | "ATHLETE" | "SPECTATOR";
+export type UserRole = 'ADMIN' | 'GESTOR' | 'COACH' | 'ATHLETE' | 'SPECTATOR';
 
 export interface ClubMembership {
   clubId: string;
@@ -75,22 +69,22 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // === Constantes de storage ===
 const STORAGE_KEYS = {
-  token: "racket_token",
-  refreshToken: "racket_refresh_token",
-  user: "racket_user",
-  schemaVersion: "racket_schema_v",
+  token: 'racket_token',
+  refreshToken: 'racket_refresh_token',
+  user: 'racket_user',
+  schemaVersion: 'racket_schema_v',
 } as const;
 
 // Incrementar este número sempre que o formato do AuthUser mudar de forma incompatível.
 // Isso garante que sessões antigas sejam limpas automaticamente em todos os browsers.
-const CURRENT_SCHEMA_VERSION = "3";
+const CURRENT_SCHEMA_VERSION = '3';
 
 /** Limpa todos os dados de sessão do localStorage */
 function clearAllSessionData(): void {
   Object.values(STORAGE_KEYS).forEach((key) => localStorage.removeItem(key));
   // Limpa legado
-  localStorage.removeItem("racket_auth");
-  localStorage.removeItem("racket_club");
+  localStorage.removeItem('racket_auth');
+  localStorage.removeItem('racket_club');
 }
 
 /** Lê e valida o AuthUser do localStorage. Retorna null se inválido ou desatualizado. */
@@ -112,8 +106,8 @@ function loadStoredUser(): AuthUser | null {
     // Validação mínima de estrutura — garante que o objeto é um AuthUser válido
     if (
       !parsed ||
-      typeof parsed.id !== "string" ||
-      typeof parsed.email !== "string" ||
+      typeof parsed.id !== 'string' ||
+      typeof parsed.email !== 'string' ||
       !Array.isArray(parsed.clubs)
     ) {
       clearAllSessionData();
@@ -141,18 +135,14 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState<AuthUser | null>(
-    loadStoredUser,
-  );
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(loadStoredUser);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const isAuthenticated = currentUser !== null;
 
-  const activeClub =
-    currentUser?.clubs?.find((c) => c.clubId === currentUser.activeClubId) ??
-    null;
+  const activeClub = currentUser?.clubs?.find((c) => c.clubId === currentUser.activeClubId) ?? null;
 
   // Configurar httpClient com token e clubId armazenados
   useEffect(() => {
@@ -168,18 +158,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Redirecionar ao login em caso de 401
   useEffect(() => {
     httpClient.onUnauthorized(() => {
-      authLog.warn("Token expirado ou inválido — forçando logout");
+      authLog.warn('Token expirado ou inválido — forçando logout');
       performLogout();
     });
   }, []);
 
   // === Helpers internos ===
 
-  const persistSession = (
-    token: string,
-    refreshToken: string | undefined,
-    user: AuthUser,
-  ) => {
+  const persistSession = (token: string, refreshToken: string | undefined, user: AuthUser) => {
     localStorage.setItem(STORAGE_KEYS.token, token);
     if (refreshToken) {
       localStorage.setItem(STORAGE_KEYS.refreshToken, refreshToken);
@@ -200,7 +186,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     httpClient.setAuthConfig({ token: null, refreshToken: null });
     httpClient.setTenantConfig({ clubId: null });
     logger.clearGlobalContext();
-    authLog.info("Logout realizado");
+    authLog.info('Logout realizado');
   };
 
   const mapLoginResponse = (data: {
@@ -232,74 +218,65 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         id: data.user.id,
         email: data.user.email,
         name: data.user.name,
-        role: (data.user.activeRole ||
-          firstClub?.role ||
-          "ATHLETE") as UserRole,
+        role: (data.user.activeRole || firstClub?.role || 'ATHLETE') as UserRole,
         clubs: data.user.clubs.map((c) => ({
           ...c,
           role: c.role as UserRole,
         })),
         activeClubId: data.user.activeClubId || firstClub?.clubId || null,
-        activeRole: (data.user.activeRole ||
-          firstClub?.role ||
-          "ATHLETE") as UserRole,
-        planType: data.user.planType || firstClub?.planType || "FREE",
+        activeRole: (data.user.activeRole || firstClub?.role || 'ATHLETE') as UserRole,
+        planType: data.user.planType || firstClub?.planType || 'FREE',
         subscriptionStatus:
-          data.user.subscriptionStatus ||
-          firstClub?.subscriptionStatus ||
-          "ACTIVE",
+          data.user.subscriptionStatus || firstClub?.subscriptionStatus || 'ACTIVE',
       },
     };
   };
 
   // === Ações públicas ===
 
-  const login = useCallback(
-    async (email: string, password: string): Promise<void> => {
-      setLoading(true);
-      setError(null);
+  const login = useCallback(async (email: string, password: string): Promise<void> => {
+    setLoading(true);
+    setError(null);
 
-      try {
-        const response = await httpClient.post<{
-          token: string;
-          refreshToken?: string;
-          user: {
-            id: string;
-            email: string;
-            name: string;
-            clubs: Array<{
-              clubId: string;
-              clubName: string;
-              clubSlug: string;
-              role: string;
-            }>;
-            activeClubId?: string;
-            activeRole?: string;
-          };
-        }>("/auth/login", { email, password }, { skipAuthHeaders: true });
+    try {
+      const response = await httpClient.post<{
+        token: string;
+        refreshToken?: string;
+        user: {
+          id: string;
+          email: string;
+          name: string;
+          clubs: Array<{
+            clubId: string;
+            clubName: string;
+            clubSlug: string;
+            role: string;
+          }>;
+          activeClubId?: string;
+          activeRole?: string;
+        };
+      }>('/auth/login', { email, password }, { skipAuthHeaders: true });
 
-        const { token, refreshToken, user } = mapLoginResponse(response.data);
-        persistSession(token, refreshToken, user);
-        setCurrentUser(user);
+      const { token, refreshToken, user } = mapLoginResponse(response.data);
+      persistSession(token, refreshToken, user);
+      setCurrentUser(user);
 
-        authLog.info("Login bem-sucedido via API", {
-          email: user.email,
-          clubId: user.activeClubId,
-        });
-      } catch (err: unknown) {
-        const message =
-          err && typeof err === "object" && "responseData" in err
-            ? ((err as { responseData: { error?: string } }).responseData
-                ?.error ?? "Credenciais inválidas.")
-            : "Erro ao conectar. Tente novamente.";
-        setError(message);
-        authLog.warn("Login falhou", { email, error: message });
-      } finally {
-        setLoading(false);
-      }
-    },
-    [],
-  );
+      authLog.info('Login bem-sucedido via API', {
+        email: user.email,
+        clubId: user.activeClubId,
+      });
+    } catch (err: unknown) {
+      const message =
+        err && typeof err === 'object' && 'responseData' in err
+          ? ((err as { responseData: { error?: string } }).responseData?.error ??
+            'Credenciais inválidas.')
+          : 'Erro ao conectar. Tente novamente.';
+      setError(message);
+      authLog.warn('Login falhou', { email, error: message });
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   const register = useCallback(
     async (name: string, email: string, password: string): Promise<void> => {
@@ -323,25 +300,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             activeClubId?: string;
             activeRole?: string;
           };
-        }>(
-          "/auth/register",
-          { name, email, password },
-          { skipAuthHeaders: true },
-        );
+        }>('/auth/register', { name, email, password }, { skipAuthHeaders: true });
 
         const { token, refreshToken, user } = mapLoginResponse(response.data);
         persistSession(token, refreshToken, user);
         setCurrentUser(user);
 
-        authLog.info("Registro e login automático", { email: user.email });
+        authLog.info('Registro e login automático', { email: user.email });
       } catch (err: unknown) {
         const message =
-          err && typeof err === "object" && "responseData" in err
-            ? ((err as { responseData: { error?: string } }).responseData
-                ?.error ?? "Erro ao registrar.")
-            : "Erro ao conectar. Tente novamente.";
+          err && typeof err === 'object' && 'responseData' in err
+            ? ((err as { responseData: { error?: string } }).responseData?.error ??
+              'Erro ao registrar.')
+            : 'Erro ao conectar. Tente novamente.';
         setError(message);
-        authLog.warn("Registro falhou", { email, error: message });
+        authLog.warn('Registro falhou', { email, error: message });
       } finally {
         setLoading(false);
       }
@@ -364,7 +337,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           planType?: string;
           subscriptionStatus?: string;
         };
-      }>("/auth/switch-club", { clubId });
+      }>('/auth/switch-club', { clubId });
 
       const newToken = response.data.token;
       const club = response.data.club;
@@ -377,8 +350,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           activeClubId: club.clubId,
           activeRole: club.role as UserRole,
           role: club.role as UserRole,
-          planType: club.planType || "FREE",
-          subscriptionStatus: club.subscriptionStatus || "ACTIVE",
+          planType: club.planType || 'FREE',
+          subscriptionStatus: club.subscriptionStatus || 'ACTIVE',
         };
         persistSession(
           newToken,
@@ -388,13 +361,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return updated;
       });
 
-      authLog.info("Clube alternado", { clubId, role: club.role });
+      authLog.info('Clube alternado', { clubId, role: club.role });
     } catch (err: unknown) {
       const message =
-        err && typeof err === "object" && "responseData" in err
-          ? ((err as { responseData: { error?: string } }).responseData
-              ?.error ?? "Erro ao trocar clube.")
-          : "Erro ao conectar. Tente novamente.";
+        err && typeof err === 'object' && 'responseData' in err
+          ? ((err as { responseData: { error?: string } }).responseData?.error ??
+            'Erro ao trocar clube.')
+          : 'Erro ao conectar. Tente novamente.';
       setError(message);
     } finally {
       setLoading(false);
@@ -408,7 +381,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const clearError = useCallback(() => setError(null), []);
 
   const loginWithResult = useCallback(
-    (apiResponse: Parameters<AuthContextType["loginWithResult"]>[0]) => {
+    (apiResponse: Parameters<AuthContextType['loginWithResult']>[0]) => {
       const { token, refreshToken, user } = mapLoginResponse(apiResponse);
       persistSession(token, refreshToken, user);
       setCurrentUser(user);
@@ -436,7 +409,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };

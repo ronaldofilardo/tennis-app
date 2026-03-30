@@ -1,17 +1,16 @@
 // frontend/src/services/RealtimeMatchService.ts
-import { API_URL } from "../config/api";
-import type { MatchState, Player, PointDetails } from "../core/scoring/types";
+import { API_URL } from '../config/api';
+import type { MatchState, Player, PointDetails } from '../core/scoring/types';
 
 export interface RealtimeMatchState extends MatchState {
-  status: "NOT_STARTED" | "IN_PROGRESS" | "FINISHED";
+  status: 'NOT_STARTED' | 'IN_PROGRESS' | 'FINISHED';
   lastUpdate: Date;
 }
 
 export class RealtimeMatchService {
   private static instance: RealtimeMatchService;
   private pollingIntervals: Map<string, NodeJS.Timeout> = new Map();
-  private subscribers: Map<string, Set<(state: RealtimeMatchState) => void>> =
-    new Map();
+  private subscribers: Map<string, Set<(state: RealtimeMatchState) => void>> = new Map();
   private activeWatchers: Map<string, number> = new Map(); // Contador de watchers ativos por matchId
 
   private constructor() {}
@@ -24,10 +23,7 @@ export class RealtimeMatchService {
   }
 
   // Inicia o monitoramento de uma partida
-  public async startWatching(
-    matchId: string,
-    onUpdate: (state: RealtimeMatchState) => void,
-  ) {
+  public async startWatching(matchId: string, onUpdate: (state: RealtimeMatchState) => void) {
     // Incrementa contador de watchers ativos
     const currentCount = this.activeWatchers.get(matchId) || 0;
     this.activeWatchers.set(matchId, currentCount + 1);
@@ -62,10 +58,7 @@ export class RealtimeMatchService {
   }
 
   // Para o monitoramento de uma partida
-  public stopWatching(
-    matchId: string,
-    onUpdate?: (state: RealtimeMatchState) => void,
-  ) {
+  public stopWatching(matchId: string, onUpdate?: (state: RealtimeMatchState) => void) {
     // Decrementa contador de watchers ativos
     const currentCount = this.activeWatchers.get(matchId) || 0;
     if (currentCount > 0) {
@@ -95,27 +88,22 @@ export class RealtimeMatchService {
   }
 
   // Atualiza o estado de uma partida
-  public async updateMatchState(
-    matchId: string,
-    state: Partial<RealtimeMatchState>,
-  ) {
+  public async updateMatchState(matchId: string, state: Partial<RealtimeMatchState>) {
     try {
       const response = await fetch(`${API_URL}/matches/${matchId}/state`, {
-        method: "PATCH",
+        method: 'PATCH',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(state),
       });
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(
-          `Falha ao atualizar estado da partida: ${response.status} ${errorText}`,
-        );
+        throw new Error(`Falha ao atualizar estado da partida: ${response.status} ${errorText}`);
       }
 
-      const updatedState = await response.json();
+      const updatedState = (await response.json()) as RealtimeMatchState;
       this.notifySubscribers(matchId, updatedState);
       return updatedState;
     } catch (error) {
@@ -128,11 +116,9 @@ export class RealtimeMatchService {
       const response = await fetch(`${API_URL}/matches/${matchId}/state`);
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(
-          `Falha ao buscar estado da partida: ${response.status} ${errorText}`,
-        );
+        throw new Error(`Falha ao buscar estado da partida: ${response.status} ${errorText}`);
       }
-      const data = await response.json();
+      const data = (await response.json()) as RealtimeMatchState;
       return data;
     } catch (error) {
       throw error;

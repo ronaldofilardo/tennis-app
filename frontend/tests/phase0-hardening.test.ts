@@ -2,7 +2,7 @@
 // Testes de regressão para Fase 0 — Hardening da Fundação
 // Cobre: enums Prisma, authMiddleware, guard admin, validação matchState
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ============================================================
 // 1. Auth Middleware — lógica pura (sem I/O)
@@ -11,21 +11,18 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 // Replicas das funções do authMiddleware.js para testes unitários
 // (evitamos import direto porque o módulo depende de verifyToken com crypto)
 
-const ROLE_HIERARCHY = ["ADMIN", "GESTOR", "COACH", "ATHLETE", "SPECTATOR"];
+const ROLE_HIERARCHY = ['ADMIN', 'GESTOR', 'COACH', 'ATHLETE', 'SPECTATOR'];
 
 function extractContextFromAuth(
   authHeader: string | undefined,
   verifyFn: (token: string) => { valid: boolean; payload?: any },
 ) {
-  if (!authHeader?.startsWith("Bearer ")) return null;
-  const result = verifyFn(authHeader.split(" ")[1]);
+  if (!authHeader?.startsWith('Bearer ')) return null;
+  const result = verifyFn(authHeader.split(' ')[1]);
   return result.valid ? result.payload : null;
 }
 
-function checkRoleAccess(
-  userRole: string | undefined,
-  allowedRoles: string[],
-): boolean {
+function checkRoleAccess(userRole: string | undefined, allowedRoles: string[]): boolean {
   return !!userRole && allowedRoles.includes(userRole);
 }
 
@@ -34,18 +31,15 @@ function checkClubAccess(
   userClubId: string | undefined,
   targetClubId: string,
 ): boolean {
-  if (userRole === "ADMIN") return true;
+  if (userRole === 'ADMIN') return true;
   return userClubId === targetClubId;
 }
 
 // ── Mock de req/res ──
 
-function createMockReqRes(options: {
-  method?: string;
-  authorization?: string;
-}) {
+function createMockReqRes(options: { method?: string; authorization?: string }) {
   const req: any = {
-    method: options.method || "GET",
+    method: options.method || 'GET',
     headers: {
       authorization: options.authorization,
     },
@@ -64,124 +58,124 @@ function createMockReqRes(options: {
   return { req, res, written };
 }
 
-describe("Auth Middleware — extractContext", () => {
+describe('Auth Middleware — extractContext', () => {
   const validPayload = {
-    userId: "u1",
-    email: "test@test.com",
-    role: "ADMIN",
-    clubId: "c1",
+    userId: 'u1',
+    email: 'test@test.com',
+    role: 'ADMIN',
+    clubId: 'c1',
   };
   const verifyOk = () => ({ valid: true, payload: validPayload });
   const verifyFail = () => ({ valid: false });
 
-  it("retorna payload quando token é válido", () => {
-    const ctx = extractContextFromAuth("Bearer abc123", verifyOk);
+  it('retorna payload quando token é válido', () => {
+    const ctx = extractContextFromAuth('Bearer abc123', verifyOk);
     expect(ctx).toEqual(validPayload);
   });
 
-  it("retorna null quando header está ausente", () => {
+  it('retorna null quando header está ausente', () => {
     const ctx = extractContextFromAuth(undefined, verifyOk);
     expect(ctx).toBeNull();
   });
 
   it("retorna null quando header não começa com 'Bearer '", () => {
-    const ctx = extractContextFromAuth("Token abc123", verifyOk);
+    const ctx = extractContextFromAuth('Token abc123', verifyOk);
     expect(ctx).toBeNull();
   });
 
-  it("retorna null quando token é inválido", () => {
-    const ctx = extractContextFromAuth("Bearer invalid", verifyFail);
+  it('retorna null quando token é inválido', () => {
+    const ctx = extractContextFromAuth('Bearer invalid', verifyFail);
     expect(ctx).toBeNull();
   });
 
-  it("retorna null quando header é string vazia", () => {
-    const ctx = extractContextFromAuth("", verifyOk);
+  it('retorna null quando header é string vazia', () => {
+    const ctx = extractContextFromAuth('', verifyOk);
     expect(ctx).toBeNull();
   });
 
   it("retorna null quando header é 'Bearer ' sem token (edge case)", () => {
-    const ctx = extractContextFromAuth("Bearer ", (token) => {
+    const ctx = extractContextFromAuth('Bearer ', (token) => {
       // Token seria string vazia
-      if (token === "") return { valid: false };
+      if (token === '') return { valid: false };
       return { valid: true, payload: validPayload };
     });
     expect(ctx).toBeNull();
   });
 });
 
-describe("Auth Middleware — checkRoleAccess", () => {
-  it("ADMIN tem acesso quando ADMIN está na lista", () => {
-    expect(checkRoleAccess("ADMIN", ["ADMIN"])).toBe(true);
+describe('Auth Middleware — checkRoleAccess', () => {
+  it('ADMIN tem acesso quando ADMIN está na lista', () => {
+    expect(checkRoleAccess('ADMIN', ['ADMIN'])).toBe(true);
   });
 
-  it("GESTOR tem acesso quando GESTOR está na lista", () => {
-    expect(checkRoleAccess("GESTOR", ["GESTOR", "ADMIN"])).toBe(true);
+  it('GESTOR tem acesso quando GESTOR está na lista', () => {
+    expect(checkRoleAccess('GESTOR', ['GESTOR', 'ADMIN'])).toBe(true);
   });
 
-  it("ATHLETE não tem acesso a rota de ADMIN", () => {
-    expect(checkRoleAccess("ATHLETE", ["ADMIN"])).toBe(false);
+  it('ATHLETE não tem acesso a rota de ADMIN', () => {
+    expect(checkRoleAccess('ATHLETE', ['ADMIN'])).toBe(false);
   });
 
-  it("COACH tem acesso quando incluído na lista", () => {
-    expect(checkRoleAccess("COACH", ["GESTOR", "COACH", "ADMIN"])).toBe(true);
+  it('COACH tem acesso quando incluído na lista', () => {
+    expect(checkRoleAccess('COACH', ['GESTOR', 'COACH', 'ADMIN'])).toBe(true);
   });
 
-  it("undefined role retorna false", () => {
-    expect(checkRoleAccess(undefined, ["ADMIN"])).toBe(false);
+  it('undefined role retorna false', () => {
+    expect(checkRoleAccess(undefined, ['ADMIN'])).toBe(false);
   });
 
-  it("role vazia não está em nenhuma lista", () => {
-    expect(checkRoleAccess("", ["ADMIN", "GESTOR"])).toBe(false);
-  });
-});
-
-describe("Auth Middleware — checkClubAccess (cross-tenant)", () => {
-  it("ADMIN acessa qualquer clube (bypass)", () => {
-    expect(checkClubAccess("ADMIN", "club-A", "club-B")).toBe(true);
-  });
-
-  it("GESTOR acessa seu próprio clube", () => {
-    expect(checkClubAccess("GESTOR", "club-A", "club-A")).toBe(true);
-  });
-
-  it("GESTOR NÃO acessa outro clube (cross-tenant bloqueado)", () => {
-    expect(checkClubAccess("GESTOR", "club-A", "club-B")).toBe(false);
-  });
-
-  it("ATHLETE NÃO acessa clube de outro", () => {
-    expect(checkClubAccess("ATHLETE", "club-X", "club-Y")).toBe(false);
-  });
-
-  it("COACH acessa seu próprio clube", () => {
-    expect(checkClubAccess("COACH", "club-A", "club-A")).toBe(true);
-  });
-
-  it("COACH NÃO acessa outro clube", () => {
-    expect(checkClubAccess("COACH", "club-A", "club-B")).toBe(false);
-  });
-
-  it("undefined clubId NÃO acessa nenhum clube", () => {
-    expect(checkClubAccess("GESTOR", undefined, "club-A")).toBe(false);
+  it('role vazia não está em nenhuma lista', () => {
+    expect(checkRoleAccess('', ['ADMIN', 'GESTOR'])).toBe(false);
   });
 });
 
-describe("Auth Middleware — ROLE_HIERARCHY", () => {
-  it("contém exatamente 5 papéis", () => {
+describe('Auth Middleware — checkClubAccess (cross-tenant)', () => {
+  it('ADMIN acessa qualquer clube (bypass)', () => {
+    expect(checkClubAccess('ADMIN', 'club-A', 'club-B')).toBe(true);
+  });
+
+  it('GESTOR acessa seu próprio clube', () => {
+    expect(checkClubAccess('GESTOR', 'club-A', 'club-A')).toBe(true);
+  });
+
+  it('GESTOR NÃO acessa outro clube (cross-tenant bloqueado)', () => {
+    expect(checkClubAccess('GESTOR', 'club-A', 'club-B')).toBe(false);
+  });
+
+  it('ATHLETE NÃO acessa clube de outro', () => {
+    expect(checkClubAccess('ATHLETE', 'club-X', 'club-Y')).toBe(false);
+  });
+
+  it('COACH acessa seu próprio clube', () => {
+    expect(checkClubAccess('COACH', 'club-A', 'club-A')).toBe(true);
+  });
+
+  it('COACH NÃO acessa outro clube', () => {
+    expect(checkClubAccess('COACH', 'club-A', 'club-B')).toBe(false);
+  });
+
+  it('undefined clubId NÃO acessa nenhum clube', () => {
+    expect(checkClubAccess('GESTOR', undefined, 'club-A')).toBe(false);
+  });
+});
+
+describe('Auth Middleware — ROLE_HIERARCHY', () => {
+  it('contém exatamente 5 papéis', () => {
     expect(ROLE_HIERARCHY).toHaveLength(5);
   });
 
-  it("ADMIN é o primeiro (mais privilegiado)", () => {
-    expect(ROLE_HIERARCHY[0]).toBe("ADMIN");
+  it('ADMIN é o primeiro (mais privilegiado)', () => {
+    expect(ROLE_HIERARCHY[0]).toBe('ADMIN');
   });
 
-  it("SPECTATOR é o último (menos privilegiado)", () => {
-    expect(ROLE_HIERARCHY[ROLE_HIERARCHY.length - 1]).toBe("SPECTATOR");
+  it('SPECTATOR é o último (menos privilegiado)', () => {
+    expect(ROLE_HIERARCHY[ROLE_HIERARCHY.length - 1]).toBe('SPECTATOR');
   });
 
-  it("COACH aparece após GESTOR e antes de ATHLETE", () => {
-    const coachIdx = ROLE_HIERARCHY.indexOf("COACH");
-    const gestorIdx = ROLE_HIERARCHY.indexOf("GESTOR");
-    const athleteIdx = ROLE_HIERARCHY.indexOf("ATHLETE");
+  it('COACH aparece após GESTOR e antes de ATHLETE', () => {
+    const coachIdx = ROLE_HIERARCHY.indexOf('COACH');
+    const gestorIdx = ROLE_HIERARCHY.indexOf('GESTOR');
+    const athleteIdx = ROLE_HIERARCHY.indexOf('ATHLETE');
     expect(coachIdx).toBeGreaterThan(gestorIdx);
     expect(coachIdx).toBeLessThan(athleteIdx);
   });
@@ -193,36 +187,33 @@ describe("Auth Middleware — ROLE_HIERARCHY", () => {
 
 // Replica lógica do App.tsx para a rota /admin:
 // isAuthenticated && isAdmin ? <AdminDashboard /> : <Navigate to={...} />
-function adminRouteDecision(
-  isAuthenticated: boolean,
-  isAdmin: boolean,
-): string {
-  if (isAuthenticated && isAdmin) return "RENDER_ADMIN";
-  if (isAuthenticated) return "/dashboard";
-  return "/login";
+function adminRouteDecision(isAuthenticated: boolean, isAdmin: boolean): string {
+  if (isAuthenticated && isAdmin) return 'RENDER_ADMIN';
+  if (isAuthenticated) return '/dashboard';
+  return '/login';
 }
 
-describe("Admin Route Guard (/admin)", () => {
-  it("ADMIN autenticado acessa o painel admin", () => {
-    expect(adminRouteDecision(true, true)).toBe("RENDER_ADMIN");
+describe('Admin Route Guard (/admin)', () => {
+  it('ADMIN autenticado acessa o painel admin', () => {
+    expect(adminRouteDecision(true, true)).toBe('RENDER_ADMIN');
   });
 
-  it("GESTOR autenticado é redirecionado para /dashboard", () => {
-    expect(adminRouteDecision(true, false)).toBe("/dashboard");
+  it('GESTOR autenticado é redirecionado para /dashboard', () => {
+    expect(adminRouteDecision(true, false)).toBe('/dashboard');
   });
 
-  it("ATHLETE autenticado é redirecionado para /dashboard", () => {
-    expect(adminRouteDecision(true, false)).toBe("/dashboard");
+  it('ATHLETE autenticado é redirecionado para /dashboard', () => {
+    expect(adminRouteDecision(true, false)).toBe('/dashboard');
   });
 
-  it("não autenticado é redirecionado para /login", () => {
-    expect(adminRouteDecision(false, false)).toBe("/login");
+  it('não autenticado é redirecionado para /login', () => {
+    expect(adminRouteDecision(false, false)).toBe('/login');
   });
 
-  it("isAdmin=true mas não autenticado → /login (caso edge)", () => {
+  it('isAdmin=true mas não autenticado → /login (caso edge)', () => {
     // isAdmin é derivado de activeRole === "ADMIN" E isAuthenticated
     // Se não autenticado, activeRole é undefined, logo isAdmin é false
-    expect(adminRouteDecision(false, true)).toBe("/login");
+    expect(adminRouteDecision(false, true)).toBe('/login');
   });
 });
 
@@ -232,37 +223,30 @@ describe("Admin Route Guard (/admin)", () => {
 
 // Importamos diretamente porque validationSchemas.js já tem fallback robusto
 // e depende apenas de Zod (que está em node_modules)
-describe("MatchStateUpdateSchema — validação de payload", () => {
+describe('MatchStateUpdateSchema — validação de payload', () => {
   // Importar o módulo real de validação
-  let MatchStateUpdateSchema: any;
-  let MatchIdSchema: any;
+  let MatchStateUpdateSchema: (typeof import('../src/services/validationSchemas.js'))['MatchStateUpdateSchema'];
+  let MatchIdSchema: (typeof import('../src/services/validationSchemas.js'))['MatchIdSchema'];
 
-  beforeEach(async () => {
-    // Import dinâmico para evitar problemas com Zod carregando
-    try {
-      const mod = await import("../src/services/validationSchemas.js");
-      MatchStateUpdateSchema = mod.MatchStateUpdateSchema;
-      MatchIdSchema = mod.MatchIdSchema;
-    } catch {
-      // Se Zod não carrega, os testes serão pulados
-      MatchStateUpdateSchema = null;
-      MatchIdSchema = null;
-    }
+  beforeAll(async () => {
+    const mod = await import('../src/services/validationSchemas.js');
+    MatchStateUpdateSchema = mod.MatchStateUpdateSchema;
+    MatchIdSchema = mod.MatchIdSchema;
+    expect(MatchStateUpdateSchema).toBeDefined();
+    expect(MatchIdSchema).toBeDefined();
   });
 
-  it("aceita matchState como string não vazia", () => {
-    if (!MatchStateUpdateSchema) return; // skip se Zod não disponível
+  it('aceita matchState como string não vazia', () => {
     const result = MatchStateUpdateSchema.safeParse({
       matchState: '{"score": "1-0"}',
     });
     expect(result.success).toBe(true);
   });
 
-  it("aceita matchState como objeto", () => {
-    if (!MatchStateUpdateSchema) return;
+  it('aceita matchState como objeto', () => {
     const result = MatchStateUpdateSchema.safeParse({
       matchState: {
-        score: "1-0",
+        score: '1-0',
         sets: [{ games: [6, 4] }],
         isFinished: false,
       },
@@ -270,68 +254,58 @@ describe("MatchStateUpdateSchema — validação de payload", () => {
     expect(result.success).toBe(true);
   });
 
-  it("rejeita matchState como string vazia", () => {
-    if (!MatchStateUpdateSchema) return;
-    const result = MatchStateUpdateSchema.safeParse({ matchState: "" });
+  it('rejeita matchState como string vazia', () => {
+    const result = MatchStateUpdateSchema.safeParse({ matchState: '' });
     expect(result.success).toBe(false);
   });
 
-  it("rejeita payload sem matchState", () => {
-    if (!MatchStateUpdateSchema) return;
+  it('rejeita payload sem matchState', () => {
     const result = MatchStateUpdateSchema.safeParse({});
     expect(result.success).toBe(false);
   });
 
-  it("rejeita payload vazio {}", () => {
-    if (!MatchStateUpdateSchema) return;
+  it('rejeita payload vazio {}', () => {
     const result = MatchStateUpdateSchema.safeParse({});
     expect(result.success).toBe(false);
   });
 
-  it("rejeita matchState null", () => {
-    if (!MatchStateUpdateSchema) return;
+  it('rejeita matchState null', () => {
     const result = MatchStateUpdateSchema.safeParse({ matchState: null });
     expect(result.success).toBe(false);
   });
 
-  it("rejeita matchState undefined", () => {
-    if (!MatchStateUpdateSchema) return;
+  it('rejeita matchState undefined', () => {
     const result = MatchStateUpdateSchema.safeParse({ matchState: undefined });
     expect(result.success).toBe(false);
   });
 
-  it("rejeita campos extras (.strict())", () => {
-    if (!MatchStateUpdateSchema) return;
+  it('rejeita campos extras (.strict())', () => {
     const result = MatchStateUpdateSchema.safeParse({
       matchState: '{"score":"1-0"}',
-      malicious: "DROP TABLE",
+      malicious: 'DROP TABLE',
     });
     expect(result.success).toBe(false);
   });
 
-  it("rejeita matchState numérico", () => {
-    if (!MatchStateUpdateSchema) return;
+  it('rejeita matchState numérico', () => {
     const result = MatchStateUpdateSchema.safeParse({ matchState: 42 });
     expect(result.success).toBe(false);
   });
 
   // MatchIdSchema
 
-  it("MatchIdSchema aceita ID válido", () => {
-    if (!MatchIdSchema) return;
-    const result = MatchIdSchema.safeParse("cm1234567890abcdef");
+  it('MatchIdSchema aceita ID válido', () => {
+    const result = MatchIdSchema.safeParse('cm1234567890abcdef');
     expect(result.success).toBe(true);
   });
 
-  it("MatchIdSchema rejeita string vazia", () => {
-    if (!MatchIdSchema) return;
-    const result = MatchIdSchema.safeParse("");
+  it('MatchIdSchema rejeita string vazia', () => {
+    const result = MatchIdSchema.safeParse('');
     expect(result.success).toBe(false);
   });
 
-  it("MatchIdSchema rejeita ID muito longo (>100 chars)", () => {
-    if (!MatchIdSchema) return;
-    const result = MatchIdSchema.safeParse("a".repeat(101));
+  it('MatchIdSchema rejeita ID muito longo (>100 chars)', () => {
+    const result = MatchIdSchema.safeParse('a'.repeat(101));
     expect(result.success).toBe(false);
   });
 });
@@ -340,37 +314,37 @@ describe("MatchStateUpdateSchema — validação de payload", () => {
 // 4. VALID_CLUB_ROLES — papéis de clube
 // ============================================================
 
-describe("VALID_CLUB_ROLES — integridade dos papéis de clube", () => {
+describe('VALID_CLUB_ROLES — integridade dos papéis de clube', () => {
   // Replica do authService.js — SPECTATOR foi movido para platformRole (não é mais papel de clube)
-  const VALID_CLUB_ROLES = ["GESTOR", "COACH", "ATHLETE"];
+  const VALID_CLUB_ROLES = ['GESTOR', 'COACH', 'ATHLETE'];
 
-  it("NÃO inclui ADMIN (papel de plataforma, não de clube)", () => {
-    expect(VALID_CLUB_ROLES).not.toContain("ADMIN");
+  it('NÃO inclui ADMIN (papel de plataforma, não de clube)', () => {
+    expect(VALID_CLUB_ROLES).not.toContain('ADMIN');
   });
 
-  it("NÃO inclui SPECTATOR (papel de plataforma independente de clube)", () => {
-    expect(VALID_CLUB_ROLES).not.toContain("SPECTATOR");
+  it('NÃO inclui SPECTATOR (papel de plataforma independente de clube)', () => {
+    expect(VALID_CLUB_ROLES).not.toContain('SPECTATOR');
   });
 
-  it("contém exatamente 3 papéis de clube", () => {
+  it('contém exatamente 3 papéis de clube', () => {
     expect(VALID_CLUB_ROLES).toHaveLength(3);
   });
 
-  it("VALID_CLUB_ROLES contém apenas GESTOR, COACH e ATHLETE", () => {
-    expect([...VALID_CLUB_ROLES].sort()).toEqual(["ATHLETE", "COACH", "GESTOR"]);
+  it('VALID_CLUB_ROLES contém apenas GESTOR, COACH e ATHLETE', () => {
+    expect([...VALID_CLUB_ROLES].sort()).toEqual(['ATHLETE', 'COACH', 'GESTOR']);
   });
 
-  it("COACH é aceito como role válida para addClubMember", () => {
-    const role = "COACH";
+  it('COACH é aceito como role válida para addClubMember', () => {
+    const role = 'COACH';
     expect(VALID_CLUB_ROLES.includes(role)).toBe(true);
   });
 
   it("role inválida 'MANAGER' é rejeitada", () => {
-    expect(VALID_CLUB_ROLES.includes("MANAGER")).toBe(false);
+    expect(VALID_CLUB_ROLES.includes('MANAGER')).toBe(false);
   });
 
   it("role 'admin' (lowercase) é rejeitada (case-sensitive)", () => {
-    expect(VALID_CLUB_ROLES.includes("admin")).toBe(false);
+    expect(VALID_CLUB_ROLES.includes('admin')).toBe(false);
   });
 });
 
@@ -378,94 +352,73 @@ describe("VALID_CLUB_ROLES — integridade dos papéis de clube", () => {
 // 5. Prisma Enums — integridade dos valores esperados
 // ============================================================
 
-describe("Prisma Enums — valores esperados no schema", () => {
+describe('Prisma Enums — valores esperados no schema', () => {
   // Os valores de enum definidos no schema.prisma devem coincidir com
   // os valores usados no código. Testamos a consistência.
 
-  const UserRoleValues = ["ADMIN", "GESTOR", "COACH", "ATHLETE", "SPECTATOR"];
-  const MatchStatusValues = ["WAITING", "LIVE", "FINISHED", "CANCELLED"];
-  const MembershipStatusValues = ["ACTIVE", "INACTIVE", "SUSPENDED", "PENDING"];
-  const PlanTypeValues = ["FREE", "BASIC", "PREMIUM", "ENTERPRISE"];
-  const MatchVisibilityValues = ["PUBLIC", "PRIVATE", "CLUB_ONLY"];
-  const TournamentStatusValues = [
-    "DRAFT",
-    "OPEN",
-    "IN_PROGRESS",
-    "FINISHED",
-    "CANCELLED",
-  ];
+  const UserRoleValues = ['ADMIN', 'GESTOR', 'COACH', 'ATHLETE', 'SPECTATOR'];
+  const MatchStatusValues = ['WAITING', 'LIVE', 'FINISHED', 'CANCELLED'];
+  const MembershipStatusValues = ['ACTIVE', 'INACTIVE', 'SUSPENDED', 'PENDING'];
+  const PlanTypeValues = ['FREE', 'BASIC', 'PREMIUM', 'ENTERPRISE'];
+  const MatchVisibilityValues = ['PUBLIC', 'PRIVATE', 'CLUB_ONLY'];
+  const TournamentStatusValues = ['DRAFT', 'OPEN', 'IN_PROGRESS', 'FINISHED', 'CANCELLED'];
   const TournamentFormatValues = [
-    "SINGLE_ELIMINATION",
-    "DOUBLE_ELIMINATION",
-    "ROUND_ROBIN",
-    "GROUP_STAGE",
+    'SINGLE_ELIMINATION',
+    'DOUBLE_ELIMINATION',
+    'ROUND_ROBIN',
+    'GROUP_STAGE',
   ];
-  const TournamentEntryStatusValues = [
-    "PENDING",
-    "CONFIRMED",
-    "CANCELLED",
-    "WAITLIST",
-  ];
-  const OrganizerRoleValues = ["DIRECTOR", "REFEREE", "ASSISTANT"];
+  const TournamentEntryStatusValues = ['PENDING', 'CONFIRMED', 'CANCELLED', 'WAITLIST'];
+  const OrganizerRoleValues = ['DIRECTOR', 'REFEREE', 'ASSISTANT'];
 
-  it("UserRole contém todos os 5 papéis", () => {
+  it('UserRole contém todos os 5 papéis', () => {
     expect(UserRoleValues).toHaveLength(5);
   });
 
-  it("MatchStatus contém WAITING, LIVE, FINISHED, CANCELLED", () => {
-    expect(MatchStatusValues).toEqual([
-      "WAITING",
-      "LIVE",
-      "FINISHED",
-      "CANCELLED",
-    ]);
+  it('MatchStatus contém WAITING, LIVE, FINISHED, CANCELLED', () => {
+    expect(MatchStatusValues).toEqual(['WAITING', 'LIVE', 'FINISHED', 'CANCELLED']);
   });
 
-  it("MembershipStatus contém ACTIVE, INACTIVE, SUSPENDED, PENDING", () => {
-    expect(MembershipStatusValues).toEqual([
-      "ACTIVE",
-      "INACTIVE",
-      "SUSPENDED",
-      "PENDING",
-    ]);
+  it('MembershipStatus contém ACTIVE, INACTIVE, SUSPENDED, PENDING', () => {
+    expect(MembershipStatusValues).toEqual(['ACTIVE', 'INACTIVE', 'SUSPENDED', 'PENDING']);
   });
 
-  it("PlanType contém todos os planos", () => {
-    expect(PlanTypeValues).toEqual(["FREE", "BASIC", "PREMIUM", "ENTERPRISE"]);
+  it('PlanType contém todos os planos', () => {
+    expect(PlanTypeValues).toEqual(['FREE', 'BASIC', 'PREMIUM', 'ENTERPRISE']);
   });
 
-  it("MatchVisibility inclui CLUB_ONLY para multi-tenant", () => {
-    expect(MatchVisibilityValues).toContain("CLUB_ONLY");
+  it('MatchVisibility inclui CLUB_ONLY para multi-tenant', () => {
+    expect(MatchVisibilityValues).toContain('CLUB_ONLY');
   });
 
-  it("TournamentStatus tem ciclo completo: DRAFT → OPEN → IN_PROGRESS → FINISHED", () => {
+  it('TournamentStatus tem ciclo completo: DRAFT → OPEN → IN_PROGRESS → FINISHED', () => {
     const idx = (v: string) => TournamentStatusValues.indexOf(v);
-    expect(idx("DRAFT")).toBeLessThan(idx("OPEN"));
-    expect(idx("OPEN")).toBeLessThan(idx("IN_PROGRESS"));
-    expect(idx("IN_PROGRESS")).toBeLessThan(idx("FINISHED"));
+    expect(idx('DRAFT')).toBeLessThan(idx('OPEN'));
+    expect(idx('OPEN')).toBeLessThan(idx('IN_PROGRESS'));
+    expect(idx('IN_PROGRESS')).toBeLessThan(idx('FINISHED'));
   });
 
-  it("TournamentFormat inclui todos os 4 formatos", () => {
+  it('TournamentFormat inclui todos os 4 formatos', () => {
     expect(TournamentFormatValues).toHaveLength(4);
   });
 
-  it("TournamentEntryStatus inclui WAITLIST", () => {
-    expect(TournamentEntryStatusValues).toContain("WAITLIST");
+  it('TournamentEntryStatus inclui WAITLIST', () => {
+    expect(TournamentEntryStatusValues).toContain('WAITLIST');
   });
 
-  it("OrganizerRole contém exatamente DIRECTOR, REFEREE, ASSISTANT", () => {
-    expect(OrganizerRoleValues).toEqual(["DIRECTOR", "REFEREE", "ASSISTANT"]);
+  it('OrganizerRole contém exatamente DIRECTOR, REFEREE, ASSISTANT', () => {
+    expect(OrganizerRoleValues).toEqual(['DIRECTOR', 'REFEREE', 'ASSISTANT']);
   });
 
   // Validações de consistência cruzada
-  it("todos os UserRole values estão em UPPERCASE e sem espaços", () => {
+  it('todos os UserRole values estão em UPPERCASE e sem espaços', () => {
     UserRoleValues.forEach((role) => {
       expect(role).toBe(role.toUpperCase());
-      expect(role).not.toContain(" ");
+      expect(role).not.toContain(' ');
     });
   });
 
-  it("todos os enum values são strings não vazias", () => {
+  it('todos os enum values são strings não vazias', () => {
     const allValues = [
       ...UserRoleValues,
       ...MatchStatusValues,
@@ -478,7 +431,7 @@ describe("Prisma Enums — valores esperados no schema", () => {
       ...OrganizerRoleValues,
     ];
     allValues.forEach((val) => {
-      expect(typeof val).toBe("string");
+      expect(typeof val).toBe('string');
       expect(val.length).toBeGreaterThan(0);
     });
   });
@@ -488,40 +441,40 @@ describe("Prisma Enums — valores esperados no schema", () => {
 // 6. Consistência — papéis usados no código vs enum
 // ============================================================
 
-describe("Consistência — código vs enums Prisma", () => {
-  const UserRoleEnum = ["ADMIN", "GESTOR", "COACH", "ATHLETE", "SPECTATOR"];
+describe('Consistência — código vs enums Prisma', () => {
+  const UserRoleEnum = ['ADMIN', 'GESTOR', 'COACH', 'ATHLETE', 'SPECTATOR'];
   // SPECTATOR foi movido para platformRole — não é mais papel de clube
-  const VALID_CLUB_ROLES = ["GESTOR", "COACH", "ATHLETE"];
+  const VALID_CLUB_ROLES = ['GESTOR', 'COACH', 'ATHLETE'];
 
-  it("VALID_CLUB_ROLES é subconjunto de UserRole (sem ADMIN)", () => {
+  it('VALID_CLUB_ROLES é subconjunto de UserRole (sem ADMIN)', () => {
     VALID_CLUB_ROLES.forEach((role) => {
       expect(UserRoleEnum).toContain(role);
     });
   });
 
-  it("ROLE_HIERARCHY coincide exatamente com UserRole enum", () => {
+  it('ROLE_HIERARCHY coincide exatamente com UserRole enum', () => {
     expect([...ROLE_HIERARCHY].sort()).toEqual([...UserRoleEnum].sort());
   });
 
-  it("isAdmin verifica exatamente ADMIN (não GESTOR ou COACH)", () => {
-    const isAdmin = (role: string) => role === "ADMIN";
-    expect(isAdmin("ADMIN")).toBe(true);
-    expect(isAdmin("GESTOR")).toBe(false);
-    expect(isAdmin("COACH")).toBe(false);
+  it('isAdmin verifica exatamente ADMIN (não GESTOR ou COACH)', () => {
+    const isAdmin = (role: string) => role === 'ADMIN';
+    expect(isAdmin('ADMIN')).toBe(true);
+    expect(isAdmin('GESTOR')).toBe(false);
+    expect(isAdmin('COACH')).toBe(false);
   });
 
-  it("isGestor verifica exatamente GESTOR", () => {
-    const isGestor = (role: string) => role === "GESTOR";
-    expect(isGestor("GESTOR")).toBe(true);
-    expect(isGestor("ADMIN")).toBe(false);
-    expect(isGestor("COACH")).toBe(false);
+  it('isGestor verifica exatamente GESTOR', () => {
+    const isGestor = (role: string) => role === 'GESTOR';
+    expect(isGestor('GESTOR')).toBe(true);
+    expect(isGestor('ADMIN')).toBe(false);
+    expect(isGestor('COACH')).toBe(false);
   });
 
-  it("COACH é tratado separadamente de GESTOR", () => {
-    const isGestor = (role: string) => role === "GESTOR";
-    const isCoach = (role: string) => role === "COACH";
-    expect(isGestor("COACH")).toBe(false);
-    expect(isCoach("GESTOR")).toBe(false);
+  it('COACH é tratado separadamente de GESTOR', () => {
+    const isGestor = (role: string) => role === 'GESTOR';
+    const isCoach = (role: string) => role === 'COACH';
+    expect(isGestor('COACH')).toBe(false);
+    expect(isCoach('GESTOR')).toBe(false);
   });
 });
 
@@ -529,69 +482,69 @@ describe("Consistência — código vs enums Prisma", () => {
 // 7. CORS e helpers — formato de resposta
 // ============================================================
 
-describe("Helpers — sendJson / methodNotAllowed", () => {
+describe('Helpers — sendJson / methodNotAllowed', () => {
   // Replicas das funções do authMiddleware
   const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Club-ID",
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Club-ID',
   };
 
   function sendJson(res: any, statusCode: number, data: any) {
     res.writeHead(statusCode, {
       ...corsHeaders,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     });
     res.end(JSON.stringify(data));
   }
 
   function methodNotAllowed(res: any, allowedMethods: string[] = []) {
     sendJson(res, 405, {
-      error: "Method not allowed",
+      error: 'Method not allowed',
       allowed: allowedMethods,
     });
   }
 
-  it("sendJson define Content-Type como application/json", () => {
+  it('sendJson define Content-Type como application/json', () => {
     const res = { writeHead: vi.fn(), end: vi.fn() };
     sendJson(res, 200, { ok: true });
     expect(res.writeHead).toHaveBeenCalledWith(
       200,
       expect.objectContaining({
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       }),
     );
   });
 
-  it("sendJson serializa body como JSON string", () => {
+  it('sendJson serializa body como JSON string', () => {
     const res = { writeHead: vi.fn(), end: vi.fn() };
-    sendJson(res, 200, { message: "test" });
-    expect(res.end).toHaveBeenCalledWith(JSON.stringify({ message: "test" }));
+    sendJson(res, 200, { message: 'test' });
+    expect(res.end).toHaveBeenCalledWith(JSON.stringify({ message: 'test' }));
   });
 
-  it("sendJson inclui CORS headers em toda resposta", () => {
+  it('sendJson inclui CORS headers em toda resposta', () => {
     const res = { writeHead: vi.fn(), end: vi.fn() };
-    sendJson(res, 403, { error: "forbidden" });
+    sendJson(res, 403, { error: 'forbidden' });
     const headers = res.writeHead.mock.calls[0][1];
-    expect(headers["Access-Control-Allow-Origin"]).toBe("*");
-    expect(headers["Access-Control-Allow-Headers"]).toContain("Authorization");
-    expect(headers["Access-Control-Allow-Headers"]).toContain("X-Club-ID");
+    expect(headers['Access-Control-Allow-Origin']).toBe('*');
+    expect(headers['Access-Control-Allow-Headers']).toContain('Authorization');
+    expect(headers['Access-Control-Allow-Headers']).toContain('X-Club-ID');
   });
 
-  it("methodNotAllowed retorna status 405", () => {
+  it('methodNotAllowed retorna status 405', () => {
     const res = { writeHead: vi.fn(), end: vi.fn() };
-    methodNotAllowed(res, ["GET", "POST"]);
+    methodNotAllowed(res, ['GET', 'POST']);
     expect(res.writeHead).toHaveBeenCalledWith(405, expect.any(Object));
   });
 
-  it("methodNotAllowed lista métodos permitidos no body", () => {
+  it('methodNotAllowed lista métodos permitidos no body', () => {
     const res = { writeHead: vi.fn(), end: vi.fn() };
-    methodNotAllowed(res, ["GET", "POST"]);
+    methodNotAllowed(res, ['GET', 'POST']);
     const body = JSON.parse(res.end.mock.calls[0][0]);
-    expect(body.allowed).toEqual(["GET", "POST"]);
+    expect(body.allowed).toEqual(['GET', 'POST']);
   });
 
-  it("CORS headers incluem X-Club-ID (necessário para multi-tenant)", () => {
-    expect(corsHeaders["Access-Control-Allow-Headers"]).toContain("X-Club-ID");
+  it('CORS headers incluem X-Club-ID (necessário para multi-tenant)', () => {
+    expect(corsHeaders['Access-Control-Allow-Headers']).toContain('X-Club-ID');
   });
 });

@@ -1,0 +1,110 @@
+/* frontend/src/components/VenueSelect.css */
+
+.venue-select {
+  position: relative;
+  width: 100%;
+}
+
+.venue-select__input {
+  width: 100%;
+  background: #1a1a2e;
+  border: 1px solid #2a2a3e;
+  border-radius: 8px;
+  color: #e2e8f0;
+  font-size: 0.875rem;
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  outline: none;
+  transition: border-color 150ms ease;
+  box-sizing: border-box;
+}
+
+.venue-select__input:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.25);
+}
+
+.venue-select__input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.venue-select__input::placeholder {
+  color: #6b7280;
+}
+
+.venue-select__badge {
+  position: absolute;
+  right: 0.625rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #4ade80;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.venue-select__dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #1e1e2e;
+  border: 1px solid #2a2a3e;
+  border-radius: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem 0;
+  z-index: 50;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.venue-select__option {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 100ms ease;
+  font-size: 0.875rem;
+  color: #e2e8f0;
+}
+
+.venue-select__option:hover,
+.venue-select__option[aria-selected='true'] {
+  background: #2a2a3e;
+}
+
+.venue-select__option-name {
+  flex: 1;
+}
+
+.venue-select__option-city {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.venue-select__option--create {
+  color: #a78bfa;
+  font-style: normal;
+}
+
+.venue-select__option--create:hover {
+  background: rgba(124, 58, 237, 0.15);
+}
+
+.venue-select__empty {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .venue-select__input,
+  .venue-select__option {
+    transition: none;
+  }
+}

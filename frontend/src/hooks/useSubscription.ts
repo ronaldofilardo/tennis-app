@@ -2,46 +2,40 @@
 // Hook para acessar informações de subscription do clube ativo.
 // Fornece dados de plano, quota, e feature-gating no frontend.
 
-import { useState, useEffect, useCallback } from "react";
-import { useAuth } from "../contexts/AuthContext";
-import httpClient from "../config/httpClient";
+import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { httpClient } from '../config/httpClient';
 
 // Limites por plano (espelha o backend)
 export const PLAN_LIMITS = {
   FREE: {
     maxAthletes: 10,
-    features: ["basic_scoring", "basic_stats"],
-    label: "Gratuito",
+    features: ['basic_scoring', 'basic_stats'],
+    label: 'Gratuito',
   },
   PREMIUM: {
     maxAthletes: 50,
-    features: [
-      "basic_scoring",
-      "basic_stats",
-      "advanced_stats",
-      "tournaments",
-      "custom_branding",
-    ],
-    label: "Premium",
+    features: ['basic_scoring', 'basic_stats', 'advanced_stats', 'tournaments', 'custom_branding'],
+    label: 'Premium',
   },
   ENTERPRISE: {
     maxAthletes: 999999,
     features: [
-      "basic_scoring",
-      "basic_stats",
-      "advanced_stats",
-      "tournaments",
-      "custom_branding",
-      "custom_domain",
-      "api_access",
-      "priority_support",
+      'basic_scoring',
+      'basic_stats',
+      'advanced_stats',
+      'tournaments',
+      'custom_branding',
+      'custom_domain',
+      'api_access',
+      'priority_support',
     ],
-    label: "Enterprise",
+    label: 'Enterprise',
   },
 } as const;
 
 export type PlanType = keyof typeof PLAN_LIMITS;
-export type Feature = (typeof PLAN_LIMITS)[PlanType]["features"][number];
+export type Feature = (typeof PLAN_LIMITS)[PlanType]['features'][number];
 
 export interface SubscriptionUsage {
   activeAthletes: number;
@@ -112,15 +106,10 @@ export function useSubscription(): UseSubscriptionReturn {
     setError(null);
 
     try {
-      const response = await httpClient.get<SubscriptionData>(
-        `/clubs/${clubId}/subscription`,
-      );
+      const response = await httpClient.get<SubscriptionData>(`/clubs/${clubId}/subscription`);
       setData(response.data);
     } catch (err) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Erro ao carregar dados da assinatura";
+      const message = err instanceof Error ? err.message : 'Erro ao carregar dados da assinatura';
       setError(message);
     } finally {
       setLoading(false);
@@ -133,14 +122,10 @@ export function useSubscription(): UseSubscriptionReturn {
 
   // Derive plan info from auth context or fetched data
   const planType: PlanType =
-    (data?.plan?.type as PlanType) ||
-    (currentUser?.planType as PlanType) ||
-    "FREE";
+    (data?.plan?.type as PlanType) || (currentUser?.planType as PlanType) || 'FREE';
 
   const subscriptionStatus =
-    data?.subscription?.status ||
-    currentUser?.subscriptionStatus ||
-    "ACTIVE";
+    data?.subscription?.status || currentUser?.subscriptionStatus || 'ACTIVE';
 
   const planConfig = PLAN_LIMITS[planType] || PLAN_LIMITS.FREE;
 
@@ -159,17 +144,15 @@ export function useSubscription(): UseSubscriptionReturn {
 
     planType,
     planLabel: planConfig.label,
-    isActive: subscriptionStatus === "ACTIVE" || subscriptionStatus === "TRIALING",
-    isPastDue: subscriptionStatus === "PAST_DUE",
-    isCanceled: subscriptionStatus === "CANCELED",
-    isFree: planType === "FREE",
-    isPremium: planType === "PREMIUM",
-    isEnterprise: planType === "ENTERPRISE",
+    isActive: subscriptionStatus === 'ACTIVE' || subscriptionStatus === 'TRIALING',
+    isPastDue: subscriptionStatus === 'PAST_DUE',
+    isCanceled: subscriptionStatus === 'CANCELED',
+    isFree: planType === 'FREE',
+    isPremium: planType === 'PREMIUM',
+    isEnterprise: planType === 'ENTERPRISE',
 
     hasFeature,
-    canAddAthlete: data?.usage
-      ? data.usage.activeAthletes < data.usage.maxAthletes
-      : true,
+    canAddAthlete: data?.usage ? data.usage.activeAthletes < data.usage.maxAthletes : true,
     athleteUsage: data?.usage
       ? {
           current: data.usage.activeAthletes,

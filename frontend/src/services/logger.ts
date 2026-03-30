@@ -5,7 +5,7 @@
 
 // === Tipos ===
 
-export type LogLevel = "debug" | "info" | "warn" | "error" | "silent";
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent';
 
 export interface LogContext {
   /** ID do usuário (email ou ID do backend) */
@@ -95,7 +95,7 @@ class AppLogger {
    */
   public setLevel(level: LogLevel): void {
     this._minLevel = level;
-    this.info("Logger", `Nível de log alterado para: ${level}`);
+    this.info('Logger', `Nível de log alterado para: ${level}`);
   }
 
   /**
@@ -114,9 +114,7 @@ class AppLogger {
   public addExternalHandler(handler: (entry: LogEntry) => void): () => void {
     this._externalHandlers.push(handler);
     return () => {
-      this._externalHandlers = this._externalHandlers.filter(
-        (h) => h !== handler,
-      );
+      this._externalHandlers = this._externalHandlers.filter((h) => h !== handler);
     };
   }
 
@@ -124,22 +122,22 @@ class AppLogger {
 
   /** Log de debug (somente em ambientes de desenvolvimento) */
   public debug(module: string, message: string, data?: unknown): void {
-    this._log("debug", module, message, data);
+    this._log('debug', module, message, data);
   }
 
   /** Log informativo */
   public info(module: string, message: string, data?: unknown): void {
-    this._log("info", module, message, data);
+    this._log('info', module, message, data);
   }
 
   /** Log de aviso */
   public warn(module: string, message: string, data?: unknown): void {
-    this._log("warn", module, message, data);
+    this._log('warn', module, message, data);
   }
 
   /** Log de erro */
   public error(module: string, message: string, data?: unknown): void {
-    this._log("error", module, message, data);
+    this._log('error', module, message, data);
   }
 
   /**
@@ -153,10 +151,7 @@ class AppLogger {
    * Retorna logs filtrados por userId ou clubId.
    * Útil quando um clube reclama de um bug específico.
    */
-  public getHistoryForTenant(filter: {
-    userId?: string;
-    clubId?: string;
-  }): LogEntry[] {
+  public getHistoryForTenant(filter: { userId?: string; clubId?: string }): LogEntry[] {
     return this._history.filter((entry) => {
       if (filter.userId && entry.context.userId !== filter.userId) return false;
       if (filter.clubId && entry.context.clubId !== filter.clubId) return false;
@@ -180,25 +175,16 @@ class AppLogger {
    */
   public createModuleLogger(module: string) {
     return {
-      debug: (message: string, data?: unknown) =>
-        this.debug(module, message, data),
-      info: (message: string, data?: unknown) =>
-        this.info(module, message, data),
-      warn: (message: string, data?: unknown) =>
-        this.warn(module, message, data),
-      error: (message: string, data?: unknown) =>
-        this.error(module, message, data),
+      debug: (message: string, data?: unknown) => this.debug(module, message, data),
+      info: (message: string, data?: unknown) => this.info(module, message, data),
+      warn: (message: string, data?: unknown) => this.warn(module, message, data),
+      error: (message: string, data?: unknown) => this.error(module, message, data),
     };
   }
 
   // === Internos ===
 
-  private _log(
-    level: LogLevel,
-    module: string,
-    message: string,
-    data?: unknown,
-  ): void {
+  private _log(level: LogLevel, module: string, message: string, data?: unknown): void {
     if (LOG_LEVEL_PRIORITY[level] < LOG_LEVEL_PRIORITY[this._minLevel]) {
       return; // Nível abaixo do mínimo configurado
     }
@@ -228,33 +214,21 @@ class AppLogger {
     const contextStr = this._formatContextSuffix(entry.context);
 
     switch (level) {
-      case "debug":
+      case 'debug':
         // eslint-disable-next-line no-console
-        console.debug(
-          `${prefix} ${message}${contextStr}`,
-          ...(data !== undefined ? [data] : []),
-        );
+        console.debug(`${prefix} ${message}${contextStr}`, ...(data !== undefined ? [data] : []));
         break;
-      case "info":
+      case 'info':
         // eslint-disable-next-line no-console
-        console.log(
-          `${prefix} ${message}${contextStr}`,
-          ...(data !== undefined ? [data] : []),
-        );
+        console.log(`${prefix} ${message}${contextStr}`, ...(data !== undefined ? [data] : []));
         break;
-      case "warn":
+      case 'warn':
         // eslint-disable-next-line no-console
-        console.warn(
-          `${prefix} ${message}${contextStr}`,
-          ...(data !== undefined ? [data] : []),
-        );
+        console.warn(`${prefix} ${message}${contextStr}`, ...(data !== undefined ? [data] : []));
         break;
-      case "error":
+      case 'error':
         // eslint-disable-next-line no-console
-        console.error(
-          `${prefix} ${message}${contextStr}`,
-          ...(data !== undefined ? [data] : []),
-        );
+        console.error(`${prefix} ${message}${contextStr}`, ...(data !== undefined ? [data] : []));
         break;
     }
 
@@ -286,7 +260,7 @@ class AppLogger {
       parts.push(`session:${context.sessionId.slice(0, 6)}`);
     }
 
-    return parts.length > 0 ? ` | ${parts.join(", ")}` : "";
+    return parts.length > 0 ? ` | ${parts.join(', ')}` : '';
   }
 
   /**
@@ -295,17 +269,17 @@ class AppLogger {
    */
   private _resolveDefaultLevel(): LogLevel {
     try {
-      if (typeof import.meta !== "undefined" && import.meta.env) {
+      if (typeof import.meta !== 'undefined' && import.meta.env) {
         const envLevel = import.meta.env.VITE_LOG_LEVEL as LogLevel | undefined;
         if (envLevel && envLevel in LOG_LEVEL_PRIORITY) {
           return envLevel;
         }
-        return import.meta.env.DEV ? "debug" : "info";
+        return import.meta.env.DEV ? 'debug' : 'info';
       }
     } catch {
       // Fallback para ambientes sem import.meta (testes)
     }
-    return "debug";
+    return 'debug';
   }
 
   /**
@@ -319,7 +293,7 @@ class AppLogger {
   /** Reset para testes */
   public _reset(): void {
     this._globalContext = {};
-    this._minLevel = "debug";
+    this._minLevel = 'debug';
     this._history = [];
     this._externalHandlers = [];
     this._initSessionId();
@@ -338,5 +312,3 @@ export const logger = AppLogger.getInstance();
 export function createLogger(module: string) {
   return logger.createModuleLogger(module);
 }
-
-export default logger;

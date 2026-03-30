@@ -1,9 +1,9 @@
 // frontend/src/components/BracketViewer.tsx
 // Visualização de bracket de torneio (eliminação simples) — Fase 3
 
-import React, { useEffect, useState, useCallback } from "react";
-import httpClient from "../config/httpClient";
-import "./BracketViewer.css";
+import React, { useEffect, useState, useCallback } from 'react';
+import { httpClient } from '../config/httpClient';
+import './BracketViewer.css';
 
 interface BracketMatch {
   id: string;
@@ -59,8 +59,7 @@ const BracketViewer: React.FC<BracketViewerProps> = ({
       if (categoryId) {
         matches = matches.filter(
           (m: BracketMatch & { categoryId?: string }) =>
-            (m as BracketMatch & { categoryId?: string }).categoryId ===
-            categoryId,
+            (m as BracketMatch & { categoryId?: string }).categoryId === categoryId,
         );
       }
 
@@ -68,9 +67,7 @@ const BracketViewer: React.FC<BracketViewerProps> = ({
       const roundsMap = new Map<number, BracketMatch[]>();
       for (const match of matches) {
         if (!match.roundNumber) continue;
-        const existing = roundsMap.get(match.roundNumber) || [];
-        existing.push(match);
-        roundsMap.set(match.roundNumber, existing);
+        roundsMap.set(match.roundNumber, [...(roundsMap.get(match.roundNumber) ?? []), match]);
       }
 
       // Ordenar rodadas (decrescente — primeira rodada tem nº maior)
@@ -79,15 +76,13 @@ const BracketViewer: React.FC<BracketViewerProps> = ({
         .map(([roundNum, roundMatches], _idx, arr) => ({
           roundNumber: roundNum,
           label: getRoundLabel(roundNum, arr.length),
-          matches: roundMatches.sort(
-            (a, b) => a.bracketPosition - b.bracketPosition,
-          ),
+          matches: roundMatches.sort((a, b) => a.bracketPosition - b.bracketPosition),
         }));
 
       setRounds(sortedRounds);
       setError(null);
     } catch {
-      setError("Erro ao carregar o chaveamento.");
+      setError('Erro ao carregar o chaveamento.');
     } finally {
       setLoading(false);
     }
@@ -110,11 +105,7 @@ const BracketViewer: React.FC<BracketViewerProps> = ({
   }
 
   if (rounds.length === 0) {
-    return (
-      <div className="bracket-empty">
-        Chaveamento ainda não foi gerado para este torneio.
-      </div>
-    );
+    return <div className="bracket-empty">Chaveamento ainda não foi gerado para este torneio.</div>;
   }
 
   return (
@@ -127,36 +118,32 @@ const BracketViewer: React.FC<BracketViewerProps> = ({
               {round.matches.map((match) => (
                 <div
                   key={match.id}
-                  className={`bracket-match ${match.status === "FINISHED" ? "finished" : ""} ${match.status === "IN_PROGRESS" ? "live" : ""}`}
+                  className={`bracket-match ${match.status === 'FINISHED' ? 'finished' : ''} ${match.status === 'IN_PROGRESS' ? 'live' : ''}`}
                   onClick={() => onMatchClick?.(match)}
                   role="button"
                   tabIndex={0}
                 >
                   <div
-                    className={`bracket-player top ${match.winner === match.player1Id ? "winner" : ""}`}
+                    className={`bracket-player top ${match.winner === match.player1Id ? 'winner' : ''}`}
                   >
-                    <span className="bracket-player-name">
-                      {match.playerP1 || "A definir"}
-                    </span>
+                    <span className="bracket-player-name">{match.playerP1 || 'A definir'}</span>
                     {match.score?.sets && (
                       <span className="bracket-score">
-                        {match.score.sets.map((s) => s.p1).join(" ")}
+                        {match.score.sets.map((s) => s.p1).join(' ')}
                       </span>
                     )}
                   </div>
                   <div
-                    className={`bracket-player bottom ${match.winner === match.player2Id ? "winner" : ""}`}
+                    className={`bracket-player bottom ${match.winner === match.player2Id ? 'winner' : ''}`}
                   >
-                    <span className="bracket-player-name">
-                      {match.playerP2 || "A definir"}
-                    </span>
+                    <span className="bracket-player-name">{match.playerP2 || 'A definir'}</span>
                     {match.score?.sets && (
                       <span className="bracket-score">
-                        {match.score.sets.map((s) => s.p2).join(" ")}
+                        {match.score.sets.map((s) => s.p2).join(' ')}
                       </span>
                     )}
                   </div>
-                  {match.status === "IN_PROGRESS" && (
+                  {match.status === 'IN_PROGRESS' && (
                     <span className="bracket-live-badge">AO VIVO</span>
                   )}
                 </div>
@@ -170,10 +157,10 @@ const BracketViewer: React.FC<BracketViewerProps> = ({
 };
 
 function getRoundLabel(roundNumber: number, totalRounds: number): string {
-  if (roundNumber === 1) return "Final";
-  if (roundNumber === 2) return "Semifinal";
-  if (roundNumber === 3) return "Quartas";
-  if (roundNumber === 4) return "Oitavas";
+  if (roundNumber === 1) return 'Final';
+  if (roundNumber === 2) return 'Semifinal';
+  if (roundNumber === 3) return 'Quartas';
+  if (roundNumber === 4) return 'Oitavas';
 
   // Rodadas de grupo (100+)
   if (roundNumber >= 100) {

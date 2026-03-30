@@ -3,8 +3,10 @@
 // Campos equivalentes à importação XLSX. O globalId é gerado automaticamente pelo backend.
 
 import React, { useState, useEffect } from 'react';
-import httpClient from '../config/httpClient';
+import { httpClient } from '../config/httpClient';
 import { useToast } from './Toast';
+import useConfirmClose from '../hooks/useConfirmClose';
+import ConfirmCloseDialog from './ConfirmCloseDialog';
 import './AddAthleteModal.css';
 
 export type AthleteRole = 'ATHLETE' | 'COACH';
@@ -97,6 +99,18 @@ export const AddAthleteModal: React.FC<AddAthleteModalProps> = ({
   const [form, setForm] = useState<AddAthleteForm>(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Partial<AddAthleteForm>>({});
+
+  const isFormDirty =
+    form.name !== '' ||
+    form.email !== '' ||
+    form.cpf !== '' ||
+    form.birthDate !== '' ||
+    form.nickname !== '' ||
+    form.phone !== '';
+  const { isConfirmOpen, handleOverlayClick, confirmClose, cancelClose } = useConfirmClose(
+    isFormDirty,
+    onClose,
+  );
 
   useEffect(() => {
     if (isOpen) {
@@ -210,10 +224,6 @@ export const AddAthleteModal: React.FC<AddAthleteModalProps> = ({
     }
   };
 
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) onClose();
-  };
-
   return (
     <div
       className="add-athlete-overlay"
@@ -221,7 +231,9 @@ export const AddAthleteModal: React.FC<AddAthleteModalProps> = ({
       aria-modal="true"
       aria-labelledby="add-athlete-title"
       onClick={handleOverlayClick}
+      style={{ position: 'relative' }}
     >
+      <ConfirmCloseDialog isOpen={isConfirmOpen} onConfirm={confirmClose} onCancel={cancelClose} />
       <div className="add-athlete-modal">
         {/* Header */}
         <div className="add-athlete-header">
@@ -435,7 +447,9 @@ export const AddAthleteModal: React.FC<AddAthleteModalProps> = ({
                     placeholder="000.000.000-00"
                     maxLength={14}
                   />
-                  {errors.fatherCpf && <span className="add-athlete-error">{errors.fatherCpf}</span>}
+                  {errors.fatherCpf && (
+                    <span className="add-athlete-error">{errors.fatherCpf}</span>
+                  )}
                 </div>
 
                 <div className="add-athlete-field">
@@ -459,7 +473,9 @@ export const AddAthleteModal: React.FC<AddAthleteModalProps> = ({
                     placeholder="000.000.000-00"
                     maxLength={14}
                   />
-                  {errors.motherCpf && <span className="add-athlete-error">{errors.motherCpf}</span>}
+                  {errors.motherCpf && (
+                    <span className="add-athlete-error">{errors.motherCpf}</span>
+                  )}
                 </div>
               </div>
             </div>

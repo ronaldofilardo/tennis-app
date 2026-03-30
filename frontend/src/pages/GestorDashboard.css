@@ -927,3 +927,7 @@
     gap: 4px;
   }
 }
+
+.text-muted {
+  color: var(--clr-text-muted, #888);
+}

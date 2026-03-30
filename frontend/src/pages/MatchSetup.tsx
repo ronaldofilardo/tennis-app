@@ -1,45 +1,43 @@
-import React, { useState, useCallback } from "react";
-import httpClient from "../config/httpClient";
-import "./MatchSetup.css";
-import { useAuth } from "../contexts/AuthContext";
-import { useToast } from "../components/Toast";
-import { createLogger } from "../services/logger";
-import AthleteSearchInput from "../components/AthleteSearchInput";
-import type { AthleteResult } from "../components/AthleteSearchInput";
-import { savePendingMatch } from "../services/offlineDb";
-import { ResumeScoreModal } from "../components/ResumeScoreModal";
-import type { OngoingMatchSetup } from "../components/ResumeScoreModal";
-import { TennisConfigFactory } from "../core/scoring/TennisConfigFactory";
-import type { TennisFormat, MatchState, Player } from "../core/scoring/types";
+import React, { useState, useCallback } from 'react';
+import { httpClient } from '../config/httpClient';
+import './MatchSetup.css';
+import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../components/Toast';
+import { createLogger } from '../services/logger';
+import AthleteSearchInput from '../components/AthleteSearchInput';
+import type { AthleteResult } from '../components/AthleteSearchInput';
+import { savePendingMatch } from '../services/offlineDb';
+import { ResumeScoreModal } from '../components/ResumeScoreModal';
+import type { OngoingMatchSetup } from '../components/ResumeScoreModal';
+import VenueSelect from '../components/VenueSelect';
+import type { VenueValue } from '../components/VenueSelect';
+import { TennisConfigFactory } from '../core/scoring/TennisConfigFactory';
+import type { TennisFormat, MatchState, Player } from '../core/scoring/types';
 
 /**
  * Constrói um MatchState inicial a partir do placar inserido pelo usuário
  * para partidas que já estão em andamento.
  */
-function buildInitialMatchState(
-  setup: OngoingMatchSetup,
-  format: string,
-): MatchState {
+function buildInitialMatchState(setup: OngoingMatchSetup, format: string): MatchState {
   const config = TennisConfigFactory.getConfig(format as TennisFormat);
 
   let p1Sets = 0;
   let p2Sets = 0;
   for (const s of setup.completedSets) {
-    if (s.winner === "PLAYER_1") p1Sets++;
+    if (s.winner === 'PLAYER_1') p1Sets++;
     else p2Sets++;
   }
 
   const currentSet = setup.completedSets.length + 1;
-  const useTiebreakPoints =
-    setup.currentGameIsTiebreak || setup.currentGameIsMatchTiebreak;
+  const useTiebreakPoints = setup.currentGameIsTiebreak || setup.currentGameIsMatchTiebreak;
 
   const gamePoints: Record<Player, string | number> = {
     PLAYER_1: useTiebreakPoints
       ? Number(setup.currentGamePoints.PLAYER_1) || 0
-      : String(setup.currentGamePoints.PLAYER_1) || "0",
+      : String(setup.currentGamePoints.PLAYER_1) || '0',
     PLAYER_2: useTiebreakPoints
       ? Number(setup.currentGamePoints.PLAYER_2) || 0
-      : String(setup.currentGamePoints.PLAYER_2) || "0",
+      : String(setup.currentGamePoints.PLAYER_2) || '0',
   };
 
   return {
@@ -51,8 +49,7 @@ function buildInitialMatchState(
     currentGame: {
       points: gamePoints,
       server: setup.server,
-      isTiebreak:
-        setup.currentGameIsTiebreak || setup.currentGameIsMatchTiebreak,
+      isTiebreak: setup.currentGameIsTiebreak || setup.currentGameIsMatchTiebreak,
       isMatchTiebreak: setup.currentGameIsMatchTiebreak,
     },
     server: setup.server,
@@ -73,7 +70,7 @@ export interface CreatedMatchData {
   id: string;
   sportType: string;
   format: string;
-  courtType?: "GRASS" | "CLAY" | "HARD";
+  courtType?: 'GRASS' | 'CLAY' | 'HARD';
   players: { p1: string; p2: string };
   status?: string;
   createdAt?: string;
@@ -84,47 +81,58 @@ interface MatchSetupProps {
   onBackToDashboard: () => void;
 }
 
-const log = createLogger("MatchSetup");
+const log = createLogger('MatchSetup');
 
-const MatchSetup: React.FC<MatchSetupProps> = ({
-  onBackToDashboard,
-  onMatchCreated,
-}) => {
+const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreated }) => {
   const { currentUser } = useAuth();
   const toast = useToast();
-  const [sport, setSport] = useState("TENNIS");
-  const [format, setFormat] = useState("BEST_OF_3");
-  const [courtType, setCourtType] = useState<"GRASS" | "CLAY" | "HARD">("HARD");
-  const [nickname, setNickname] = useState("");
-  const [player1, setPlayer1] = useState("");
-  const [player2, setPlayer2] = useState("");
-  const [selectedAthlete1, setSelectedAthlete1] =
-    useState<AthleteResult | null>(null);
-  const [selectedAthlete2, setSelectedAthlete2] =
-    useState<AthleteResult | null>(null);
-  const [visibility, setVisibility] = useState<
-    "PUBLIC" | "CLUB" | "PLAYERS_ONLY"
-  >("PLAYERS_ONLY");
-  const [visibleTo, setVisibleTo] = useState<"both" | string>("both"); // Legado
+  const [sport, setSport] = useState('TENNIS');
+  const [format, setFormat] = useState('BEST_OF_3');
+  const [courtType, setCourtType] = useState<'GRASS' | 'CLAY' | 'HARD'>('HARD');
+  const [nickname, setNickname] = useState('');
+  const [player1, setPlayer1] = useState('');
+  const [player2, setPlayer2] = useState('');
+  const [selectedAthlete1, setSelectedAthlete1] = useState<AthleteResult | null>(null);
+  const [selectedAthlete2, setSelectedAthlete2] = useState<AthleteResult | null>(null);
+  const [visibility, setVisibility] = useState<'PUBLIC' | 'CLUB' | 'PLAYERS_ONLY'>('PLAYERS_ONLY');
+  const [visibleTo, setVisibleTo] = useState<'both' | string>('both'); // Legado
   const [error, setError] = useState<string | null>(null);
   const [isResuming, setIsResuming] = useState(false);
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
   const [openForAnnotation, setOpenForAnnotation] = useState(false);
+  const [scheduledDate, setScheduledDate] = useState('');
+  const [scheduledTime, setScheduledTime] = useState('');
+  const [venueValue, setVenueValue] = useState<VenueValue>({ venueId: null, venueName: '' });
+  const [duplicateMatch, setDuplicateMatch] = useState<{
+    id: string;
+    playerP1?: string;
+    playerP2?: string;
+  } | null>(null);
+  const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
+  const [pendingDuplicatePayload, setPendingDuplicatePayload] = useState<Record<
+    string,
+    unknown
+  > | null>(null);
 
   // Monta o payload base da partida a partir do estado do formulário
   const buildMatchPayload = useCallback(
     (finalP1: string, finalP2: string) => ({
       sportType: sport,
       format: format,
-      courtType: sport === "TENNIS" ? courtType : undefined,
+      courtType: sport === 'TENNIS' ? courtType : undefined,
       players: { p1: finalP1, p2: finalP2 },
       nickname: nickname || null,
-      visibility: visibility || "PLAYERS_ONLY",
-      visibleTo: visibleTo || "both",
-      apontadorEmail: currentUser?.email || "",
+      visibility: visibility || 'PLAYERS_ONLY',
+      visibleTo: visibleTo || 'both',
+      apontadorEmail: currentUser?.email || '',
       player1Id: selectedAthlete1?.id,
       player2Id: selectedAthlete2?.id,
       openForAnnotation,
+      scheduledAt:
+        scheduledDate && scheduledTime
+          ? new Date(`${scheduledDate}T${scheduledTime}`).toISOString()
+          : null,
+      venueId: venueValue.venueId || null,
     }),
     [
       sport,
@@ -137,6 +145,9 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
       selectedAthlete1,
       selectedAthlete2,
       openForAnnotation,
+      scheduledDate,
+      scheduledTime,
+      venueValue,
     ],
   );
 
@@ -153,10 +164,7 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
 
       try {
         const matchPayload = buildMatchPayload(finalP1, finalP2);
-        const response = await httpClient.post<CreatedMatchData>(
-          "/matches",
-          matchPayload,
-        );
+        const response = await httpClient.post<CreatedMatchData>('/matches', matchPayload);
         const createdMatch = response.data;
 
         // Constrói e envia o estado inicial da partida em andamento
@@ -165,13 +173,13 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
           matchState: initialState,
         });
 
-        log.info("Partida em andamento criada", { id: createdMatch.id });
-        onMatchCreated({ ...createdMatch, status: "IN_PROGRESS" });
+        log.info('Partida em andamento criada', { id: createdMatch.id });
+        onMatchCreated({ ...createdMatch, status: 'IN_PROGRESS' });
       } catch (err) {
-        log.error("Erro ao criar partida em andamento", err);
+        log.error('Erro ao criar partida em andamento', err);
         toast.error(
-          "Falha ao criar partida em andamento. Verifique o console.",
-          "Erro ao criar partida",
+          'Falha ao criar partida em andamento. Verifique o console.',
+          'Erro ao criar partida',
         );
       }
     },
@@ -195,17 +203,19 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
     const finalP2 = player2 || selectedAthlete2?.name;
 
     if (!finalP1 || !finalP2) {
-      setError("Os nomes dos jogadores são obrigatórios.");
+      setError('Os nomes dos jogadores são obrigatórios.');
+      return;
+    }
+
+    if (!scheduledDate || !scheduledTime) {
+      setError('Data e horário da partida são obrigatórios.');
       return;
     }
 
     // Partida em andamento: abre modal para inserir placar antes de criar
     if (isResuming) {
       if (!navigator.onLine) {
-        toast.warning(
-          "Retomada de partida não está disponível no modo offline.",
-          "Modo offline",
-        );
+        toast.warning('Retomada de partida não está disponível no modo offline.', 'Modo offline');
         return;
       }
       setIsResumeModalOpen(true);
@@ -221,16 +231,21 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
       const matchPayload = {
         sportType: sport,
         format: format,
-        courtType: sport === "TENNIS" ? courtType : undefined,
+        courtType: sport === 'TENNIS' ? courtType : undefined,
         players: { p1: finalP1, p2: finalP2 },
         nickname: nickname || null,
-        visibility: visibility || "PLAYERS_ONLY",
-        visibleTo: visibleToValue || "both", // Legado
-        apontadorEmail: currentUser?.email || "",
+        visibility: visibility || 'PLAYERS_ONLY',
+        visibleTo: visibleToValue || 'both', // Legado
+        apontadorEmail: currentUser?.email || '',
         // Novos campos multi-tenancy
         player1Id: selectedAthlete1?.id,
         player2Id: selectedAthlete2?.id,
         openForAnnotation,
+        scheduledAt:
+          scheduledDate && scheduledTime
+            ? new Date(`${scheduledDate}T${scheduledTime}`).toISOString()
+            : null,
+        venueId: venueValue.venueId || null,
       };
 
       // ── Suporte offline ───────────────────────────────────────────────────
@@ -239,43 +254,65 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
         await savePendingMatch({
           tempId,
           matchData: matchPayload,
-          syncStatus: "PENDING",
+          syncStatus: 'PENDING',
           createdAt: Date.now(),
         });
-        toast.success(
-          "Partida salva localmente. Será enviada ao reconectar.",
-          "Modo offline",
-        );
+        toast.success('Partida salva localmente. Será enviada ao reconectar.', 'Modo offline');
         // Criar objeto local para navegar ao placar sem ID do servidor
         onMatchCreated({
           id: tempId,
           sportType: sport,
           format: format,
-          courtType: sport === "TENNIS" ? courtType : undefined,
+          courtType: sport === 'TENNIS' ? courtType : undefined,
           players: { p1: finalP1, p2: finalP2 },
-          status: "NOT_STARTED",
+          status: 'NOT_STARTED',
         });
         return;
       }
 
-      const response = await httpClient.post<CreatedMatchData>(
-        "/matches",
-        matchPayload,
-      );
+      const response = await httpClient.post<CreatedMatchData>('/matches', matchPayload);
 
-      log.info("Partida criada com sucesso", {
+      log.info('Partida criada com sucesso', {
         id: response.data.id,
       });
       onMatchCreated(response.data); // Navega para o placar com os dados da nova partida
     } catch (error) {
-      log.error("Erro ao criar a partida", error);
-      // AREA 4: Substituído alert() nativo por Toast (themeable para White Label)
+      log.error('Erro ao criar a partida', error);
+      const httpErr = error as {
+        status?: number;
+        data?: { code?: string; existing?: { id: string; playerP1?: string; playerP2?: string } };
+      };
+      if (httpErr?.status === 409 && httpErr?.data?.code === 'DUPLICATE_MATCH') {
+        setDuplicateMatch(httpErr.data.existing ?? null);
+        // NOTE: matchPayload é criado localmente e seu tipo não exporta compatibilidade
+        // direta com Record<string, unknown>. O estado de duplicata armazena o payload
+        // genérico para exibição — não é reutilizado para operações críticas.
+        setPendingDuplicatePayload(matchPayload as unknown as Record<string, unknown>);
+        setIsDuplicateModalOpen(true);
+        return;
+      }
       toast.error(
-        "Falha ao criar a partida. Verifique o console do navegador e do backend.",
-        "Erro ao criar partida",
+        'Falha ao criar a partida. Verifique o console do navegador e do backend.',
+        'Erro ao criar partida',
       );
     }
   };
+
+  const handleForceCreate = async () => {
+    if (!pendingDuplicatePayload) return;
+    setIsDuplicateModalOpen(false);
+    try {
+      const response = await httpClient.post<CreatedMatchData>('/matches', {
+        ...pendingDuplicatePayload,
+        force: true,
+      });
+      onMatchCreated(response.data);
+    } catch (err) {
+      log.error('Erro ao forçar criação de partida', err);
+      toast.error('Falha ao criar a partida.', 'Erro ao criar partida');
+    }
+  };
+
   return (
     <div className="match-setup">
       <header className="match-setup-header">
@@ -284,34 +321,25 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
         </button>
         <h2>Nova Partida</h2>
       </header>
-      {error && (
-        <div className="form-error" style={{ color: "red", margin: "8px 0" }}>
-          {error}
-        </div>
-      )}
+      {error && <div className="form-error">{error}</div>}
       <form className="setup-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="sport">Desporto</label>
-          <select
-            id="sport"
-            name="sport"
-            value={sport}
-            onChange={(e) => setSport(e.target.value)}
-          >
+          <select id="sport" name="sport" value={sport} onChange={(e) => setSport(e.target.value)}>
             <option value="TENNIS">Tênis</option>
             <option value="PADEL">Padel</option>
             <option value="BEACH_TENNIS">Beach Tennis</option>
           </select>
         </div>
 
-        {sport === "TENNIS" && (
+        {sport === 'TENNIS' && (
           <div className="form-group">
             <label>Tipo de Quadra</label>
             <div className="court-type-selector">
               <button
                 type="button"
-                className={`court-type-btn clay${courtType === "CLAY" ? " active" : ""}`}
-                onClick={() => setCourtType("CLAY")}
+                className={`court-type-btn clay${courtType === 'CLAY' ? 'active' : ''}`}
+                onClick={() => setCourtType('CLAY')}
               >
                 <span className="court-type-icon">🟤</span>
                 <span className="court-type-name">Saibro</span>
@@ -319,8 +347,8 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
               </button>
               <button
                 type="button"
-                className={`court-type-btn hard${courtType === "HARD" ? " active" : ""}`}
-                onClick={() => setCourtType("HARD")}
+                className={`court-type-btn hard${courtType === 'HARD' ? 'active' : ''}`}
+                onClick={() => setCourtType('HARD')}
               >
                 <span className="court-type-icon">🔵</span>
                 <span className="court-type-name">Dura</span>
@@ -328,8 +356,8 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
               </button>
               <button
                 type="button"
-                className={`court-type-btn grass${courtType === "GRASS" ? " active" : ""}`}
-                onClick={() => setCourtType("GRASS")}
+                className={`court-type-btn grass${courtType === 'GRASS' ? 'active' : ''}`}
+                onClick={() => setCourtType('GRASS')}
               >
                 <span className="court-type-icon">🟢</span>
                 <span className="court-type-name">Grama</span>
@@ -395,31 +423,21 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
               Melhor de 3 sets com vantagem, Set tie-break em todos os sets
             </option>
             <option value="BEST_OF_3_MATCH_TB">
-              Melhor de 3 sets com vantagem, Set tie-break em 6-6, Match
-              tie-break no 3º set
+              Melhor de 3 sets com vantagem, Set tie-break em 6-6, Match tie-break no 3º set
             </option>
             <option value="BEST_OF_5">
               Melhor de 5 sets com vantagem, Set tie-break em todos os sets
             </option>
-            <option value="SINGLE_SET">
-              Set único com vantagem, Set tie-break em 6-6
-            </option>
-            <option value="PRO_SET">
-              Pro Set (8 games) com vantagem, Set tie-break em 8-8
-            </option>
+            <option value="SINGLE_SET">Set único com vantagem, Set tie-break em 6-6</option>
+            <option value="PRO_SET">Pro Set (8 games) com vantagem, Set tie-break em 8-8</option>
             <option value="MATCH_TIEBREAK">
               Match Tiebreak (10 pontos) sem vantagem, Primeiro a 10
             </option>
-            <option value="SHORT_SET">
-              Set curto (4 games) com vantagem, Tie-break em 4-4
-            </option>
+            <option value="SHORT_SET">Set curto (4 games) com vantagem, Tie-break em 4-4</option>
             <option value="NO_AD">
-              Melhor de 3 sets método No-Ad (ponto decisivo em 40-40), Set
-              tie-break em 6-6
+              Melhor de 3 sets método No-Ad (ponto decisivo em 40-40), Set tie-break em 6-6
             </option>
-            <option value="FAST4">
-              Fast4 Tennis (4 games) método No-Ad, Tie-break em 3-3
-            </option>
+            <option value="FAST4">Fast4 Tennis (4 games) método No-Ad, Tie-break em 3-3</option>
             <option value="SHORT_SET_NO_AD">
               Set curto (4 games) método No-Ad, Tie-break em 4-4
             </option>
@@ -443,11 +461,7 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
           <label>Visibilidade da partida</label>
           <select
             value={visibility}
-            onChange={(e) =>
-              setVisibility(
-                e.target.value as "PUBLIC" | "CLUB" | "PLAYERS_ONLY",
-              )
-            }
+            onChange={(e) => setVisibility(e.target.value as 'PUBLIC' | 'CLUB' | 'PLAYERS_ONLY')}
           >
             <option value="PUBLIC">🌐 Pública (todos podem ver)</option>
             <option value="CLUB">🏢 Clube (apenas membros do clube)</option>
@@ -469,8 +483,8 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
           </label>
           {isResuming && (
             <p className="resume-check-hint">
-              Após clicar em &ldquo;Iniciar Partida&rdquo;, você poderá inserir
-              o placar atual antes de continuar.
+              Após clicar em &ldquo;Iniciar Partida&rdquo;, você poderá inserir o placar atual antes
+              de continuar.
             </p>
           )}
         </div>
@@ -489,15 +503,54 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
           </label>
           {openForAnnotation && (
             <p className="resume-check-hint">
-              A partida aparecerá no painel de outros usuários como disponível
-              para anotação.
+              A partida aparecerá no painel de outros usuários como disponível para anotação.
             </p>
           )}
         </div>
 
+        {/* Data, hora e local da partida */}
+        <div className="form-group">
+          <label>
+            Data e horário <span className="required-mark">*</span>
+          </label>
+          <div className="match-datetime-row">
+            <input
+              id="scheduled-date"
+              type="date"
+              className="match-date-input"
+              value={scheduledDate}
+              onChange={(e) => {
+                setScheduledDate(e.target.value);
+                setError(null);
+              }}
+              aria-label="Data da partida"
+            />
+            <input
+              id="scheduled-time"
+              type="time"
+              className="match-time-input"
+              value={scheduledTime}
+              onChange={(e) => {
+                setScheduledTime(e.target.value);
+                setError(null);
+              }}
+              aria-label="Horário da partida"
+            />
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label>Local da partida</label>
+          <VenueSelect
+            value={venueValue}
+            onChange={setVenueValue}
+            placeholder="Buscar ou criar local..."
+          />
+        </div>
+
         <div className="form-actions">
           <button type="submit" className="start-match-button">
-            {isResuming ? "Continuar →" : "Iniciar Partida"}
+            {isResuming ? 'Continuar →' : 'Iniciar Partida'}
           </button>
         </div>
       </form>
@@ -506,13 +559,48 @@ const MatchSetup: React.FC<MatchSetupProps> = ({
       <ResumeScoreModal
         isOpen={isResumeModalOpen}
         players={{
-          p1: player1 || selectedAthlete1?.name || "Jogador 1",
-          p2: player2 || selectedAthlete2?.name || "Jogador 2",
+          p1: player1 || selectedAthlete1?.name || 'Jogador 1',
+          p2: player2 || selectedAthlete2?.name || 'Jogador 2',
         }}
         format={format}
         onConfirm={handleResumeConfirm}
         onCancel={() => setIsResumeModalOpen(false)}
       />
+
+      {/* Modal de partida duplicada */}
+      {isDuplicateModalOpen && duplicateMatch && (
+        <div
+          className="modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="duplicate-modal-title"
+        >
+          <div className="modal-content">
+            <h3 id="duplicate-modal-title">Partida já existe</h3>
+            <p>
+              Já existe uma partida entre <strong>{duplicateMatch.playerP1 ?? 'P1'}</strong> e{' '}
+              <strong>{duplicateMatch.playerP2 ?? 'P2'}</strong> no horário informado.
+            </p>
+            <div className="modal-actions">
+              <button
+                className="btn-primary"
+                onClick={() => {
+                  setIsDuplicateModalOpen(false);
+                  onMatchCreated(duplicateMatch as CreatedMatchData);
+                }}
+              >
+                Ir para aquela partida
+              </button>
+              <button className="btn-secondary" onClick={handleForceCreate}>
+                Criar mesmo assim
+              </button>
+              <button className="btn-ghost" onClick={() => setIsDuplicateModalOpen(false)}>
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

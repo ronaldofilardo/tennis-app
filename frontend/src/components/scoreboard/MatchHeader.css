@@ -42,6 +42,17 @@
   padding: 0.3rem 0.75rem;
 }
 
+.header-btn-edit {
+  padding: 0.3rem 0.6rem;
+  color: var(--text-secondary);
+}
+
+.header-btn-edit:hover {
+  color: #a78bfa;
+  background: rgba(167, 139, 250, 0.15);
+  border-color: rgba(167, 139, 250, 0.4);
+}
+
 .header-center {
   display: flex;
   flex-direction: column;

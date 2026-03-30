@@ -1,0 +1,70 @@
+/* ConfirmCloseDialog.css */
+
+.confirm-close-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: inherit;
+}
+
+.confirm-close-dialog {
+  background: #1e1e2e;
+  border-radius: 10px;
+  border: 1px solid #3a3a5e;
+  padding: 1.5rem;
+  max-width: 300px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+.confirm-close-message {
+  color: #e2e8f0;
+  font-size: 0.95rem;
+  margin: 0 0 1.25rem;
+  line-height: 1.5;
+}
+
+.confirm-close-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.confirm-close-cancel {
+  background: transparent;
+  border: 1px solid #2a2a3e;
+  border-radius: 8px;
+  color: #94a3b8;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.confirm-close-cancel:hover {
+  border-color: #4a4a6a;
+  color: #e2e8f0;
+}
+
+.confirm-close-confirm {
+  background: #dc2626;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.confirm-close-confirm:hover {
+  background: #b91c1c;
+}

@@ -1,9 +1,11 @@
 // frontend/src/components/TournamentModal.tsx
 // Modal de criação/edição de torneio com categorias — Fase 3
 
-import React, { useState } from "react";
-import httpClient from "../config/httpClient";
-import "./TournamentModal.css";
+import React, { useState } from 'react';
+import { httpClient } from '../config/httpClient';
+import useConfirmClose from '../hooks/useConfirmClose';
+import ConfirmCloseDialog from './ConfirmCloseDialog';
+import './TournamentModal.css';
 
 interface TournamentCategory {
   name: string;
@@ -44,68 +46,60 @@ interface TournamentModalProps {
 }
 
 const FORMATS = [
-  { value: "SINGLE_ELIMINATION", label: "Eliminação Simples" },
-  { value: "DOUBLE_ELIMINATION", label: "Eliminação Dupla" },
-  { value: "ROUND_ROBIN", label: "Todos contra Todos" },
-  { value: "GROUP_STAGE", label: "Fase de Grupos" },
+  { value: 'SINGLE_ELIMINATION', label: 'Eliminação Simples' },
+  { value: 'DOUBLE_ELIMINATION', label: 'Eliminação Dupla' },
+  { value: 'ROUND_ROBIN', label: 'Todos contra Todos' },
+  { value: 'GROUP_STAGE', label: 'Fase de Grupos' },
 ];
 
 const COURT_TYPES = [
-  { value: "", label: "Não especificado" },
-  { value: "GRASS", label: "Grama" },
-  { value: "CLAY", label: "Saibro" },
-  { value: "HARD", label: "Dura" },
-  { value: "INDOOR", label: "Indoor" },
+  { value: '', label: 'Não especificado' },
+  { value: 'GRASS', label: 'Grama' },
+  { value: 'CLAY', label: 'Saibro' },
+  { value: 'HARD', label: 'Dura' },
+  { value: 'INDOOR', label: 'Indoor' },
 ];
 
 const GENDERS = [
-  { value: "", label: "Misto" },
-  { value: "M", label: "Masculino" },
-  { value: "F", label: "Feminino" },
+  { value: '', label: 'Misto' },
+  { value: 'M', label: 'Masculino' },
+  { value: 'F', label: 'Feminino' },
 ];
 
 const BRACKET_TYPES = [
-  { value: "", label: "Padrão do torneio" },
-  { value: "SINGLE_ELIMINATION", label: "Eliminação Simples" },
-  { value: "ROUND_ROBIN", label: "Todos contra Todos" },
-  { value: "GROUP_STAGE", label: "Fase de Grupos" },
+  { value: '', label: 'Padrão do torneio' },
+  { value: 'SINGLE_ELIMINATION', label: 'Eliminação Simples' },
+  { value: 'ROUND_ROBIN', label: 'Todos contra Todos' },
+  { value: 'GROUP_STAGE', label: 'Fase de Grupos' },
 ];
 
 const EMPTY_CATEGORY: TournamentCategory = {
-  name: "",
-  gender: "",
-  ageGroup: "",
+  name: '',
+  gender: '',
+  ageGroup: '',
   maxPlayers: undefined,
-  bracketType: "",
+  bracketType: '',
 };
 
-const TournamentModal: React.FC<TournamentModalProps> = ({
-  onClose,
-  onCreated,
-  editData,
-}) => {
+const TournamentModal: React.FC<TournamentModalProps> = ({ onClose, onCreated, editData }) => {
   const [form, setForm] = useState<TournamentFormData>({
-    name: editData?.name || "",
-    description: editData?.description || "",
-    startDate: editData?.startDate?.split("T")[0] || "",
-    endDate: editData?.endDate?.split("T")[0] || "",
-    format: editData?.format || "SINGLE_ELIMINATION",
-    sportType: editData?.sportType || "TENNIS",
-    courtType: editData?.courtType || "",
-    maxPlayers: editData?.maxPlayers?.toString() || "",
-    categories: editData?.categories?.length
-      ? editData.categories
-      : [{ ...EMPTY_CATEGORY }],
+    name: editData?.name || '',
+    description: editData?.description || '',
+    startDate: editData?.startDate?.split('T')[0] || '',
+    endDate: editData?.endDate?.split('T')[0] || '',
+    format: editData?.format || 'SINGLE_ELIMINATION',
+    sportType: editData?.sportType || 'TENNIS',
+    courtType: editData?.courtType || '',
+    maxPlayers: editData?.maxPlayers?.toString() || '',
+    categories: editData?.categories?.length ? editData.categories : [{ ...EMPTY_CATEGORY }],
   });
 
-  const [activeTab, setActiveTab] = useState<"info" | "categories">("info");
+  const [activeTab, setActiveTab] = useState<'info' | 'categories'>('info');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const updateField = <K extends keyof TournamentFormData>(
-    key: K,
-    value: TournamentFormData[K],
-  ) => setForm((prev) => ({ ...prev, [key]: value }));
+  const updateField = <K extends keyof TournamentFormData>(key: K, value: TournamentFormData[K]) =>
+    setForm((prev) => ({ ...prev, [key]: value }));
 
   const updateCategory = (
     index: number,
@@ -138,7 +132,7 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
     setError(null);
 
     if (!form.name.trim()) {
-      setError("Nome do torneio é obrigatório.");
+      setError('Nome do torneio é obrigatório.');
       return;
     }
 
@@ -171,23 +165,34 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
       if (editData?.id) {
         await httpClient.patch(`/tournaments/${editData.id}`, payload);
       } else {
-        await httpClient.post("/tournaments", payload);
+        await httpClient.post('/tournaments', payload);
       }
       onCreated();
     } catch (err: unknown) {
       const message =
-        err && typeof err === "object" && "responseData" in err
-          ? ((err as { responseData: { error?: string } }).responseData
-              ?.error ?? "Erro ao salvar torneio.")
-          : "Erro ao conectar. Tente novamente.";
+        err && typeof err === 'object' && 'responseData' in err
+          ? ((err as { responseData: { error?: string } }).responseData?.error ??
+            'Erro ao salvar torneio.')
+          : 'Erro ao conectar. Tente novamente.';
       setError(message);
     } finally {
       setLoading(false);
     }
   };
 
+  const isFormDirty =
+    form.name.trim() !== '' ||
+    form.description.trim() !== '' ||
+    form.startDate !== '' ||
+    form.endDate !== '';
+  const { isConfirmOpen, handleOverlayClick, confirmClose, cancelClose } = useConfirmClose(
+    isFormDirty,
+    onClose,
+  );
+
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onClick={handleOverlayClick} style={{ position: 'relative' }}>
+      <ConfirmCloseDialog isOpen={isConfirmOpen} onConfirm={confirmClose} onCancel={cancelClose} />
       <div
         className="tournament-modal"
         onClick={(e) => e.stopPropagation()}
@@ -195,9 +200,7 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
         aria-labelledby="tournament-modal-title"
       >
         <div className="modal-header">
-          <h2 id="tournament-modal-title">
-            {editData ? "Editar Torneio" : "Novo Torneio"}
-          </h2>
+          <h2 id="tournament-modal-title">{editData ? 'Editar Torneio' : 'Novo Torneio'}</h2>
           <button className="modal-close" onClick={onClose} aria-label="Fechar">
             ✕
           </button>
@@ -206,15 +209,15 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
         {/* Tabs */}
         <div className="modal-tabs">
           <button
-            className={`modal-tab ${activeTab === "info" ? "active" : ""}`}
-            onClick={() => setActiveTab("info")}
+            className={`modal-tab ${activeTab === 'info' ? 'active' : ''}`}
+            onClick={() => setActiveTab('info')}
             type="button"
           >
             Informações
           </button>
           <button
-            className={`modal-tab ${activeTab === "categories" ? "active" : ""}`}
-            onClick={() => setActiveTab("categories")}
+            className={`modal-tab ${activeTab === 'categories' ? 'active' : ''}`}
+            onClick={() => setActiveTab('categories')}
             type="button"
           >
             Categorias ({form.categories.filter((c) => c.name.trim()).length})
@@ -223,7 +226,7 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
 
         <form onSubmit={handleSubmit} className="modal-form">
           {/* === Tab: Informações Gerais === */}
-          {activeTab === "info" && (
+          {activeTab === 'info' && (
             <div className="modal-tab-content">
               <div className="form-field">
                 <label htmlFor="t-name">Nome do Torneio *</label>
@@ -231,7 +234,7 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
                   id="t-name"
                   type="text"
                   value={form.name}
-                  onChange={(e) => updateField("name", e.target.value)}
+                  onChange={(e) => updateField('name', e.target.value)}
                   placeholder="Ex: Copa Primavera 2025"
                   disabled={loading}
                   required
@@ -243,7 +246,7 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
                 <textarea
                   id="t-desc"
                   value={form.description}
-                  onChange={(e) => updateField("description", e.target.value)}
+                  onChange={(e) => updateField('description', e.target.value)}
                   placeholder="Detalhes do torneio..."
                   rows={3}
                   disabled={loading}
@@ -257,7 +260,7 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
                     id="t-start"
                     type="date"
                     value={form.startDate}
-                    onChange={(e) => updateField("startDate", e.target.value)}
+                    onChange={(e) => updateField('startDate', e.target.value)}
                     disabled={loading}
                   />
                 </div>
@@ -267,7 +270,7 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
                     id="t-end"
                     type="date"
                     value={form.endDate}
-                    onChange={(e) => updateField("endDate", e.target.value)}
+                    onChange={(e) => updateField('endDate', e.target.value)}
                     disabled={loading}
                   />
                 </div>
@@ -279,7 +282,7 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
                   <select
                     id="t-format"
                     value={form.format}
-                    onChange={(e) => updateField("format", e.target.value)}
+                    onChange={(e) => updateField('format', e.target.value)}
                     disabled={loading}
                   >
                     {FORMATS.map((f) => (
@@ -294,7 +297,7 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
                   <select
                     id="t-court"
                     value={form.courtType}
-                    onChange={(e) => updateField("courtType", e.target.value)}
+                    onChange={(e) => updateField('courtType', e.target.value)}
                     disabled={loading}
                   >
                     {COURT_TYPES.map((c) => (
@@ -314,7 +317,7 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
                   min="2"
                   max="256"
                   value={form.maxPlayers}
-                  onChange={(e) => updateField("maxPlayers", e.target.value)}
+                  onChange={(e) => updateField('maxPlayers', e.target.value)}
                   placeholder="Sem limite"
                   disabled={loading}
                 />
@@ -323,11 +326,11 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
           )}
 
           {/* === Tab: Categorias === */}
-          {activeTab === "categories" && (
+          {activeTab === 'categories' && (
             <div className="modal-tab-content">
               <p className="categories-hint">
-                Categorias permitem dividir o torneio por gênero, faixa etária
-                ou nível. Cada categoria pode ter seu próprio chaveamento.
+                Categorias permitem dividir o torneio por gênero, faixa etária ou nível. Cada
+                categoria pode ter seu próprio chaveamento.
               </p>
 
               {form.categories.map((cat, idx) => (
@@ -351,9 +354,7 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
                       <input
                         type="text"
                         value={cat.name}
-                        onChange={(e) =>
-                          updateCategory(idx, "name", e.target.value)
-                        }
+                        onChange={(e) => updateCategory(idx, 'name', e.target.value)}
                         placeholder="Ex: Masculino A"
                         disabled={loading}
                       />
@@ -361,10 +362,8 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
                     <div className="form-field">
                       <label>Gênero</label>
                       <select
-                        value={cat.gender || ""}
-                        onChange={(e) =>
-                          updateCategory(idx, "gender", e.target.value)
-                        }
+                        value={cat.gender || ''}
+                        onChange={(e) => updateCategory(idx, 'gender', e.target.value)}
                         disabled={loading}
                       >
                         {GENDERS.map((g) => (
@@ -381,10 +380,8 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
                       <label>Faixa Etária</label>
                       <input
                         type="text"
-                        value={cat.ageGroup || ""}
-                        onChange={(e) =>
-                          updateCategory(idx, "ageGroup", e.target.value)
-                        }
+                        value={cat.ageGroup || ''}
+                        onChange={(e) => updateCategory(idx, 'ageGroup', e.target.value)}
                         placeholder="Ex: Sub-18, 40+"
                         disabled={loading}
                       />
@@ -392,10 +389,8 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
                     <div className="form-field">
                       <label>Chaveamento</label>
                       <select
-                        value={cat.bracketType || ""}
-                        onChange={(e) =>
-                          updateCategory(idx, "bracketType", e.target.value)
-                        }
+                        value={cat.bracketType || ''}
+                        onChange={(e) => updateCategory(idx, 'bracketType', e.target.value)}
                         disabled={loading}
                       >
                         {BRACKET_TYPES.map((b) => (
@@ -424,20 +419,11 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
           {error && <div className="modal-error">{error}</div>}
 
           <div className="modal-actions">
-            <button
-              type="button"
-              className="btn-cancel"
-              onClick={onClose}
-              disabled={loading}
-            >
+            <button type="button" className="btn-cancel" onClick={onClose} disabled={loading}>
               Cancelar
             </button>
             <button type="submit" className="btn-save" disabled={loading}>
-              {loading
-                ? "Salvando..."
-                : editData
-                  ? "Salvar Alterações"
-                  : "Criar Torneio"}
+              {loading ? 'Salvando...' : editData ? 'Salvar Alterações' : 'Criar Torneio'}
             </button>
           </div>
         </form>

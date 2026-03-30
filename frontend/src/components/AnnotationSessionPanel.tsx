@@ -2,14 +2,14 @@
 // Painel de sessões de anotação — integra no ScoreboardV2.
 // Permite iniciar/encerrar sessões e endossar sessões finalizadas.
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   listSessions,
   startSession,
   endSession,
   endorseSession,
   type AnnotationSession,
-} from "../services/annotationSessionService";
+} from '../services/annotationSessionService';
 
 interface AnnotationSessionPanelProps {
   matchId: string;
@@ -36,7 +36,7 @@ const AnnotationSessionPanel: React.FC<AnnotationSessionPanelProps> = ({
       setSessions(data);
       setError(null);
     } catch {
-      setError("Erro ao carregar sessões");
+      setError('Erro ao carregar sessões');
     } finally {
       setIsLoading(false);
     }
@@ -56,7 +56,7 @@ const AnnotationSessionPanel: React.FC<AnnotationSessionPanelProps> = ({
       await startSession(matchId);
       await fetchSessions();
     } catch {
-      setError("Erro ao iniciar sessão");
+      setError('Erro ao iniciar sessão');
     } finally {
       setIsLoading(false);
     }
@@ -68,7 +68,7 @@ const AnnotationSessionPanel: React.FC<AnnotationSessionPanelProps> = ({
       await endSession(matchId, sessionId);
       await fetchSessions();
     } catch {
-      setError("Erro ao encerrar sessão");
+      setError('Erro ao encerrar sessão');
     } finally {
       setIsLoading(false);
     }
@@ -80,96 +80,48 @@ const AnnotationSessionPanel: React.FC<AnnotationSessionPanelProps> = ({
       await endorseSession(matchId, sessionId);
       await fetchSessions();
     } catch {
-      setError("Erro ao endossar sessão");
+      setError('Erro ao endossar sessão');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const canAnnotate = userRole !== "SPECTATOR" && matchStatus !== "FINISHED";
+  const canAnnotate = userRole !== 'SPECTATOR' && matchStatus !== 'FINISHED';
   const isMySession = activeSession?.annotatorUserId === currentUserId;
 
   if (!isOpen) {
     return (
       <button
-        className="annotation-session-toggle"
+        className={`annotation-session-toggle cursor-pointer rounded-md border-none px-3 py-1.5 text-sm text-white ${activeSession ? 'bg-green-500' : 'bg-slate-500'}`}
         onClick={() => setIsOpen(true)}
-        style={{
-          padding: "6px 12px",
-          fontSize: "0.85rem",
-          background: activeSession ? "#22c55e" : "#64748b",
-          color: "#fff",
-          border: "none",
-          borderRadius: "6px",
-          cursor: "pointer",
-        }}
       >
-        {activeSession
-          ? `📝 Sessão ativa (${activeSession.annotator.name})`
-          : "📋 Sessões"}
+        {activeSession ? `📝 Sessão ativa (${activeSession.annotator.name})` : '📋 Sessões'}
       </button>
     );
   }
 
   return (
-    <div
-      className="annotation-session-panel"
-      style={{
-        background: "#1e293b",
-        borderRadius: "8px",
-        padding: "16px",
-        marginTop: "8px",
-        color: "#e2e8f0",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "12px",
-        }}
-      >
-        <h4 style={{ margin: 0, fontSize: "1rem" }}>Sessões de Anotação</h4>
+    <div className="annotation-session-panel mt-2 rounded-lg bg-slate-800 p-4 text-slate-200">
+      <div className="mb-3 flex items-center justify-between">
+        <h4 className="m-0 text-base">Sessões de Anotação</h4>
         <button
           onClick={() => setIsOpen(false)}
-          style={{
-            background: "none",
-            border: "none",
-            color: "#94a3b8",
-            cursor: "pointer",
-            fontSize: "1.2rem",
-          }}
+          className="cursor-pointer border-none bg-transparent text-xl text-slate-400"
         >
           ✕
         </button>
       </div>
 
-      {error && (
-        <div
-          style={{ color: "#ef4444", marginBottom: "8px", fontSize: "0.85rem" }}
-        >
-          {error}
-        </div>
-      )}
+      {error && <div className="mb-2 text-sm text-red-500">{error}</div>}
 
       {/* Ações */}
       {canAnnotate && !activeSession && (
         <button
           onClick={handleStartSession}
           disabled={isLoading}
-          style={{
-            width: "100%",
-            padding: "8px",
-            background: "#3b82f6",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            cursor: isLoading ? "wait" : "pointer",
-            marginBottom: "12px",
-          }}
+          className={`mb-3 w-full rounded-md border-none bg-blue-500 p-2 text-white ${isLoading ? 'cursor-wait' : 'cursor-pointer'}`}
         >
-          {isLoading ? "Iniciando..." : "Iniciar Sessão de Anotação"}
+          {isLoading ? 'Iniciando...' : 'Iniciar Sessão de Anotação'}
         </button>
       )}
 
@@ -177,88 +129,48 @@ const AnnotationSessionPanel: React.FC<AnnotationSessionPanelProps> = ({
         <button
           onClick={() => handleEndSession(activeSession.id)}
           disabled={isLoading}
-          style={{
-            width: "100%",
-            padding: "8px",
-            background: "#ef4444",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            cursor: isLoading ? "wait" : "pointer",
-            marginBottom: "12px",
-          }}
+          className={`mb-3 w-full rounded-md border-none bg-red-500 p-2 text-white ${isLoading ? 'cursor-wait' : 'cursor-pointer'}`}
         >
-          {isLoading ? "Encerrando..." : "Encerrar Minha Sessão"}
+          {isLoading ? 'Encerrando...' : 'Encerrar Minha Sessão'}
         </button>
       )}
 
       {/* Lista de sessões */}
       {sessions.length === 0 && !isLoading && (
-        <p style={{ color: "#94a3b8", fontSize: "0.85rem" }}>
-          Nenhuma sessão registrada.
-        </p>
+        <p className="text-sm text-slate-400">Nenhuma sessão registrada.</p>
       )}
 
       {sessions.map((session) => (
         <div
           key={session.id}
-          style={{
-            background: session.isActive ? "#1a3a2a" : "#0f172a",
-            borderRadius: "6px",
-            padding: "10px",
-            marginBottom: "6px",
-            border: session.isActive
-              ? "1px solid #22c55e"
-              : "1px solid #334155",
-          }}
+          className={`mb-1.5 rounded-md border p-2.5 ${session.isActive ? 'border-green-500 bg-emerald-950' : 'border-slate-700 bg-slate-950'}`}
         >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              fontSize: "0.85rem",
-            }}
-          >
+          <div className="flex justify-between text-sm">
             <span>
-              {session.isActive ? "🟢 " : "⚪ "}
+              {session.isActive ? '🟢 ' : '⚪ '}
               <strong>{session.annotator.name}</strong>
             </span>
-            <span style={{ color: "#94a3b8" }}>
-              {new Date(session.startedAt).toLocaleTimeString("pt-BR")}
-              {session.endedAt &&
-                ` → ${new Date(session.endedAt).toLocaleTimeString("pt-BR")}`}
+            <span className="text-slate-400">
+              {new Date(session.startedAt).toLocaleTimeString('pt-BR')}
+              {session.endedAt && ` → ${new Date(session.endedAt).toLocaleTimeString('pt-BR')}`}
             </span>
           </div>
 
           {/* Endossos */}
           {session.endorsements.length > 0 && (
-            <div
-              style={{ marginTop: "6px", fontSize: "0.8rem", color: "#94a3b8" }}
-            >
-              ✅ Endossado por:{" "}
-              {session.endorsements.map((e) => e.endorsedBy.name).join(", ")}
+            <div className="mt-1.5 text-xs text-slate-400">
+              ✅ Endossado por: {session.endorsements.map((e) => e.endorsedBy.name).join(', ')}
             </div>
           )}
 
           {/* Botão de endossar (apenas sessões encerradas, não própria) */}
           {!session.isActive &&
             session.annotatorUserId !== currentUserId &&
-            !session.endorsements.some(
-              (e) => e.endorsedByUserId === currentUserId,
-            ) && (
+            !session.endorsements.some((e) => e.endorsedByUserId === currentUserId) && (
               <button
                 onClick={() => handleEndorse(session.id)}
                 disabled={isLoading}
-                style={{
-                  marginTop: "6px",
-                  padding: "4px 10px",
-                  background: "#0ea5e9",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  fontSize: "0.8rem",
-                }}
+                className="mt-1.5 cursor-pointer rounded border-none bg-sky-500 px-2.5 py-1 text-xs text-white"
               >
                 Endossar
               </button>
