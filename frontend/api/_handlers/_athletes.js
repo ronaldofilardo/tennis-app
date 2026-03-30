@@ -74,13 +74,11 @@ export default async function handler(req, res) {
           gender: true,
           ranking: true,
           userId: true,
-          // clubId e nome do clube expostos para todos — necessário para o combobox do scorer
           clubId: true,
-          club: { select: { name: true } },
           user: { select: { name: true } },
         },
       });
-      // Para usuários anônimos, omite userId (privacidade) mas mantém clubName
+      // Para usuários anônimos, omite userId (privacidade)
       // Usa User.name como nome canônico (mesmo exibido no Gestor); AthleteProfile.name como fallback
       const response = athletes.map((a) => ({
         id: a.id,
@@ -90,7 +88,7 @@ export default async function handler(req, res) {
         category: a.category,
         gender: a.gender,
         ranking: a.ranking,
-        clubName: a.club?.name ?? null,
+        clubName: null,
         ...(ctx ? { clubId: a.clubId, userId: a.userId } : {}),
       }));
       return sendJson(res, 200, { athletes: response });
