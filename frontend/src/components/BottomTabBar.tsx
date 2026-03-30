@@ -37,7 +37,7 @@ const BottomTabBar: React.FC<BottomTabBarProps> = ({ activeTab, onTabChange, bad
         return (
           <button
             key={tab.id}
-            className={`bottom-tab-item${isActive ? 'bottom-tab-item--active' : ''}`}
+            className={`bottom-tab-item${isActive ? ' bottom-tab-item--active' : ''}`}
             onClick={() => onTabChange(tab.id)}
             role="tab"
             aria-selected={isActive}

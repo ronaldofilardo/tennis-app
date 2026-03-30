@@ -17,6 +17,9 @@ export default defineConfig({
       // Workbox em modo injectManifest para maior controle
       strategies: 'generateSW',
       workbox: {
+        // Forçar SW a ativar imediatamente (resolve cache antigo em mobile)
+        skipWaiting: true,
+        clientsClaim: true,
         // App shell: arquivos estáticos ficam em cache
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         // Rotas da API nunca ficam em cache (sempre online quando disponível)

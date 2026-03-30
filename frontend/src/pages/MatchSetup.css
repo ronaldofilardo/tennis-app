@@ -132,7 +132,9 @@
 }
 
 .match-time-input {
-  width: 110px;
+  flex: 0 1 auto;
+  min-width: 90px;
+  max-width: 120px;
   background: #1a1a2e;
   border: 1px solid #2a2a3e;
   border-radius: 8px;

@@ -40,7 +40,15 @@
 body {
   margin: 0;
   padding-top: 4rem;
+  padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
   min-width: 320px;
   min-height: 100vh;
   /* zoom removido — usar font-size fluido + rem em vez de zoom fixo */
+}
+
+/* Desktop: sem BottomTabBar — remove padding inferior */
+@media (min-width: 1024px) {
+  body {
+    padding-bottom: 0;
+  }
 }

@@ -5,17 +5,17 @@
 //   GET   /api/athletes/:id      → detalhe do atleta (com privacidade)
 //   PATCH /api/athletes/:id      → atualiza perfil
 
-import prisma from "../_lib/prisma.js";
+import prisma from '../_lib/prisma.js';
 import {
   handleCors,
   requireAuth,
   extractContext,
   sendJson,
   methodNotAllowed,
-} from "../_lib/authMiddleware.js";
+} from '../_lib/authMiddleware.js';
 
 function getAthleteId(url) {
-  const parts = url.pathname.split("/").filter(Boolean);
+  const parts = url.pathname.split('/').filter(Boolean);
   const seg = parts[2] || null; // /api/athletes/:id
   return seg;
 }
@@ -23,25 +23,22 @@ function getAthleteId(url) {
 export default async function handler(req, res) {
   if (handleCors(req, res)) return;
 
-  const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+  const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const athleteId = getAthleteId(url);
 
   // ─── GET /api/athletes (busca pública — não requer auth) ──────────────────
   // Permite que o scorer avulso (anônimo) encontre atletas da base central.
   // Retorna apenas campos públicos; dados sensíveis ficam protegidos.
-  if (!athleteId && req.method === "GET") {
+  if (!athleteId && req.method === 'GET') {
     try {
       const ctx = extractContext(req); // pode ser null (anon)
-      const searchQuery = url.searchParams.get("q") || "";
-      const filterClubId = url.searchParams.get("clubId") || null;
-      const excludeUserId = url.searchParams.get("excludeUserId") || null;
-      const excludeAthleteId = url.searchParams.get("excludeAthleteId") || null;
-      const limit = Math.min(
-        parseInt(url.searchParams.get("limit") || "20"),
-        200,
-      );
+      const searchQuery = url.searchParams.get('q') || '';
+      const filterClubId = url.searchParams.get('clubId') || null;
+      const excludeUserId = url.searchParams.get('excludeUserId') || null;
+      const excludeAthleteId = url.searchParams.get('excludeAthleteId') || null;
+      const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 200);
       const sanitized = searchQuery
-        .replace(/[<>'"%;()&+]/g, "")
+        .replace(/[<>'"%;()&+]/g, '')
         .trim()
         .slice(0, 100);
       const notClauses = [
@@ -52,8 +49,8 @@ export default async function handler(req, res) {
         isPublic: true,
         ...(sanitized && {
           OR: [
-            { name: { contains: sanitized, mode: "insensitive" } },
-            { globalId: { contains: sanitized, mode: "insensitive" } },
+            { name: { contains: sanitized, mode: 'insensitive' } },
+            { globalId: { contains: sanitized, mode: 'insensitive' } },
           ],
         }),
         ...(filterClubId && { clubId: filterClubId }),
@@ -64,7 +61,7 @@ export default async function handler(req, res) {
       const athletes = await prisma.athleteProfile.findMany({
         where,
         take: limit,
-        orderBy: { name: "asc" },
+        orderBy: { name: 'asc' },
         select: {
           id: true,
           globalId: true,
@@ -93,8 +90,8 @@ export default async function handler(req, res) {
       }));
       return sendJson(res, 200, { athletes: response });
     } catch (err) {
-      console.error("[athletes GET]", err);
-      return sendJson(res, 500, { error: "Internal server error" });
+      console.error('[athletes GET]', err);
+      return sendJson(res, 500, { error: 'Internal server error' });
     }
   }
 
@@ -104,12 +101,12 @@ export default async function handler(req, res) {
 
   // ─── /api/athletes/:id ────────────────────────────────────────────────────
   if (athleteId) {
-    if (req.method === "GET") {
+    if (req.method === 'GET') {
       try {
         const athlete = await prisma.athleteProfile.findUnique({
           where: { id: athleteId },
         });
-        if (!athlete) return sendJson(res, 404, { error: "Athlete not found" });
+        if (!athlete) return sendJson(res, 404, { error: 'Athlete not found' });
         const isOwnClub = ctx.clubId && athlete.clubId === ctx.clubId;
         const isSelf = athlete.userId && athlete.userId === ctx.userId;
         const response =
@@ -127,56 +124,49 @@ export default async function handler(req, res) {
               };
         return sendJson(res, 200, response);
       } catch (err) {
-        console.error("[athletes/:id GET]", err);
-        return sendJson(res, 500, { error: "Internal server error" });
+        console.error('[athletes/:id GET]', err);
+        return sendJson(res, 500, { error: 'Internal server error' });
       }
     }
 
-    if (req.method === "PATCH") {
+    if (req.method === 'PATCH') {
       try {
         const athlete = await prisma.athleteProfile.findUnique({
           where: { id: athleteId },
         });
-        if (!athlete) return sendJson(res, 404, { error: "Athlete not found" });
+        if (!athlete) return sendJson(res, 404, { error: 'Athlete not found' });
         const isSelf = athlete.userId && athlete.userId === ctx.userId;
         const isGestorOfClub =
-          (ctx.role === "GESTOR" && ctx.clubId === athlete.clubId) ||
-          ctx.role === "ADMIN";
+          (ctx.role === 'GESTOR' && ctx.clubId === athlete.clubId) || ctx.role === 'ADMIN';
         if (!isSelf && !isGestorOfClub)
           return sendJson(res, 403, {
-            error:
-              "Apenas o gestor do clube pode editar perfis de atletas e técnicos.",
+            error: 'Apenas o gestor do clube pode editar perfis de atletas e técnicos.',
           });
-        const { name, nickname, birthDate, phone, category, gender, ranking } =
-          req.body || {};
+        const { name, nickname, birthDate, phone, category, gender, ranking } = req.body || {};
         const updateData = {};
         if (name !== undefined) updateData.name = name.trim();
-        if (nickname !== undefined)
-          updateData.nickname = nickname?.trim() || null;
-        if (birthDate !== undefined)
-          updateData.birthDate = birthDate ? new Date(birthDate) : null;
+        if (nickname !== undefined) updateData.nickname = nickname?.trim() || null;
+        if (birthDate !== undefined) updateData.birthDate = birthDate ? new Date(birthDate) : null;
         if (phone !== undefined) updateData.phone = phone?.trim() || null;
-        if (category !== undefined)
-          updateData.category = category?.trim() || null;
+        if (category !== undefined) updateData.category = category?.trim() || null;
         if (gender !== undefined) updateData.gender = gender || null;
-        if (ranking !== undefined)
-          updateData.ranking = ranking ? parseInt(ranking) : null;
+        if (ranking !== undefined) updateData.ranking = ranking ? parseInt(ranking) : null;
         const updated = await prisma.athleteProfile.update({
           where: { id: athleteId },
           data: updateData,
         });
         return sendJson(res, 200, updated);
       } catch (err) {
-        console.error("[athletes/:id PATCH]", err);
-        return sendJson(res, 500, { error: "Internal server error" });
+        console.error('[athletes/:id PATCH]', err);
+        return sendJson(res, 500, { error: 'Internal server error' });
       }
     }
 
-    return methodNotAllowed(res, ["GET", "PATCH"]);
+    return methodNotAllowed(res, ['GET', 'PATCH']);
   }
 
   // ─── POST /api/athletes ───────────────────────────────────────────────────
-  if (req.method === "POST") {
+  if (req.method === 'POST') {
     try {
       const {
         name,
@@ -188,7 +178,7 @@ export default async function handler(req, res) {
         ranking,
         isPublic = true,
       } = req.body || {};
-      if (!name) return sendJson(res, 400, { error: "name is required" });
+      if (!name) return sendJson(res, 400, { error: 'name is required' });
       const athlete = await prisma.athleteProfile.create({
         data: {
           userId: ctx.userId,
@@ -205,10 +195,10 @@ export default async function handler(req, res) {
       });
       return sendJson(res, 201, athlete);
     } catch (err) {
-      console.error("[athletes POST]", err);
-      return sendJson(res, 500, { error: "Internal server error" });
+      console.error('[athletes POST]', err);
+      return sendJson(res, 500, { error: 'Internal server error' });
     }
   }
 
-  return methodNotAllowed(res, ["GET", "POST"]);
+  return methodNotAllowed(res, ['GET', 'POST']);
 }

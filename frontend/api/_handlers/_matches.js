@@ -19,16 +19,11 @@ import {
   getMatchStats,
   getVisibleMatches,
   getMatchesOpenForAnnotation,
-} from "../../src/services/matchService.js";
-import {
-  handleCors,
-  requireAuth,
-  sendJson,
-  methodNotAllowed,
-} from "../_lib/authMiddleware.js";
-import { validateMatchApiResponse } from "../../src/schemas/contracts.js";
-import { requireActiveSubscription } from "../_lib/subscriptionMiddleware.js";
-import prisma from "../_lib/prisma.js";
+} from '../../src/services/matchService.js';
+import { handleCors, requireAuth, sendJson, methodNotAllowed } from '../_lib/authMiddleware.js';
+import { validateMatchApiResponse } from '../../src/schemas/contracts.js';
+import { requireActiveSubscription } from '../_lib/subscriptionMiddleware.js';
+import prisma from '../_lib/prisma.js';
 
 /**
  * Gera (ou atualiza) o comparativo de anotações para uma partida.
@@ -36,7 +31,7 @@ import prisma from "../_lib/prisma.js";
  */
 async function generateComparison(matchId) {
   const sessions = await prisma.matchAnnotationSession.findMany({
-    where: { matchId, status: "COMPLETED" },
+    where: { matchId, status: 'COMPLETED' },
     select: {
       id: true,
       annotatorUserId: true,
@@ -53,7 +48,12 @@ async function generateComparison(matchId) {
       try {
         const state = s.finalStateSnapshot ? JSON.parse(s.finalStateSnapshot) : null;
         const history = state?.pointsHistory || [];
-        return { sessionId: s.id, annotatorId: s.annotatorUserId, annotatorName: s.annotator?.name || s.annotatorUserId, history };
+        return {
+          sessionId: s.id,
+          annotatorId: s.annotatorUserId,
+          annotatorName: s.annotator?.name || s.annotatorUserId,
+          history,
+        };
       } catch {
         return null;
       }
@@ -78,18 +78,25 @@ async function generateComparison(matchId) {
     points.push({ index: i, consensus, sessions: bySession });
   }
 
-  const payload = { sessions: sessionData.map((s) => ({ id: s.sessionId, annotatorId: s.annotatorId, name: s.annotatorName })), points };
+  const payload = {
+    sessions: sessionData.map((s) => ({
+      id: s.sessionId,
+      annotatorId: s.annotatorId,
+      name: s.annotatorName,
+    })),
+    points,
+  };
 
   // Upsert comparativo
   const existing = await prisma.matchAnnotationComparison.findFirst({ where: { matchId } });
   if (existing) {
     return prisma.matchAnnotationComparison.update({
       where: { id: existing.id },
-      data: { payload, status: "PUBLISHED", updatedAt: new Date() },
+      data: { payload, status: 'PUBLISHED', updatedAt: new Date() },
     });
   }
   return prisma.matchAnnotationComparison.create({
-    data: { matchId, payload, status: "PUBLISHED" },
+    data: { matchId, payload, status: 'PUBLISHED' },
   });
 }
 
@@ -117,13 +124,13 @@ async function createDashboardShares(matchId) {
   const addUser = (userId) => {
     if (userId && !addedUsers.has(userId)) {
       addedUsers.add(userId);
-      sharesData.push({ matchId, targetUserId: userId, shareType: "ANNOTATION" });
+      sharesData.push({ matchId, targetUserId: userId, shareType: 'ANNOTATION' });
     }
   };
   const addClub = (clubId) => {
     if (clubId && !addedClubs.has(clubId)) {
       addedClubs.add(clubId);
-      sharesData.push({ matchId, targetClubId: clubId, shareType: "ANNOTATION" });
+      sharesData.push({ matchId, targetClubId: clubId, shareType: 'ANNOTATION' });
     }
   };
 
@@ -140,46 +147,78 @@ async function createDashboardShares(matchId) {
 }
 
 function parsePath(url) {
-  const parts = url.pathname.split("/").filter(Boolean);
+  const parts = url.pathname.split('/').filter(Boolean);
   // parts: [api, matches, ?id|special, ?sub, ?subId, ?action]
   const seg = parts[2] || null;
   const sub = parts[3] || null;
   const subId = parts[4] || null;
   const action = parts[5] || null;
-  const isVisible = seg === "visible";
-  const isOpenForAnnotation = seg === "open-for-annotation";
-  const isDiscover = seg === "discover";
-  const isMyShares = seg === "my-shares";
-  const isAnnotatedForMe = seg === "annotated-for-me";
-  const isAnnotatedByMe = seg === "annotated-by-me";
-  const isMyCompleted = seg === "my-completed";
-  const isSpecialSeg = isVisible || isOpenForAnnotation || isDiscover || isMyShares || isAnnotatedForMe || isAnnotatedByMe || isMyCompleted;
+  const isVisible = seg === 'visible';
+  const isOpenForAnnotation = seg === 'open-for-annotation';
+  const isDiscover = seg === 'discover';
+  const isMyShares = seg === 'my-shares';
+  const isAnnotatedForMe = seg === 'annotated-for-me';
+  const isAnnotatedByMe = seg === 'annotated-by-me';
+  const isMyCompleted = seg === 'my-completed';
+  const isSpecialSeg =
+    isVisible ||
+    isOpenForAnnotation ||
+    isDiscover ||
+    isMyShares ||
+    isAnnotatedForMe ||
+    isAnnotatedByMe ||
+    isMyCompleted;
   const id = !isSpecialSeg ? seg : null;
-  const isMetadata = sub === "metadata";
-  const isClaim = sub === "claim";
-  return { id, sub, subId, action, isVisible, isOpenForAnnotation, isDiscover, isMyShares, isAnnotatedForMe, isAnnotatedByMe, isMyCompleted, isMetadata, isClaim };
+  const isMetadata = sub === 'metadata';
+  const isClaim = sub === 'claim';
+  return {
+    id,
+    sub,
+    subId,
+    action,
+    isVisible,
+    isOpenForAnnotation,
+    isDiscover,
+    isMyShares,
+    isAnnotatedForMe,
+    isAnnotatedByMe,
+    isMyCompleted,
+    isMetadata,
+    isClaim,
+  };
 }
 
 export default async function handler(req, res) {
   try {
     if (handleCors(req, res)) return;
 
-    const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
-    const { id, sub, subId, action, isVisible, isOpenForAnnotation, isDiscover, isMyShares, isAnnotatedForMe, isAnnotatedByMe, isMyCompleted, isMetadata, isClaim } = parsePath(url);
+    const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+    const {
+      id,
+      sub,
+      subId,
+      action,
+      isVisible,
+      isOpenForAnnotation,
+      isDiscover,
+      isMyShares,
+      isAnnotatedForMe,
+      isAnnotatedByMe,
+      isMyCompleted,
+      isMetadata,
+      isClaim,
+    } = parsePath(url);
 
     // ─── GET /api/matches/my-shares ───────────────────────────────────────────
     // Retorna MatchDashboardShare PENDING destinados ao usuário logado (ou ao seu clube)
     if (isMyShares) {
-      if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
+      if (req.method !== 'GET') return methodNotAllowed(res, ['GET']);
       const ctx = requireAuth(req, res);
       if (!ctx) return;
       const shares = await prisma.matchDashboardShare.findMany({
         where: {
-          status: "PENDING",
-          OR: [
-            { targetUserId: ctx.userId },
-            ...(ctx.clubId ? [{ targetClubId: ctx.clubId }] : []),
-          ],
+          status: 'PENDING',
+          OR: [{ targetUserId: ctx.userId }, ...(ctx.clubId ? [{ targetClubId: ctx.clubId }] : [])],
         },
         include: {
           match: {
@@ -196,20 +235,20 @@ export default async function handler(req, res) {
             },
           },
         },
-        orderBy: { notifiedAt: "desc" },
+        orderBy: { notifiedAt: 'desc' },
       });
       return sendJson(res, 200, shares);
     }
 
     // ─── GET /api/matches/my-completed ───────────────────────────────────────
     if (isMyCompleted) {
-      if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
+      if (req.method !== 'GET') return methodNotAllowed(res, ['GET']);
       const ctx = requireAuth(req, res);
       if (!ctx) return;
       const profile = await prisma.athleteProfile.findFirst({ where: { userId: ctx.userId } });
       const matches = await prisma.match.findMany({
         where: {
-          status: "FINISHED",
+          status: 'FINISHED',
           OR: [
             { createdByUserId: ctx.userId },
             ...(profile ? [{ player1Id: profile.id }, { player2Id: profile.id }] : []),
@@ -227,29 +266,33 @@ export default async function handler(req, res) {
           createdAt: true,
           player1: { select: { id: true, name: true } },
           player2: { select: { id: true, name: true } },
-          _count: { select: { annotationSessions: { where: { status: "COMPLETED" } } } },
+          _count: { select: { annotationSessions: { where: { status: 'COMPLETED' } } } },
         },
-        orderBy: { updatedAt: "desc" },
+        orderBy: { updatedAt: 'desc' },
         take: 30,
       });
-      return sendJson(res, 200, matches.map((m) => ({
-        id: m.id,
-        sportType: m.sportType,
-        format: m.format,
-        courtType: m.courtType,
-        playerP1: m.playerP1,
-        playerP2: m.playerP2,
-        scheduledAt: m.scheduledAt,
-        createdAt: m.createdAt,
-        player1: m.player1,
-        player2: m.player2,
-        annotationCount: m._count.annotationSessions,
-      })));
+      return sendJson(
+        res,
+        200,
+        matches.map((m) => ({
+          id: m.id,
+          sportType: m.sportType,
+          format: m.format,
+          courtType: m.courtType,
+          playerP1: m.playerP1,
+          playerP2: m.playerP2,
+          scheduledAt: m.scheduledAt,
+          createdAt: m.createdAt,
+          player1: m.player1,
+          player2: m.player2,
+          annotationCount: m._count.annotationSessions,
+        })),
+      );
     }
 
     // ─── GET /api/matches/annotated-for-me ───────────────────────────────────
     if (isAnnotatedForMe) {
-      if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
+      if (req.method !== 'GET') return methodNotAllowed(res, ['GET']);
       const ctx = requireAuth(req, res);
       if (!ctx) return;
 
@@ -257,7 +300,7 @@ export default async function handler(req, res) {
 
       const matches = await prisma.match.findMany({
         where: {
-          annotationSessions: { some: { status: "COMPLETED" } },
+          annotationSessions: { some: { status: 'COMPLETED' } },
           OR: [
             ...(profile ? [{ player1Id: profile.id }, { player2Id: profile.id }] : []),
             { playersEmails: { has: ctx.email } },
@@ -280,7 +323,7 @@ export default async function handler(req, res) {
           player2: { select: { id: true, name: true } },
           club: { select: { id: true, name: true } },
           annotationSessions: {
-            where: { status: "COMPLETED" },
+            where: { status: 'COMPLETED' },
             select: {
               id: true,
               annotatorUserId: true,
@@ -288,15 +331,15 @@ export default async function handler(req, res) {
               finalStateSnapshot: true,
               annotator: { select: { id: true, name: true } },
             },
-            orderBy: { endedAt: "desc" },
+            orderBy: { endedAt: 'desc' },
           },
           dashboardShares: {
             where: { targetUserId: ctx.userId },
-            orderBy: { notifiedAt: "desc" },
+            orderBy: { notifiedAt: 'desc' },
             take: 1,
           },
         },
-        orderBy: { updatedAt: "desc" },
+        orderBy: { updatedAt: 'desc' },
         take: 30,
       });
 
@@ -316,13 +359,13 @@ export default async function handler(req, res) {
         completedAnnotations: m.annotationSessions.map((s) => ({
           id: s.id,
           annotatorId: s.annotatorUserId,
-          annotatorName: s.annotator?.name ?? "Anotador",
+          annotatorName: s.annotator?.name ?? 'Anotador',
           endedAt: s.endedAt,
           hasFinalState: !!s.finalStateSnapshot,
         })),
         comparisonAvailable: m.annotationSessions.length >= 2,
         myShare: m.dashboardShares[0] ?? null,
-        isNew: !m.dashboardShares[0] || m.dashboardShares[0].status === "PENDING",
+        isNew: !m.dashboardShares[0] || m.dashboardShares[0].status === 'PENDING',
       }));
 
       return sendJson(res, 200, enriched);
@@ -330,12 +373,12 @@ export default async function handler(req, res) {
 
     // ─── GET /api/matches/annotated-by-me ────────────────────────────────────
     if (isAnnotatedByMe) {
-      if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
+      if (req.method !== 'GET') return methodNotAllowed(res, ['GET']);
       const ctx = requireAuth(req, res);
       if (!ctx) return;
 
       const sessions = await prisma.matchAnnotationSession.findMany({
-        where: { annotatorUserId: ctx.userId, status: "COMPLETED" },
+        where: { annotatorUserId: ctx.userId, status: 'COMPLETED' },
         include: {
           match: {
             select: {
@@ -352,7 +395,7 @@ export default async function handler(req, res) {
               player2: { select: { id: true, name: true } },
               club: { select: { id: true, name: true } },
               annotationSessions: {
-                where: { status: "COMPLETED" },
+                where: { status: 'COMPLETED' },
                 select: {
                   id: true,
                   annotatorUserId: true,
@@ -363,7 +406,7 @@ export default async function handler(req, res) {
             },
           },
         },
-        orderBy: { endedAt: "desc" },
+        orderBy: { endedAt: 'desc' },
         take: 30,
       });
 
@@ -377,7 +420,7 @@ export default async function handler(req, res) {
         completedAnnotations: s.match.annotationSessions.map((sa) => ({
           id: sa.id,
           annotatorId: sa.annotatorUserId,
-          annotatorName: sa.annotator?.name ?? "Anotador",
+          annotatorName: sa.annotator?.name ?? 'Anotador',
           endedAt: sa.endedAt,
         })),
         comparisonAvailable: s.match.annotationSessions.length >= 2,
@@ -388,7 +431,7 @@ export default async function handler(req, res) {
 
     // ─── GET /api/matches/visible ────────────────────────────────────────────
     if (isVisible) {
-      if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
+      if (req.method !== 'GET') return methodNotAllowed(res, ['GET']);
       // Email e role vêm do JWT (Authorization header) — nunca de query string
       // (query string fica em logs de servidor, histórico do browser, etc.)
       const ctx = requireAuth(req, res);
@@ -402,7 +445,7 @@ export default async function handler(req, res) {
 
     // ─── GET /api/matches/open-for-annotation ────────────────────────────────
     if (isOpenForAnnotation) {
-      if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
+      if (req.method !== 'GET') return methodNotAllowed(res, ['GET']);
       const ctx = requireAuth(req, res);
       if (!ctx) return;
       const result = await getMatchesOpenForAnnotation();
@@ -413,21 +456,21 @@ export default async function handler(req, res) {
     // Partidas públicas abertas para anotação por qualquer usuário logado.
     // Suporta filtros: sportType, clubId, dateFrom, dateTo
     if (isDiscover) {
-      if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
+      if (req.method !== 'GET') return methodNotAllowed(res, ['GET']);
       const ctx = requireAuth(req, res);
       if (!ctx) return;
       const sp = url.searchParams;
       const whereClause = {
-        visibility: "PUBLIC",
+        visibility: 'PUBLIC',
         openForAnnotation: true,
-        status: { not: "FINISHED" },
-        ...(sp.get("sportType") ? { sportType: sp.get("sportType") } : {}),
-        ...(sp.get("clubId") ? { clubId: sp.get("clubId") } : {}),
-        ...(sp.get("dateFrom") || sp.get("dateTo")
+        status: { not: 'FINISHED' },
+        ...(sp.get('sportType') ? { sportType: sp.get('sportType') } : {}),
+        ...(sp.get('clubId') ? { clubId: sp.get('clubId') } : {}),
+        ...(sp.get('dateFrom') || sp.get('dateTo')
           ? {
               scheduledAt: {
-                ...(sp.get("dateFrom") ? { gte: new Date(sp.get("dateFrom")) } : {}),
-                ...(sp.get("dateTo") ? { lte: new Date(sp.get("dateTo")) } : {}),
+                ...(sp.get('dateFrom') ? { gte: new Date(sp.get('dateFrom')) } : {}),
+                ...(sp.get('dateTo') ? { lte: new Date(sp.get('dateTo')) } : {}),
               },
             }
           : {}),
@@ -453,7 +496,7 @@ export default async function handler(req, res) {
           createdBy: { select: { id: true, name: true } },
           _count: { select: { annotationSessions: true } },
         },
-        orderBy: [{ scheduledAt: "asc" }, { createdAt: "desc" }],
+        orderBy: [{ scheduledAt: 'asc' }, { createdAt: 'desc' }],
         take: 50,
       });
       return sendJson(res, 200, matches);
@@ -464,12 +507,12 @@ export default async function handler(req, res) {
     // GET    /api/matches/:id/sessions              → lista sessões da partida
     // PATCH  /api/matches/:id/sessions/:sessionId   → encerra sessão (endedAt)
     // POST   /api/matches/:id/sessions/:sessionId/endorse → endossa sessão
-    if (id && sub === "sessions") {
+    if (id && sub === 'sessions') {
       const ctx = requireAuth(req, res);
       if (!ctx) return;
 
       // GET /api/matches/:id/sessions/:sessionId/report-data → dados de relatório
-      if (subId && action === "report-data" && req.method === "GET") {
+      if (subId && action === 'report-data' && req.method === 'GET') {
         const session = await prisma.matchAnnotationSession.findUnique({
           where: { id: subId },
           include: {
@@ -491,11 +534,11 @@ export default async function handler(req, res) {
           },
         });
         if (!session || session.matchId !== id)
-          return sendJson(res, 404, { error: "Session not found" });
+          return sendJson(res, 404, { error: 'Session not found' });
         return sendJson(res, 200, {
           session: {
             id: session.id,
-            annotatorName: session.annotator?.name ?? "Anotador",
+            annotatorName: session.annotator?.name ?? 'Anotador',
             endedAt: session.endedAt,
             finalStateSnapshot: session.finalStateSnapshot
               ? JSON.parse(session.finalStateSnapshot)
@@ -506,17 +549,17 @@ export default async function handler(req, res) {
       }
 
       // Endosso: POST /api/matches/:id/sessions/:sessionId/endorse
-      if (subId && action === "endorse" && req.method === "POST") {
+      if (subId && action === 'endorse' && req.method === 'POST') {
         const session = await prisma.matchAnnotationSession.findUnique({
           where: { id: subId },
           select: { id: true, matchId: true, isActive: true },
         });
         if (!session || session.matchId !== id)
-          return sendJson(res, 404, { error: "Session not found" });
+          return sendJson(res, 404, { error: 'Session not found' });
         // Só pode endossar sessão encerrada
         if (session.isActive)
           return sendJson(res, 400, {
-            error: "Cannot endorse an active session",
+            error: 'Cannot endorse an active session',
           });
         const endorsement = await prisma.annotationEndorsement.create({
           data: { sessionId: subId, endorsedByUserId: ctx.userId },
@@ -528,7 +571,7 @@ export default async function handler(req, res) {
       }
 
       // PATCH /api/matches/:id/sessions/:sessionId → encerrar sessão
-      if (subId && req.method === "PATCH") {
+      if (subId && req.method === 'PATCH') {
         const session = await prisma.matchAnnotationSession.findUnique({
           where: { id: subId },
           select: {
@@ -539,14 +582,13 @@ export default async function handler(req, res) {
           },
         });
         if (!session || session.matchId !== id)
-          return sendJson(res, 404, { error: "Session not found" });
+          return sendJson(res, 404, { error: 'Session not found' });
         // Só o anotador ou ADMIN pode encerrar
-        if (session.annotatorUserId !== ctx.userId && ctx.role !== "ADMIN")
+        if (session.annotatorUserId !== ctx.userId && ctx.role !== 'ADMIN')
           return sendJson(res, 403, {
-            error: "Only the annotator or admin can end a session",
+            error: 'Only the annotator or admin can end a session',
           });
-        if (!session.isActive)
-          return sendJson(res, 400, { error: "Session already ended" });
+        if (!session.isActive) return sendJson(res, 400, { error: 'Session already ended' });
         // Capturar snapshot do matchState atual como finalStateSnapshot
         const match = await prisma.match.findUnique({
           where: { id },
@@ -556,24 +598,26 @@ export default async function handler(req, res) {
           where: { id: subId },
           data: {
             isActive: false,
-            status: "COMPLETED",
+            status: 'COMPLETED',
             endedAt: new Date(),
             finalStateSnapshot: req.body?.finalState
               ? JSON.stringify(req.body.finalState)
-              : (match?.matchState || null),
+              : match?.matchState || null,
           },
         });
 
         // Verificar se há múltiplas sessões COMPLETED para gerar comparativo
         const completedSessions = await prisma.matchAnnotationSession.count({
-          where: { matchId: id, status: "COMPLETED" },
+          where: { matchId: id, status: 'COMPLETED' },
         });
         if (completedSessions >= 2) {
           // Reagendar geração de comparativo (assíncrono — não bloqueia resposta)
           setImmediate(async () => {
             try {
               await generateComparison(id);
-            } catch { /* silently fail — comparativo pode ser regenerado */ }
+            } catch {
+              /* silently fail — comparativo pode ser regenerado */
+            }
           });
         }
 
@@ -581,7 +625,7 @@ export default async function handler(req, res) {
       }
 
       // GET /api/matches/:id/sessions → listar sessões
-      if (req.method === "GET") {
+      if (req.method === 'GET') {
         const sessions = await prisma.matchAnnotationSession.findMany({
           where: { matchId: id },
           include: {
@@ -590,27 +634,27 @@ export default async function handler(req, res) {
               include: { endorsedBy: { select: { id: true, name: true } } },
             },
           },
-          orderBy: { createdAt: "desc" },
+          orderBy: { createdAt: 'desc' },
         });
         return sendJson(res, 200, sessions);
       }
 
       // POST /api/matches/:id/sessions → iniciar nova sessão (multi-anotador)
-      if (req.method === "POST") {
+      if (req.method === 'POST') {
         // Verificar se a partida existe e não está finalizada
         const match = await prisma.match.findUnique({
           where: { id },
           select: { status: true, clubId: true, openForAnnotation: true },
         });
-        if (!match) return sendJson(res, 404, { error: "Match not found" });
-        if (match.status === "FINISHED")
-          return sendJson(res, 409, { error: "Match already finished" });
+        if (!match) return sendJson(res, 404, { error: 'Match not found' });
+        if (match.status === 'FINISHED')
+          return sendJson(res, 409, { error: 'Match already finished' });
 
         // Partida aberta: qualquer autenticado (não SPECTATOR de plataforma) pode anotar
         // Partida fechada: respeita role de clube (comportamento original)
-        if (!match.openForAnnotation && ctx.role === "SPECTATOR")
+        if (!match.openForAnnotation && ctx.role === 'SPECTATOR')
           return sendJson(res, 403, {
-            error: "Spectators cannot annotate matches",
+            error: 'Spectators cannot annotate matches',
           });
 
         // Multi-anotador: NÃO desativar sessões existentes
@@ -630,7 +674,7 @@ export default async function handler(req, res) {
             matchId: id,
             annotatorUserId: ctx.userId,
             isActive: true,
-            status: "IN_PROGRESS",
+            status: 'IN_PROGRESS',
           },
           include: {
             annotator: { select: { id: true, name: true, email: true } },
@@ -639,48 +683,47 @@ export default async function handler(req, res) {
         return sendJson(res, 201, session);
       }
 
-      return methodNotAllowed(res, ["GET", "POST", "PATCH"]);
+      return methodNotAllowed(res, ['GET', 'POST', 'PATCH']);
     }
 
     // ─── /api/matches/:id/comparison ─────────────────────────────────────────
-    if (id && sub === "comparison") {
+    if (id && sub === 'comparison') {
       const ctx = requireAuth(req, res);
       if (!ctx) return;
-      if (req.method === "GET") {
+      if (req.method === 'GET') {
         const comp = await prisma.matchAnnotationComparison.findFirst({
           where: { matchId: id },
-          orderBy: { updatedAt: "desc" },
+          orderBy: { updatedAt: 'desc' },
         });
-        if (!comp) return sendJson(res, 404, { error: "No comparison found" });
+        if (!comp) return sendJson(res, 404, { error: 'No comparison found' });
         return sendJson(res, 200, comp);
       }
-      if (req.method === "POST") {
+      if (req.method === 'POST') {
         const comp = await generateComparison(id);
-        if (!comp) return sendJson(res, 422, { error: "Need at least 2 completed sessions" });
+        if (!comp) return sendJson(res, 422, { error: 'Need at least 2 completed sessions' });
         return sendJson(res, 200, comp);
       }
-      return methodNotAllowed(res, ["GET", "POST"]);
+      return methodNotAllowed(res, ['GET', 'POST']);
     }
 
     // ─── /api/matches/:id/share ───────────────────────────────────────────────
-    if (id && sub === "share") {
+    if (id && sub === 'share') {
       const ctx = requireAuth(req, res);
       if (!ctx) return;
 
       // PATCH /api/matches/:id/share/:shareId → aceitar ou rejeitar
-      if (subId && req.method === "PATCH") {
+      if (subId && req.method === 'PATCH') {
         const { status: newStatus } = req.body;
-        if (!["ACCEPTED", "REJECTED"].includes(newStatus))
-          return sendJson(res, 400, { error: "status must be ACCEPTED or REJECTED" });
+        if (!['ACCEPTED', 'REJECTED'].includes(newStatus))
+          return sendJson(res, 400, { error: 'status must be ACCEPTED or REJECTED' });
         const share = await prisma.matchDashboardShare.findUnique({
           where: { id: subId },
           select: { id: true, matchId: true, targetUserId: true, targetClubId: true },
         });
-        if (!share || share.matchId !== id)
-          return sendJson(res, 404, { error: "Share not found" });
+        if (!share || share.matchId !== id) return sendJson(res, 404, { error: 'Share not found' });
         // Apenas o próprio usuário ou membro do clube pode responder
-        if (share.targetUserId && share.targetUserId !== ctx.userId && ctx.role !== "ADMIN")
-          return sendJson(res, 403, { error: "Cannot respond to this share" });
+        if (share.targetUserId && share.targetUserId !== ctx.userId && ctx.role !== 'ADMIN')
+          return sendJson(res, 403, { error: 'Cannot respond to this share' });
         const updated = await prisma.matchDashboardShare.update({
           where: { id: subId },
           data: { status: newStatus, respondedAt: new Date() },
@@ -689,7 +732,7 @@ export default async function handler(req, res) {
       }
 
       // POST /api/matches/:id/share → criar shares para todos os stakeholders
-      if (req.method === "POST") {
+      if (req.method === 'POST') {
         await createDashboardShares(id);
         const shares = await prisma.matchDashboardShare.findMany({
           where: { matchId: id },
@@ -698,82 +741,73 @@ export default async function handler(req, res) {
       }
 
       // GET /api/matches/:id/share → listar shares da partida
-      if (req.method === "GET") {
+      if (req.method === 'GET') {
         const shares = await prisma.matchDashboardShare.findMany({
           where: { matchId: id },
-          orderBy: { notifiedAt: "desc" },
+          orderBy: { notifiedAt: 'desc' },
         });
         return sendJson(res, 200, shares);
       }
 
-      return methodNotAllowed(res, ["GET", "POST", "PATCH"]);
+      return methodNotAllowed(res, ['GET', 'POST', 'PATCH']);
     }
 
     // ─── /api/matches/:id/state ──────────────────────────────────────────────
-    if (id && sub === "state") {
+    if (id && sub === 'state') {
       const ctx = requireAuth(req, res);
       if (!ctx) return;
-      if (ctx.role !== "ADMIN") {
+      if (ctx.role !== 'ADMIN') {
         const match = await getMatchById(id);
-        if (
-          match?.clubId &&
-          match.clubId !== ctx.clubId &&
-          match.visibility !== "PUBLIC"
-        ) {
-          return sendJson(res, 403, { error: "Access denied to this match" });
+        if (match?.clubId && match.clubId !== ctx.clubId && match.visibility !== 'PUBLIC') {
+          return sendJson(res, 403, { error: 'Access denied to this match' });
         }
       }
-      if (req.method === "GET")
-        return sendJson(res, 200, await getMatchState(id));
-      if (req.method === "PATCH") {
+      if (req.method === 'GET') return sendJson(res, 200, await getMatchState(id));
+      if (req.method === 'PATCH') {
         // SPECTATOR não pode alterar estado
-        if (ctx.role === "SPECTATOR")
+        if (ctx.role === 'SPECTATOR')
           return sendJson(res, 403, {
-            error: "Spectators cannot modify matches",
+            error: 'Spectators cannot modify matches',
           });
         // Partida finalizada é imutável
         const current = await prisma.match.findUnique({
           where: { id },
           select: { status: true },
         });
-        if (current?.status === "FINISHED")
-          return sendJson(res, 409, { error: "Match already finished" });
+        if (current?.status === 'FINISHED')
+          return sendJson(res, 409, { error: 'Match already finished' });
         // Cross-club PUBLIC: somente leitura
         const matchData = await getMatchById(id);
-        if (
-          matchData?.clubId &&
-          matchData.clubId !== ctx.clubId &&
-          ctx.role !== "ADMIN"
-        )
+        if (matchData?.clubId && matchData.clubId !== ctx.clubId && ctx.role !== 'ADMIN')
           return sendJson(res, 403, {
-            error: "Cross-club matches are read-only",
+            error: 'Cross-club matches are read-only',
           });
         const result = await updateMatchState(id, req.body);
         // Ao finalizar partida, criar compartilhamentos automáticos
         const newStatus = req.body?.status || req.body?.matchState?.status;
-        if (newStatus === "FINISHED" || result?.status === "FINISHED") {
+        if (newStatus === 'FINISHED' || result?.status === 'FINISHED') {
           setImmediate(async () => {
-            try { await createDashboardShares(id); } catch { /* silently fail */ }
+            try {
+              await createDashboardShares(id);
+            } catch {
+              /* silently fail */
+            }
           });
         }
         return sendJson(res, 200, result);
       }
-      return methodNotAllowed(res, ["GET", "PATCH"]);
+      return methodNotAllowed(res, ['GET', 'PATCH']);
     }
 
     // ─── GET /api/matches/:id/stats ──────────────────────────────────────────
-    if (id && sub === "stats") {
+    if (id && sub === 'stats') {
       const ctx = requireAuth(req, res);
       if (!ctx) return;
-      if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
-      if (ctx.role !== "ADMIN") {
+      if (req.method !== 'GET') return methodNotAllowed(res, ['GET']);
+      if (ctx.role !== 'ADMIN') {
         const match = await getMatchById(id);
-        if (
-          match?.clubId &&
-          match.clubId !== ctx.clubId &&
-          match.visibility !== "PUBLIC"
-        ) {
-          return sendJson(res, 403, { error: "Access denied to this match" });
+        if (match?.clubId && match.clubId !== ctx.clubId && match.visibility !== 'PUBLIC') {
+          return sendJson(res, 403, { error: 'Access denied to this match' });
         }
       }
       return sendJson(res, 200, await getMatchStats(id));
@@ -785,9 +819,9 @@ export default async function handler(req, res) {
       if (!ctx) return;
 
       // POST /api/matches/:id/claim — salva partida no histórico do usuário
-      if (isClaim && req.method === "POST") {
+      if (isClaim && req.method === 'POST') {
         const matchExists = await prisma.match.findUnique({ where: { id }, select: { id: true } });
-        if (!matchExists) return sendJson(res, 404, { error: "Match not found" });
+        if (!matchExists) return sendJson(res, 404, { error: 'Match not found' });
         const existing = await prisma.matchDashboardShare.findFirst({
           where: { matchId: id, targetUserId: ctx.userId },
         });
@@ -795,15 +829,15 @@ export default async function handler(req, res) {
         if (existing) {
           share = await prisma.matchDashboardShare.update({
             where: { id: existing.id },
-            data: { status: "ACCEPTED", respondedAt: new Date() },
+            data: { status: 'ACCEPTED', respondedAt: new Date() },
           });
         } else {
           share = await prisma.matchDashboardShare.create({
             data: {
               matchId: id,
               targetUserId: ctx.userId,
-              shareType: "ANNOTATION",
-              status: "ACCEPTED",
+              shareType: 'ANNOTATION',
+              status: 'ACCEPTED',
               respondedAt: new Date(),
             },
           });
@@ -812,18 +846,19 @@ export default async function handler(req, res) {
       }
 
       // PATCH /api/matches/:id/metadata — atualiza metadados editáveis pelo criador
-      if (isMetadata && req.method === "PATCH") {
+      if (isMetadata && req.method === 'PATCH') {
         const match = await prisma.match.findUnique({
           where: { id },
           select: { createdByUserId: true },
         });
-        if (!match) return sendJson(res, 404, { error: "Match not found" });
-        if (match.createdByUserId !== ctx.userId && ctx.role !== "ADMIN") {
-          return sendJson(res, 403, { error: "Apenas o criador da partida pode editar os dados" });
+        if (!match) return sendJson(res, 404, { error: 'Match not found' });
+        if (match.createdByUserId !== ctx.userId && ctx.role !== 'ADMIN') {
+          return sendJson(res, 403, { error: 'Apenas o criador da partida pode editar os dados' });
         }
         const { scheduledAt, venueId, nickname, visibility, openForAnnotation } = req.body ?? {};
         const data = {};
-        if (scheduledAt !== undefined) data.scheduledAt = scheduledAt ? new Date(scheduledAt) : null;
+        if (scheduledAt !== undefined)
+          data.scheduledAt = scheduledAt ? new Date(scheduledAt) : null;
         if (venueId !== undefined) data.venueId = venueId || null;
         if (nickname !== undefined) data.nickname = nickname || null;
         if (visibility !== undefined) data.visibility = visibility;
@@ -832,29 +867,25 @@ export default async function handler(req, res) {
         return sendJson(res, 200, updated);
       }
 
-      if (req.method === "GET") {
+      if (req.method === 'GET') {
         const match = await getMatchById(id);
-        if (match && ctx.role !== "ADMIN") {
-          if (
-            match.clubId &&
-            match.clubId !== ctx.clubId &&
-            match.visibility !== "PUBLIC"
-          ) {
-            return sendJson(res, 403, { error: "Access denied to this match" });
+        if (match && ctx.role !== 'ADMIN') {
+          if (match.clubId && match.clubId !== ctx.clubId && match.visibility !== 'PUBLIC') {
+            return sendJson(res, 403, { error: 'Access denied to this match' });
           }
         }
         return sendJson(res, 200, match);
       }
-      if (req.method === "PATCH") {
+      if (req.method === 'PATCH') {
         // SPECTATOR não pode alterar partidas
-        if (ctx.role === "SPECTATOR")
+        if (ctx.role === 'SPECTATOR')
           return sendJson(res, 403, {
-            error: "Spectators cannot modify matches",
+            error: 'Spectators cannot modify matches',
           });
         const existing = await getMatchById(id);
-        if (existing && ctx.role !== "ADMIN") {
+        if (existing && ctx.role !== 'ADMIN') {
           if (existing.clubId && existing.clubId !== ctx.clubId) {
-            return sendJson(res, 403, { error: "Access denied to this match" });
+            return sendJson(res, 403, { error: 'Access denied to this match' });
           }
         }
         // Partida finalizada é imutável
@@ -862,36 +893,34 @@ export default async function handler(req, res) {
           where: { id },
           select: { status: true },
         });
-        if (currentStatus?.status === "FINISHED")
-          return sendJson(res, 409, { error: "Match already finished" });
+        if (currentStatus?.status === 'FINISHED')
+          return sendJson(res, 409, { error: 'Match already finished' });
         return sendJson(res, 200, await updateMatch(id, req.body));
       }
-      return methodNotAllowed(res, ["GET", "PATCH"]);
+      return methodNotAllowed(res, ['GET', 'PATCH']);
     }
 
     // ─── /api/matches (root) ─────────────────────────────────────────────────
     const ctx = requireAuth(req, res);
     if (!ctx) return;
 
-    if (req.method === "GET") {
+    if (req.method === 'GET') {
       const result = await getAllMatches(ctx.clubId, ctx.role, ctx.userId);
       const validated = result.map((match) => {
         const validation = validateMatchApiResponse(match);
         if (!validation.success) {
-          throw new Error(
-            `Contrato de API violado: ${validation.error.message}`,
-          );
+          throw new Error(`Contrato de API violado: ${validation.error.message}`);
         }
-        return { ...match, contractVersion: "1.0.0" };
+        return { ...match, contractVersion: '1.0.0' };
       });
       return sendJson(res, 200, validated);
     }
 
-    if (req.method === "POST") {
+    if (req.method === 'POST') {
       // SPECTATOR não pode criar partidas
-      if (ctx.role === "SPECTATOR")
+      if (ctx.role === 'SPECTATOR')
         return sendJson(res, 403, {
-          error: "Spectators cannot create matches",
+          error: 'Spectators cannot create matches',
         });
       const subCheck = await requireActiveSubscription(req, res, ctx);
       if (!subCheck) return;
@@ -904,7 +933,7 @@ export default async function handler(req, res) {
         const windowMs = 30 * 60 * 1000; // ±30 minutos
         const existing = await prisma.match.findFirst({
           where: {
-            status: { not: "FINISHED" },
+            status: { not: 'FINISHED' },
             scheduledAt: {
               gte: new Date(scheduledDate.getTime() - windowMs),
               lte: new Date(scheduledDate.getTime() + windowMs),
@@ -922,12 +951,11 @@ export default async function handler(req, res) {
         });
         if (existing) {
           return sendJson(res, 409, {
-            code: "DUPLICATE_MATCH",
+            code: 'DUPLICATE_MATCH',
             existing: {
               id: existing.id,
               scheduledAt: existing.scheduledAt,
-              creatorName:
-                existing.createdBy?.name || existing.createdBy?.email || "outro usuário",
+              creatorName: existing.createdBy?.name || existing.createdBy?.email || 'outro usuário',
             },
           });
         }
@@ -961,22 +989,20 @@ export default async function handler(req, res) {
       const result = await createMatch(matchData);
       const validation = validateMatchApiResponse(result);
       if (!validation.success) {
-        throw new Error(
-          `Contrato de API violado na criação: ${validation.error.message}`,
-        );
+        throw new Error(`Contrato de API violado na criação: ${validation.error.message}`);
       }
-      return sendJson(res, 201, { ...result, contractVersion: "1.0.0" });
+      return sendJson(res, 201, { ...result, contractVersion: '1.0.0' });
     }
 
-    return methodNotAllowed(res, ["GET", "POST"]);
+    return methodNotAllowed(res, ['GET', 'POST']);
   } catch (error) {
-    console.error("Erro interno em matches:", error);
+    console.error('Erro interno em matches:', error);
     const msg =
       error instanceof Error
         ? error.message
         : error != null
           ? String(error)
-          : "Internal server error";
+          : 'Internal server error';
     return sendJson(res, 500, { error: msg });
   }
 }
