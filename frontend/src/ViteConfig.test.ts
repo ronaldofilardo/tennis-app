@@ -40,4 +40,11 @@ describe("Configuração do Vite", () => {
     expect(viteConfigContent).toContain("export default defineConfig");
     expect(viteConfigContent).toContain("defineConfig");
   });
+
+  it("deve ter skipWaiting e clientsClaim configurados para atualização imediata do PWA", () => {
+    const viteConfigContent = readFileSync(viteConfigPath, "utf-8");
+
+    expect(viteConfigContent).toContain("skipWaiting: true");
+    expect(viteConfigContent).toContain("clientsClaim: true");
+  });
 });
