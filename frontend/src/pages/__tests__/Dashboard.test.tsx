@@ -289,7 +289,7 @@ describe('Dashboard', () => {
     expect(screen.getByText(/Erro ao carregar/)).toBeInTheDocument();
   });
 
-  it('opens NewMatchMenu when Nova Partida is selected from hamburger menu', () => {
+  it('chama onNewMatchClick diretamente quando Nova Partida é selecionada no menu hamburger', () => {
     render(
       <Dashboard
         onNewMatchClick={mockOnNewMatchClick}
@@ -300,11 +300,11 @@ describe('Dashboard', () => {
       />,
     );
 
-    // Open hamburger menu, then click "Nova Partida"
+    // Abre o menu hamburger e clica em "Nova Partida"
     fireEvent.click(screen.getByTestId('hamburger-btn'));
     fireEvent.click(screen.getByTestId('menu-new-match'));
-    // NewMatchMenu should now be visible (it renders menu items)
-    expect(screen.getByRole('menu', { name: /partida/i })).toBeInTheDocument();
+    // onNewMatchClick deve ser chamado diretamente (navega para /match/new)
+    expect(mockOnNewMatchClick).toHaveBeenCalled();
   });
 
   it('filters matches based on user permissions', () => {

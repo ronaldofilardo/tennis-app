@@ -1,60 +1,33 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { vi } from 'vitest';
+import { readFileSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-// Mock do CSS para testar zoom
-const mockCSS = `
-body {
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  padding-top: 4rem;
-  min-width: 320px;
-  min-height: 100vh;
-  zoom: 0.65;
-}
-`;
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const indexCssPath = join(__dirname, './index.css');
 
 describe('Responsividade', () => {
-  it('deve aplicar zoom de 0.65 para dispositivos móveis', () => {
-    // Simula carregamento do CSS
-    const style = document.createElement('style');
-    style.textContent = mockCSS;
-    document.head.appendChild(style);
-
-    // Verifica se o zoom foi aplicado (nota: zoom pode não ser suportado em todos os navegadores de teste)
-    const body = document.body;
-    const computedStyle = window.getComputedStyle(body);
-    // Em navegadores que suportam zoom, deve ser '0.65', mas pode ser undefined em alguns ambientes de teste
-    if (computedStyle.zoom !== undefined) {
-      expect(computedStyle.zoom).toBe('0.65');
-    }
-
-    // Limpa o mock
-    document.head.removeChild(style);
+  it('não deve usar zoom no body (substituído por font-size fluido)', () => {
+    const css = readFileSync(indexCssPath, 'utf-8');
+    // Garante que não há propriedade zoom no seletor body
+    const bodyBlock = css.match(/body\s*\{[^}]*\}/s)?.[0] ?? '';
+    expect(bodyBlock).not.toMatch(/\bzoom\s*:/);
   });
 
-  it('deve manter min-width de 320px', () => {
-    const style = document.createElement('style');
-    style.textContent = mockCSS;
-    document.head.appendChild(style);
-
-    const body = document.body;
-    const computedStyle = window.getComputedStyle(body);
-    expect(computedStyle.minWidth).toBe('320px');
-
-    document.head.removeChild(style);
+  it('deve ter min-width de 320px no body', () => {
+    const css = readFileSync(indexCssPath, 'utf-8');
+    expect(css).toContain('min-width: 320px');
   });
 
-  it('deve manter min-height de 100vh', () => {
-    const style = document.createElement('style');
-    style.textContent = mockCSS;
-    document.head.appendChild(style);
+  it('deve ter padding-bottom para acomodar a BottomTabBar em mobile', () => {
+    const css = readFileSync(indexCssPath, 'utf-8');
+    // Verifica que há regra de padding-bottom com safe-area-inset-bottom para mobile
+    expect(css).toMatch(/padding-bottom\s*:\s*calc\([^)]*safe-area-inset-bottom/);
+  });
 
-    const body = document.body;
-    const computedStyle = window.getComputedStyle(body);
-    expect(computedStyle.minHeight).toBe('100vh');
-
-    document.head.removeChild(style);
+  it('deve resetar padding-bottom em desktop', () => {
+    const css = readFileSync(indexCssPath, 'utf-8');
+    // Garante que em media query de desktop o padding-bottom é resetado para 0
+    expect(css).toMatch(/@media[^{]*min-width[^{]*1024px[^{]*\{[^}]*padding-bottom\s*:\s*0/s);
   });
 });
