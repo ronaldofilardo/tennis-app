@@ -338,7 +338,7 @@ const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreat
             <div className="court-type-selector">
               <button
                 type="button"
-                className={`court-type-btn clay${courtType === 'CLAY' ? 'active' : ''}`}
+                className={`court-type-btn clay${courtType === 'CLAY' ? ' active' : ''}`}
                 onClick={() => setCourtType('CLAY')}
               >
                 <span className="court-type-icon">🟤</span>
@@ -347,7 +347,7 @@ const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreat
               </button>
               <button
                 type="button"
-                className={`court-type-btn hard${courtType === 'HARD' ? 'active' : ''}`}
+                className={`court-type-btn hard${courtType === 'HARD' ? ' active' : ''}`}
                 onClick={() => setCourtType('HARD')}
               >
                 <span className="court-type-icon">🔵</span>
@@ -356,7 +356,7 @@ const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreat
               </button>
               <button
                 type="button"
-                className={`court-type-btn grass${courtType === 'GRASS' ? 'active' : ''}`}
+                className={`court-type-btn grass${courtType === 'GRASS' ? ' active' : ''}`}
                 onClick={() => setCourtType('GRASS')}
               >
                 <span className="court-type-icon">🟢</span>

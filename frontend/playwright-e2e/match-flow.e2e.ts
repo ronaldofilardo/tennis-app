@@ -163,6 +163,59 @@ test.describe('Fluxo Completo de Partida - E2E', () => {
     expect(buttonBox?.width).toBeLessThan(400); // Botão não deve ser muito largo
   });
 
+  test('seleção de tipo de quadra - visual highlighting', async ({ page }) => {
+    await page.goto('/');
+    await page.fill('input[type="email"]', 'test@test.com');
+    await page.fill('input[type="password"]', 'password');
+    await page.click('button[type="submit"]');
+
+    await page.waitForURL('**/dashboard');
+    
+    // Navegar para criação de nova partida
+    await page.click('text=Nova Partida');
+    await page.waitForURL('**/match/new');
+
+    // Verificar que o formulário de tipo de quadra está visível
+    await expect(page.locator('text=Tipo de Quadra')).toBeVisible();
+
+    // Verificar que há 3 botões de quadra (Saibro, Dura, Grama)
+    const courtButtons = page.locator('.court-type-btn');
+    await expect(courtButtons).toHaveCount(3);
+
+    // Por padrão, "Dura" (HARD) deve estar selecionado
+    const hardButton = page.locator('.court-type-btn.hard');
+    await expect(hardButton).toHaveClass(/active/);
+
+    // Verificar que checkmark aparece no botão selecionado
+    const hardButtonClasses = await hardButton.getAttribute('class');
+    expect(hardButtonClasses).toContain('active');
+
+    // Clicar em "Saibro" (CLAY)
+    const clayButton = page.locator('.court-type-btn.clay');
+    await clayButton.click();
+
+    // Verificar que "Saibro" agora está ativo
+    await expect(clayButton).toHaveClass(/active/);
+
+    // Verificar que "Dura" não está mais ativo
+    await expect(hardButton).not.toHaveClass(/active/);
+
+    // Clicar em "Grama" (GRASS)
+    const grassButton = page.locator('.court-type-btn.grass');
+    await grassButton.click();
+
+    // Verificar que "Grama" agora está ativo
+    await expect(grassButton).toHaveClass(/active/);
+
+    // Verificar que "Saibro" não está mais ativo
+    await expect(clayButton).not.toHaveClass(/active/);
+
+    // Voltar para "Dura" para confirmar que a alternância funciona
+    await hardButton.click();
+    await expect(hardButton).toHaveClass(/active/);
+    await expect(grassButton).not.toHaveClass(/active/);
+  });
+
   test('performance - tempo de carregamento crítico', async ({ page }) => {
     const startTime = Date.now();
 

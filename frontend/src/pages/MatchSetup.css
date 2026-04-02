@@ -200,9 +200,11 @@
   transition:
     border-color 0.15s,
     background 0.15s,
+    box-shadow 0.15s,
     transform 0.1s;
   color: #aaa;
   font-family: inherit;
+  position: relative;
 }
 
 .court-type-btn:hover {
@@ -230,8 +232,19 @@
 /* Ativo — Saibro */
 .court-type-btn.clay.active {
   border-color: #c2622a;
-  background: rgba(194, 98, 42, 0.18);
+  border-width: 3px;
+  background: rgba(194, 98, 42, 0.25);
   color: #e8936a;
+  box-shadow: 0 0 12px rgba(194, 98, 42, 0.4);
+}
+.court-type-btn.clay.active::after {
+  content: '✓';
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 1.2rem;
+  color: #c2622a;
+  font-weight: bold;
 }
 .court-type-btn.clay.active .court-type-name {
   color: #e8936a;
@@ -243,7 +256,18 @@
 /* Ativo — Dura */
 .court-type-btn.hard.active {
   border-color: #3b82f6;
-  background: rgba(59, 130, 246, 0.18);
+  border-width: 3px;
+  background: rgba(59, 130, 246, 0.25);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+}
+.court-type-btn.hard.active::after {
+  content: '✓';
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 1.2rem;
+  color: #3b82f6;
+  font-weight: bold;
 }
 .court-type-btn.hard.active .court-type-name {
   color: #93c5fd;
@@ -255,7 +279,18 @@
 /* Ativo — Grama */
 .court-type-btn.grass.active {
   border-color: #22c55e;
-  background: rgba(34, 197, 94, 0.18);
+  border-width: 3px;
+  background: rgba(34, 197, 94, 0.25);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.4);
+}
+.court-type-btn.grass.active::after {
+  content: '✓';
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 1.2rem;
+  color: #22c55e;
+  font-weight: bold;
 }
 .court-type-btn.grass.active .court-type-name {
   color: #86efac;
