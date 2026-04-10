@@ -93,7 +93,11 @@ const AnnotatedMatchCard: React.FC<AnnotatedMatchCardProps> = ({
     .filter((a) => a.endedAt)
     .sort((a, b) => new Date(b.endedAt!).getTime() - new Date(a.endedAt!).getTime())[0]?.endedAt;
 
-  const canViewReport = !match.comparisonAvailable && firstAnnotation?.hasFinalState;
+  // Sessão a usar para ver a timeline: anotador usa a própria sessão; atleta usa a primeira anotação
+  const sessionForTimeline = viewerRole === 'ANNOTATOR' ? match.mySession : firstAnnotation;
+  const canViewTimeline = sessionForTimeline != null;
+  const sessionIdForTimeline =
+    viewerRole === 'ANNOTATOR' ? match.mySession?.id : firstAnnotation?.id;
 
   return (
     <article
@@ -203,7 +207,16 @@ const AnnotatedMatchCard: React.FC<AnnotatedMatchCardProps> = ({
               ↓ Salvar no histórico
             </button>
           ))}
-        {match.comparisonAvailable ? (
+        {canViewTimeline && sessionIdForTimeline && (
+          <button
+            className="annotated-match-card__btn annotated-match-card__btn--secondary"
+            onClick={() => onViewReport(sessionIdForTimeline, match.id)}
+            aria-label="Ver timeline e detalhes da anotação"
+          >
+            Ver timeline
+          </button>
+        )}
+        {match.comparisonAvailable && (
           <button
             className="annotated-match-card__btn annotated-match-card__btn--primary"
             onClick={() => onViewComparison(match.id)}
@@ -211,22 +224,14 @@ const AnnotatedMatchCard: React.FC<AnnotatedMatchCardProps> = ({
           >
             Ver comparativo
           </button>
-        ) : canViewReport && firstAnnotation ? (
+        )}
+        {!canViewTimeline && !match.comparisonAvailable && (
           <button
             className="annotated-match-card__btn annotated-match-card__btn--primary"
-            onClick={() => onViewReport(firstAnnotation.id, match.id)}
-            aria-label="Ver relatório da anotação"
+            disabled
+            aria-label="Dados da anotação ainda não disponíveis"
           >
-            Ver relatório
-          </button>
-        ) : (
-          <button
-            className="annotated-match-card__btn annotated-match-card__btn--primary"
-            onClick={() => firstAnnotation && onViewReport(firstAnnotation.id, match.id)}
-            aria-label="Ver detalhes da anotação"
-            disabled={!firstAnnotation}
-          >
-            Ver detalhes
+            Sem dados
           </button>
         )}
       </footer>

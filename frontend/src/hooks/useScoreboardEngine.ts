@@ -15,7 +15,7 @@ import { useShakeDetection } from '../hooks/useGestures';
 import { resolvePlayerName } from '../data/players';
 import { useToast } from '../components/Toast';
 import { createLogger } from '../services/logger';
-import { startSession } from '../services/annotationSessionService';
+import { startSession, endSession } from '../services/annotationSessionService';
 import { API_URL } from '../config/api';
 import { useAuth } from '../contexts/AuthContext';
 import type { ViewMode } from '../components/scoreboard/MatchHeader';
@@ -203,6 +203,12 @@ export function useScoreboardEngine(onEndMatch: () => void) {
 
   const syncTimeoutRef = useRef<number | null>(null);
 
+  // Ref para armazenar matchId (pode ficar undefined em useParams durante cleanup)
+  const matchIdRef = useRef<string | null>(null);
+
+  // Ref para o ID da sessão de anotação auto-iniciada; encerrada no handleEndMatch
+  const annotationSessionIdRef = useRef<string | null>(null);
+
   const getSystem = () => scoringSystemRef.current;
 
   const forceRerender = useCallback(() => {
@@ -258,14 +264,60 @@ export function useScoreboardEngine(onEndMatch: () => void) {
   // Função para persistir o estado antes de fechar
   const handleEndMatch = async () => {
     const sys = getSystem();
-    if (sys && matchData?.status !== 'NOT_STARTED') {
+    let finalState: unknown = undefined;
+
+    // Sempre tentar capturar o estado final, mesmo se a sincronização falhar
+    if (sys) {
       try {
-        await sys.syncState();
+        // Tentar sincronizar com o backend (atualiza dados em tempo real)
+        if (matchData?.status && matchData.status !== 'NOT_STARTED') {
+          await sys.syncState();
+        }
+        // Capturar o estado final do sistema (com ou sem sync bem-sucedido)
+        finalState = sys.getState();
+        scoreLog.debug('Estado final capturado com sucesso', {
+          matchId: matchIdRef.current,
+          hasPointsHistory: !!finalState?.pointsHistory,
+          pointsCount: finalState?.pointsHistory?.length ?? 0,
+        });
       } catch (err) {
-        // Sincronização final falhou — não impede fechamento (estado já pode estar sincronizado)
-        scoreLog.warn('Falha no syncState ao encerrar partida (não crítico)', { matchId });
+        // Sincronização falhou, mas tenta ainda assim capturar o estado local
+        scoreLog.warn('Falha no syncState ao encerrar partida (tentando capturar estado local)', {
+          matchId: matchIdRef.current,
+          error: err instanceof Error ? err.message : String(err),
+        });
+        try {
+          finalState = sys.getState();
+          scoreLog.info('Estado local capturado após falha de sync', {
+            matchId: matchIdRef.current,
+          });
+        } catch (getStateErr) {
+          scoreLog.warn('Falha ao capturar estado local', { matchId: matchIdRef.current });
+        }
       }
     }
+
+    // Encerra a sessão de anotação auto-iniciada (salva finalStateSnapshot + status=COMPLETED)
+    const sessionId = annotationSessionIdRef.current;
+    const currentMatchId = matchIdRef.current;
+    if (sessionId && currentMatchId) {
+      try {
+        await endSession(currentMatchId, sessionId, finalState);
+        scoreLog.info('Sessão de anotação encerrada com sucesso', {
+          matchId: currentMatchId,
+          sessionId,
+          hasFinalState: !!finalState,
+        });
+      } catch (err) {
+        scoreLog.warn('Falha ao encerrar sessão de anotação', {
+          matchId: currentMatchId,
+          sessionId,
+          error: err instanceof Error ? err.message : String(err),
+        });
+      }
+      annotationSessionIdRef.current = null;
+    }
+
     onEndMatch();
   };
 
@@ -299,6 +351,9 @@ export function useScoreboardEngine(onEndMatch: () => void) {
       setIsLoading(false);
       return;
     }
+
+    // Sincroniza matchId no ref para uso em callbacks (ex: handleEndMatch durante cleanup)
+    matchIdRef.current = matchId;
 
     let cancelled = false;
 
@@ -363,6 +418,7 @@ export function useScoreboardEngine(onEndMatch: () => void) {
       try {
         const session = await startSession(matchId);
         if (active && session) {
+          annotationSessionIdRef.current = session.id;
           dispatch({ type: 'ANNOTATOR_COUNT_SET', count: Math.max(annotatorCount, 1) });
         }
       } catch {
@@ -501,6 +557,11 @@ export function useScoreboardEngine(onEndMatch: () => void) {
       pointDetails.serve = { isFirstServe: serveStep !== 'second' };
     }
 
+    // Garante que shotPlayer sempre esteja preenchido — padrão: o vencedor do ponto
+    if (!pointDetails.shotPlayer) {
+      pointDetails.shotPlayer = player;
+    }
+
     let newState: ReturnType<typeof scoringSystem.getState>;
     try {
       newState = scoringSystem.addPoint(player, pointDetails as PointDetails);
@@ -533,7 +594,8 @@ export function useScoreboardEngine(onEndMatch: () => void) {
           `Vencedor: ${winnerName} | Placar: ${newState.sets.PLAYER_1} sets x ${newState.sets.PLAYER_2} sets`,
           '🏆 Partida Finalizada!',
         );
-        navigate('/dashboard');
+        // Encerra a sessão de anotação (salva finalState) antes de navegar
+        handleEndMatch();
       }, 500);
     }
   };

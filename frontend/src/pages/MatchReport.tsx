@@ -5,6 +5,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { httpClient } from '../config/httpClient';
 import { createLogger } from '../services/logger';
+import type { PointDetails } from '../core/scoring/types';
+import MatchTimelineView from '../components/MatchTimelineView';
 import './MatchReport.css';
 
 const log = createLogger('MatchReport');
@@ -37,7 +39,10 @@ interface MatchStateSnapshot {
   isFinished?: boolean;
   startedAt?: string;
   endedAt?: string;
-  points?: PointEntry[];
+  /** Pontos ricos (EnhancedMatchState.pointsHistory) — formato preferido */
+  pointsHistory?: PointDetails[];
+  /** Pontos legacy — formato simplificado de versões antigas */
+  points?: LegacyPointEntry[];
   server?: string;
   score?: {
     sets: [number, number];
@@ -56,7 +61,8 @@ interface GameState {
   p2: string;
 }
 
-interface PointEntry {
+/** Formato simplificado de ponto (dados de sessões anotadas antes do EnhancedMatchState). */
+interface LegacyPointEntry {
   ts?: string;
   winner: 'p1' | 'p2';
   type?: string;
@@ -97,7 +103,7 @@ function formatDateTime(iso: string | null | undefined): string {
   });
 }
 
-function computeStats(points: PointEntry[]): { p1: PointStats; p2: PointStats } {
+function computeStats(points: LegacyPointEntry[]): { p1: PointStats; p2: PointStats } {
   const init = (): PointStats => ({
     total: 0,
     aces: 0,
@@ -197,9 +203,12 @@ const MatchReport: React.FC = () => {
 
   const { session, match } = data;
   const snapshot = session.finalStateSnapshot;
-  const points: PointEntry[] = snapshot?.points ?? [];
+  // Formato rico (EnhancedMatchState.pointsHistory) — preferido para a nova timeline
+  const pointsHistory: PointDetails[] = snapshot?.pointsHistory ?? [];
+  // Formato legado — mantido para compatibilidade com sessões antigas que só têm "points"
+  const legacyPoints: LegacyPointEntry[] = snapshot?.points ?? [];
   const sets: SetData[] = snapshot?.sets ?? [];
-  const stats = points.length > 0 ? computeStats(points) : null;
+  const stats = legacyPoints.length > 0 ? computeStats(legacyPoints) : null;
 
   const p1Name = match.player1?.name ?? match.playerP1;
   const p2Name = match.player2?.name ?? match.playerP2;
@@ -362,47 +371,45 @@ const MatchReport: React.FC = () => {
           </section>
         )}
 
-        {/* Timeline de pontos */}
-        {points.length > 0 && (
+        {/* Timeline de pontos — usa dados ricos (PointDetails) quando disponíveis */}
+        {pointsHistory.length > 0 ? (
+          <section className="match-report__section" aria-label="Timeline de pontos">
+            <MatchTimelineView
+              pointsHistory={pointsHistory}
+              playerNames={{ p1: p1Name, p2: p2Name }}
+            />
+          </section>
+        ) : legacyPoints.length > 0 ? (
+          // Fallback: dados legados de sessões antigas (formato simplificado)
           <section className="match-report__section" aria-label="Timeline de pontos">
             <h2 className="match-report__section-title">
-              Timeline de Pontos ({points.length} pontos)
+              Timeline de Pontos ({legacyPoints.length} pontos)
             </h2>
             <ol className="match-report__timeline" aria-label="Sequência de pontos">
-              {points.map((pt, idx) => (
+              {legacyPoints.map((pt, idx) => (
                 <li
                   key={idx}
                   className={`match-report__timeline-item match-report__timeline-item--${pt.winner}`}
-                  aria-label={`Ponto ${idx + 1}: ${pt.winner === 'p1' ? p1Name : p2Name} venceu${pt.aces ? ' (ace)' : ''}${pt.doubleFault ? ' (dupla falta)' : ''}${pt.winner_shot ? ' (winner)' : ''}${pt.unforced_error ? ' (erro não forçado)' : ''}`}
+                  aria-label={`Ponto ${idx + 1}: ${pt.winner === 'p1' ? p1Name : p2Name} venceu`}
                 >
                   <span className="match-report__timeline-num">{idx + 1}</span>
                   <span className="match-report__timeline-winner">
                     {pt.winner === 'p1' ? p1Name : p2Name}
                   </span>
                   {pt.aces && (
-                    <span className="match-report__timeline-tag match-report__timeline-tag--ace">
-                      Ace
-                    </span>
+                    <span className="match-timeline__tag match-timeline__tag--ace">Ace</span>
                   )}
                   {pt.doubleFault && (
-                    <span className="match-report__timeline-tag match-report__timeline-tag--fault">
-                      Dupla falta
-                    </span>
+                    <span className="match-timeline__tag match-timeline__tag--fault">DF</span>
                   )}
                   {pt.winner_shot && (
-                    <span className="match-report__timeline-tag match-report__timeline-tag--winner">
-                      Winner
-                    </span>
+                    <span className="match-timeline__tag match-timeline__tag--winner">W</span>
                   )}
                   {pt.unforced_error && (
-                    <span className="match-report__timeline-tag match-report__timeline-tag--error">
-                      Erro n/f
-                    </span>
+                    <span className="match-timeline__tag match-timeline__tag--error">ENF</span>
                   )}
                   {pt.forced_error && (
-                    <span className="match-report__timeline-tag match-report__timeline-tag--forced">
-                      Erro forçado
-                    </span>
+                    <span className="match-timeline__tag match-timeline__tag--forced">EF</span>
                   )}
                   {pt.ts && (
                     <span className="match-report__timeline-ts">
@@ -416,7 +423,7 @@ const MatchReport: React.FC = () => {
               ))}
             </ol>
           </section>
-        )}
+        ) : null}
 
         {!snapshot && (
           <section className="match-report__section match-report__no-data">

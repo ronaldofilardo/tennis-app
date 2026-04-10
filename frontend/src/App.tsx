@@ -22,6 +22,7 @@ const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
 const JoinClubPage = React.lazy(() => import('./pages/JoinClub'));
 const MatchDiscovery = React.lazy(() => import('./pages/MatchDiscovery'));
 const MatchReport = React.lazy(() => import('./pages/MatchReport'));
+const MatchComparisonPage = React.lazy(() => import('./pages/MatchComparisonPage'));
 
 function App() {
   return (
@@ -244,6 +245,12 @@ const AppContent: React.FC = () => {
               element={isAuthenticated ? <MatchReport /> : <Navigate to="/login" />}
             />
 
+            {/* Comparativo de anotações */}
+            <Route
+              path="/comparison/:matchId"
+              element={isAuthenticated ? <MatchComparisonPage /> : <Navigate to="/login" />}
+            />
+
             {/* Rota Padrão */}
             <Route
               path="*"
@@ -266,9 +273,7 @@ const AppContent: React.FC = () => {
       </main>
 
       {/* ── Mobile bottom navigation ── */}
-      {showBottomTabBar && (
-        <BottomTabBar activeTab={activeTab} onTabChange={handleTabChange} />
-      )}
+      {showBottomTabBar && <BottomTabBar activeTab={activeTab} onTabChange={handleTabChange} />}
     </div>
   );
 };

@@ -1547,9 +1547,12 @@ app.get('/api/admin/users', async (req, res) => {
 // Partidas visíveis — delega ao matchService.js (fonte da verdade)
 app.get('/api/matches/visible', async (req, res) => {
   try {
-    console.log(`[GET /api/matches/visible] Buscando para email: ${req.query.email}`);
+    const ctx = await extractCtx(req); // null para anônimos — OK, mostra apenas partidas públicas
+    const email = ctx?.email ?? undefined;
+    const role = ctx?.role ?? undefined;
+    console.log(`[GET /api/matches/visible] Buscando para email: ${email}`);
     const svc = await getMatchService();
-    const result = await svc.getVisibleMatches(req.query);
+    const result = await svc.getVisibleMatches({ email, role });
     console.log(`[GET /api/matches/visible] Encontradas ${result.length} partidas`);
     res.json(result);
   } catch (error) {
@@ -1724,6 +1727,7 @@ app.patch('/api/matches/:id/sessions/:sessionId', async (req, res) => {
       data: {
         endedAt: new Date(),
         isActive: false,
+        status: 'COMPLETED',
         ...(finalState ? { finalStateSnapshot: JSON.stringify(finalState) } : {}),
       },
     });
@@ -1927,7 +1931,6 @@ app.get('/api/matches/my-completed', async (req, res) => {
         createdAt: true,
         player1: { select: { id: true, name: true } },
         player2: { select: { id: true, name: true } },
-        _count: { select: { annotationSessions: { where: { status: 'COMPLETED' } } } },
       },
       orderBy: { updatedAt: 'desc' },
       take: 30,
@@ -1944,7 +1947,6 @@ app.get('/api/matches/my-completed', async (req, res) => {
       createdAt: m.createdAt ? m.createdAt.toISOString() : null,
       player1: m.player1,
       player2: m.player2,
-      annotationCount: m._count.annotationSessions,
     }));
 
     res.json(result);
@@ -1964,7 +1966,12 @@ app.get('/api/matches/annotated-for-me', async (req, res) => {
 
     const matches = await prisma.match.findMany({
       where: {
-        annotationSessions: { some: { status: 'COMPLETED' } },
+        // Sessões completadas: status='COMPLETED' OU encerradas (isActive=false + endedAt)
+        annotationSessions: {
+          some: {
+            OR: [{ status: 'COMPLETED' }, { isActive: false, endedAt: { not: null } }],
+          },
+        },
         OR: [
           ...(profile ? [{ player1Id: profile.id }, { player2Id: profile.id }] : []),
           { playersEmails: { has: ctx.email } },
@@ -1987,7 +1994,9 @@ app.get('/api/matches/annotated-for-me', async (req, res) => {
         player2: { select: { id: true, name: true } },
         club: { select: { id: true, name: true } },
         annotationSessions: {
-          where: { status: 'COMPLETED' },
+          where: {
+            OR: [{ status: 'COMPLETED' }, { isActive: false, endedAt: { not: null } }],
+          },
           select: {
             id: true,
             annotatorUserId: true,
@@ -2045,8 +2054,27 @@ app.get('/api/matches/annotated-by-me', async (req, res) => {
     const ctx = await extractCtx(req);
     if (!ctx) return res.status(401).json({ error: 'Authentication required' });
 
+    // Cleanup: fechar sessões órfãs (IN_PROGRESS) do usuário em partidas já FINISHED
+    // Corrige dados históricos criados antes do fix no handleEndMatch
+    await prisma.matchAnnotationSession.updateMany({
+      where: {
+        annotatorUserId: ctx.userId,
+        status: 'IN_PROGRESS',
+        isActive: true,
+        match: { status: 'FINISHED' },
+      },
+      data: {
+        status: 'COMPLETED',
+        isActive: false,
+        endedAt: new Date(),
+      },
+    });
+
     const sessions = await prisma.matchAnnotationSession.findMany({
-      where: { annotatorUserId: ctx.userId, status: 'COMPLETED' },
+      where: {
+        annotatorUserId: ctx.userId,
+        OR: [{ status: 'COMPLETED' }, { isActive: false, endedAt: { not: null } }],
+      },
       include: {
         match: {
           select: {
@@ -2063,7 +2091,9 @@ app.get('/api/matches/annotated-by-me', async (req, res) => {
             player2: { select: { id: true, name: true } },
             club: { select: { id: true, name: true } },
             annotationSessions: {
-              where: { status: 'COMPLETED' },
+              where: {
+                OR: [{ status: 'COMPLETED' }, { isActive: false, endedAt: { not: null } }],
+              },
               select: {
                 id: true,
                 annotatorUserId: true,
@@ -2119,6 +2149,7 @@ app.get('/api/matches/:id/sessions/:sessionId/report-data', async (req, res) => 
             playerP1: true,
             playerP2: true,
             scheduledAt: true,
+            matchState: true,
             player1: { select: { name: true } },
             player2: { select: { name: true } },
             club: { select: { name: true } },
@@ -2132,16 +2163,38 @@ app.get('/api/matches/:id/sessions/:sessionId/report-data', async (req, res) => 
       return res.status(404).json({ error: 'Sessão não encontrada' });
     }
 
+    // Tenta usar o finalStateSnapshot da sessão.
+    // Fallback: usa o matchState da partida (salvo a cada ponto via syncState).
+    let snapshotData = null;
+    if (session.finalStateSnapshot) {
+      try {
+        snapshotData = JSON.parse(session.finalStateSnapshot);
+      } catch {
+        snapshotData = null;
+      }
+    }
+    if (!snapshotData && session.match.matchState) {
+      try {
+        snapshotData =
+          typeof session.match.matchState === 'string'
+            ? JSON.parse(session.match.matchState)
+            : session.match.matchState;
+      } catch {
+        snapshotData = null;
+      }
+    }
+
+    // Remover matchState do objeto match antes de enviar (não é necessário no frontend)
+    const { matchState: _ms, ...matchWithoutState } = session.match;
+
     res.json({
       session: {
         id: session.id,
         annotatorName: session.annotator?.name ?? 'Anotador',
         endedAt: session.endedAt,
-        finalStateSnapshot: session.finalStateSnapshot
-          ? JSON.parse(session.finalStateSnapshot)
-          : null,
+        finalStateSnapshot: snapshotData,
       },
-      match: session.match,
+      match: matchWithoutState,
     });
   } catch (error) {
     console.error(

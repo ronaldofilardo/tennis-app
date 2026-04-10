@@ -308,7 +308,13 @@ class HttpClient {
 
       // Classificar erro de rede vs timeout
       if (error instanceof DOMException && error.name === 'AbortError') {
-        throw new HttpError(`Request timeout para ${url}`, 'TIMEOUT_ERROR', 0);
+        // Só converte para TIMEOUT_ERROR se foi nosso controller interno que disparou.
+        // Se veio de um signal externo (ex: cleanup do useEffect), re-lança como AbortError
+        // para que o chamador possa ignorar o cancelamento corretamente.
+        if (abortController) {
+          throw new HttpError(`Request timeout para ${url}`, 'TIMEOUT_ERROR', 0);
+        }
+        throw error;
       }
 
       throw new HttpError(
