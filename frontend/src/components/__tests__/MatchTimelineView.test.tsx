@@ -70,7 +70,10 @@ describe('MatchTimelineView', () => {
 
   it('deve renderizar o número de pontos correto no cabeçalho', () => {
     // Arrange
-    const points = [makePoint(), makePoint({ result: { winner: 'PLAYER_2', type: 'UNFORCED_ERROR' } })];
+    const points = [
+      makePoint(),
+      makePoint({ result: { winner: 'PLAYER_2', type: 'UNFORCED_ERROR' } }),
+    ];
 
     // Act
     render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
@@ -256,12 +259,8 @@ describe('MatchTimelineView', () => {
     unmount();
 
     // Assert
-    expect(
-      removeEventListenerSpy.mock.calls.some(([event]) => event === 'beforeprint'),
-    ).toBe(true);
-    expect(
-      removeEventListenerSpy.mock.calls.some(([event]) => event === 'afterprint'),
-    ).toBe(true);
+    expect(removeEventListenerSpy.mock.calls.some(([event]) => event === 'beforeprint')).toBe(true);
+    expect(removeEventListenerSpy.mock.calls.some(([event]) => event === 'afterprint')).toBe(true);
   });
 
   // --- Tags especiais ---

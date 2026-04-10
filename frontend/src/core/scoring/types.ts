@@ -1,22 +1,22 @@
 // src/core/scoring/types.ts
 
-export type Player = "PLAYER_1" | "PLAYER_2";
+export type Player = 'PLAYER_1' | 'PLAYER_2';
 
-export type GamePoint = "0" | "15" | "30" | "40" | "AD";
+export type GamePoint = '0' | '15' | '30' | '40' | 'AD';
 
 // Formatos baseados no PDF anexo dos 8 tipos de tênis
 export type TennisFormat =
-  | "BEST_OF_3" // Melhor de 3 sets (padrão)
-  | "BEST_OF_5" // Melhor de 5 sets (Grand Slams masculino)
-  | "SINGLE_SET" // Set único
-  | "PRO_SET" // Pro Set (primeiro a 8 games com vantagem de 2)
-  | "MATCH_TIEBREAK" // Match Tiebreak (super tiebreak de 10 pontos)
-  | "SHORT_SET" // Set curto (primeiro a 4 games)
-  | "NO_AD" // Sem vantagem (sudden death no deuce)
-  | "FAST4" // Fast4 Tennis (4 games, sem deuce, tiebreak em 3-3)
-  | "BEST_OF_3_MATCH_TB" // Melhor de 3 com match tiebreak no 3º set
-  | "SHORT_SET_NO_AD" // Set curto com método No-Ad (Anexo V)
-  | "NO_LET_TENNIS"; // Tênis com regra No-Let (Anexo V)
+  | 'BEST_OF_3' // Melhor de 3 sets (padrão)
+  | 'BEST_OF_5' // Melhor de 5 sets (Grand Slams masculino)
+  | 'SINGLE_SET' // Set único
+  | 'PRO_SET' // Pro Set (primeiro a 8 games com vantagem de 2)
+  | 'MATCH_TIEBREAK' // Match Tiebreak (super tiebreak de 10 pontos)
+  | 'SHORT_SET' // Set curto (primeiro a 4 games)
+  | 'NO_AD' // Sem vantagem (sudden death no deuce)
+  | 'FAST4' // Fast4 Tennis (4 games, sem deuce, tiebreak em 3-3)
+  | 'BEST_OF_3_MATCH_TB' // Melhor de 3 com match tiebreak no 3º set
+  | 'SHORT_SET_NO_AD' // Set curto com método No-Ad (Anexo V)
+  | 'NO_LET_TENNIS'; // Tênis com regra No-Let (Anexo V)
 
 export interface TennisConfig {
   format: TennisFormat;
@@ -79,36 +79,60 @@ export interface MatchState {
 
 // === SISTEMA DE ANÁLISE DETALHADA DE PONTOS ===
 
-export type ServeType =
-  | "ACE"
-  | "FAULT_FIRST"
-  | "DOUBLE_FAULT"
-  | "SERVICE_WINNER";
-export type PointResultType = "WINNER" | "UNFORCED_ERROR" | "FORCED_ERROR";
+export type ServeType = 'ACE' | 'FAULT_FIRST' | 'DOUBLE_FAULT' | 'SERVICE_WINNER';
+export type PointResultType = 'WINNER' | 'UNFORCED_ERROR' | 'FORCED_ERROR';
 export type ShotType =
-  | "FOREHAND"
-  | "BACKHAND"
-  | "VOLLEY"
-  | "SMASH"
-  | "SLICE"
-  | "DROP_SHOT"
-  | "LOB"
-  | "PASSING_SHOT";
+  | 'FOREHAND'
+  | 'BACKHAND'
+  | 'VOLLEY'
+  | 'SMASH'
+  | 'SLICE'
+  | 'DROP_SHOT'
+  | 'LOB'
+  | 'PASSING_SHOT';
+
+/**
+ * Contexto do ponto: placar e situação no momento ANTES do ponto ser jogado.
+ * Armazenado pela engine ao registrar cada ponto para permitir análise cronológica
+ * sem precisar reconstruir estados anteriores.
+ */
+export interface PointContext {
+  /** Número do set (1, 2, 3…) */
+  setNumber: number;
+  /** Games vencidos por PLAYER_1 no set atual */
+  gamesP1: number;
+  /** Games vencidos por PLAYER_2 no set atual */
+  gamesP2: number;
+  /** Sets vencidos por PLAYER_1 */
+  setsWonP1: number;
+  /** Sets vencidos por PLAYER_2 */
+  setsWonP2: number;
+  /** Pontuação do game de PLAYER_1 antes do ponto ("0" | "15" | "30" | "40" | "AD" ou número em tiebreak) */
+  gameScoreP1: GamePoint | number;
+  /** Pontuação do game de PLAYER_2 antes do ponto */
+  gameScoreP2: GamePoint | number;
+  /** Quem está sacando neste ponto */
+  server: Player;
+  /** Verdadeiro se é um breakpoint para o devolvedor (receiver pode quebrar o saque) */
+  isBreakPoint: boolean;
+  /** Verdadeiro se o ponto ocorre num tiebreak */
+  isTiebreak: boolean;
+}
 
 export interface PointDetails {
   // Informações do Saque
   serve?: {
     type: ServeType;
     isFirstServe: boolean;
-    serveEffect?: "TopSpin" | "Slice" | "Flat";
-    direction?: "Fechado" | "Centro" | "Aberto";
+    serveEffect?: 'TopSpin' | 'Slice' | 'Flat';
+    direction?: 'Fechado' | 'Centro' | 'Aberto';
     /** Tipo do erro (Out ou Net) — presente em FAULT_FIRST e DOUBLE_FAULT */
-    errorType?: "out" | "net";
+    errorType?: 'out' | 'net';
     /** Para DOUBLE_FAULT: detalhes do erro no 1º saque */
     firstFault?: {
-      errorType?: "out" | "net";
-      serveEffect?: "TopSpin" | "Slice" | "Flat";
-      direction?: "Fechado" | "Centro" | "Aberto";
+      errorType?: 'out' | 'net';
+      serveEffect?: 'TopSpin' | 'Slice' | 'Flat';
+      direction?: 'Fechado' | 'Centro' | 'Aberto';
     };
   };
 
@@ -130,6 +154,9 @@ export interface PointDetails {
   // Detalhes tático-técnicos do rally (fluxotosystem)
   rallyDetails?: RallyDetails;
 
+  // Contexto do placar no momento do ponto (populado pela engine)
+  context?: PointContext;
+
   // Timestamp para análise
   timestamp: number;
 }
@@ -140,20 +167,15 @@ export interface EnhancedMatchState extends MatchState {
 
 // === DETALHES DO RALLY (fluxotosystem.txt) ===
 
-export type RallyVencedor = "sacador" | "devolvedor";
-export type RallySituacao = "passada" | "rede" | "fundo" | "devolucao";
-export type RallyTipo = "winner" | "erro-forcado" | "erro-nao-forcado";
-export type RallySubtipo1 = "PassingShot" | "ServeReturn";
-export type RallySubtipo2 = "Out" | "Net";
-export type RallyGolpe = "BH" | "FH" | "VBH" | "VFH" | "Smash";
-export type RallyEfeito = "topspin" | "slice" | "flat";
-export type RallyDirecao =
-  | "cruzada"
-  | "paralela"
-  | "centro"
-  | "inside-in"
-  | "inside-out";
-export type RallyGolpeEsp = "lob" | "drop" | "bate-pronto" | "swingvolley";
+export type RallyVencedor = 'sacador' | 'devolvedor';
+export type RallySituacao = 'passada' | 'rede' | 'fundo' | 'devolucao';
+export type RallyTipo = 'winner' | 'erro-forcado' | 'erro-nao-forcado';
+export type RallySubtipo1 = 'PassingShot' | 'ServeReturn';
+export type RallySubtipo2 = 'Out' | 'Net';
+export type RallyGolpe = 'BH' | 'FH' | 'VBH' | 'VFH' | 'Smash';
+export type RallyEfeito = 'topspin' | 'slice' | 'flat';
+export type RallyDirecao = 'cruzada' | 'paralela' | 'centro' | 'inside-in' | 'inside-out';
+export type RallyGolpeEsp = 'lob' | 'drop' | 'bate-pronto' | 'swingvolley';
 
 export interface RallyDetails {
   vencedor: RallyVencedor;
