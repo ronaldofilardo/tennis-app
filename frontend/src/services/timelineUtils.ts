@@ -34,7 +34,10 @@ export function filterPointsHistory(
   }
 
   if (criteria.breakPointsOnly) {
-    result = result.filter((p) => p.context && p.context.isBreakPoint === true);
+    result = result.filter((p) => {
+      const hasBreakPoint = (p as any).context?.isBreakPoint === true;
+      return hasBreakPoint;
+    });
   }
 
   if (criteria.winnersOnly) {
