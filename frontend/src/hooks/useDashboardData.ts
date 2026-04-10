@@ -71,19 +71,39 @@ export function useDashboardData(authUser: AuthUser | null | undefined): UseDash
     setAnnotatedLoading(true);
     const _token = localStorage.getItem('racket_token') ?? '';
     const headers = { Authorization: `Bearer ${_token}` };
+    
+    console.log('[useDashboardData] Iniciando fetch de anotações para:', authUser.email);
+    
     Promise.all([
       fetch(`${API_URL}/matches/annotated-for-me`, { headers, credentials: 'include' })
-        .then((r) => (r.ok ? r.json() : []))
-        .catch(() => []),
+        .then((r) => {
+          console.log('[useDashboardData] annotated-for-me status:', r.status);
+          return r.ok ? r.json() : [];
+        })
+        .catch((err) => {
+          console.error('[useDashboardData] erro em annotated-for-me:', err);
+          return [];
+        }),
       fetch(`${API_URL}/matches/annotated-by-me`, { headers, credentials: 'include' })
-        .then((r) => (r.ok ? r.json() : []))
-        .catch(() => []),
+        .then((r) => {
+          console.log('[useDashboardData] annotated-by-me status:', r.status);
+          return r.ok ? r.json() : [];
+        })
+        .catch((err) => {
+          console.error('[useDashboardData] erro em annotated-by-me:', err);
+          return [];
+        }),
     ])
       .then(([forMe, byMe]) => {
+        console.log('[useDashboardData] annotated-for-me:', Array.isArray(forMe) ? forMe.length : 0, 'itens');
+        console.log('[useDashboardData] annotated-by-me:', Array.isArray(byMe) ? byMe.length : 0, 'itens');
         setAnnotatedMatches(Array.isArray(forMe) ? (forMe as AnnotatedMatch[]) : []);
         setAnnotatedByMe(Array.isArray(byMe) ? (byMe as AnnotatedMatch[]) : []);
       })
-      .finally(() => setAnnotatedLoading(false));
+      .finally(() => {
+        console.log('[useDashboardData] fetch de anotações concluído');
+        setAnnotatedLoading(false);
+      });
   }, [authUser]);
 
   // ── Fetch completed matches ────────────────────────────────────────────────
