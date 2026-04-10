@@ -398,9 +398,32 @@ const Dashboard: React.FC<DashboardProps> = ({
           />
         )}
 
+      {/* ── Debug: Mostrar estado se view é 'annotated' ── */}
+      {activeDashboardView === 'annotated' && (
+        <div
+          style={{
+            backgroundColor: '#f0f0f0',
+            padding: '1rem',
+            borderRadius: '8px',
+            marginBottom: '1rem',
+            fontSize: '12px',
+            fontFamily: 'monospace',
+          }}
+        >
+          <div>
+            <strong>DEBUG (Partidas Anotadas):</strong>
+          </div>
+          <div>loading: {String(loading)}</div>
+          <div>annotatedLoading: {String(annotatedLoading)}</div>
+          <div>activeDashboardView: {activeDashboardView}</div>
+          <div>annotatedMatches: {annotatedMatches.length}</div>
+          <div>annotatedByMe: {annotatedByMe.length}</div>
+        </div>
+      )}
+
       {/* ── Partidas Anotadas ── */}
       {!loading &&
-        activeDashboardView === 'history' &&
+        (activeDashboardView === 'history' || activeDashboardView === 'annotated') &&
         (annotatedLoading || annotatedMatches.length > 0 || annotatedByMe.length > 0) && (
           <DashboardAnnotatedSection
             annotatedMatches={annotatedMatches}
@@ -411,6 +434,17 @@ const Dashboard: React.FC<DashboardProps> = ({
             onDismiss={handleDismissAnnotation}
             onClaim={handleClaimMatch}
           />
+        )}
+
+      {/* ── Mensagem quando view é 'annotated' mas sem dados ── */}
+      {!loading &&
+        activeDashboardView === 'annotated' &&
+        !annotatedLoading &&
+        annotatedMatches.length === 0 &&
+        annotatedByMe.length === 0 && (
+          <section className="match-report__section match-report__no-data">
+            <p>Nenhuma partida anotada ou recebida para análise até o momento.</p>
+          </section>
         )}
 
       {/* ── Meu Histórico ── */}
