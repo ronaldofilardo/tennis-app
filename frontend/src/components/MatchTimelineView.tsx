@@ -162,14 +162,14 @@ const PointCard: React.FC<PointCardProps> = React.memo(
           </span>
         </button>
 
-        {/* Detalhe expandido */}
-        {expanded && (
-          <div
-            id={`timeline-detail-${originalIndex}`}
-            className="match-timeline__card-detail"
-            role="region"
-            aria-label={`Detalhes do ponto ${originalIndex + 1}`}
-          >
+        {/* Detalhe: sempre no DOM, hidden via atributo (CSS print pode sobrescrever) */}
+        <div
+          id={`timeline-detail-${originalIndex}`}
+          className="match-timeline__card-detail"
+          role="region"
+          aria-label={`Detalhes do ponto ${originalIndex + 1}`}
+          hidden={!expanded}
+        >
             {/* ── Saque ──────────────────────────────────────────────────── */}
             {point.serve && (
               <div className="match-timeline__detail-section">
@@ -421,7 +421,6 @@ const PointCard: React.FC<PointCardProps> = React.memo(
               </div>
             )}
           </div>
-        )}
       </li>
     );
   },

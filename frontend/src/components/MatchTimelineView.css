@@ -421,12 +421,9 @@
     border-top: 1px solid #ddd !important;
   }
 
-  /* Força expansão de TODOS os cards em print */
-  .match-timeline__card-detail {
-    max-height: none !important;
-    overflow: visible !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+  /* hidden attr: CSS print sobrescreve o display:none do atributo hidden */
+  .match-timeline__card-detail[hidden] {
+    display: block !important;
   }
 
   .match-timeline__detail-section-title {

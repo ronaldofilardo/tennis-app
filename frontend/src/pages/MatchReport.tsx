@@ -241,29 +241,7 @@ const MatchReport: React.FC = () => {
 
         <button
           className="match-report__btn match-report__btn--primary"
-          onClick={() => {
-            // Garante que events beforeprint/afterprint sejam disparados
-            // e que CSS print seja aplicado mesmo em navegadores problemáticos
-            try {
-              // Fase 1: Dispatch beforeprint (expande todos os cards)
-              window.dispatchEvent(new Event('beforeprint'));
-              
-              // Fase 2: Pequeno delay para CSS render
-              setTimeout(() => {
-                // Fase 3: Chamar print
-                window.print();
-                
-                // Fase 4: Dispatch afterprint após print (recolhe cards)
-                setTimeout(() => {
-                  window.dispatchEvent(new Event('afterprint'));
-                }, 500);
-              }, 100);
-            } catch (err) {
-              console.error('[MatchReport] Erro ao gerar PDF:', err);
-              // Fallback: tentar print mesmo assim
-              window.print();
-            }
-          }}
+          onClick={() => window.print()}
           aria-label="Imprimir ou salvar como PDF"
         >
           <svg
