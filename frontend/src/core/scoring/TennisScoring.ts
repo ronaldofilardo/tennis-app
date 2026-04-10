@@ -6,6 +6,7 @@ import type {
   TennisFormat,
   TennisConfig,
   PointDetails,
+  PointContext,
   EnhancedMatchState,
 } from './types';
 import { TennisConfigFactory } from './TennisConfigFactory';
@@ -175,9 +176,10 @@ export class TennisScoring {
     // Salvar estado atual antes de modificar
     this.saveToHistory();
 
-    // Registrar detalhes do ponto se fornecidos
+    // Registrar detalhes do ponto se fornecidos, enriquecendo com contexto do placar atual
     if (details) {
-      this.recordPointDetails(player, details);
+      const ctx = this.buildPointContext();
+      this.recordPointDetails(player, { ...details, context: ctx });
     }
 
     // Se é tiebreak ou match tiebreak, usa lógica numérica
@@ -725,6 +727,48 @@ export class TennisScoring {
   }
 
   // === MÉTODOS PARA ANÁLISE DETALHADA DE PONTOS ===
+
+  /**
+   * Constrói o contexto do placar ANTES do ponto ser processado.
+   * Captura set, games, pontuação e se é breakpoint para o devolvedor.
+   */
+  private buildPointContext(): PointContext {
+    const game = this.state.currentGame;
+    const set = this.state.currentSetState;
+    const server = this.state.server;
+    const opponent: Player = server === 'PLAYER_1' ? 'PLAYER_2' : 'PLAYER_1';
+
+    const serverScore = game.points[server];
+    const receiverScore = game.points[opponent];
+
+    // Breakpoint: o devolvedor pode quebrar o saque neste ponto
+    let isBreakPoint = false;
+    if (!game.isTiebreak && !game.isMatchTiebreak) {
+      // Receiver tem 40 e sacador tem 0, 15 ou 30
+      isBreakPoint =
+        receiverScore === '40' &&
+        (serverScore === '0' || serverScore === '15' || serverScore === '30');
+      // Ou receiver tem AD (vantagem do devolvedor)
+      if (receiverScore === 'AD') isBreakPoint = true;
+      // No-Ad deciding point quando o devolvedor ainda não está adiantado
+      if (game.isNoAdDecidingPoint && receiverScore === '40' && serverScore === '40') {
+        isBreakPoint = true;
+      }
+    }
+
+    return {
+      setNumber: this.state.currentSet,
+      gamesP1: set.games.PLAYER_1,
+      gamesP2: set.games.PLAYER_2,
+      setsWonP1: this.state.sets.PLAYER_1,
+      setsWonP2: this.state.sets.PLAYER_2,
+      gameScoreP1: game.points.PLAYER_1,
+      gameScoreP2: game.points.PLAYER_2,
+      server,
+      isBreakPoint,
+      isTiebreak: (game.isTiebreak || game.isMatchTiebreak) ?? false,
+    };
+  }
 
   private recordPointDetails(winner: Player, details: PointDetails): void {
     const pointDetail: PointDetails = {

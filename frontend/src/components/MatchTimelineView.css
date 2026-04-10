@@ -421,6 +421,14 @@
     border-top: 1px solid #ddd !important;
   }
 
+  /* Força expansão de TODOS os cards em print */
+  .match-timeline__card-detail {
+    max-height: none !important;
+    overflow: visible !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
   .match-timeline__detail-section-title {
     color: #444 !important;
   }

@@ -436,8 +436,14 @@ const MatchTimelineView: React.FC<MatchTimelineViewProps> = ({ pointsHistory, pl
   const [printMode, setPrintMode] = useState(false);
 
   useEffect(() => {
-    const onBefore = () => setPrintMode(true);
-    const onAfter = () => setPrintMode(false);
+    const onBefore = () => {
+      console.log('[MatchTimelineView] beforeprint disparado — expandindo todos os cards');
+      setPrintMode(true);
+    };
+    const onAfter = () => {
+      console.log('[MatchTimelineView] afterprint disparado — recolhendo cards');
+      setPrintMode(false);
+    };
     window.addEventListener('beforeprint', onBefore);
     window.addEventListener('afterprint', onAfter);
     return () => {

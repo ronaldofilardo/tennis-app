@@ -170,7 +170,7 @@ test.describe('Fluxo Completo de Partida - E2E', () => {
     await page.click('button[type="submit"]');
 
     await page.waitForURL('**/dashboard');
-    
+
     // Navegar para criação de nova partida
     await page.click('text=Nova Partida');
     await page.waitForURL('**/match/new');

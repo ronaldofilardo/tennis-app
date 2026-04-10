@@ -27,9 +27,7 @@ describe('LiveMatchesCarousel', () => {
   });
 
   it('aplica classe live-carousel--single com espaço correto quando há 1 partida', () => {
-    render(
-      <LiveMatchesCarousel matches={[matchBase]} onMatchClick={mockOnMatchClick} />,
-    );
+    render(<LiveMatchesCarousel matches={[matchBase]} onMatchClick={mockOnMatchClick} />);
 
     const carousel = screen.getByTestId('live-carousel');
     // A classe deve ter espaço separador — era o bug: 'live-carousellive-carousel--single'
@@ -37,13 +35,8 @@ describe('LiveMatchesCarousel', () => {
   });
 
   it('não aplica live-carousel--single quando há mais de 1 partida', () => {
-    const matches = [
-      matchBase,
-      { ...matchBase, id: '2' },
-    ];
-    render(
-      <LiveMatchesCarousel matches={matches} onMatchClick={mockOnMatchClick} />,
-    );
+    const matches = [matchBase, { ...matchBase, id: '2' }];
+    render(<LiveMatchesCarousel matches={matches} onMatchClick={mockOnMatchClick} />);
 
     const carousel = screen.getByTestId('live-carousel');
     expect(carousel.className).toBe('live-carousel');
@@ -55,9 +48,7 @@ describe('LiveMatchesCarousel', () => {
       matchBase,
       { ...matchBase, id: '2', players: { p1: 'Jogador C', p2: 'Jogador D' } },
     ];
-    render(
-      <LiveMatchesCarousel matches={matches} onMatchClick={mockOnMatchClick} />,
-    );
+    render(<LiveMatchesCarousel matches={matches} onMatchClick={mockOnMatchClick} />);
 
     expect(screen.getByTestId('live-card-1')).toBeInTheDocument();
     expect(screen.getByTestId('live-card-2')).toBeInTheDocument();
@@ -65,9 +56,7 @@ describe('LiveMatchesCarousel', () => {
 
   it('chama onMatchClick ao clicar em uma partida', async () => {
     const user = userEvent.setup();
-    render(
-      <LiveMatchesCarousel matches={[matchBase]} onMatchClick={mockOnMatchClick} />,
-    );
+    render(<LiveMatchesCarousel matches={[matchBase]} onMatchClick={mockOnMatchClick} />);
 
     await user.click(screen.getByTestId('live-card-1'));
     expect(mockOnMatchClick).toHaveBeenCalledWith(matchBase);
@@ -75,9 +64,7 @@ describe('LiveMatchesCarousel', () => {
 
   it('exibe seção "Ao Vivo" com contagem de partidas', () => {
     const matches = [matchBase, { ...matchBase, id: '2' }];
-    render(
-      <LiveMatchesCarousel matches={matches} onMatchClick={mockOnMatchClick} />,
-    );
+    render(<LiveMatchesCarousel matches={matches} onMatchClick={mockOnMatchClick} />);
 
     expect(screen.getByTestId('live-section')).toBeInTheDocument();
     expect(screen.getByText('Ao Vivo')).toBeInTheDocument();

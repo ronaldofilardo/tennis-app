@@ -448,11 +448,22 @@ export async function getVisibleMatches(queryParams, testPrisma) {
     throw new Error(validateAndFormatZodError(queryValidation.error));
   }
 
-  // Busca todas as partidas primeiro com select otimizado
+  const { email, role } = queryValidation.data;
+
+  // Busca partidas otimizada: filtro no banco de dados, não em memória
   // IMPORTANTE: ao adicionar campos ao schema Prisma, inclua-os aqui também
   let matches = [];
   try {
     matches = await (testPrisma || prisma).match.findMany({
+      where: email
+        ? {
+            OR: [
+              { apontadorEmail: email },
+              { playersEmails: { has: email } },
+              { visibility: 'PUBLIC' }, // Mostrar también partidas públicas
+            ],
+          }
+        : undefined,
       select: {
         id: true,
         sportType: true,
@@ -473,37 +484,31 @@ export async function getVisibleMatches(queryParams, testPrisma) {
         visibility: true,
       },
       orderBy: { createdAt: 'desc' },
+      take: 200, // Limita a 200 partidas recentes (não usar limit infinito)
     });
   } catch (e) {
     return [];
   }
 
-  // Aplica filtro de visibilidade (se necessário)
-  const { email, role } = queryValidation.data;
-  const filtered = matches.filter((match) => {
-    let matchRole = undefined;
-    let playersEmails = match.playersEmails || [];
-    try {
-      if (match.matchState) {
-        const parsed =
-          typeof match.matchState === 'string' ? JSON.parse(match.matchState) : match.matchState;
-        if (parsed && parsed.role) matchRole = parsed.role;
-      }
-    } catch {
-      // parse falhou: ignorar matchState do filtro
-    }
-    // Retorna se o e-mail do usuário está em playersEmails OU é o apontador da partida
-    if (!email) return false;
-    const isApontador = match.apontadorEmail === email;
-    const isInPlayersEmails = Array.isArray(playersEmails) && playersEmails.includes(email);
-    if (!isApontador && !isInPlayersEmails) {
-      return false;
-    }
-    if (role !== undefined && matchRole !== undefined) {
-      return matchRole === role;
-    }
-    return true;
-  });
+  // Aplica filtro de role se necessário (parse mínimo)
+  const filtered = role
+    ? matches.filter((match) => {
+        let matchRole = undefined;
+        try {
+          if (match.matchState) {
+            const parsed =
+              typeof match.matchState === 'string'
+                ? JSON.parse(match.matchState)
+                : match.matchState;
+            if (parsed && parsed.role) matchRole = parsed.role;
+          }
+        } catch {
+          // parse falhou: ignorar matchState do filtro
+        }
+        return matchRole === role;
+      })
+    : matches;
+
   // Retorna status conforme está salvo no banco, garantindo robustez
   return filtered.map((match) => {
     let parsedState = null;
