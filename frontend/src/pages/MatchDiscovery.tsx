@@ -13,6 +13,7 @@ const log = createLogger('MatchDiscovery');
 
 interface DiscoverMatch {
   id: string;
+  publicMatchCode?: string | null;
   sportType: string;
   format: string;
   courtType?: string;

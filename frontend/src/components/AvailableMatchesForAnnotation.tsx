@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { httpClient } from '../config/httpClient';
 import { createLogger } from '../services/logger';
+import { useToast } from './Toast';
 import './AvailableMatchesForAnnotation.css';
 
 const log = createLogger('AvailableMatchesForAnnotation');
@@ -26,18 +28,19 @@ export const AvailableMatchesForAnnotation: React.FC<Props> = ({ onSelectMatch }
   const [matches, setMatches] = useState<AvailableMatch[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [annotatingId, setAnnotatingId] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const toast = useToast();
 
   useEffect(() => {
     const fetchMatches = async () => {
       setLoading(true);
       setError(null);
       try {
-        // Buscar partidas públicas abertas para anotação que ainda não começaram
         const res = await httpClient.get<AvailableMatch[]>(
-          '/matches/discover?visibility=PUBLIC&openForAnnotation=true'
+          '/matches/discover?visibility=PUBLIC&openForAnnotation=true',
         );
-        const availableMatches = Array.isArray(res.data) ? res.data : [];
-        setMatches(availableMatches);
+        setMatches(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         log.error('Erro ao carregar partidas disponíveis', err);
         setError('Erro ao carregar partidas disponíveis');
@@ -48,6 +51,23 @@ export const AvailableMatchesForAnnotation: React.FC<Props> = ({ onSelectMatch }
 
     fetchMatches();
   }, []);
+
+  const handleAnnotate = async (matchId: string) => {
+    if (onSelectMatch) {
+      onSelectMatch(matchId);
+      return;
+    }
+    setAnnotatingId(matchId);
+    try {
+      await httpClient.post(`/matches/${matchId}/sessions`, {});
+      navigate(`/match/${matchId}`);
+    } catch (err) {
+      log.error('Erro ao iniciar anotação', err);
+      toast.error('Não foi possível iniciar a anotação.', 'Erro');
+    } finally {
+      setAnnotatingId(null);
+    }
+  };
 
   if (loading) return <div className="available-matches-loading">Carregando partidas...</div>;
   if (error) return <div className="available-matches-error">{error}</div>;
@@ -98,15 +118,18 @@ export const AvailableMatchesForAnnotation: React.FC<Props> = ({ onSelectMatch }
                 )}
               </div>
               {match.createdBy && (
-                <div className="match-creator">Criada por: <strong>{match.createdBy.name}</strong></div>
+                <div className="match-creator">
+                  Criada por: <strong>{match.createdBy.name}</strong>
+                </div>
               )}
             </div>
             <button
               className="annotate-btn"
-              onClick={() => onSelectMatch?.(match.id)}
-              title="Anotar esta partida"
+              onClick={() => handleAnnotate(match.id)}
+              disabled={annotatingId === match.id}
+              aria-label={`Anotar partida ${getMatchCode(match)}`}
             >
-              → Anotar
+              {annotatingId === match.id ? '...' : '→ Anotar'}
             </button>
           </div>
         ))}
@@ -116,3 +139,4 @@ export const AvailableMatchesForAnnotation: React.FC<Props> = ({ onSelectMatch }
 };
 
 export default AvailableMatchesForAnnotation;
+

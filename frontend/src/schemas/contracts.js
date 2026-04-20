@@ -186,6 +186,8 @@ export const MatchApiResponseSchema = z
     club_id: z.string().optional().nullable(),
     metadata: z.record(z.string(), z.unknown()).optional().nullable(),
     tags: z.array(z.string()).optional().nullable(),
+    // Identificador público para compartilhamento com anotadores
+    publicMatchCode: z.string().optional().nullable(),
 })
     .catchall(z.unknown()); // Permite campos extras
 // Funções de validação

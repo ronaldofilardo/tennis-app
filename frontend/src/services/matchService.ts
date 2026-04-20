@@ -126,6 +126,7 @@ export async function createMatch(matchData: unknown, testPrisma?: PrismaClient)
     bracketType,
     temperature,
     humidity,
+    publicMatchCode,
   } = validation.data;
 
   const prismaClient = testPrisma ?? prisma;
@@ -179,6 +180,7 @@ export async function createMatch(matchData: unknown, testPrisma?: PrismaClient)
       bracketType: bracketType ?? null,
       temperature: temperature ?? null,
       humidity: humidity ?? null,
+      publicMatchCode: publicMatchCode ?? null,
       completedSets: JSON.stringify([]),
       matchState: JSON.stringify({
         playersIds: { p1: players.p1, p2: players.p2 },
@@ -207,6 +209,7 @@ export async function createMatch(matchData: unknown, testPrisma?: PrismaClient)
     bracketType: newMatch.bracketType ?? null,
     temperature: newMatch.temperature ?? null,
     humidity: newMatch.humidity ?? null,
+    publicMatchCode: newMatch.publicMatchCode ?? null,
     visibleTo: visibleTo ?? 'both',
     clubId: newMatch.clubId ?? null,
     status: newMatch.status,
