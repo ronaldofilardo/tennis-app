@@ -121,6 +121,11 @@ export async function createMatch(matchData: unknown, testPrisma?: PrismaClient)
     openForAnnotation = false,
     scheduledAt,
     venueId,
+    tournamentName,
+    roundName,
+    bracketType,
+    temperature,
+    humidity,
   } = validation.data;
 
   const prismaClient = testPrisma ?? prisma;
@@ -169,6 +174,11 @@ export async function createMatch(matchData: unknown, testPrisma?: PrismaClient)
       createdByUserId: createdByUserId ?? null,
       scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
       venueId: venueId ?? null,
+      tournamentName: tournamentName ?? null,
+      roundName: roundName ?? null,
+      bracketType: bracketType ?? null,
+      temperature: temperature ?? null,
+      humidity: humidity ?? null,
       completedSets: JSON.stringify([]),
       matchState: JSON.stringify({
         playersIds: { p1: players.p1, p2: players.p2 },
@@ -192,6 +202,11 @@ export async function createMatch(matchData: unknown, testPrisma?: PrismaClient)
     openForAnnotation: newMatch.openForAnnotation,
     scheduledAt: newMatch.scheduledAt ? newMatch.scheduledAt.toISOString() : null,
     venueId: newMatch.venueId ?? null,
+    tournamentName: newMatch.tournamentName ?? null,
+    roundName: newMatch.roundName ?? null,
+    bracketType: newMatch.bracketType ?? null,
+    temperature: newMatch.temperature ?? null,
+    humidity: newMatch.humidity ?? null,
     visibleTo: visibleTo ?? 'both',
     clubId: newMatch.clubId ?? null,
     status: newMatch.status,

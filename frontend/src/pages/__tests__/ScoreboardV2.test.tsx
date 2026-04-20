@@ -225,6 +225,7 @@ describe('ScoreboardV2 - Ace Button Behavior', () => {
           },
           result: { winner: 'PLAYER_1', type: 'WINNER' },
           rally: { ballExchanges: 1 },
+          shotPlayer: 'PLAYER_1',
         });
       });
     });

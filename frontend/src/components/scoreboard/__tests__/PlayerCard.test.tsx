@@ -17,7 +17,6 @@ const defaultProps = {
   isBreakPoint: false,
   isAdvantage: false,
   isDeuce: false,
-  viewMode: 'simple' as const,
   disabled: false,
   onPress: vi.fn(),
   onSwipeDown: vi.fn(),

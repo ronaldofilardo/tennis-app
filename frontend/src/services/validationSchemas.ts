@@ -45,6 +45,12 @@ export const MatchCreateSchema = z.object({
   openForAnnotation: z.boolean().optional().default(false),
   scheduledAt: z.string().datetime({ offset: true }).optional().nullable(),
   venueId: z.string().optional().nullable(),
+  // Novos metadados de contexto
+  tournamentName: z.string().max(200).optional().nullable(),
+  roundName: z.string().max(200).optional().nullable(),
+  bracketType: z.enum(['ELIMINATION', 'GROUPS', 'SWISS']).optional().nullable(),
+  temperature: z.number().min(-50).max(60).optional().nullable(),
+  humidity: z.number().min(0).max(100).optional().nullable(),
   metadata: z.record(z.string(), z.unknown()).optional().nullable(),
   tags: z.array(z.string()).optional().nullable(),
   _meta: z
@@ -90,6 +96,24 @@ export const MatchIdSchema = z
   .string()
   .min(1, 'ID da partida não pode ser vazio')
   .max(100, 'ID da partida muito longo');
+
+// Esquema para deleção de partida
+export const MatchDeleteSchema = z.object({
+  matchId: MatchIdSchema,
+  reason: z.string().max(500).optional(),
+  confirmedByCreator: z.boolean().default(true),
+});
+
+// Esquema para encerrar partida (endMatch)
+export const MatchEndSchema = z.object({
+  matchId: MatchIdSchema,
+  status: z.enum(['FINISHED', 'CANCELLED', 'SUSPENDED']),
+  winner: z.string().nullable().optional(),
+  score: z.string().nullable().optional(),
+  completedSets: z.array(z.unknown()).optional(),
+  reason: z.string().max(500).optional(),
+  endedAt: z.string().datetime({ offset: true }).optional(),
+});
 
 // Função utilitária para validar payload de estado de partida
 export function validateMatchStatePayload(data: unknown): {

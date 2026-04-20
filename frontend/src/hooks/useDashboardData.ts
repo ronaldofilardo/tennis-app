@@ -71,9 +71,9 @@ export function useDashboardData(authUser: AuthUser | null | undefined): UseDash
     setAnnotatedLoading(true);
     const _token = localStorage.getItem('racket_token') ?? '';
     const headers = { Authorization: `Bearer ${_token}` };
-    
+
     console.log('[useDashboardData] Iniciando fetch de anotações para:', authUser.email);
-    
+
     Promise.all([
       fetch(`${API_URL}/matches/annotated-for-me`, { headers, credentials: 'include' })
         .then((r) => {
@@ -95,8 +95,16 @@ export function useDashboardData(authUser: AuthUser | null | undefined): UseDash
         }),
     ])
       .then(([forMe, byMe]) => {
-        console.log('[useDashboardData] annotated-for-me:', Array.isArray(forMe) ? forMe.length : 0, 'itens');
-        console.log('[useDashboardData] annotated-by-me:', Array.isArray(byMe) ? byMe.length : 0, 'itens');
+        console.log(
+          '[useDashboardData] annotated-for-me:',
+          Array.isArray(forMe) ? forMe.length : 0,
+          'itens',
+        );
+        console.log(
+          '[useDashboardData] annotated-by-me:',
+          Array.isArray(byMe) ? byMe.length : 0,
+          'itens',
+        );
         setAnnotatedMatches(Array.isArray(forMe) ? (forMe as AnnotatedMatch[]) : []);
         setAnnotatedByMe(Array.isArray(byMe) ? (byMe as AnnotatedMatch[]) : []);
       })

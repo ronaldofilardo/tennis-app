@@ -418,13 +418,21 @@ model Match {
   tournamentId    String? // Torneio vinculado (null = partida avulsa)
   categoryId      String? // Categoria do torneio
   roundNumber     Int? // Rodada no torneio (1 = final, 2 = semifinal, etc)
-  bracketPosition Int? // Posição no chaveamento
-  scheduledAt     DateTime? // Data/hora agendada da partida
-  venueId         String? // Local da partida (diretório central)
+  bracketPosition  Int? // Posição no chaveamento
+  scheduledAt      DateTime? // Data/hora agendada da partida
+  venueId          String? // Local da partida (diretório central)
+
+  // === Metadados de contexto ===
+  tournamentName String? // Nome do torneio (texto livre)
+  roundName      String? // Nome da rodada (texto livre)
+  bracketType    String? // ELIMINATION | GROUPS | SWISS
+  temperature    Float?  // Temperatura em °C
+  humidity       Float?  // Umidade relativa do ar em % (URA)
 
   // === Visibilidade ===
   visibility          MatchVisibility @default(PLAYERS_ONLY)
   openForAnnotation   Boolean         @default(false) // Permite qualquer autenticado anotar
+  publicMatchCode     String?         @unique // Identificador público curto para compartilhamento (ex: "TN42KX")
 
   status    MatchStatus @default(NOT_STARTED)
   score     String?
@@ -454,6 +462,7 @@ model Match {
   @@index([tournamentId])
   @@index([createdByUserId])
   @@index([venueId])
+  @@index([bracketType])
   @@map("matches")
 }
 

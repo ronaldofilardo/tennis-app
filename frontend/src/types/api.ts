@@ -15,6 +15,20 @@ export interface Match {
   };
   status: 'NOT_STARTED' | 'IN_PROGRESS' | 'FINISHED';
   score?: MatchScore;
+  // Metadados de contexto
+  tournamentName?: string | null;
+  roundName?: string | null;
+  bracketType?: 'ELIMINATION' | 'GROUPS' | 'SWISS' | null;
+  temperature?: number | null;
+  humidity?: number | null;
+  createdByUserId?: string | null;
+  nickname?: string | null;
+  courtType?: string | null;
+  scheduledAt?: string | null;
+  venueId?: string | null;
+  visibility?: 'PUBLIC' | 'CLUB' | 'PLAYERS_ONLY';
+  openForAnnotation?: boolean;
+  publicMatchCode?: string | null;
 }
 
 export interface UpdateMatchData {

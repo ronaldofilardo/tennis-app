@@ -4,20 +4,24 @@
  * Uso: node debug_annotated.js
  */
 
-const { PrismaClient } = require('@prisma/client');
-const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, 'frontend/.env.development') });
+const { PrismaClient } = require("@prisma/client");
+const path = require("path");
+require("dotenv").config({
+  path: path.join(__dirname, "frontend/.env.development"),
+});
 
 const prisma = new PrismaClient();
 
 async function debug() {
   try {
-    console.log('\n=== DEBUG: PARTIDAS ANOTADAS ===\n');
+    console.log("\n=== DEBUG: PARTIDAS ANOTADAS ===\n");
 
     // Contar usuários
     const users = await prisma.user.findMany();
     console.log(`📊 Total de usuários: ${users.length}`);
-    users.forEach((u) => console.log(`  - ${u.id}: ${u.email} (role: ${u.role})`));
+    users.forEach((u) =>
+      console.log(`  - ${u.id}: ${u.email} (role: ${u.role})`),
+    );
 
     // Contar partidas
     const matches = await prisma.match.findMany();
@@ -28,7 +32,7 @@ async function debug() {
     console.log(`\n📝 Total de sessões de anotação: ${sessions.length}`);
 
     if (sessions.length > 0) {
-      console.log('\n📝 Detalhes das sessões:');
+      console.log("\n📝 Detalhes das sessões:");
       sessions.slice(0, 5).forEach((s) => {
         console.log(`  - ID: ${s.id}`);
         console.log(`    • Match: ${s.matchId}`);
@@ -38,7 +42,7 @@ async function debug() {
         console.log(`    • Encerrado em: ${s.endedAt}`);
       });
     } else {
-      console.log('\n⚠️  Nenhuma sessão de anotação encontrada!');
+      console.log("\n⚠️  Nenhuma sessão de anotação encontrada!");
     }
 
     // Procurar partidas com sessões completas
@@ -46,7 +50,10 @@ async function debug() {
       where: {
         annotationSessions: {
           some: {
-            OR: [{ status: 'COMPLETED' }, { isActive: false, endedAt: { not: null } }],
+            OR: [
+              { status: "COMPLETED" },
+              { isActive: false, endedAt: { not: null } },
+            ],
           },
         },
       },
@@ -66,9 +73,9 @@ async function debug() {
     const shares = await prisma.matchDashboardShare.findMany();
     console.log(`\n📤 Total de dashboard shares: ${shares.length}`);
 
-    console.log('\n✅ Debug concluído\n');
+    console.log("\n✅ Debug concluído\n");
   } catch (err) {
-    console.error('❌ Erro:', err);
+    console.error("❌ Erro:", err);
   } finally {
     await prisma.$disconnect();
   }

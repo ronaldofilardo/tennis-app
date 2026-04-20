@@ -19,7 +19,6 @@ import EditMatchModal from '../components/EditMatchModal';
 import type { EditableMatch } from '../components/EditMatchModal';
 import SetupModal from '../components/scoreboard/SetupModal';
 import { useScoreboardEngine } from '../hooks/useScoreboardEngine';
-import { computeTechStats } from './scoreboardHelpers';
 import '../styles/scoreboard-tokens.css';
 import './ScoreboardV2.css';
 
@@ -38,10 +37,6 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
     annotatorCount,
     scoringSystemRef,
     getSystem,
-    viewMode,
-    setViewMode,
-    showFamilyExplainer,
-    setShowFamilyExplainer,
     fontScale,
     handleFontScaleInc,
     handleFontScaleDec,
@@ -182,24 +177,6 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
   // tech stats aproximados (usa pointsHistory se disponível)
   const pointsHistory: PointDetails[] = scoringSystem?.getPointsHistory() ?? [];
 
-  // legenda de evento para modo família / assistir
-  const familyCaption = (() => {
-    if (state.isFinished && state.winner) {
-      return `${state.winner === 'PLAYER_1' ? players.p1 : players.p2} venceu a partida!`;
-    }
-    if (p1MatchPt) return `Match Point para ${players.p1}!`;
-    if (p2MatchPt) return `Match Point para ${players.p2}!`;
-    if (isTiebreak) return `Tie-break! Quem chegar a 7 pontos vence.`;
-    if (isDeuce) return `Deuce! Cada jogador precisa de 2 pontos seguidos para vencer.`;
-    if (p1AtSetPt) return `Set Point para ${players.p1}!`;
-    if (p2AtSetPt) return `Set Point para ${players.p2}!`;
-    if (isBreakPoint) {
-      const bpPlayer = returner === 'PLAYER_1' ? players.p1 : players.p2;
-      return `Break Point para ${bpPlayer}!`;
-    }
-    return null;
-  })();
-
   const courtAttr = matchData.courtType ?? 'GRASS';
 
   return (
@@ -294,8 +271,6 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
           sportType={matchData.sportType}
           completedSets={state.completedSets ?? []}
           elapsed={elapsed}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
           onBack={handleEndMatch}
           onMenu={fetchStats}
           onEdit={
@@ -365,10 +340,6 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
               isBreakPoint={isBreakPoint && returner === 'PLAYER_1'}
               isAdvantage={p1HasAdv}
               isDeuce={isDeuce}
-              viewMode={viewMode}
-              techStats={
-                viewMode === 'technical' ? computeTechStats(pointsHistory, 'PLAYER_1') : undefined
-              }
               disabled={state.isFinished}
               onPress={() => handlePointDetailsOpen('PLAYER_1')}
               onSwipeDown={() => {
@@ -409,10 +380,6 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
               isBreakPoint={isBreakPoint && returner === 'PLAYER_2'}
               isAdvantage={p2HasAdv}
               isDeuce={isDeuce}
-              viewMode={viewMode}
-              techStats={
-                viewMode === 'technical' ? computeTechStats(pointsHistory, 'PLAYER_2') : undefined
-              }
               disabled={state.isFinished}
               onPress={() => handlePointDetailsOpen('PLAYER_2')}
               onSwipeDown={() => {
@@ -421,11 +388,6 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
               }}
             />
           </div>
-
-          {/* Legenda modo família / assistir */}
-          {viewMode === 'family' && familyCaption && (
-            <div className="family-caption">{familyCaption}</div>
-          )}
 
           {/* Banner de partida finalizada */}
           {state.isFinished && state.winner && (
@@ -446,16 +408,9 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
               </div>
             </div>
           )}
-
-          {/* Modo Família: botão "O que está acontecendo?" */}
-          {viewMode === 'family' && !state.isFinished && (
-            <button className="family-help-btn" onClick={() => setShowFamilyExplainer(true)}>
-              ❓ O que está acontecendo?
-            </button>
-          )}
         </div>
 
-        {/* ActionBar (saque + undo + stats + quem venceu o ponto) */}
+        {/* ActionBar (saque + undo + quem venceu o ponto) */}
         <ActionBar
           canUndo={scoringSystem?.canUndo() ?? false}
           isFinished={state.isFinished ?? false}
@@ -472,7 +427,6 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
           onFault={handleFault}
           onFaultOut={() => handleServeErrorOpen('out', 'second')}
           onFaultNet={() => handleServeErrorOpen('net', 'second')}
-          onStats={fetchStats}
           fontScale={fontScale}
           onFontScaleInc={handleFontScaleInc}
           onFontScaleDec={handleFontScaleDec}
@@ -488,24 +442,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
           />
         )}
 
-        {/* Explainer modo família */}
-        {showFamilyExplainer && (
-          <div className="context-menu-overlay" onClick={() => setShowFamilyExplainer(false)}>
-            <div className="context-menu" onClick={(e) => e.stopPropagation()}>
-              <p className="context-menu-title">📖 Como funciona?</p>
-              <p className="family-explainer-text">
-                {isTiebreak
-                  ? 'Tie-break: quem chegar a 7 pontos primeiro (com 2 de vantagem) vence o set.'
-                  : isDeuce
-                    ? 'Deuce: ambos estão empatados em 40-40. Um jogador precisa de 2 pontos seguidos para vencer o game.'
-                    : `Pontuação do game: 0, 15, 30, 40. Quem chegar a 40 e ganhar mais um ponto, vence o game. O primeiro jogador a vencer ${gamesPerSet} games vence o set.`}
-              </p>
-              <button className="context-menu-item" onClick={() => setShowFamilyExplainer(false)}>
-                Entendi!
-              </button>
-            </div>
-          </div>
-        )}
+        {/* Explainer modo família removido */}
       </div>
     </>
   );

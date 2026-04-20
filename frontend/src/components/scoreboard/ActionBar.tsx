@@ -1,11 +1,11 @@
-import React from "react";
-import "./ActionBar.css";
+import React from 'react';
+import './ActionBar.css';
 
 interface ActionBarProps {
   canUndo: boolean;
   isFinished: boolean;
-  serveStep: "none" | "second";
-  server: "PLAYER_1" | "PLAYER_2";
+  serveStep: 'none' | 'second';
+  server: 'PLAYER_1' | 'PLAYER_2';
   playerNames: { PLAYER_1: string; PLAYER_2: string };
   onUndo: () => void;
   onAce: () => void;
@@ -15,7 +15,6 @@ interface ActionBarProps {
   /** Handlers específicos para Out/Net no 2º saque (fallback: onFault) */
   onFaultOut?: () => void;
   onFaultNet?: () => void;
-  onStats: () => void;
   onConfig?: () => void;
   /** Controle do tamanho do placar */
   fontScale?: number;
@@ -36,20 +35,18 @@ const ActionBar: React.FC<ActionBarProps> = ({
   onFault,
   onFaultOut,
   onFaultNet,
-  onStats,
   onConfig,
   fontScale = 1,
   onFontScaleInc,
   onFontScaleDec,
 }) => {
-  const isSecondServe = serveStep === "second";
-  const returner: "PLAYER_1" | "PLAYER_2" =
-    server === "PLAYER_1" ? "PLAYER_2" : "PLAYER_1";
+  const isSecondServe = serveStep === 'second';
+  const returner: 'PLAYER_1' | 'PLAYER_2' = server === 'PLAYER_1' ? 'PLAYER_2' : 'PLAYER_1';
 
   // Os botões de ponto ficam SEMPRE na mesma posição dos cards:
   // esquerda = PLAYER_1, direita = PLAYER_2 (independente de quem é sacador)
-  const leftPlayer: "PLAYER_1" | "PLAYER_2" = "PLAYER_1";
-  const rightPlayer: "PLAYER_1" | "PLAYER_2" = "PLAYER_2";
+  const leftPlayer: 'PLAYER_1' | 'PLAYER_2' = 'PLAYER_1';
+  const rightPlayer: 'PLAYER_1' | 'PLAYER_2' = 'PLAYER_2';
   const leftName = playerNames[leftPlayer];
   const rightName = playerNames[rightPlayer];
   const leftIsServer = server === leftPlayer;
@@ -59,14 +56,12 @@ const ActionBar: React.FC<ActionBarProps> = ({
     <div className="action-bar">
       {/* Linha de saque */}
       {!isFinished && (
-        <div
-          className={`quick-actions-row serve-${server === "PLAYER_1" ? "left" : "right"}`}
-        >
+        <div className={`quick-actions-row serve-${server === 'PLAYER_1' ? 'left' : 'right'}`}>
           <button
-            className={`serve-step-btn serve-info ${isSecondServe ? "second-serve serve-step-second" : "first-serve serve-step-first"}`}
+            className={`serve-step-btn serve-info ${isSecondServe ? 'second-serve serve-step-second' : 'first-serve serve-step-first'}`}
             disabled
           >
-            {isSecondServe ? "2º Saque" : "1º Saque"}
+            {isSecondServe ? '2º Saque' : '1º Saque'}
           </button>
           <button className="action-quick-btn" onClick={onAce}>
             Ace
@@ -89,14 +84,11 @@ const ActionBar: React.FC<ActionBarProps> = ({
       {/* Linha de ações gerais */}
       <div className="main-actions">
         <button
-          className={`main-action-btn undo-btn ${!canUndo || isFinished ? "main-action-btn-disabled" : ""}`}
+          className={`main-action-btn undo-btn ${!canUndo || isFinished ? 'main-action-btn-disabled' : ''}`}
           onClick={onUndo}
           disabled={!canUndo || isFinished}
         >
           ↩ Correção (Undo)
-        </button>
-        <button className="main-action-btn stats-btn" onClick={onStats}>
-          📊 Stats
         </button>
 
         {/* Controle de tamanho do placar */}

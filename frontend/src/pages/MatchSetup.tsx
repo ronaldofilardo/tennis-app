@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { httpClient } from '../config/httpClient';
 import './MatchSetup.css';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,6 +11,7 @@ import { ResumeScoreModal } from '../components/ResumeScoreModal';
 import type { OngoingMatchSetup } from '../components/ResumeScoreModal';
 import VenueSelect from '../components/VenueSelect';
 import type { VenueValue } from '../components/VenueSelect';
+import AvailableMatchesForAnnotation from '../components/AvailableMatchesForAnnotation';
 import { TennisConfigFactory } from '../core/scoring/TennisConfigFactory';
 import type { TennisFormat, MatchState, Player } from '../core/scoring/types';
 
@@ -114,6 +115,45 @@ const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreat
     unknown
   > | null>(null);
 
+  // ─── Novos campos de metadados ────────────────────────────────────────────
+  const [tournamentName, setTournamentName] = useState('');
+  const [roundName, setRoundName] = useState('');
+  const [bracketType, setBracketType] = useState<'ELIMINATION' | 'GROUPS' | 'SWISS'>('ELIMINATION');
+  const [temperature, setTemperature] = useState('');
+  const [humidity, setHumidity] = useState('');
+  const [tournamentSuggestions, setTournamentSuggestions] = useState<string[]>([]);
+  const [roundSuggestions, setRoundSuggestions] = useState<string[]>([]);
+  const [showTournamentSuggestions, setShowTournamentSuggestions] = useState(false);
+  const [showRoundSuggestions, setShowRoundSuggestions] = useState(false);
+  const tournamentInputRef = useRef<HTMLInputElement>(null);
+  const roundInputRef = useRef<HTMLInputElement>(null);
+
+  // Buscar sugestões de torneios/rodadas ao abrir ou digitar
+  useEffect(() => {
+    let cancelled = false;
+    const fetchSuggestions = async () => {
+      try {
+        const params = tournamentName
+          ? `?tournamentName=${encodeURIComponent(tournamentName)}`
+          : '';
+        const res = await httpClient.get<{ tournaments: string[]; rounds: string[] }>(
+          `/matches/tournament-suggestions${params}`,
+        );
+        if (!cancelled) {
+          setTournamentSuggestions(res.data.tournaments ?? []);
+          setRoundSuggestions(res.data.rounds ?? []);
+        }
+      } catch {
+        // Falha silenciosa — sugestões são nice-to-have
+      }
+    };
+    const timer = setTimeout(fetchSuggestions, 300);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [tournamentName]);
+
   // Monta o payload base da partida a partir do estado do formulário
   const buildMatchPayload = useCallback(
     (finalP1: string, finalP2: string) => ({
@@ -133,6 +173,12 @@ const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreat
           ? new Date(`${scheduledDate}T${scheduledTime}`).toISOString()
           : null,
       venueId: venueValue.venueId || null,
+      // Novos metadados
+      tournamentName: tournamentName.trim() || null,
+      roundName: roundName.trim() || null,
+      bracketType: bracketType || null,
+      temperature: temperature !== '' ? parseFloat(temperature) : null,
+      humidity: humidity !== '' ? parseFloat(humidity) : null,
     }),
     [
       sport,
@@ -148,6 +194,11 @@ const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreat
       scheduledDate,
       scheduledTime,
       venueValue,
+      tournamentName,
+      roundName,
+      bracketType,
+      temperature,
+      humidity,
     ],
   );
 
@@ -246,6 +297,12 @@ const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreat
             ? new Date(`${scheduledDate}T${scheduledTime}`).toISOString()
             : null,
         venueId: venueValue.venueId || null,
+        // Novos metadados
+        tournamentName: tournamentName.trim() || null,
+        roundName: roundName.trim() || null,
+        bracketType: bracketType || null,
+        temperature: temperature !== '' ? parseFloat(temperature) : null,
+        humidity: humidity !== '' ? parseFloat(humidity) : null,
       };
 
       // ── Suporte offline ───────────────────────────────────────────────────
@@ -322,6 +379,7 @@ const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreat
         <h2>Nova Partida</h2>
       </header>
       {error && <div className="form-error">{error}</div>}
+      <AvailableMatchesForAnnotation />
       <form className="setup-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="sport">Desporto</label>
@@ -546,6 +604,148 @@ const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreat
             onChange={setVenueValue}
             placeholder="Buscar ou criar local..."
           />
+        </div>
+
+        {/* ─── Metadados de Contexto ─────────────────────────────────────────── */}
+        <div className="form-group form-group--combobox">
+          <label htmlFor="tournament-name">
+            Torneio <span className="form-optional">(opcional)</span>
+          </label>
+          <div className="combobox-wrapper">
+            <input
+              id="tournament-name"
+              ref={tournamentInputRef}
+              type="text"
+              className="match-setup-input"
+              placeholder="Ex: Copa Clube 2026"
+              value={tournamentName}
+              maxLength={200}
+              autoComplete="off"
+              onChange={(e) => setTournamentName(e.target.value)}
+              onFocus={() => setShowTournamentSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowTournamentSuggestions(false), 150)}
+              aria-label="Nome do torneio"
+              aria-autocomplete="list"
+              aria-expanded={showTournamentSuggestions && tournamentSuggestions.length > 0}
+            />
+            {showTournamentSuggestions && tournamentSuggestions.length > 0 && (
+              <ul className="combobox-suggestions" role="listbox" aria-label="Sugestões de torneio">
+                {tournamentSuggestions
+                  .filter((s) => s.toLowerCase().includes(tournamentName.toLowerCase()))
+                  .map((s) => (
+                    <li
+                      key={s}
+                      role="option"
+                      className="combobox-suggestion-item"
+                      onMouseDown={() => {
+                        setTournamentName(s);
+                        setShowTournamentSuggestions(false);
+                        tournamentInputRef.current?.blur();
+                      }}
+                    >
+                      {s}
+                    </li>
+                  ))}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        <div className="form-group form-group--combobox">
+          <label htmlFor="round-name">
+            Rodada <span className="form-optional">(opcional)</span>
+          </label>
+          <div className="combobox-wrapper">
+            <input
+              id="round-name"
+              ref={roundInputRef}
+              type="text"
+              className="match-setup-input"
+              placeholder="Ex: Oitavas, Semifinal, Final"
+              value={roundName}
+              maxLength={200}
+              autoComplete="off"
+              onChange={(e) => setRoundName(e.target.value)}
+              onFocus={() => setShowRoundSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowRoundSuggestions(false), 150)}
+              aria-label="Nome da rodada"
+              aria-autocomplete="list"
+              aria-expanded={showRoundSuggestions && roundSuggestions.length > 0}
+            />
+            {showRoundSuggestions && roundSuggestions.length > 0 && (
+              <ul className="combobox-suggestions" role="listbox" aria-label="Sugestões de rodada">
+                {roundSuggestions
+                  .filter((s) => s.toLowerCase().includes(roundName.toLowerCase()))
+                  .map((s) => (
+                    <li
+                      key={s}
+                      role="option"
+                      className="combobox-suggestion-item"
+                      onMouseDown={() => {
+                        setRoundName(s);
+                        setShowRoundSuggestions(false);
+                        roundInputRef.current?.blur();
+                      }}
+                    >
+                      {s}
+                    </li>
+                  ))}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="bracket-type">
+            Tipo de Chave <span className="form-optional">(opcional)</span>
+          </label>
+          <select
+            id="bracket-type"
+            value={bracketType}
+            onChange={(e) => setBracketType(e.target.value as 'ELIMINATION' | 'GROUPS' | 'SWISS')}
+            aria-label="Tipo de chave do torneio"
+          >
+            <option value="ELIMINATION">Eliminatória</option>
+            <option value="GROUPS">Grupos</option>
+            <option value="SWISS">Suíço</option>
+          </select>
+        </div>
+
+        <div className="form-group match-conditions-row">
+          <div className="match-condition-field">
+            <label htmlFor="temperature">
+              Temperatura (°C) <span className="form-optional">(opcional)</span>
+            </label>
+            <input
+              id="temperature"
+              type="number"
+              className="match-setup-input"
+              placeholder="Ex: 28"
+              value={temperature}
+              min={-50}
+              max={60}
+              step={0.1}
+              onChange={(e) => setTemperature(e.target.value)}
+              aria-label="Temperatura em graus Celsius"
+            />
+          </div>
+          <div className="match-condition-field">
+            <label htmlFor="humidity">
+              Umidade — URA (%) <span className="form-optional">(opcional)</span>
+            </label>
+            <input
+              id="humidity"
+              type="number"
+              className="match-setup-input"
+              placeholder="Ex: 65"
+              value={humidity}
+              min={0}
+              max={100}
+              step={1}
+              onChange={(e) => setHumidity(e.target.value)}
+              aria-label="Umidade relativa do ar em porcentagem"
+            />
+          </div>
         </div>
 
         <div className="form-actions">

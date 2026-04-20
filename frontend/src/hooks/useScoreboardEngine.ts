@@ -18,7 +18,6 @@ import { createLogger } from '../services/logger';
 import { startSession, endSession } from '../services/annotationSessionService';
 import { API_URL } from '../config/api';
 import { useAuth } from '../contexts/AuthContext';
-import type { ViewMode } from '../components/scoreboard/MatchHeader';
 
 // Função utilitária para pegar o estado mais profundo
 function getDeepMatchState(state: unknown): MatchState {
@@ -48,8 +47,6 @@ interface ScoreboardUIState {
   isServeErrorModalOpen: boolean;
   pendingServeError: PendingServeError | null;
   firstServeError: FirstServeError | null;
-  viewMode: ViewMode;
-  showFamilyExplainer: boolean;
   annotatorCount: number;
   editMatchOpen: boolean;
   fontScale: number;
@@ -74,8 +71,6 @@ type ScoreboardUIAction =
   | { type: 'FIRST_SERVE_ERROR_CLEAR' }
   | { type: 'EDIT_MATCH_OPEN' }
   | { type: 'EDIT_MATCH_CLOSE' }
-  | { type: 'VIEW_MODE_SET'; mode: ViewMode }
-  | { type: 'FAMILY_EXPLAINER_SET'; show: boolean }
   | { type: 'FONT_SCALE_SET'; scale: number }
   | { type: 'ANNOTATOR_COUNT_SET'; count: number };
 
@@ -126,10 +121,6 @@ function scoreboardUIReducer(
       return { ...state, editMatchOpen: true };
     case 'EDIT_MATCH_CLOSE':
       return { ...state, editMatchOpen: false };
-    case 'VIEW_MODE_SET':
-      return { ...state, viewMode: action.mode };
-    case 'FAMILY_EXPLAINER_SET':
-      return { ...state, showFamilyExplainer: action.show };
     case 'FONT_SCALE_SET':
       return { ...state, fontScale: action.scale };
     case 'ANNOTATOR_COUNT_SET':
@@ -167,8 +158,6 @@ export function useScoreboardEngine(onEndMatch: () => void) {
     isServeErrorModalOpen: false,
     pendingServeError: null,
     firstServeError: null,
-    viewMode: 'simple',
-    showFamilyExplainer: false,
     annotatorCount: 0,
     editMatchOpen: false,
     fontScale: (() => {
@@ -192,8 +181,6 @@ export function useScoreboardEngine(onEndMatch: () => void) {
     isServeErrorModalOpen,
     pendingServeError,
     firstServeError,
-    viewMode,
-    showFamilyExplainer,
     annotatorCount,
     editMatchOpen,
     fontScale,
@@ -232,15 +219,6 @@ export function useScoreboardEngine(onEndMatch: () => void) {
     localStorage.setItem('sb-font-scale', String(next));
     dispatch({ type: 'FONT_SCALE_SET', scale: next });
   }, [fontScale]);
-
-  // Compatibility wrappers for ScoreboardV2 direct setter calls
-  const setViewMode = useCallback((mode: ViewMode) => {
-    dispatch({ type: 'VIEW_MODE_SET', mode });
-  }, []);
-
-  const setShowFamilyExplainer = useCallback((show: boolean) => {
-    dispatch({ type: 'FAMILY_EXPLAINER_SET', show });
-  }, []);
 
   const setIsStatsOpen = useCallback(
     (isOpen: boolean) => {
@@ -758,10 +736,6 @@ export function useScoreboardEngine(onEndMatch: () => void) {
     getSystem,
 
     // View state
-    viewMode,
-    setViewMode,
-    showFamilyExplainer,
-    setShowFamilyExplainer,
     fontScale,
     handleFontScaleInc,
     handleFontScaleDec,

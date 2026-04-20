@@ -1,16 +1,9 @@
 import React, { useState, useRef } from 'react';
 // Note: longPress removido — marcador define o tempo necessário sem interrupção (demanda 4)
 // Note: swipeUp removido — toque no placar abre detalhes do ponto (demanda 5)
-import type { ViewMode } from './MatchHeader';
 import './PlayerCard.css';
 
 type GamePoint = '0' | '15' | '30' | '40' | 'AD' | number;
-
-interface TechStats {
-  firstServePercent: number;
-  winners: number;
-  unforced: number;
-}
 
 interface PlayerCardProps {
   player: 'PLAYER_1' | 'PLAYER_2';
@@ -27,8 +20,6 @@ interface PlayerCardProps {
   isBreakPoint: boolean;
   isAdvantage: boolean;
   isDeuce: boolean;
-  viewMode: ViewMode;
-  techStats?: TechStats;
   disabled?: boolean;
   onPress: () => void;
   onSwipeDown?: () => void;
@@ -72,8 +63,6 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
   isBreakPoint,
   isAdvantage,
   isDeuce,
-  viewMode,
-  techStats,
   disabled,
   onPress,
   onSwipeDown,
@@ -146,7 +135,6 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
         pressed ? 'card-pressed' : '',
         isServing ? 'card-serving' : '',
         isDeuce ? 'card-deuce' : '',
-        viewMode === 'family' ? 'card-family' : '',
         disabled ? 'card-disabled' : '',
       ]
         .filter(Boolean)
@@ -160,9 +148,6 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerCancel}
     >
-      {/* Avatar (modo família) */}
-      {viewMode === 'family' && <div className="player-avatar">{getInitials(name)}</div>}
-
       {/* Nome */}
       <div className="player-card-name">
         {name}
@@ -215,15 +200,6 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
       {(isMatchPoint || isSetPoint || isBreakPoint) && (
         <div className="point-indicator">
           {isMatchPoint ? '🏆 Match Point' : isSetPoint ? '🎯 Set Point' : '⚡ Break Point'}
-        </div>
-      )}
-
-      {/* Overlay técnico */}
-      {viewMode === 'technical' && techStats && (
-        <div className="tech-overlay">
-          <span>1º: {techStats.firstServePercent}%</span>
-          <span>W: {techStats.winners}</span>
-          <span>UE: {techStats.unforced}</span>
         </div>
       )}
 

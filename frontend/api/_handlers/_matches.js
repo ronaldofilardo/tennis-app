@@ -23,6 +23,7 @@ import {
 import { handleCors, requireAuth, sendJson, methodNotAllowed } from '../_lib/authMiddleware.js';
 import { validateMatchApiResponse } from '../../src/schemas/contracts.js';
 import { requireActiveSubscription } from '../_lib/subscriptionMiddleware.js';
+import { generatePublicMatchCode } from '../../src/utils/codeGenerator.js';
 import prisma from '../_lib/prisma.js';
 
 /**
@@ -160,6 +161,7 @@ function parsePath(url) {
   const isAnnotatedForMe = seg === 'annotated-for-me';
   const isAnnotatedByMe = seg === 'annotated-by-me';
   const isMyCompleted = seg === 'my-completed';
+  const isTournamentSuggestions = seg === 'tournament-suggestions';
   const isSpecialSeg =
     isVisible ||
     isOpenForAnnotation ||
@@ -167,7 +169,8 @@ function parsePath(url) {
     isMyShares ||
     isAnnotatedForMe ||
     isAnnotatedByMe ||
-    isMyCompleted;
+    isMyCompleted ||
+    isTournamentSuggestions;
   const id = !isSpecialSeg ? seg : null;
   const isMetadata = sub === 'metadata';
   const isClaim = sub === 'claim';
@@ -185,6 +188,7 @@ function parsePath(url) {
     isMyCompleted,
     isMetadata,
     isClaim,
+    isTournamentSuggestions,
   };
 }
 
@@ -207,6 +211,7 @@ export default async function handler(req, res) {
       isMyCompleted,
       isMetadata,
       isClaim,
+      isTournamentSuggestions,
     } = parsePath(url);
 
     // ─── GET /api/matches/my-shares ───────────────────────────────────────────
@@ -486,6 +491,7 @@ export default async function handler(req, res) {
           status: true,
           visibility: true,
           openForAnnotation: true,
+          publicMatchCode: true,
           playerP1: true,
           playerP2: true,
           player1: { select: { id: true, name: true, globalId: true, clubId: true } },
@@ -813,6 +819,42 @@ export default async function handler(req, res) {
       return sendJson(res, 200, await getMatchStats(id));
     }
 
+    // ─── GET /api/matches/tournament-suggestions ──────────────────────────────
+    // Retorna sugestões de torneios e rodadas já usadas pelo clube do usuário
+    if (isTournamentSuggestions) {
+      if (req.method !== 'GET') return methodNotAllowed(res, ['GET']);
+      const ctx = requireAuth(req, res);
+      if (!ctx) return;
+      const tournamentFilter = url.searchParams.get('tournamentName');
+      const [tournaments, rounds] = await Promise.all([
+        prisma.match.findMany({
+          where: {
+            clubId: ctx.clubId ?? undefined,
+            tournamentName: { not: null },
+          },
+          distinct: ['tournamentName'],
+          select: { tournamentName: true },
+          orderBy: { createdAt: 'desc' },
+          take: 20,
+        }),
+        prisma.match.findMany({
+          where: {
+            clubId: ctx.clubId ?? undefined,
+            roundName: { not: null },
+            ...(tournamentFilter ? { tournamentName: tournamentFilter } : {}),
+          },
+          distinct: ['roundName'],
+          select: { roundName: true },
+          orderBy: { createdAt: 'desc' },
+          take: 20,
+        }),
+      ]);
+      return sendJson(res, 200, {
+        tournaments: tournaments.map((t) => t.tournamentName).filter(Boolean),
+        rounds: rounds.map((r) => r.roundName).filter(Boolean),
+      });
+    }
+
     // ─── /api/matches/:id ────────────────────────────────────────────────────
     if (id) {
       const ctx = requireAuth(req, res);
@@ -855,7 +897,18 @@ export default async function handler(req, res) {
         if (match.createdByUserId !== ctx.userId && ctx.role !== 'ADMIN') {
           return sendJson(res, 403, { error: 'Apenas o criador da partida pode editar os dados' });
         }
-        const { scheduledAt, venueId, nickname, visibility, openForAnnotation } = req.body ?? {};
+        const {
+          scheduledAt,
+          venueId,
+          nickname,
+          visibility,
+          openForAnnotation,
+          tournamentName,
+          roundName,
+          bracketType,
+          temperature,
+          humidity,
+        } = req.body ?? {};
         const data = {};
         if (scheduledAt !== undefined)
           data.scheduledAt = scheduledAt ? new Date(scheduledAt) : null;
@@ -863,6 +916,12 @@ export default async function handler(req, res) {
         if (nickname !== undefined) data.nickname = nickname || null;
         if (visibility !== undefined) data.visibility = visibility;
         if (openForAnnotation !== undefined) data.openForAnnotation = Boolean(openForAnnotation);
+        if (tournamentName !== undefined) data.tournamentName = tournamentName || null;
+        if (roundName !== undefined) data.roundName = roundName || null;
+        if (bracketType !== undefined) data.bracketType = bracketType || null;
+        if (temperature !== undefined)
+          data.temperature = temperature !== null ? Number(temperature) : null;
+        if (humidity !== undefined) data.humidity = humidity !== null ? Number(humidity) : null;
         const updated = await prisma.match.update({ where: { id }, data });
         return sendJson(res, 200, updated);
       }
@@ -877,6 +936,37 @@ export default async function handler(req, res) {
         return sendJson(res, 200, match);
       }
       if (req.method === 'PATCH') {
+        // Ação especial: encerrar partida manualmente pelo criador
+        if (req.body?.action === 'endMatch') {
+          const matchToEnd = await prisma.match.findUnique({
+            where: { id },
+            select: { createdByUserId: true, status: true },
+          });
+          if (!matchToEnd) return sendJson(res, 404, { error: 'Match not found' });
+          if (matchToEnd.createdByUserId !== ctx.userId && ctx.role !== 'ADMIN') {
+            return sendJson(res, 403, { error: 'Apenas o criador pode encerrar a partida' });
+          }
+          if (matchToEnd.status === 'FINISHED') {
+            return sendJson(res, 409, { error: 'Match already finished' });
+          }
+          const endedMatch = await prisma.match.update({
+            where: { id },
+            data: {
+              status: 'FINISHED',
+              ...(req.body.winner !== undefined ? { winner: req.body.winner } : {}),
+              ...(req.body.score !== undefined ? { score: req.body.score } : {}),
+            },
+          });
+          setImmediate(async () => {
+            try {
+              await createDashboardShares(id);
+            } catch {
+              /* silently fail */
+            }
+          });
+          return sendJson(res, 200, endedMatch);
+        }
+
         // SPECTATOR não pode alterar partidas
         if (ctx.role === 'SPECTATOR')
           return sendJson(res, 403, {
@@ -897,7 +987,27 @@ export default async function handler(req, res) {
           return sendJson(res, 409, { error: 'Match already finished' });
         return sendJson(res, 200, await updateMatch(id, req.body));
       }
-      return methodNotAllowed(res, ['GET', 'PATCH']);
+      if (req.method === 'DELETE') {
+        const match = await prisma.match.findUnique({
+          where: { id },
+          select: { createdByUserId: true, status: true },
+        });
+        if (!match) return sendJson(res, 404, { error: 'Match not found' });
+        if (match.createdByUserId !== ctx.userId && ctx.role !== 'ADMIN') {
+          return sendJson(res, 403, {
+            error: 'Apenas o criador ou administrador pode excluir a partida',
+          });
+        }
+        if (match.status !== 'NOT_STARTED') {
+          return sendJson(res, 400, {
+            error: 'Apenas partidas não iniciadas podem ser excluídas',
+            code: 'MATCH_ALREADY_STARTED',
+          });
+        }
+        await prisma.match.delete({ where: { id } });
+        return sendJson(res, 200, { success: true });
+      }
+      return methodNotAllowed(res, ['GET', 'PATCH', 'DELETE']);
     }
 
     // ─── /api/matches (root) ─────────────────────────────────────────────────
@@ -985,8 +1095,51 @@ export default async function handler(req, res) {
         createdByUserId: ctx.userId,
         homeClubId: derivedHomeClubId,
         awayClubId: derivedAwayClubId,
+        // Novos metadados de contexto (sanitizar para evitar injeção)
+        tournamentName: req.body.tournamentName
+          ? String(req.body.tournamentName).slice(0, 200)
+          : undefined,
+        roundName: req.body.roundName ? String(req.body.roundName).slice(0, 200) : undefined,
+        bracketType: ['ELIMINATION', 'GROUPS', 'SWISS'].includes(req.body.bracketType)
+          ? req.body.bracketType
+          : undefined,
+        temperature:
+          req.body.temperature !== undefined && req.body.temperature !== null
+            ? Number(req.body.temperature)
+            : undefined,
+        humidity:
+          req.body.humidity !== undefined && req.body.humidity !== null
+            ? Number(req.body.humidity)
+            : undefined,
+        // Gerar identificador público único para a partida
+        publicMatchCode: generatePublicMatchCode(),
       };
-      const result = await createMatch(matchData);
+      
+      // Retry logic: se o código gerado já existir (colisão rara), tentar novamente
+      let result;
+      let retries = 0;
+      const maxRetries = 10;
+      while (retries < maxRetries) {
+        try {
+          result = await createMatch(matchData);
+          break;
+        } catch (err) {
+          if (err.code === 'P2002' && err.meta?.target?.includes('publicMatchCode')) {
+            // Colisão de código único, gerar novo e tentar novamente
+            matchData.publicMatchCode = generatePublicMatchCode();
+            retries++;
+          } else {
+            throw err;
+          }
+        }
+      }
+      
+      if (!result) {
+        return sendJson(res, 500, {
+          error: 'Falha ao gerar identificador único para partida após múltiplas tentativas',
+        });
+      }
+      
       const validation = validateMatchApiResponse(result);
       if (!validation.success) {
         throw new Error(`Contrato de API violado na criação: ${validation.error.message}`);
