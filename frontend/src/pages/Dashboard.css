@@ -613,6 +613,31 @@
   transform: translateY(-1px);
 }
 
+.delete-match-btn {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  transition:
+    background 0.18s,
+    transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.delete-match-btn:hover {
+  background: rgba(239, 68, 68, 0.22);
+  transform: translateY(-1px);
+}
+
 /* ══════════════════════════════════════════════════════════
    MOBILE-FIRST IMPROVEMENTS
    ══════════════════════════════════════════════════════════ */

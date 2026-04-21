@@ -1,0 +1,224 @@
+.edit-score-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.edit-score-modal {
+  background: var(--clr-surface, #1a1a2e);
+  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.12));
+  border-radius: 16px;
+  width: 100%;
+  max-width: 420px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.edit-score-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 20px 14px;
+  border-bottom: 1px solid var(--clr-border, rgba(255, 255, 255, 0.08));
+}
+
+.edit-score-icon {
+  font-size: 1.2rem;
+}
+
+.edit-score-title {
+  flex: 1;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--clr-text, #f0f0f0);
+}
+
+.edit-score-close {
+  background: none;
+  border: none;
+  color: var(--clr-text-muted, rgba(255, 255, 255, 0.5));
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.edit-score-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.edit-score-body {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.edit-score-warning {
+  margin: 0;
+  padding: 10px 14px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 8px;
+  font-size: 0.83rem;
+  color: var(--clr-warning, #f59e0b);
+}
+
+.edit-score-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.edit-score-section-label {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--clr-text-muted, rgba(255, 255, 255, 0.5));
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.edit-score-sets {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.edit-score-set-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.edit-score-set-num {
+  font-size: 0.83rem;
+  color: var(--clr-text-muted, rgba(255, 255, 255, 0.5));
+  width: 40px;
+  flex-shrink: 0;
+}
+
+.edit-score-set-btns {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+}
+
+.edit-score-set-btn {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid var(--clr-border, rgba(255, 255, 255, 0.12));
+  background: transparent;
+  color: var(--clr-text-muted, rgba(255, 255, 255, 0.6));
+  transition: all 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.edit-score-set-btn.active {
+  background: var(--clr-accent, #3b82f6);
+  border-color: var(--clr-accent, #3b82f6);
+  color: #fff;
+  font-weight: 600;
+}
+
+.edit-score-set-btn:hover:not(.active) {
+  border-color: var(--clr-accent, #3b82f6);
+  color: var(--clr-text, #f0f0f0);
+}
+
+.edit-score-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  font-size: 0.83rem;
+  color: var(--clr-text-muted, rgba(255, 255, 255, 0.6));
+}
+
+.edit-score-summary-score {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--clr-text, #f0f0f0);
+}
+
+.edit-score-server-btns {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-score-server-btn {
+  flex: 1;
+  padding: 11px 14px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid var(--clr-border, rgba(255, 255, 255, 0.12));
+  background: transparent;
+  color: var(--clr-text-muted, rgba(255, 255, 255, 0.6));
+  transition: all 0.15s;
+}
+
+.edit-score-server-btn.active {
+  background: var(--clr-accent, #3b82f6);
+  border-color: var(--clr-accent, #3b82f6);
+  color: #fff;
+  font-weight: 600;
+}
+
+.edit-score-server-btn:hover:not(.active) {
+  border-color: var(--clr-accent, #3b82f6);
+  color: var(--clr-text, #f0f0f0);
+}
+
+.edit-score-footer {
+  display: flex;
+  gap: 10px;
+  padding: 0 20px 20px;
+}
+
+.edit-score-btn-cancel,
+.edit-score-btn-confirm {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.15s;
+}
+
+.edit-score-btn-cancel {
+  background: var(--clr-surface-raised, rgba(255, 255, 255, 0.08));
+  color: var(--clr-text, #f0f0f0);
+}
+
+.edit-score-btn-confirm {
+  background: var(--clr-accent, #3b82f6);
+  color: #fff;
+}
+
+.edit-score-btn-cancel:hover {
+  opacity: 0.8;
+}
+
+.edit-score-btn-confirm:hover {
+  opacity: 0.85;
+}

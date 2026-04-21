@@ -1114,7 +1114,7 @@ export default async function handler(req, res) {
         // Gerar identificador público único para a partida
         publicMatchCode: generatePublicMatchCode(),
       };
-      
+
       // Retry logic: se o código gerado já existir (colisão rara), tentar novamente
       let result;
       let retries = 0;
@@ -1133,13 +1133,13 @@ export default async function handler(req, res) {
           }
         }
       }
-      
+
       if (!result) {
         return sendJson(res, 500, {
           error: 'Falha ao gerar identificador único para partida após múltiplas tentativas',
         });
       }
-      
+
       const validation = validateMatchApiResponse(result);
       if (!validation.success) {
         throw new Error(`Contrato de API violado na criação: ${validation.error.message}`);

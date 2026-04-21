@@ -139,4 +139,3 @@ export const AvailableMatchesForAnnotation: React.FC<Props> = ({ onSelectMatch }
 };
 
 export default AvailableMatchesForAnnotation;
-

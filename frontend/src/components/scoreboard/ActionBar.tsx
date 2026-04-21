@@ -16,6 +16,8 @@ interface ActionBarProps {
   onFaultOut?: () => void;
   onFaultNet?: () => void;
   onConfig?: () => void;
+  /** Abre modal de ajuste de placar */
+  onEditScore?: () => void;
   /** Controle do tamanho do placar */
   fontScale?: number;
   onFontScaleInc?: () => void;
@@ -36,6 +38,7 @@ const ActionBar: React.FC<ActionBarProps> = ({
   onFaultOut,
   onFaultNet,
   onConfig,
+  onEditScore,
   fontScale = 1,
   onFontScaleInc,
   onFontScaleDec,
@@ -116,6 +119,15 @@ const ActionBar: React.FC<ActionBarProps> = ({
         {onConfig && (
           <button className="main-action-btn config-btn" onClick={onConfig}>
             ⚙
+          </button>
+        )}
+        {onEditScore && !isFinished && (
+          <button
+            className="main-action-btn edit-score-btn"
+            onClick={onEditScore}
+            title="Ajustar placar manualmente"
+          >
+            ✏️
           </button>
         )}
       </div>

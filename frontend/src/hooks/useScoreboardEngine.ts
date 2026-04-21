@@ -622,6 +622,68 @@ export function useScoreboardEngine(onEndMatch: () => void) {
     }
   };
 
+  const getLastPointDetails = (): PointDetails | null => {
+    return getSystem()?.getLastPointDetails() ?? null;
+  };
+
+  const handleEditScore = async (
+    setWinners: Array<'p1' | 'p2'>,
+    newServer: Player,
+  ): Promise<void> => {
+    const scoringSystem = getSystem();
+    if (!scoringSystem) return;
+
+    try {
+      const currentState = scoringSystem.getState();
+
+      const p1Sets = setWinners.filter((w) => w === 'p1').length;
+      const p2Sets = setWinners.filter((w) => w === 'p2').length;
+
+      const completedSets = setWinners.map((winner, idx) => ({
+        setNumber: idx + 1,
+        games: {
+          PLAYER_1: winner === 'p1' ? 6 : 0,
+          PLAYER_2: winner === 'p2' ? 6 : 0,
+        } as Record<Player, number>,
+        winner: (winner === 'p1' ? 'PLAYER_1' : 'PLAYER_2') as Player,
+      }));
+
+      const newState: MatchState = {
+        ...currentState,
+        sets: { PLAYER_1: p1Sets, PLAYER_2: p2Sets },
+        currentSet: setWinners.length + 1,
+        currentSetState: {
+          games: { PLAYER_1: 0, PLAYER_2: 0 } as Record<Player, number>,
+        },
+        currentGame: {
+          points: { PLAYER_1: '0', PLAYER_2: '0' } as Record<Player, string>,
+          server: newServer,
+          isTiebreak: false,
+          isMatchTiebreak: false,
+        },
+        server: newServer,
+        isFinished: false,
+        winner: undefined,
+        completedSets,
+        config: currentState.config,
+      };
+
+      scoringSystem.loadState(newState);
+      setServeStepSafe('none');
+      forceRerender();
+
+      if (syncTimeoutRef.current) window.clearTimeout(syncTimeoutRef.current);
+      syncTimeoutRef.current = window.setTimeout(() => {
+        const sys = getSystem();
+        sys?.syncState()?.catch(() => {
+          scoreLog.warn('Falha no syncState após edição de placar', { matchId });
+        });
+      }, 250);
+    } catch (err) {
+      scoreLog.warn('Erro ao editar placar', { matchId });
+    }
+  };
+
   const handleServerEffectConfirm = (effect?: string, direction?: string) => {
     if (!playerInFocus) return;
     const isSecond = serveStep === 'second';
@@ -767,6 +829,8 @@ export function useScoreboardEngine(onEndMatch: () => void) {
     handlePointDetailsCancel,
     handleFault,
     handleUndo,
+    getLastPointDetails,
+    handleEditScore,
     handleServerEffectConfirm,
     handleServeErrorOpen,
     handleServeErrorConfirm,

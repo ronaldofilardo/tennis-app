@@ -23,6 +23,7 @@ import DashboardProfilePanel from '../components/dashboard/DashboardProfilePanel
 import DashboardAnnotatedSection from '../components/dashboard/DashboardAnnotatedSection';
 import DashboardOpenMatchesSection from '../components/dashboard/DashboardOpenMatchesSection';
 import DashboardEmptyStates from '../components/dashboard/DashboardEmptyStates';
+import { ConfirmDeleteMatchModal } from '../components/ConfirmDeleteMatchModal';
 import { useDashboardData } from '../hooks/useDashboardData';
 import { useDashboardMatchActions } from '../hooks/useDashboardMatchActions';
 import { computeAthleteStats } from './dashboardHelpers';
@@ -184,6 +185,10 @@ const Dashboard: React.FC<DashboardProps> = ({
   } = uiState;
   const newMatchBtnRef = useRef<HTMLButtonElement>(null);
 
+  // ── Delete match state ────────────────────────────────
+  const [deletingMatchId, setDeletingMatchId] = React.useState<string | null>(null);
+  const [deletedMatchIds, setDeletedMatchIds] = React.useState<Set<string>>(new Set());
+
   const handleViewReport = useCallback(
     (sessionId: string, matchId: string) => {
       navigate(`/match-report/${matchId}/${sessionId}`);
@@ -249,6 +254,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   };
 
   const visibleMatches = (Array.isArray(matches) ? matches : []).filter((match) =>
+    !deletedMatchIds.has(String(match.id)) &&
     canViewMatch(match),
   );
 
@@ -518,6 +524,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               onStartMatch={onStartMatch}
               onContinueMatch={onContinueMatch}
               onEditMatch={(match) => dispatchUI({ type: 'SET_EDITING_MATCH', match })}
+              onDeleteMatch={(matchId) => setDeletingMatchId(matchId)}
               onViewStats={openStatsForMatch}
               fetchMatchStateForContinue={fetchMatchStateForContinue}
               onToastWarning={toast.warning}
@@ -534,6 +541,28 @@ const Dashboard: React.FC<DashboardProps> = ({
         stats={matchStats}
         nickname={selectedMatch?.nickname || null}
       />
+
+      {/* ── ConfirmDeleteMatchModal ── */}
+      {deletingMatchId && (() => {
+        const matchToDelete = filteredMatches.find((m) => String(m.id) === deletingMatchId);
+        const players = matchToDelete?.players && typeof matchToDelete.players === 'object'
+          ? { p1: matchToDelete.players.p1, p2: matchToDelete.players.p2 }
+          : { p1: 'Jogador 1', p2: 'Jogador 2' };
+        return (
+          <ConfirmDeleteMatchModal
+            isOpen={true}
+            matchId={deletingMatchId}
+            players={players}
+            onConfirm={async (matchId) => {
+              await httpClient.delete(`/matches/${matchId}`);
+              setDeletedMatchIds((prev) => new Set([...prev, matchId]));
+              setDeletingMatchId(null);
+              toast.success?.('Partida excluída com sucesso');
+            }}
+            onCancel={() => setDeletingMatchId(null)}
+          />
+        );
+      })()}
 
       {/* ── EditMatchModal ── */}
       {editingMatch && (
