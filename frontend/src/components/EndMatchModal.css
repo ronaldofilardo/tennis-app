@@ -189,7 +189,11 @@
   font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color var(--transition-fast) var(--ease-in-out), border-color var(--transition-fast) var(--ease-in-out), color var(--transition-fast) var(--ease-in-out), transform var(--transition-fast) var(--ease-in-out);
+  transition:
+    background-color var(--transition-fast) var(--ease-in-out),
+    border-color var(--transition-fast) var(--ease-in-out),
+    color var(--transition-fast) var(--ease-in-out),
+    transform var(--transition-fast) var(--ease-in-out);
   min-width: 120px;
 }
 

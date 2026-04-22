@@ -15,6 +15,7 @@ import VSIndicator from '../components/scoreboard/VSIndicator';
 import ContextBadges from '../components/scoreboard/ContextBadges';
 import ActionBar from '../components/scoreboard/ActionBar';
 import AnnotationSessionPanel from '../components/AnnotationSessionPanel';
+import CreatorEndMatchPanel from '../components/CreatorEndMatchPanel';
 import EditMatchModal from '../components/EditMatchModal';
 import type { EditableMatch } from '../components/EditMatchModal';
 import SetupModal from '../components/scoreboard/SetupModal';
@@ -505,6 +506,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
           onFontScaleDec={handleFontScaleDec}
           onEditScore={() => setEditScoreModalOpen(true)}
           isModalOpen={isServeErrorModalOpen}
+          isMatchFinalized={matchData?.status === 'FINISHED'}
         />
 
         {/* Painel de sessões de anotação */}
@@ -514,6 +516,21 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
             matchStatus={matchData?.status ?? 'NOT_STARTED'}
             currentUserId={currentUser.id}
             userRole={currentUser.activeRole}
+          />
+        )}
+
+        {/* Painel para criador encerrar partida manualmente */}
+        {matchId && currentUser && matchData && (
+          <CreatorEndMatchPanel
+            matchId={matchId}
+            isCreator={matchData.createdByUserId === currentUser.id}
+            matchStatus={matchData.status}
+            onMatchEnded={() => {
+              // Após encerrar, atualizar status local
+              if (matchData) {
+                setMatchData({ ...matchData, status: 'FINISHED' });
+              }
+            }}
           />
         )}
 

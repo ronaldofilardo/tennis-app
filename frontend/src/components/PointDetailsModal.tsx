@@ -91,7 +91,18 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
   onCancel,
   fontScale = 1,
 }) => {
-  const { sel, setSituacao, setTipo, setGolpe, setSub1, setSub2, setEfeito, setDirecao, setGolpeEsp, reset } = useRallyDetails();
+  const {
+    sel,
+    setSituacao,
+    setTipo,
+    setGolpe,
+    setSub1,
+    setSub2,
+    setEfeito,
+    setDirecao,
+    setGolpeEsp,
+    reset,
+  } = useRallyDetails();
 
   // Sempre pede confirmação ao clicar fora — o ponto já foi atribuído
   const isFormDirty = true;

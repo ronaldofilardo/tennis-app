@@ -69,7 +69,7 @@
 
 /* Active indicator dot */
 .bottom-tab-item--active::after {
-  content: "";
+  content: '';
   position: absolute;
   top: 2px;
   width: 4px;
@@ -103,9 +103,6 @@
     display: none;
   }
 }
-
-
-
 
 /* ── Accessibility: Respect motion preferences ────────────── */
 @media (prefers-reduced-motion: reduce) {

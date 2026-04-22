@@ -940,7 +940,7 @@ export default async function handler(req, res) {
         if (req.body?.action === 'endMatch') {
           const matchToEnd = await prisma.match.findUnique({
             where: { id },
-            select: { createdByUserId: true, status: true },
+            select: { createdByUserId: true, status: true, matchState: true },
           });
           if (!matchToEnd) return sendJson(res, 404, { error: 'Match not found' });
           if (matchToEnd.createdByUserId !== ctx.userId && ctx.role !== 'ADMIN') {
@@ -949,21 +949,53 @@ export default async function handler(req, res) {
           if (matchToEnd.status === 'FINISHED') {
             return sendJson(res, 409, { error: 'Match already finished' });
           }
+
+          // Capturar snapshot do estado final
+          const finalStateSnapshot = matchToEnd.matchState;
+
+          // Atualizar match para FINISHED
           const endedMatch = await prisma.match.update({
             where: { id },
             data: {
               status: 'FINISHED',
+              endedAt: new Date(),
               ...(req.body.winner !== undefined ? { winner: req.body.winner } : {}),
               ...(req.body.score !== undefined ? { score: req.body.score } : {}),
             },
           });
+
+          // Encerrar todas as sessões de anotação IN_PROGRESS
+          const inProgressSessions = await prisma.matchAnnotationSession.findMany({
+            where: { matchId: id, status: 'IN_PROGRESS' },
+          });
+
+          if (inProgressSessions.length > 0) {
+            await prisma.matchAnnotationSession.updateMany({
+              where: { matchId: id, status: 'IN_PROGRESS' },
+              data: {
+                status: 'COMPLETED',
+                isActive: false,
+                endedAt: new Date(),
+                finalStateSnapshot: finalStateSnapshot,
+              },
+            });
+          }
+
+          // Gerar comparativo se houver 2+ sessões completadas
           setImmediate(async () => {
             try {
+              const completedCount = await prisma.matchAnnotationSession.count({
+                where: { matchId: id, status: 'COMPLETED' },
+              });
+              if (completedCount >= 2) {
+                await generateComparison(id);
+              }
               await createDashboardShares(id);
             } catch {
               /* silently fail */
             }
           });
+
           return sendJson(res, 200, endedMatch);
         }
 

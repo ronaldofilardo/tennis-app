@@ -439,6 +439,7 @@ model Match {
   winner    String?
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+  endedAt   DateTime?   // Data/hora quando partida foi encerrada (por vitória, criador ou outro motivo)
 
   completedSets String? // JSON string
   matchState    String? // JSON string — estado completo do TennisScoring

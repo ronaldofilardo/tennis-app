@@ -432,6 +432,42 @@ export function useScoreboardEngine(onEndMatch: () => void) {
     };
   }, [renderKey]);
 
+  // ── useEffect: polling de Match.status para detectar encerramento pelo criador ──
+  useEffect(() => {
+    if (!matchId || !matchData) return;
+    let pollInterval: number | null = null;
+    let active = true;
+
+    const pollMatchStatus = async () => {
+      try {
+        const response = await httpClient.get<MatchData>(`/matches/${matchId}/state`);
+        if (!active) return;
+        if (response.ok && response.data?.status === 'FINISHED' && matchData?.status !== 'FINISHED') {
+          // Partida foi encerrada (por criador ou por vitória)
+          if (matchData.status !== 'FINISHED') {
+            toast.warning(
+              'A partida foi encerrada e não aceita mais anotações.',
+              '🛑 Partida Encerrada',
+            );
+            setMatchData((prev) => (prev ? { ...prev, status: 'FINISHED' } : null));
+          }
+        }
+      } catch {
+        // Falha silenciosa no polling — não é crítico
+      }
+    };
+
+    // Iniciar polling a cada 10 segundos
+    if (matchData.status !== 'FINISHED') {
+      pollInterval = window.setInterval(pollMatchStatus, 10000);
+    }
+
+    return () => {
+      active = false;
+      if (pollInterval) window.clearInterval(pollInterval);
+    };
+  }, [matchId, matchData?.status]);
+
   // ── Handlers ──
 
   const handleSetupConfirm = async (firstServer: Player) => {

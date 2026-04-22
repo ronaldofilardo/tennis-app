@@ -217,7 +217,10 @@ const HamburgerMenuDropdown: React.FC<HamburgerMenuDropdownProps> = ({
             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
           </svg>
         </span>
-        <span className="hamburger-dropdown__label" title="Partidas aguardando anotação de jogadores">
+        <span
+          className="hamburger-dropdown__label"
+          title="Partidas aguardando anotação de jogadores"
+        >
           Aguardando Anotador
         </span>
         {pendingCount > 0 && (

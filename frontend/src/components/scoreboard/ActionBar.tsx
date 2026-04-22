@@ -24,6 +24,8 @@ interface ActionBarProps {
   onFontScaleDec?: () => void;
   /** Esconde a barra de ações quando modal está aberto */
   isModalOpen?: boolean;
+  /** Se true, desabilita completamente a entrada (partida encerrada manualmente) */
+  isMatchFinalized?: boolean;
 }
 
 const ActionBar: React.FC<ActionBarProps> = ({
@@ -45,8 +47,10 @@ const ActionBar: React.FC<ActionBarProps> = ({
   onFontScaleInc,
   onFontScaleDec,
   isModalOpen = false,
+  isMatchFinalized = false,
 }) => {
   const isSecondServe = serveStep === 'second';
+  const disabled = isFinished || isMatchFinalized;
 
   const handleOutClick = () => {
     if (isSecondServe) {
@@ -77,7 +81,7 @@ const ActionBar: React.FC<ActionBarProps> = ({
   return (
     <div className="action-bar">
       {/* Linha de saque */}
-      {!isFinished && !isModalOpen && (
+      {!disabled && !isModalOpen && (
         <div className={`quick-actions-row serve-${server === 'PLAYER_1' ? 'left' : 'right'}`}>
           <button
             className={`serve-step-btn serve-info ${isSecondServe ? 'second-serve serve-step-second' : 'first-serve serve-step-first'}`}
