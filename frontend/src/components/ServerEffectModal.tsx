@@ -70,7 +70,7 @@ const ServerEffectModal: React.FC<ServerEffectModalProps> = ({
     <div className="server-effect-modal-overlay" onClick={handleOverlayClick}>
       <ConfirmCloseDialog isOpen={isConfirmOpen} onConfirm={confirmClose} onCancel={cancelClose} />
       <div
-        className={`server-effect-modal${isError ? ' server-effect-modal--error' : ''}`}
+        className={`server-effect-modal${isError ? 'server-effect-modal--error' : ''}`}
         data-testid="server-effect-modal"
         onClick={(e) => e.stopPropagation()}
         style={{ '--sb-scale': String(fontScale) } as React.CSSProperties}
@@ -79,9 +79,6 @@ const ServerEffectModal: React.FC<ServerEffectModalProps> = ({
           {isError ? (
             <>
               <h3>⚠️ Erro de Saque ({errorLabel})</h3>
-              <p className="modal-helper-text" style={{ marginTop: '0.5rem', fontSize: '0.9rem', opacity: 0.8 }}>
-                Registre o efeito e direção para continuar
-              </p>
               <div className="winner-display">
                 <strong>{serveLabel}</strong>
               </div>

@@ -504,6 +504,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
           onFontScaleInc={handleFontScaleInc}
           onFontScaleDec={handleFontScaleDec}
           onEditScore={() => setEditScoreModalOpen(true)}
+          isModalOpen={isServeErrorModalOpen}
         />
 
         {/* Painel de sessões de anotação */}

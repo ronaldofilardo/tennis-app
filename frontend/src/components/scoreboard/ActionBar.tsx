@@ -22,6 +22,8 @@ interface ActionBarProps {
   fontScale?: number;
   onFontScaleInc?: () => void;
   onFontScaleDec?: () => void;
+  /** Esconde a barra de ações quando modal está aberto */
+  isModalOpen?: boolean;
 }
 
 const ActionBar: React.FC<ActionBarProps> = ({
@@ -42,8 +44,25 @@ const ActionBar: React.FC<ActionBarProps> = ({
   fontScale = 1,
   onFontScaleInc,
   onFontScaleDec,
+  isModalOpen = false,
 }) => {
   const isSecondServe = serveStep === 'second';
+
+  const handleOutClick = () => {
+    if (isSecondServe) {
+      (onFaultOut ?? onFault)();
+    } else {
+      onOut();
+    }
+  };
+
+  const handleNetClick = () => {
+    if (isSecondServe) {
+      (onFaultNet ?? onFault)();
+    } else {
+      onNet();
+    }
+  };
   const returner: 'PLAYER_1' | 'PLAYER_2' = server === 'PLAYER_1' ? 'PLAYER_2' : 'PLAYER_1';
 
   // Os botões de ponto ficam SEMPRE na mesma posição dos cards:
@@ -58,7 +77,7 @@ const ActionBar: React.FC<ActionBarProps> = ({
   return (
     <div className="action-bar">
       {/* Linha de saque */}
-      {!isFinished && (
+      {!isFinished && !isModalOpen && (
         <div className={`quick-actions-row serve-${server === 'PLAYER_1' ? 'left' : 'right'}`}>
           <button
             className={`serve-step-btn serve-info ${isSecondServe ? 'second-serve serve-step-second' : 'first-serve serve-step-first'}`}
@@ -69,16 +88,10 @@ const ActionBar: React.FC<ActionBarProps> = ({
           <button className="action-quick-btn" onClick={onAce}>
             Ace
           </button>
-          <button
-            className="action-quick-btn action-quick-fault"
-            onClick={isSecondServe ? (onFaultOut ?? onFault) : onOut}
-          >
+          <button className="action-quick-btn action-quick-fault" onClick={handleOutClick}>
             Out
           </button>
-          <button
-            className="action-quick-btn action-quick-fault"
-            onClick={isSecondServe ? (onFaultNet ?? onFault) : onNet}
-          >
+          <button className="action-quick-btn action-quick-fault" onClick={handleNetClick}>
             Net
           </button>
         </div>
