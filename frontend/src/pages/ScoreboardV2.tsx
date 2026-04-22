@@ -1,6 +1,6 @@
 // frontend/src/pages/ScoreboardV2.tsx (Fluxo de saque final e correto)
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import MatchStatsModal from '../components/MatchStatsModal';
 import LoadingIndicator from '../components/LoadingIndicator';
 import ServerEffectModal from '../components/ServerEffectModal';
@@ -22,6 +22,7 @@ import { UndoConfirmModal } from '../components/scoreboard/UndoConfirmModal';
 import { EditScoreModal } from '../components/scoreboard/EditScoreModal';
 import { ConfirmDeleteMatchModal } from '../components/ConfirmDeleteMatchModal';
 import { useScoreboardEngine } from '../hooks/useScoreboardEngine';
+import { useShakeDetection } from '../hooks/useGestures';
 import '../styles/scoreboard-tokens.css';
 import './ScoreboardV2.css';
 
@@ -77,6 +78,16 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
   const [undoModalOpen, setUndoModalOpen] = useState(false);
   const [editScoreModalOpen, setEditScoreModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  // Shake detection → open undo modal
+  useShakeDetection({
+    onShake: useCallback(() => {
+      const sys = getSystem?.();
+      if (sys?.canUndo()) {
+        setUndoModalOpen(true);
+      }
+    }, [getSystem]),
+  });
 
   if (isLoading) return <LoadingIndicator />;
   if (error) {

@@ -103,13 +103,13 @@ export const EditScoreModal: React.FC<EditScoreModalProps> = ({
         <div className="edit-score-header">
           <span className="edit-score-icon">✏️</span>
           <h2 className="edit-score-title">Ajustar Placar</h2>
-          <button className="edit-score-close" onClick={onCancel}>✕</button>
+          <button className="edit-score-close" onClick={onCancel}>
+            ✕
+          </button>
         </div>
 
         <div className="edit-score-body">
-          <p className="edit-score-warning">
-            ⚠️ O histórico de pontos anteriores será apagado.
-          </p>
+          <p className="edit-score-warning">⚠️ O histórico de pontos anteriores será apagado.</p>
 
           {!isFirstSetOnly && (
             <div className="edit-score-section">
@@ -138,7 +138,9 @@ export const EditScoreModal: React.FC<EditScoreModalProps> = ({
 
               <div className="edit-score-summary">
                 <span>{playerNames.p1}</span>
-                <span className="edit-score-summary-score">{p1Sets} — {p2Sets}</span>
+                <span className="edit-score-summary-score">
+                  {p1Sets} — {p2Sets}
+                </span>
                 <span>{playerNames.p2}</span>
               </div>
             </div>

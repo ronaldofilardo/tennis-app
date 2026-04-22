@@ -11,7 +11,6 @@ import type {
 import type { MatchData } from '../types/scoreboard';
 export type { MatchData } from '../types/scoreboard';
 import { httpClient } from '../config/httpClient';
-import { useShakeDetection } from '../hooks/useGestures';
 import { resolvePlayerName } from '../data/players';
 import { useToast } from '../components/Toast';
 import { createLogger } from '../services/logger';
@@ -298,15 +297,6 @@ export function useScoreboardEngine(onEndMatch: () => void) {
 
     onEndMatch();
   };
-
-  // Shake → undo
-  useShakeDetection({
-    onShake: useCallback(() => {
-      if (window.confirm('Desfazer último ponto?')) {
-        handleUndo();
-      }
-    }, []),
-  });
 
   // Função para buscar estatísticas
   const fetchStats = async () => {

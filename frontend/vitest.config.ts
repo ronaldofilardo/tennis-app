@@ -31,6 +31,7 @@ export default defineConfig({
       forks: {
         maxForks: 2,
         minForks: 1,
+        execArgv: ['--max-old-space-size=4096'],
       },
     },
     coverage: {

@@ -253,9 +253,8 @@ const Dashboard: React.FC<DashboardProps> = ({
     return false;
   };
 
-  const visibleMatches = (Array.isArray(matches) ? matches : []).filter((match) =>
-    !deletedMatchIds.has(String(match.id)) &&
-    canViewMatch(match),
+  const visibleMatches = (Array.isArray(matches) ? matches : []).filter(
+    (match) => !deletedMatchIds.has(String(match.id)) && canViewMatch(match),
   );
 
   // ── Computed: match counts by status ────────────────────
@@ -543,26 +542,28 @@ const Dashboard: React.FC<DashboardProps> = ({
       />
 
       {/* ── ConfirmDeleteMatchModal ── */}
-      {deletingMatchId && (() => {
-        const matchToDelete = filteredMatches.find((m) => String(m.id) === deletingMatchId);
-        const players = matchToDelete?.players && typeof matchToDelete.players === 'object'
-          ? { p1: matchToDelete.players.p1, p2: matchToDelete.players.p2 }
-          : { p1: 'Jogador 1', p2: 'Jogador 2' };
-        return (
-          <ConfirmDeleteMatchModal
-            isOpen={true}
-            matchId={deletingMatchId}
-            players={players}
-            onConfirm={async (matchId) => {
-              await httpClient.delete(`/matches/${matchId}`);
-              setDeletedMatchIds((prev) => new Set([...prev, matchId]));
-              setDeletingMatchId(null);
-              toast.success?.('Partida excluída com sucesso');
-            }}
-            onCancel={() => setDeletingMatchId(null)}
-          />
-        );
-      })()}
+      {deletingMatchId &&
+        (() => {
+          const matchToDelete = filteredMatches.find((m) => String(m.id) === deletingMatchId);
+          const players =
+            matchToDelete?.players && typeof matchToDelete.players === 'object'
+              ? { p1: matchToDelete.players.p1, p2: matchToDelete.players.p2 }
+              : { p1: 'Jogador 1', p2: 'Jogador 2' };
+          return (
+            <ConfirmDeleteMatchModal
+              isOpen={true}
+              matchId={deletingMatchId}
+              players={players}
+              onConfirm={async (matchId) => {
+                await httpClient.delete(`/matches/${matchId}`);
+                setDeletedMatchIds((prev) => new Set([...prev, matchId]));
+                setDeletingMatchId(null);
+                toast.success?.('Partida excluída com sucesso');
+              }}
+              onCancel={() => setDeletingMatchId(null)}
+            />
+          );
+        })()}
 
       {/* ── EditMatchModal ── */}
       {editingMatch && (

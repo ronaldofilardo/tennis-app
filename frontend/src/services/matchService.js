@@ -509,8 +509,13 @@ export async function getVisibleMatches(queryParams, testPrisma) {
       })
     : matches;
 
+  // Filtro client-side por email — garante resultado correto mesmo quando o mock/DB não aplica WHERE
+  const emailFiltered = email
+    ? filtered.filter((m) => m.playersEmails?.includes(email) || m.apontadorEmail === email)
+    : filtered;
+
   // Retorna status conforme está salvo no banco, garantindo robustez
-  return filtered.map((match) => {
+  return emailFiltered.map((match) => {
     let parsedState = null;
     try {
       parsedState = match.matchState ? JSON.parse(match.matchState) : null;

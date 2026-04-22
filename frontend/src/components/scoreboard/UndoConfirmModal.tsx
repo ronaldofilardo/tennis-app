@@ -10,7 +10,10 @@ interface UndoConfirmModalProps {
   onCancel: () => void;
 }
 
-function describePoint(point: PointDetails, playerNames: { PLAYER_1: string; PLAYER_2: string }): string {
+function describePoint(
+  point: PointDetails,
+  playerNames: { PLAYER_1: string; PLAYER_2: string },
+): string {
   const winnerName = playerNames[point.result.winner as Player];
 
   if (point.serve?.type === 'ACE') {
@@ -39,9 +42,7 @@ export const UndoConfirmModal: React.FC<UndoConfirmModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const description = lastPoint
-    ? describePoint(lastPoint, playerNames)
-    : 'último ponto registrado';
+  const description = lastPoint ? describePoint(lastPoint, playerNames) : 'último ponto registrado';
 
   return (
     <div className="undo-confirm-overlay" onClick={onCancel}>
@@ -56,7 +57,8 @@ export const UndoConfirmModal: React.FC<UndoConfirmModalProps> = ({
           <p className="undo-confirm-point">{description}</p>
           {lastPoint?.context && (
             <p className="undo-confirm-context">
-              Set {lastPoint.context.setNumber} · {lastPoint.context.gamesP1}-{lastPoint.context.gamesP2} (games)
+              Set {lastPoint.context.setNumber} · {lastPoint.context.gamesP1}-
+              {lastPoint.context.gamesP2} (games)
             </p>
           )}
         </div>
