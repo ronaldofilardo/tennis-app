@@ -127,6 +127,7 @@ export async function createMatch(matchData, testPrisma) {
     openForAnnotation = false,
     scheduledAt,
     venueId,
+    publicMatchCode,
   } = validation.data;
 
   const prismaClient = testPrisma || prisma;
@@ -177,6 +178,7 @@ export async function createMatch(matchData, testPrisma) {
       createdByUserId: createdByUserId || null,
       scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
       venueId: venueId || null,
+      publicMatchCode: publicMatchCode || null,
       completedSets: JSON.stringify([]),
       matchState: JSON.stringify({
         playersIds: { p1: players.p1, p2: players.p2 },
@@ -198,6 +200,7 @@ export async function createMatch(matchData, testPrisma) {
     playersEmails: newMatch.playersEmails,
     visibility: newMatch.visibility,
     openForAnnotation: newMatch.openForAnnotation,
+    publicMatchCode: newMatch.publicMatchCode || null,
     scheduledAt: newMatch.scheduledAt ? newMatch.scheduledAt.toISOString() : null,
     venueId: newMatch.venueId || null,
     visibleTo: visibleTo || 'both',
@@ -235,6 +238,14 @@ export async function getMatchById(id) {
       createdAt: true,
       matchState: true,
       visibility: true,
+      createdByUserId: true,
+      annotationSessions: {
+        select: {
+          id: true,
+          status: true,
+          isActive: true,
+        },
+      },
     },
   });
 
@@ -271,6 +282,8 @@ export async function getMatchById(id) {
     completedSets,
     createdAt: match.createdAt ? match.createdAt.toISOString() : undefined,
     matchState,
+    createdByUserId: match.createdByUserId,
+    annotationSessions: match.annotationSessions,
   };
 }
 

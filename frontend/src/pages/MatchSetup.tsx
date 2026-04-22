@@ -12,6 +12,7 @@ import type { OngoingMatchSetup } from '../components/ResumeScoreModal';
 import VenueSelect from '../components/VenueSelect';
 import type { VenueValue } from '../components/VenueSelect';
 import AvailableMatchesForAnnotation from '../components/AvailableMatchesForAnnotation';
+import { LocateMatchModal } from '../components/LocateMatchModal';
 import { TennisConfigFactory } from '../core/scoring/TennisConfigFactory';
 import type { TennisFormat, MatchState, Player } from '../core/scoring/types';
 
@@ -95,12 +96,17 @@ const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreat
   const [player2, setPlayer2] = useState('');
   const [selectedAthlete1, setSelectedAthlete1] = useState<AthleteResult | null>(null);
   const [selectedAthlete2, setSelectedAthlete2] = useState<AthleteResult | null>(null);
-  const [visibility, setVisibility] = useState<'PUBLIC' | 'CLUB' | 'PLAYERS_ONLY'>('PLAYERS_ONLY');
+  // GESTOR cria partidas abertas por padrão; outros usuários as criam fechadas
+  const [visibility, setVisibility] = useState<'PUBLIC' | 'CLUB' | 'PLAYERS_ONLY'>(
+    currentUser?.role === 'GESTOR' ? 'PUBLIC' : 'PLAYERS_ONLY',
+  );
   const [visibleTo, setVisibleTo] = useState<'both' | string>('both'); // Legado
   const [error, setError] = useState<string | null>(null);
   const [isResuming, setIsResuming] = useState(false);
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
-  const [openForAnnotation, setOpenForAnnotation] = useState(false);
+  const [isLocateModalOpen, setIsLocateModalOpen] = useState(false);
+  // GESTOR cria partidas abertas para anotação por padrão
+  const [openForAnnotation, setOpenForAnnotation] = useState(currentUser?.role === 'GESTOR');
   const [scheduledDate, setScheduledDate] = useState('');
   const [scheduledTime, setScheduledTime] = useState('');
   const [venueValue, setVenueValue] = useState<VenueValue>({ venueId: null, venueName: '' });
@@ -749,8 +755,19 @@ const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreat
         </div>
 
         <div className="form-actions">
+          <button
+            type="button"
+            className="locate-button"
+            onClick={() => setIsLocateModalOpen(true)}
+          >
+            🔍 Localizar Partida
+          </button>
           <button type="submit" className="start-match-button">
-            {isResuming ? 'Continuar →' : 'Iniciar Partida'}
+            {isResuming
+              ? 'Continuar →'
+              : currentUser?.role === 'GESTOR'
+                ? 'Registrar'
+                : 'Iniciar Partida'}
           </button>
         </div>
       </form>
@@ -766,6 +783,9 @@ const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreat
         onConfirm={handleResumeConfirm}
         onCancel={() => setIsResumeModalOpen(false)}
       />
+
+      {/* Modal para localizar partida pública */}
+      <LocateMatchModal isOpen={isLocateModalOpen} onClose={() => setIsLocateModalOpen(false)} />
 
       {/* Modal de partida duplicada */}
       {isDuplicateModalOpen && duplicateMatch && (

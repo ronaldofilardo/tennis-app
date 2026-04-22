@@ -68,7 +68,7 @@ const CreatorEndMatchPanel: React.FC<CreatorEndMatchPanelProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
       <div className="rounded-lg bg-slate-900 p-6 text-slate-200 shadow-xl">
         <h3 className="mb-4 text-lg font-semibold">Encerrar Partida?</h3>
 

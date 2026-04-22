@@ -122,6 +122,12 @@ export const MatchCreateSchema = z.object({
   openForAnnotation: z.boolean().optional().default(false), // Permite qualquer autenticado anotar
   scheduledAt: z.string().datetime({ offset: true }).optional().nullable(), // Data/hora agendada ISO string
   venueId: z.string().optional().nullable(), // ID do local no diretório
+  publicMatchCode: z.string().optional().nullable(), // Código único para localizar partida
+  tournamentName: z.string().optional().nullable(), // Nome do torneio
+  roundName: z.string().optional().nullable(), // Nome da rodada
+  bracketType: z.enum(['ELIMINATION', 'GROUPS', 'SWISS']).optional().nullable(), // Tipo de chave
+  temperature: z.number().optional().nullable(), // Temperatura em graus
+  humidity: z.number().optional().nullable(), // Umidade em percentual
   metadata: z.record(z.string(), z.unknown()).optional().nullable(),
   tags: z.array(z.string()).optional().nullable(),
   _meta: z

@@ -64,11 +64,7 @@ describe('Match End-by-Creator Functionality', () => {
         createdByUserId: creatorId,
         status: 'IN_PROGRESS',
         matchState: JSON.stringify({
-          pointsHistory: [
-            { winner: 'PLAYER_1' },
-            { winner: 'PLAYER_2' },
-            { winner: 'PLAYER_1' },
-          ],
+          pointsHistory: [{ winner: 'PLAYER_1' }, { winner: 'PLAYER_2' }, { winner: 'PLAYER_1' }],
         }),
       },
     });
@@ -120,11 +116,7 @@ describe('Match End-by-Creator Functionality', () => {
 
   it('should mark all IN_PROGRESS sessions as COMPLETED with finalStateSnapshot', async () => {
     const finalSnapshot = JSON.stringify({
-      pointsHistory: [
-        { winner: 'PLAYER_1' },
-        { winner: 'PLAYER_2' },
-        { winner: 'PLAYER_1' },
-      ],
+      pointsHistory: [{ winner: 'PLAYER_1' }, { winner: 'PLAYER_2' }, { winner: 'PLAYER_1' }],
     });
 
     // Simulando lógica do backend

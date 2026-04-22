@@ -49,6 +49,8 @@ interface ScoreboardUIState {
   annotatorCount: number;
   editMatchOpen: boolean;
   fontScale: number;
+  suspendedSession: any | null;
+  previousAnnotationPoints: number;
 }
 
 type ScoreboardUIAction =
@@ -71,7 +73,9 @@ type ScoreboardUIAction =
   | { type: 'EDIT_MATCH_OPEN' }
   | { type: 'EDIT_MATCH_CLOSE' }
   | { type: 'FONT_SCALE_SET'; scale: number }
-  | { type: 'ANNOTATOR_COUNT_SET'; count: number };
+  | { type: 'ANNOTATOR_COUNT_SET'; count: number }
+  | { type: 'SUSPENDED_SESSION_SET'; session: any; pointsCount: number }
+  | { type: 'SUSPENDED_SESSION_CLEAR' };
 
 function scoreboardUIReducer(
   state: ScoreboardUIState,
@@ -124,6 +128,14 @@ function scoreboardUIReducer(
       return { ...state, fontScale: action.scale };
     case 'ANNOTATOR_COUNT_SET':
       return { ...state, annotatorCount: action.count };
+    case 'SUSPENDED_SESSION_SET':
+      return {
+        ...state,
+        suspendedSession: action.session,
+        previousAnnotationPoints: action.pointsCount,
+      };
+    case 'SUSPENDED_SESSION_CLEAR':
+      return { ...state, suspendedSession: null, previousAnnotationPoints: 0 };
     default:
       return state;
   }
@@ -164,6 +176,8 @@ export function useScoreboardEngine(onEndMatch: () => void) {
       const parsed = saved ? parseFloat(saved) : 1.0;
       return isNaN(parsed) ? 1.0 : Math.min(2.0, Math.max(0.6, parsed));
     })(),
+    suspendedSession: null,
+    previousAnnotationPoints: 0,
   };
   const [uiState, dispatch] = useReducer(scoreboardUIReducer, initialUIState);
   const {
@@ -388,6 +402,16 @@ export function useScoreboardEngine(onEndMatch: () => void) {
         if (active && session) {
           annotationSessionIdRef.current = session.id;
           dispatch({ type: 'ANNOTATOR_COUNT_SET', count: Math.max(annotatorCount, 1) });
+
+          // Detectar se sessão é suspensa e abrir modal
+          if (session.suspended && session.previousState) {
+            const pointsCount = session.previousState.pointsHistory?.length ?? 0;
+            dispatch({
+              type: 'SUSPENDED_SESSION_SET',
+              session,
+              pointsCount,
+            });
+          }
         }
       } catch {
         // fire-and-forget: não crítico, anotação continua sem contagem
@@ -403,7 +427,9 @@ export function useScoreboardEngine(onEndMatch: () => void) {
           const sessions = Array.isArray(data)
             ? data
             : ((data as { sessions?: unknown[] })?.sessions ?? []);
-          dispatch({ type: 'ANNOTATOR_COUNT_SET', count: sessions.length });
+          // Contar apenas sessões ATIVAS (anotadores cobrindo AGORA)
+          const activeSessions = (sessions as any[]).filter((s) => s.isActive === true);
+          dispatch({ type: 'ANNOTATOR_COUNT_SET', count: activeSessions.length || 1 });
         }
       } catch (err) {
         scoreLog.warn('Falha ao buscar sessões de anotação (não crítico)', { matchId });
@@ -442,7 +468,11 @@ export function useScoreboardEngine(onEndMatch: () => void) {
       try {
         const response = await httpClient.get<MatchData>(`/matches/${matchId}/state`);
         if (!active) return;
-        if (response.ok && response.data?.status === 'FINISHED' && matchData?.status !== 'FINISHED') {
+        if (
+          response.ok &&
+          response.data?.status === 'FINISHED' &&
+          matchData?.status !== 'FINISHED'
+        ) {
           // Partida foi encerrada (por criador ou por vitória)
           if (matchData.status !== 'FINISHED') {
             toast.warning(
@@ -467,6 +497,38 @@ export function useScoreboardEngine(onEndMatch: () => void) {
       if (pollInterval) window.clearInterval(pollInterval);
     };
   }, [matchId, matchData?.status]);
+
+  // ── useEffect: Cleanup ao desmontar (marca sessão como ABANDONED) ──
+  // Quando usuário sai SEM finalizar a partida, marca como ABANDONED para retomada
+  useEffect(() => {
+    return () => {
+      const markSessionAbandoned = async () => {
+        const sessionId = annotationSessionIdRef.current;
+        const currentMatchId = matchIdRef.current;
+
+        // Só marcar como ABANDONED se não foi finalizado (não fazer duplo cleanup)
+        if (sessionId && currentMatchId && matchData?.status !== 'FINISHED') {
+          try {
+            await httpClient.patch(`/matches/${currentMatchId}/sessions/${sessionId}`, {
+              status: 'ABANDONED',
+            });
+            scoreLog.info('Sessão marcada como ABANDONED (usuário saiu)', {
+              matchId: currentMatchId,
+              sessionId,
+            });
+          } catch (err) {
+            scoreLog.warn('Falha ao marcar sessão como ABANDONED', {
+              matchId: currentMatchId,
+              sessionId,
+              error: err instanceof Error ? err.message : String(err),
+            });
+          }
+        }
+      };
+
+      markSessionAbandoned();
+    };
+  }, [matchData?.status]);
 
   // ── Handlers ──
 
@@ -802,6 +864,46 @@ export function useScoreboardEngine(onEndMatch: () => void) {
     dispatch({ type: 'SERVE_ERROR_CLOSE' }); // sets isServeErrorModalOpen=false + pendingServeError=null
   };
 
+  // ── useEffect: Cleanup ao desmontar ou navegar ──
+  // Marca sessão como ABANDONED quando usuário sai SEM finalizar partida
+  useEffect(() => {
+    return () => {
+      const markSessionAbandoned = async () => {
+        const sessionId = annotationSessionIdRef.current;
+        const matchIdValue = matchIdRef.current;
+        const sys = getSystem();
+        const currentState = sys?.getState();
+
+        if (sessionId && matchIdValue && currentState && !currentState.isFinished) {
+          try {
+            // Capturar snapshot do estado atual para retomada
+            const stateSnapshot = JSON.stringify(currentState);
+
+            await httpClient.patch(`/matches/${matchIdValue}/sessions/${sessionId}`, {
+              status: 'ABANDONED',
+              matchStateSnapshot: stateSnapshot,
+            });
+
+            scoreLog.info('Sessão marcada como ABANDONED ao sair', {
+              matchId: matchIdValue,
+              sessionId,
+              hasState: !!currentState,
+            });
+          } catch (err) {
+            scoreLog.warn('Falha ao marcar sessão como ABANDONED', {
+              matchId: matchIdValue,
+              sessionId,
+              error: err instanceof Error ? err.message : String(err),
+            });
+            // Silencioso: não interrompe o unmount
+          }
+        }
+      };
+
+      markSessionAbandoned();
+    };
+  }, []);
+
   return {
     // Router / Auth
     matchId,
@@ -862,5 +964,10 @@ export function useScoreboardEngine(onEndMatch: () => void) {
     handleServeErrorConfirm,
     handleServeErrorCancel,
     fetchStats,
+
+    // Suspended session resume
+    suspendedSession: uiState.suspendedSession,
+    previousAnnotationPoints: uiState.previousAnnotationPoints,
+    clearSuspendedSession: () => dispatch({ type: 'SUSPENDED_SESSION_CLEAR' }),
   };
 }

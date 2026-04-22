@@ -159,20 +159,39 @@
 /* ── Form actions ────────────────────────────────────────── */
 
 .form-actions {
-  text-align: center;
+  display: flex;
+  gap: 12px;
   margin-top: 2rem;
+  flex-wrap: wrap;
 }
 
+.locate-button,
 .start-match-button {
-  background-color: #4caf50;
-  color: white;
   border: none;
   padding: 12px 24px;
   font-size: 1.2rem;
   font-weight: bold;
   border-radius: 8px;
   cursor: pointer;
-  width: 100%;
+  flex: 1;
+  min-width: 150px;
+  transition: all 150ms ease;
+}
+
+.locate-button {
+  background-color: var(--clr-surface-2);
+  color: var(--clr-text);
+  border: 1px solid var(--clr-border);
+}
+
+.locate-button:hover {
+  background-color: var(--clr-surface);
+  border-color: var(--clr-text-muted);
+}
+
+.start-match-button {
+  background-color: #4caf50;
+  color: white;
 }
 
 .start-match-button:hover {

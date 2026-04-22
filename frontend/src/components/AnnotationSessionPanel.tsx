@@ -18,6 +18,33 @@ interface AnnotationSessionPanelProps {
   userRole: string;
 }
 
+// Helper: extrair nome do anotador com fallbacks robustos
+function getAnnotatorName(session: AnnotationSession): string {
+  // 1. Prioritário: nome completo
+  if (session.annotator?.name && session.annotator.name.trim()) {
+    return session.annotator.name.trim();
+  }
+  
+  // 2. Email (username antes do @)
+  if (session.annotator?.email) {
+    const username = session.annotator.email.split('@')[0];
+    if (username && username.trim()) return username.trim();
+  }
+  
+  // 3. ID do anotador
+  if (session.annotator?.id) {
+    return `Usuário ${session.annotator.id.substring(0, 8)}`;
+  }
+  
+  // 4. Fallback com annotatorUserId do session
+  if (session.annotatorUserId) {
+    return `Usuário ${session.annotatorUserId.substring(0, 8)}`;
+  }
+  
+  // 5. Fallback final
+  return 'Usuário desconhecido';
+}
+
 const AnnotationSessionPanel: React.FC<AnnotationSessionPanelProps> = ({
   matchId,
   matchStatus,
@@ -33,7 +60,7 @@ const AnnotationSessionPanel: React.FC<AnnotationSessionPanelProps> = ({
     try {
       setIsLoading(true);
       const data = await listSessions(matchId);
-      setSessions(data);
+      setSessions(Array.isArray(data) ? data : []);
       setError(null);
     } catch {
       setError('Erro ao carregar sessões');
@@ -95,7 +122,9 @@ const AnnotationSessionPanel: React.FC<AnnotationSessionPanelProps> = ({
         className={`annotation-session-toggle cursor-pointer rounded-md border-none px-3 py-1.5 text-sm text-white ${activeSession ? 'bg-green-500' : 'bg-slate-500'}`}
         onClick={() => setIsOpen(true)}
       >
-        {activeSession ? `📝 Sessão ativa (${activeSession.annotator.name})` : '📋 Sessões'}
+        {activeSession
+          ? `📝 Sessão ativa (${getAnnotatorName(activeSession)})`
+          : '📋 Sessões'}
       </button>
     );
   }
@@ -146,27 +175,42 @@ const AnnotationSessionPanel: React.FC<AnnotationSessionPanelProps> = ({
           className={`mb-1.5 rounded-md border p-2.5 ${session.isActive ? 'border-green-500 bg-emerald-950' : 'border-slate-700 bg-slate-950'}`}
         >
           <div className="flex justify-between text-sm">
-            <span>
-              {session.isActive ? '🟢 ' : '⚪ '}
-              <strong>{session.annotator.name}</strong>
-            </span>
-            <span className="text-slate-400">
+            <div>
+              <strong>
+                {getAnnotatorName(session)}
+                {session.annotatorUserId === currentUserId && ' (Você)'}
+              </strong>
+              <div className="mt-1 text-xs">
+                <span
+                  className={`inline-block rounded px-2 py-0.5 ${
+                    session.isActive
+                      ? 'bg-green-900 text-green-200'
+                      : 'bg-slate-700 text-slate-300'
+                  }`}
+                >
+                  {session.isActive ? '🟢 Anotando' : '⚪ Parou'}
+                </span>
+              </div>
+            </div>
+            <span className="text-xs text-slate-400">
               {new Date(session.startedAt).toLocaleTimeString('pt-BR')}
               {session.endedAt && ` → ${new Date(session.endedAt).toLocaleTimeString('pt-BR')}`}
             </span>
           </div>
 
           {/* Endossos */}
-          {session.endorsements.length > 0 && (
+          {(session.endorsements?.length ?? 0) > 0 && (
             <div className="mt-1.5 text-xs text-slate-400">
-              ✅ Endossado por: {session.endorsements.map((e) => e.endorsedBy.name).join(', ')}
+              ✅ Endossado por:{' '}
+              {session.endorsements.map((e) => e.endorsedBy?.name ?? 'Usuário').join(', ')}
             </div>
           )}
 
-          {/* Botão de endossar (apenas sessões encerradas, não própria) */}
+          {/* Botão de endossar (apenas sessões encerradas, não própria, não já endossada) */}
           {!session.isActive &&
+            session.endedAt &&
             session.annotatorUserId !== currentUserId &&
-            !session.endorsements.some((e) => e.endorsedByUserId === currentUserId) && (
+            !(session.endorsements ?? []).some((e) => e.endorsedByUserId === currentUserId) && (
               <button
                 onClick={() => handleEndorse(session.id)}
                 disabled={isLoading}

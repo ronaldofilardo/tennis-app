@@ -21,11 +21,7 @@ describe('CreatorEndMatchPanel', () => {
 
   it('should not render if user is not creator', () => {
     const { container } = render(
-      <CreatorEndMatchPanel
-        matchId={mockMatchId}
-        isCreator={false}
-        matchStatus="IN_PROGRESS"
-      />
+      <CreatorEndMatchPanel matchId={mockMatchId} isCreator={false} matchStatus="IN_PROGRESS" />,
     );
 
     expect(container.firstChild).toBeNull();
@@ -33,11 +29,7 @@ describe('CreatorEndMatchPanel', () => {
 
   it('should not render if match is already finished', () => {
     const { container } = render(
-      <CreatorEndMatchPanel
-        matchId={mockMatchId}
-        isCreator={true}
-        matchStatus="FINISHED"
-      />
+      <CreatorEndMatchPanel matchId={mockMatchId} isCreator={true} matchStatus="FINISHED" />,
     );
 
     expect(container.firstChild).toBeNull();
@@ -45,11 +37,7 @@ describe('CreatorEndMatchPanel', () => {
 
   it('should render button when creator and match in progress', () => {
     render(
-      <CreatorEndMatchPanel
-        matchId={mockMatchId}
-        isCreator={true}
-        matchStatus="IN_PROGRESS"
-      />
+      <CreatorEndMatchPanel matchId={mockMatchId} isCreator={true} matchStatus="IN_PROGRESS" />,
     );
 
     const button = screen.getByText(/Encerrar Partida/i);
@@ -58,11 +46,7 @@ describe('CreatorEndMatchPanel', () => {
 
   it('should open modal when button is clicked', async () => {
     render(
-      <CreatorEndMatchPanel
-        matchId={mockMatchId}
-        isCreator={true}
-        matchStatus="IN_PROGRESS"
-      />
+      <CreatorEndMatchPanel matchId={mockMatchId} isCreator={true} matchStatus="IN_PROGRESS" />,
     );
 
     const button = screen.getByText(/Encerrar Partida/i);
@@ -83,7 +67,7 @@ describe('CreatorEndMatchPanel', () => {
         isCreator={true}
         matchStatus="IN_PROGRESS"
         onMatchEnded={mockOnMatchEnded}
-      />
+      />,
     );
 
     fireEvent.click(screen.getByText(/Encerrar Partida/i));
@@ -110,7 +94,7 @@ describe('CreatorEndMatchPanel', () => {
         isCreator={true}
         matchStatus="IN_PROGRESS"
         onMatchEnded={mockOnMatchEnded}
-      />
+      />,
     );
 
     fireEvent.click(screen.getByText(/Encerrar Partida/i));
@@ -142,11 +126,7 @@ describe('CreatorEndMatchPanel', () => {
     (httpClient.httpClient.patch as any) = mockPatch;
 
     render(
-      <CreatorEndMatchPanel
-        matchId={mockMatchId}
-        isCreator={true}
-        matchStatus="IN_PROGRESS"
-      />
+      <CreatorEndMatchPanel matchId={mockMatchId} isCreator={true} matchStatus="IN_PROGRESS" />,
     );
 
     fireEvent.click(screen.getByText(/Encerrar Partida/i));

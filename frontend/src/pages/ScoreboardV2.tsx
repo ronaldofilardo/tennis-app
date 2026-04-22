@@ -1,6 +1,7 @@
 // frontend/src/pages/ScoreboardV2.tsx (Fluxo de saque final e correto)
 
 import React, { useState, useCallback, useEffect } from 'react';
+import { httpClient } from '../config/httpClient';
 import MatchStatsModal from '../components/MatchStatsModal';
 import LoadingIndicator from '../components/LoadingIndicator';
 import ServerEffectModal from '../components/ServerEffectModal';
@@ -16,13 +17,17 @@ import ContextBadges from '../components/scoreboard/ContextBadges';
 import ActionBar from '../components/scoreboard/ActionBar';
 import AnnotationSessionPanel from '../components/AnnotationSessionPanel';
 import CreatorEndMatchPanel from '../components/CreatorEndMatchPanel';
+import ReopenMatchPanel from '../components/ReopenMatchPanel';
+import ResumeAnnotationModal from '../components/ResumeAnnotationModal';
 import EditMatchModal from '../components/EditMatchModal';
 import type { EditableMatch } from '../components/EditMatchModal';
+import MatchManagerModal from '../components/MatchManagerModal';
 import SetupModal from '../components/scoreboard/SetupModal';
 import { UndoConfirmModal } from '../components/scoreboard/UndoConfirmModal';
 import { EditScoreModal } from '../components/scoreboard/EditScoreModal';
 import { ConfirmDeleteMatchModal } from '../components/ConfirmDeleteMatchModal';
 import { useScoreboardEngine } from '../hooks/useScoreboardEngine';
+import { useCreatorManagerMode } from '../hooks/useCreatorManagerMode';
 import { useShakeDetection } from '../hooks/useGestures';
 import '../styles/scoreboard-tokens.css';
 import './ScoreboardV2.css';
@@ -74,13 +79,50 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
     handleServeErrorConfirm,
     handleServeErrorCancel,
     fetchStats,
+    suspendedSession,
+    previousAnnotationPoints,
+    clearSuspendedSession,
   } = useScoreboardEngine(onEndMatch);
+
+  // ── Hook: Verificar se é criador em modo manager (DEVE vir no topo) ──────────
+  const isCreatorManager = useCreatorManagerMode(matchData);
 
   const [undoModalOpen, setUndoModalOpen] = useState(false);
   const [editScoreModalOpen, setEditScoreModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [showResumeModal, setShowResumeModal] = useState(false);
 
-  // Shake detection → open undo modal
+  // Detectar sessão suspensa e abrir modal
+  useEffect(() => {
+    if (suspendedSession) {
+      setShowResumeModal(true);
+    }
+  }, [suspendedSession]);
+
+  // Handler para retomar anotação suspensa
+  const handleResumeAnnotation = useCallback(async () => {
+    if (!suspendedSession) return;
+    try {
+      // Reativar sessão existente
+      const res = await httpClient.patch(`/matches/${matchId}/sessions/${suspendedSession.id}`, {
+        isActive: true,
+        status: 'IN_PROGRESS',
+      });
+      if (res.ok) {
+        setShowResumeModal(false);
+        clearSuspendedSession();
+      }
+    } catch (err) {
+      console.error('Erro ao retomar anotação:', err);
+    }
+  }, [suspendedSession, matchId, clearSuspendedSession]);
+
+  // Handler para começar nova anotação
+  const handleStartNewAnnotation = useCallback(() => {
+    setShowResumeModal(false);
+    clearSuspendedSession();
+    // A sessão será criada automaticamente pelo próximo POST /sessions
+  }, [clearSuspendedSession]);
   useShakeDetection({
     onShake: useCallback(() => {
       const sys = getSystem?.();
@@ -114,7 +156,33 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
       </div>
     );
   }
-  // Derivar scoringSystem do ref para uso no render (read-only, imutável aqui)
+
+  if (isCreatorManager) {
+    return (
+      <MatchManagerModal
+        matchId={matchId}
+        matchData={matchData}
+        onClose={() => navigate('/dashboard')}
+        onDataUpdated={(updatedMatch) => {
+          setMatchData((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  nickname: updatedMatch.nickname,
+                  scheduledAt: updatedMatch.scheduledAt,
+                  venueId: updatedMatch.venueId,
+                  venue: updatedMatch.venue,
+                  visibility: updatedMatch.visibility,
+                  openForAnnotation: updatedMatch.openForAnnotation,
+                }
+              : null,
+          );
+        }}
+      />
+    );
+  }
+
+  // ── Derivar scoringSystem do ref para uso no render (read-only, imutável aqui) ──
   const scoringSystem = scoringSystemRef.current;
 
   if (!scoringSystem) {
@@ -154,8 +222,31 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
     );
   }
 
-  // Partidas finalizadas não devem chegar aqui - devem ser redirecionadas para stats
+  // Partidas finalizadas: verificar se há sessão ativa para continuar
   if (matchData?.status === 'FINISHED') {
+    // Se houver anotação em andamento, permitir continuar
+    const hasActiveSession = (matchData as any).annotationSessions?.some(
+      (s: any) => s.status === 'IN_PROGRESS' && s.isActive,
+    );
+
+    const isCreator = matchData.createdByUserId === currentUser?.id;
+
+    // Se há sessão ativa ou se é criador, mostrar opção de reabrir
+    if (hasActiveSession || isCreator) {
+      return (
+        <ReopenMatchPanel
+          matchId={matchId}
+          isCreator={isCreator}
+          hasActiveSession={hasActiveSession}
+          onReopened={() => {
+            // Recarregar dados da partida
+            window.location.reload();
+          }}
+        />
+      );
+    }
+
+    // Caso contrário, redirecionar para dashboard
     navigate('/dashboard');
     return null;
   }
@@ -315,6 +406,17 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
             handleEndMatch();
           }}
           onCancel={() => setDeleteModalOpen(false)}
+        />
+      )}
+
+      {/* Modal de retomada de anotação suspensa */}
+      {suspendedSession && matchData && (
+        <ResumeAnnotationModal
+          isOpen={showResumeModal}
+          onResume={handleResumeAnnotation}
+          onStartNew={handleStartNewAnnotation}
+          annotatorName={currentUser?.name || 'Anotador'}
+          previousPointsCount={previousAnnotationPoints || 0}
         />
       )}
 

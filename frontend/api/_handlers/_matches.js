@@ -508,6 +508,47 @@ export default async function handler(req, res) {
       return sendJson(res, 200, matches);
     }
 
+    // ─── GET /api/matches/by-code/:code ──────────────────────────────────────
+    // Localiza uma partida pelo publicMatchCode para anotação
+    if (seg === 'by-code' && sub) {
+      if (req.method !== 'GET') return methodNotAllowed(res, ['GET']);
+      const ctx = requireAuth(req, res);
+      if (!ctx) return;
+
+      const code = sub.toUpperCase();
+      const match = await prisma.match.findUnique({
+        where: { publicMatchCode: code },
+        select: {
+          id: true,
+          sportType: true,
+          format: true,
+          courtType: true,
+          scheduledAt: true,
+          status: true,
+          visibility: true,
+          openForAnnotation: true,
+          publicMatchCode: true,
+          playerP1: true,
+          playerP2: true,
+          player1: { select: { id: true, name: true, globalId: true } },
+          player2: { select: { id: true, name: true, globalId: true } },
+          club: { select: { id: true, name: true } },
+          createdBy: { select: { id: true, name: true } },
+        },
+      });
+
+      if (!match) {
+        return sendJson(res, 404, { error: 'Partida não encontrada com este código' });
+      }
+
+      // Verificar se a partida está aberta para anotação
+      if (!match.openForAnnotation || match.visibility !== 'PUBLIC') {
+        return sendJson(res, 403, { error: 'Partida não está disponível para anotação' });
+      }
+
+      return sendJson(res, 200, match);
+    }
+
     // ─── /api/matches/:id/sessions ───────────────────────────────────────────
     // POST   /api/matches/:id/sessions              → inicia sessão de anotação
     // GET    /api/matches/:id/sessions              → lista sessões da partida
@@ -576,7 +617,7 @@ export default async function handler(req, res) {
         return sendJson(res, 201, endorsement);
       }
 
-      // PATCH /api/matches/:id/sessions/:sessionId → encerrar sessão
+      // PATCH /api/matches/:id/sessions/:sessionId → encerrar ou marcar como ABANDONED
       if (subId && req.method === 'PATCH') {
         const session = await prisma.matchAnnotationSession.findUnique({
           where: { id: subId },
@@ -589,42 +630,63 @@ export default async function handler(req, res) {
         });
         if (!session || session.matchId !== id)
           return sendJson(res, 404, { error: 'Session not found' });
-        // Só o anotador ou ADMIN pode encerrar
+        // Só o anotador ou ADMIN pode encerrar/marcar como ABANDONED
         if (session.annotatorUserId !== ctx.userId && ctx.role !== 'ADMIN')
           return sendJson(res, 403, {
             error: 'Only the annotator or admin can end a session',
           });
         if (!session.isActive) return sendJson(res, 400, { error: 'Session already ended' });
-        // Capturar snapshot do matchState atual como finalStateSnapshot
+
+        // Validar status se fornecido
+        const newStatus = req.body?.status || 'COMPLETED';
+        if (!['COMPLETED', 'ABANDONED', 'IN_PROGRESS'].includes(newStatus))
+          return sendJson(res, 400, { error: 'Invalid status' });
+
+        // Capturar snapshot do matchState atual como finalStateSnapshot (para COMPLETED)
+        // Para ABANDONED, usar matchStateSnapshot se fornecido
         const match = await prisma.match.findUnique({
           where: { id },
           select: { matchState: true },
         });
-        const updated = await prisma.matchAnnotationSession.update({
-          where: { id: subId },
-          data: {
+
+        const updateData = {
+          status: newStatus,
+          ...(newStatus === 'ABANDONED' && {
             isActive: false,
-            status: 'COMPLETED',
+            matchStateSnapshot: req.body?.matchStateSnapshot || match?.matchState || null,
+          }),
+          ...(newStatus === 'COMPLETED' && {
+            isActive: false,
             endedAt: new Date(),
             finalStateSnapshot: req.body?.finalState
               ? JSON.stringify(req.body.finalState)
               : match?.matchState || null,
+          }),
+        };
+
+        const updated = await prisma.matchAnnotationSession.update({
+          where: { id: subId },
+          data: updateData,
+          include: {
+            annotator: { select: { id: true, name: true, email: true } },
           },
         });
 
-        // Verificar se há múltiplas sessões COMPLETED para gerar comparativo
-        const completedSessions = await prisma.matchAnnotationSession.count({
-          where: { matchId: id, status: 'COMPLETED' },
-        });
-        if (completedSessions >= 2) {
-          // Reagendar geração de comparativo (assíncrono — não bloqueia resposta)
-          setImmediate(async () => {
-            try {
-              await generateComparison(id);
-            } catch {
-              /* silently fail — comparativo pode ser regenerado */
-            }
+        // Verificar se há múltiplas sessões COMPLETED para gerar comparativo (só para COMPLETED)
+        if (newStatus === 'COMPLETED') {
+          const completedSessions = await prisma.matchAnnotationSession.count({
+            where: { matchId: id, status: 'COMPLETED' },
           });
+          if (completedSessions >= 2) {
+            // Reagendar geração de comparativo (assíncrono — não bloqueia resposta)
+            setImmediate(async () => {
+              try {
+                await generateComparison(id);
+              } catch {
+                /* silently fail — comparativo pode ser regenerado */
+              }
+            });
+          }
         }
 
         return sendJson(res, 200, updated);
@@ -645,7 +707,7 @@ export default async function handler(req, res) {
         return sendJson(res, 200, sessions);
       }
 
-      // POST /api/matches/:id/sessions → iniciar nova sessão (multi-anotador)
+      // POST /api/matches/:id/sessions → iniciar (ou retomar) sessão
       if (req.method === 'POST') {
         // Verificar se a partida existe e não está finalizada
         const match = await prisma.match.findUnique({
@@ -663,9 +725,7 @@ export default async function handler(req, res) {
             error: 'Spectators cannot annotate matches',
           });
 
-        // Multi-anotador: NÃO desativar sessões existentes
-        // Cada anotador tem sua própria sessão independente
-        // Se o usuário já tem sessão ativa, retornar a existente
+        // ─── 1. Buscar sessão ATIVA (prioritário) ───────────────────────────────
         const existingSession = await prisma.matchAnnotationSession.findFirst({
           where: { matchId: id, annotatorUserId: ctx.userId, isActive: true },
           include: {
@@ -674,7 +734,33 @@ export default async function handler(req, res) {
         });
         if (existingSession) return sendJson(res, 200, existingSession);
 
-        // Criar nova sessão ativa para este anotador
+        // ─── 2. Buscar sessão SUSPENSA (abandonada) para retomada ────────────────
+        // Se anotador saiu e voltou, oferecer retomada da sessão anterior
+        const suspendedSession = await prisma.matchAnnotationSession.findFirst({
+          where: {
+            matchId: id,
+            annotatorUserId: ctx.userId,
+            isActive: false,
+            status: { in: ['IN_PROGRESS', 'ABANDONED'] },
+          },
+          include: {
+            annotator: { select: { id: true, name: true, email: true } },
+          },
+          orderBy: { updatedAt: 'desc' }, // Última sessão
+        });
+
+        if (suspendedSession) {
+          // Retornar sessão suspensa com flag para frontend oferecer retomada
+          return sendJson(res, 200, {
+            ...suspendedSession,
+            suspended: true, // Flag: é retomada, não nova
+            previousState: suspendedSession.matchStateSnapshot
+              ? JSON.parse(suspendedSession.matchStateSnapshot)
+              : null,
+          });
+        }
+
+        // ─── 3. Criar NOVA sessão ────────────────────────────────────────────────
         const session = await prisma.matchAnnotationSession.create({
           data: {
             matchId: id,
@@ -887,16 +973,24 @@ export default async function handler(req, res) {
         return sendJson(res, 200, { ok: true, shareId: share.id, status: share.status });
       }
 
-      // PATCH /api/matches/:id/metadata — atualiza metadados editáveis pelo criador
+      // PATCH /api/matches/:id/metadata — atualiza metadados editáveis pelo criador (GESTOR/ADMIN)
       if (isMetadata && req.method === 'PATCH') {
         const match = await prisma.match.findUnique({
           where: { id },
           select: { createdByUserId: true },
         });
         if (!match) return sendJson(res, 404, { error: 'Match not found' });
-        if (match.createdByUserId !== ctx.userId && ctx.role !== 'ADMIN') {
-          return sendJson(res, 403, { error: 'Apenas o criador da partida pode editar os dados' });
+
+        // Apenas criador com role GESTOR/ADMIN pode editar
+        const isCreator = match.createdByUserId === ctx.userId;
+        const isManagerRole = ctx.role === 'GESTOR' || ctx.role === 'ADMIN';
+
+        if (!isCreator || !isManagerRole) {
+          return sendJson(res, 403, {
+            error: 'Apenas o criador (gestor) da partida pode editar os dados',
+          });
         }
+
         const {
           scheduledAt,
           venueId,
@@ -999,7 +1093,68 @@ export default async function handler(req, res) {
           return sendJson(res, 200, endedMatch);
         }
 
-        // SPECTATOR não pode alterar partidas
+        // Ação especial: reabrir partida finalizada para continuar anotação
+        if (req.body?.action === 'reopenMatch') {
+          const matchToReopen = await prisma.match.findUnique({
+            where: { id },
+            select: {
+              createdByUserId: true,
+              status: true,
+              matchAnnotationSessions: {
+                select: { id: true, status: true, annotatorUserId: true },
+              },
+            },
+          });
+          if (!matchToReopen) return sendJson(res, 404, { error: 'Match not found' });
+
+          // Permite criador ou qualquer anotador da partida
+          const isCreator = matchToReopen.createdByUserId === ctx.userId;
+          const isAnnotator = matchToReopen.matchAnnotationSessions?.some(
+            (s) => s.annotatorUserId === ctx.userId,
+          );
+
+          if (!isCreator && !isAnnotator && ctx.role !== 'ADMIN') {
+            return sendJson(res, 403, {
+              error: 'Access denied - only creator or annotators can reopen',
+            });
+          }
+
+          if (matchToReopen.status !== 'FINISHED') {
+            return sendJson(res, 409, { error: 'Match is not finished' });
+          }
+
+          // Reabrir: mudar status de FINISHED para IN_PROGRESS
+          const reopenedMatch = await prisma.match.update({
+            where: { id },
+            data: {
+              status: 'IN_PROGRESS',
+              endedAt: null,
+            },
+          });
+
+          // Se houver uma sessão COMPLETED do anotador atual, reativá-la
+          const userSession = await prisma.matchAnnotationSession.findFirst({
+            where: {
+              matchId: id,
+              annotatorUserId: ctx.userId,
+              status: 'COMPLETED',
+            },
+          });
+
+          if (userSession) {
+            await prisma.matchAnnotationSession.update({
+              where: { id: userSession.id },
+              data: {
+                status: 'IN_PROGRESS',
+                isActive: true,
+                endedAt: null,
+              },
+            });
+          }
+
+          return sendJson(res, 200, reopenedMatch);
+        }
+
         if (ctx.role === 'SPECTATOR')
           return sendJson(res, 403, {
             error: 'Spectators cannot modify matches',
