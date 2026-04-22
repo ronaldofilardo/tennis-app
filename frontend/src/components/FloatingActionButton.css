@@ -51,7 +51,7 @@
   right: 80px;
   background: var(--clr-surface-2, #1e2535);
   color: var(--clr-text, #e8eaf0);
-  font-size: 0.75rem;
+  font-size: var(--font-scale-sm);
   font-weight: 600;
   padding: 6px 12px;
   border-radius: 8px;
@@ -76,5 +76,16 @@
   .fab,
   .fab-tooltip {
     display: none;
+  }
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

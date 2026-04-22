@@ -11,7 +11,7 @@
 
 .undo-confirm-modal {
   background: var(--clr-surface, #1a1a2e);
-  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.12));
+  border: 1px solid var(--clr-border, var(--clr-border-light));
   border-radius: 16px;
   width: 100%;
   max-width: 360px;
@@ -24,7 +24,7 @@
   align-items: center;
   gap: 10px;
   padding: 20px 20px 12px;
-  border-bottom: 1px solid var(--clr-border, rgba(255, 255, 255, 0.08));
+  border-bottom: 1px solid var(--clr-border, var(--clr-border-light));
 }
 
 .undo-confirm-icon {
@@ -52,7 +52,7 @@
 
 .undo-confirm-point {
   margin: 0 0 6px;
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   font-weight: 600;
   color: var(--clr-text, #f0f0f0);
 }
@@ -82,7 +82,7 @@
 }
 
 .undo-confirm-btn-cancel {
-  background: var(--clr-surface-raised, rgba(255, 255, 255, 0.08));
+  background: var(--clr-surface-raised, var(--clr-border-light));
   color: var(--clr-text, #f0f0f0);
 }
 
@@ -97,4 +97,15 @@
 
 .undo-confirm-btn-confirm:hover {
   opacity: 0.85;
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

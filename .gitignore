@@ -2,6 +2,11 @@ yarn-error.log*
 pnpm-debug.log*
 jspm_packages/
 dist
+
+# UX Audit reports (gerados por scripts/audit-ux.mjs)
+audit-results.md
+/tmp/audit-raw.json
+/tmp/impeccable-raw.json
 ehthumbs.db
 # Node dependencies
 node_modules/

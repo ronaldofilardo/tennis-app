@@ -43,6 +43,24 @@ vi.mock("../src/core/scoring/pointFlowRules", () => ({
   GOLPE_ESP_LABELS: {},
 }));
 
+// Mock hooks
+vi.mock("../src/hooks/useConfirmClose", () => ({
+  default: () => ({
+    isConfirmOpen: false,
+    handleOverlayClick: vi.fn(),
+    confirmClose: vi.fn(),
+    cancelClose: vi.fn(),
+  }),
+}));
+
+vi.mock("../src/components/ErrorBoundary", () => ({
+  ErrorBoundary: ({ children }: { children: React.ReactNode }) => children,
+}));
+
+vi.mock("../src/components/ConfirmCloseDialog", () => ({
+  default: () => null,
+}));
+
 import PointDetailsModal from "../src/components/PointDetailsModal";
 
 // ── Helpers ──────────────────────────────────────────────────

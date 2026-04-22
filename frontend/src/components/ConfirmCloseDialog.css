@@ -41,7 +41,7 @@
   border-radius: 8px;
   color: #94a3b8;
   padding: 0.5rem 1rem;
-  font-size: 0.875rem;
+  font-size: var(--font-scale-body);
   cursor: pointer;
   transition:
     border-color 0.15s,
@@ -59,7 +59,7 @@
   border-radius: 8px;
   color: #fff;
   padding: 0.5rem 1rem;
-  font-size: 0.875rem;
+  font-size: var(--font-scale-body);
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s;
@@ -67,4 +67,15 @@
 
 .confirm-close-confirm:hover {
   background: #b91c1c;
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

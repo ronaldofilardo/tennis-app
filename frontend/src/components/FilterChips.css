@@ -26,7 +26,7 @@
   gap: 4px;
   padding: 8px 14px;
   border-radius: 20px;
-  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  border: 1px solid var(--clr-border, var(--clr-border));
   background: var(--clr-surface, #181d27);
   color: var(--clr-text-muted, #6b7280);
   font-size: 0.78rem;
@@ -68,4 +68,15 @@
   font-size: 0.68rem;
   font-weight: 700;
   opacity: 0.7;
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

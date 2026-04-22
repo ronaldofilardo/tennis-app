@@ -1,7 +1,8 @@
 // frontend/src/components/PointDetailsModal.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { ErrorBoundary } from './ErrorBoundary';
+import { useRallyDetails } from '../hooks/useRallyDetails';
 import type {
   Player,
   RallyDetails,
@@ -50,17 +51,6 @@ interface PointDetailsModalProps {
   fontScale?: number;
 }
 
-interface Sel {
-  situacao?: RallySituacao;
-  tipo?: RallyTipo;
-  sub1?: RallySubtipo1;
-  sub2?: RallySubtipo2;
-  golpe?: RallyGolpe;
-  efeito?: RallyEfeito;
-  direcao?: RallyDirecao;
-  golpe_esp?: RallyGolpeEsp;
-}
-
 function BtnGroup<T extends string>({
   options,
   labels,
@@ -101,7 +91,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
   onCancel,
   fontScale = 1,
 }) => {
-  const [sel, setSel] = useState<Sel>({});
+  const { sel, setSituacao, setTipo, setGolpe, setSub1, setSub2, setEfeito, setDirecao, setGolpeEsp, reset } = useRallyDetails();
 
   // Sempre pede confirmação ao clicar fora — o ponto já foi atribuído
   const isFormDirty = true;
@@ -111,7 +101,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
   );
 
   useEffect(() => {
-    if (isOpen) setSel({});
+    if (isOpen) reset();
   }, [isOpen, playerWinner]);
 
   if (!isOpen) return null;
@@ -175,57 +165,6 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
   // Confirmar fica disponível assim que 'golpe' for selecionado (registro parcial permitido)
   const isComplete = !!sel.golpe;
 
-  // Cascata de reset: campos posteriores são limpos ao mudar campo anterior
-  // Nova ordem para erros: situação → resultado → golpe → sub1 → sub2 → efeito → direção
-  function update<K extends keyof Sel>(field: K, value: Sel[K]) {
-    setSel((prev) => {
-      if (field === 'situacao') return { situacao: value as RallySituacao };
-      if (field === 'tipo') return { situacao: prev.situacao, tipo: value as RallyTipo };
-      if (field === 'golpe')
-        // Golpe vem antes de sub1/sub2 para erros; reseta tudo que vem depois
-        return {
-          ...prev,
-          golpe: value as RallyGolpe,
-          sub1: undefined,
-          sub2: undefined,
-          efeito: undefined,
-          direcao: undefined,
-          golpe_esp: undefined,
-        };
-      if (field === 'sub1')
-        return {
-          ...prev,
-          sub1: value as RallySubtipo1,
-          sub2: undefined,
-          efeito: undefined,
-          direcao: undefined,
-          golpe_esp: undefined,
-        };
-      if (field === 'sub2')
-        return {
-          ...prev,
-          sub2: value as RallySubtipo2,
-          efeito: undefined,
-          direcao: undefined,
-          golpe_esp: undefined,
-        };
-      if (field === 'efeito')
-        return {
-          ...prev,
-          efeito: value as RallyEfeito,
-          direcao: undefined,
-          golpe_esp: undefined,
-        };
-      if (field === 'direcao')
-        return {
-          ...prev,
-          direcao: value as RallyDirecao,
-          golpe_esp: undefined,
-        };
-      return { ...prev, [field]: value };
-    });
-  }
-
   function handleConfirm() {
     if (!isComplete) return;
     const details = {
@@ -271,7 +210,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
               labels={SITUACAO_LABELS}
               selected={sel.situacao}
               disabled={false}
-              onSelect={(v) => update('situacao', v)}
+              onSelect={setSituacao}
             />
           </div>
 
@@ -283,7 +222,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
               labels={TIPO_LABELS}
               selected={sel.tipo}
               disabled={!sel.situacao}
-              onSelect={(v) => update('tipo', v)}
+              onSelect={setTipo}
             />
           </div>
 
@@ -295,7 +234,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
               labels={GOLPE_LABELS}
               selected={sel.golpe}
               disabled={!golpeReady}
-              onSelect={(v) => update('golpe', v)}
+              onSelect={setGolpe}
             />
           </div>
 
@@ -308,7 +247,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
                 labels={SUBTIPO1_LABELS}
                 selected={sel.sub1}
                 disabled={!sub1Ready}
-                onSelect={(v) => update('sub1', v)}
+                onSelect={setSub1}
               />
             </div>
           )}
@@ -322,7 +261,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
                 labels={SUBTIPO2_LABELS}
                 selected={sel.sub2}
                 disabled={!sub2Ready}
-                onSelect={(v) => update('sub2', v)}
+                onSelect={setSub2}
               />
             </div>
           )}
@@ -336,7 +275,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
                 labels={EFEITO_LABELS}
                 selected={sel.efeito}
                 disabled={!efeitoReady}
-                onSelect={(v) => update('efeito', v)}
+                onSelect={setEfeito}
               />
             </div>
           )}
@@ -349,7 +288,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
               labels={DIRECAO_LABELS}
               selected={sel.direcao}
               disabled={!direcaoReady}
-              onSelect={(v) => update('direcao', v)}
+              onSelect={setDirecao}
             />
           </div>
 
@@ -362,7 +301,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
                 labels={GOLPE_ESP_LABELS}
                 selected={sel.golpe_esp}
                 disabled={!sel.direcao}
-                onSelect={(v) => update('golpe_esp', v)}
+                onSelect={setGolpeEsp}
               />
             </div>
           )}
@@ -397,3 +336,4 @@ const PointDetailsModalWithBoundary: React.FC<PointDetailsModalProps> = (props) 
 );
 
 export default PointDetailsModalWithBoundary;
+export { PointDetailsModal };

@@ -88,7 +88,7 @@
 
 .annotated-match-card__dismiss:hover {
   color: #9ca3af;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--clr-border-lighter);
 }
 
 .annotated-match-card__dismiss:focus-visible {
@@ -174,7 +174,7 @@
   font-weight: 600;
   cursor: pointer;
   border: none;
-  transition: all 150ms ease;
+  transition: background-color var(--transition-fast) var(--ease-in-out), border-color var(--transition-fast) var(--ease-in-out), color var(--transition-fast) var(--ease-in-out), transform var(--transition-fast) var(--ease-in-out);
 }
 
 .annotated-match-card__btn:disabled {
@@ -215,12 +215,12 @@
 }
 
 .annotated-match-card__btn--ghost:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--clr-border-lighter);
   color: #e2e8f0;
 }
 
 /* Responsive */
-@media (max-width: 480px) {
+@media (max-width: clamp(260px, 80vw, 480px)) {
   .annotated-match-card__players {
     font-size: 14px;
   }

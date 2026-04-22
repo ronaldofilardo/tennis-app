@@ -46,7 +46,7 @@
 }
 
 .action-quick-btn {
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--clr-border);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
   border-radius: var(--radius-btn);
@@ -160,13 +160,13 @@
 .config-btn {
   flex: 0 0 auto;
   padding: 0.6rem 0.8rem;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--clr-surface-light);
   color: var(--text-muted);
   border-color: var(--border-subtle);
 }
 
 .config-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--clr-border-light);
   color: var(--text-secondary);
 }
 
@@ -183,7 +183,7 @@
 }
 
 .font-scale-btn {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--clr-surface-light);
   border: 1px solid var(--border-subtle);
   color: var(--text-muted);
   border-radius: var(--radius-btn);
@@ -207,4 +207,15 @@
 .font-scale-btn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -12,8 +12,8 @@
 .join-club-card {
   max-width: 420px;
   width: 100%;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--clr-surface-lighter);
+  border: 1px solid var(--clr-border-light);
   border-radius: 16px;
   padding: 40px 32px;
   text-align: center;
@@ -35,7 +35,7 @@
   width: 80px;
   height: 80px;
   border-radius: 16px;
-  background: var(--accent-gold, #eab308);
+  background: var(--clr-yellow);
   color: #000;
   font-size: 36px;
   font-weight: 700;
@@ -97,7 +97,7 @@
 .join-club-btn-primary {
   margin-top: 8px;
   padding: 12px 32px;
-  background: var(--accent-gold, #eab308);
+  background: var(--clr-yellow);
   color: #000;
   border: none;
   border-radius: 10px;
@@ -115,7 +115,7 @@
 .join-club-btn-secondary {
   margin-top: 8px;
   padding: 10px 24px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--clr-surface-light);
   color: var(--text-primary, #f8fafc);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 10px;

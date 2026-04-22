@@ -24,8 +24,8 @@
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--clr-surface-light);
+  border: 1px solid var(--clr-border-light);
   color: #e2e8f0;
   cursor: pointer;
   flex-shrink: 0;
@@ -34,7 +34,7 @@
 
 .match-discovery__back:hover,
 .match-discovery__back:focus-visible {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--clr-border-light);
   outline: none;
   box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.4);
 }
@@ -63,12 +63,12 @@
 .discovery-filter-chip {
   padding: 6px 14px;
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--clr-border-light);
+  background: var(--clr-surface-lighter);
   color: #94a3b8;
   font-size: 13px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast) ease;
 }
 
 .discovery-filter-chip:hover,
@@ -159,7 +159,7 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast) ease;
 }
 
 .match-discovery__cta:hover,
@@ -182,7 +182,7 @@
 /* Card */
 .discovery-card {
   background: #1e1e2e;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--clr-border-light);
   border-radius: 12px;
   padding: 16px;
   transition:
@@ -269,7 +269,7 @@
   flex-wrap: wrap;
   gap: 8px;
   padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--clr-surface-light);
 }
 
 .discovery-card__annotators {
@@ -292,7 +292,7 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast) ease;
 }
 
 .discovery-card__annotate-btn:hover:not(:disabled),

@@ -5,13 +5,13 @@
 .server-effect-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.82);
+  background: var(--clr-overlay-dark);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2000;
   padding: 16px;
-  animation: semFadeIn 0.2s ease-out;
+  animation: semFadeIn 0.2s var(--ease-out);
   backdrop-filter: blur(4px);
 }
 
@@ -34,7 +34,7 @@
   border-top: 3px solid var(--surface-accent, #22c55e);
   border-radius: var(--radius-card, 20px);
   width: 100%;
-  max-width: 400px;
+  max-width: clamp(280px, 90vw, 400px);
   box-shadow:
     var(--shadow-card, 0 8px 32px rgba(0, 0, 0, 0.4)),
     0 0 32px var(--surface-accent-dim, rgba(34, 197, 94, 0.12));
@@ -43,6 +43,13 @@
   overflow: hidden;
   font-family: var(--font-main, 'Inter', sans-serif);
   color: var(--text-primary, #f8fafc);
+}
+
+/* Landscape tablet optimization */
+@media (orientation: landscape) and (min-height: 500px) {
+  .server-effect-modal {
+    max-width: 500px;
+  }
 }
 
 /* Variante erro (Out / Net) — borda laranja âmbar para diferenciar de sacadas */
@@ -57,7 +64,7 @@
 
 .modal-header {
   padding: 20px 24px 14px;
-  border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  border-bottom: 1px solid var(--border-subtle, var(--clr-border-light));
   text-align: center;
   background: var(--surface-accent-dim, rgba(34, 197, 94, 0.06));
 }
@@ -117,7 +124,7 @@
 .button-group button {
   padding: 8px 14px;
   border: 1.5px solid var(--border-default, rgba(255, 255, 255, 0.15));
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--clr-surface-light);
   border-radius: var(--radius-btn, 12px);
   cursor: pointer;
   transition:
@@ -133,7 +140,7 @@
 
 .button-group button:hover {
   border-color: rgba(255, 255, 255, 0.35);
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--clr-border-light);
   color: var(--text-primary, #f8fafc);
 }
 
@@ -151,7 +158,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  border-top: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  border-top: 1px solid var(--border-subtle, var(--clr-border-light));
   background: rgba(0, 0, 0, 0.15);
 }
 
@@ -179,7 +186,7 @@
 .cancel-btn {
   padding: 11px 16px;
   background: transparent;
-  color: var(--alert-red, #ef4444);
+  color: var(--alert-red, var(--clr-error));
   border: 1.5px solid rgba(239, 68, 68, 0.35);
   border-radius: var(--radius-btn, 12px);
   font-size: calc(0.875rem * var(--sb-scale, 1));
@@ -194,4 +201,15 @@
 .cancel-btn:hover {
   background: rgba(239, 68, 68, 0.1);
   border-color: rgba(239, 68, 68, 0.6);
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

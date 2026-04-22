@@ -17,7 +17,7 @@
   --clr-bg: #0f1117;
   --clr-surface: #181d27;
   --clr-surface-2: #1e2535;
-  --clr-border: rgba(255, 255, 255, 0.07);
+  --clr-border: var(--clr-border);
   --clr-text: #e8eaf0;
   --clr-text-muted: #6b7280;
   --clr-text-dim: #9ca3af;
@@ -28,6 +28,45 @@
   --clr-clay: #c4623a;
   --clr-hard: #3b82f6;
   --clr-grass: #16a34a;
+
+  /* Semantic color aliases */
+  --clr-error: var(--clr-live);
+  --clr-success: var(--clr-accent);
+  --clr-warning: var(--clr-yellow);
+  --clr-info: var(--clr-blue);
+
+  /* Surface variants with opacity */
+  --clr-surface-light: var(--clr-surface-light);
+  --clr-surface-lighter: var(--clr-surface-lighter);
+  --clr-surface-dark: rgba(0, 0, 0, 0.4);
+
+  /* Border variants */
+  --clr-border-light: var(--clr-border-light);
+  --clr-border-lighter: var(--clr-surface-lighter);
+
+  /* Overlay & translucent */
+  --clr-overlay-dark: rgba(0, 0, 0, 0.82);
+  --clr-overlay-light: rgba(255, 255, 255, 0.08);
+
+  /* Accent variants (yellow/gold secondary) */
+  --clr-yellow-faint: rgba(234, 179, 8, 0.06);
+  --clr-yellow-light: rgba(234, 179, 8, 0.12);
+  --clr-yellow-hover: rgba(234, 179, 8, 0.4);
+
+  /* Animation tokens (Emil Kowalski Design Engineering) */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-fast: 150ms;
+  --transition-normal: 200ms;
+  --transition-slow: 300ms;
+
+  /* Typography scale (responsive, mobile-first) */
+  --font-scale-h1: clamp(1.75rem, 5vw, 2.5rem);
+  --font-scale-h2: clamp(1.5rem, 4vw, 2rem);
+  --font-scale-h3: clamp(1.25rem, 3vw, 1.5rem);
+  --font-scale-body: clamp(0.875rem, 2vw, 1rem);
+  --font-scale-sm: clamp(0.75rem, 1.5vw, 0.875rem);
 }
 body {
   margin: 0;

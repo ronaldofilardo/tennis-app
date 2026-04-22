@@ -57,7 +57,7 @@
 }
 
 .auth-field label {
-  font-size: 0.85rem;
+  font-size: var(--font-scale-body);
   font-weight: 500;
   color: var(--text-secondary, #8fb8a4);
 }
@@ -76,7 +76,7 @@
 
 .auth-field input:focus {
   outline: none;
-  border-color: var(--accent-gold, #eab308);
+  border-color: var(--clr-yellow);
 }
 
 .auth-field input:disabled {
@@ -94,8 +94,8 @@
   background: rgba(239, 68, 68, 0.12);
   border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 6px;
-  color: var(--alert-red, #ef4444);
-  font-size: 0.85rem;
+  color: var(--alert-red, var(--clr-error));
+  font-size: var(--font-scale-body);
   text-align: center;
 }
 
@@ -104,11 +104,11 @@
 .auth-submit {
   width: 100%;
   padding: 12px;
-  background: var(--accent-gold, #eab308);
+  background: var(--clr-yellow);
   color: #000;
   border: none;
   border-radius: 6px;
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   font-weight: 600;
   cursor: pointer;
   transition:
@@ -136,7 +136,7 @@
 .auth-toggle {
   text-align: center;
   margin-top: 20px;
-  font-size: 0.85rem;
+  font-size: var(--font-scale-body);
   color: var(--text-muted, #5a8a70);
 }
 
@@ -147,9 +147,9 @@
 .auth-link {
   background: none;
   border: none;
-  color: var(--accent-gold, #eab308);
+  color: var(--clr-yellow);
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: var(--font-scale-body);
   font-weight: 600;
   padding: 0;
   text-decoration: underline;
@@ -165,7 +165,7 @@
 .auth-register-options {
   margin-top: 20px;
   padding-top: 16px;
-  border-top: 1px solid var(--border-muted, rgba(255, 255, 255, 0.1));
+  border-top: 1px solid var(--border-muted, var(--clr-border-light));
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -174,7 +174,7 @@
 
 .auth-register-label {
   margin: 0 0 4px;
-  font-size: 0.75rem;
+  font-size: var(--font-scale-sm);
   color: var(--text-muted, #5a8a70);
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -187,7 +187,7 @@
   border: 1px solid var(--border-muted, rgba(255, 255, 255, 0.15));
   border-radius: 8px;
   color: var(--text-secondary, #bbd5c5);
-  font-size: 0.875rem;
+  font-size: var(--font-scale-body);
   font-weight: 500;
   cursor: pointer;
   transition:
@@ -198,12 +198,23 @@
 }
 
 .auth-register-btn:hover {
-  background: var(--surface-hover, rgba(255, 255, 255, 0.06));
-  border-color: var(--accent-gold, #eab308);
+  background: var(--surface-hover, var(--clr-surface-light));
+  border-color: var(--clr-yellow);
   color: var(--text-primary, #e8f5ee);
 }
 
 .auth-register-btn:focus-visible {
-  outline: 2px solid var(--accent-gold, #eab308);
+  outline: 2px solid var(--clr-yellow);
   outline-offset: 2px;
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

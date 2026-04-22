@@ -10,7 +10,7 @@
   padding: 10px 16px;
   font-size: 0.82rem;
   font-weight: 500;
-  animation: slide-down 0.2s ease-out;
+  animation: slide-down 0.2s var(--ease-out);
 }
 
 @keyframes slide-down {
@@ -37,7 +37,7 @@
 }
 
 .offline-banner-icon {
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   flex-shrink: 0;
 }
 
@@ -60,4 +60,15 @@
 
 .offline-banner-sync-btn:hover {
   background: rgba(245, 158, 11, 0.4);
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

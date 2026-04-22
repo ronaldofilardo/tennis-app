@@ -32,7 +32,7 @@
   border-radius: 6px;
   border-left: 3px solid #48bb78;
   font-size: 0.9em;
-  transition: all 0.2s ease;
+  transition: all var(--transition-normal) ease;
 }
 
 .rule-item:hover {
@@ -56,5 +56,15 @@
   .rule-item {
     font-size: 0.85em;
     padding: 6px 10px;
+  }
+}
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
