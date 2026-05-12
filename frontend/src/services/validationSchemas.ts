@@ -51,6 +51,8 @@ export const MatchCreateSchema = z.object({
   bracketType: z.enum(['ELIMINATION', 'GROUPS', 'SWISS']).optional().nullable(),
   temperature: z.number().min(-50).max(60).optional().nullable(),
   humidity: z.number().min(0).max(100).optional().nullable(),
+  // Identificador público para compartilhamento com anotadores
+  publicMatchCode: z.string().optional().nullable(),
   metadata: z.record(z.string(), z.unknown()).optional().nullable(),
   tags: z.array(z.string()).optional().nullable(),
   _meta: z

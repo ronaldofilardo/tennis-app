@@ -17,6 +17,7 @@ export interface EditableMatch {
   visibility?: string;
   openForAnnotation?: boolean;
   createdByUserId?: string | null;
+  status?: string | null;
 }
 
 interface EditMatchModalProps {

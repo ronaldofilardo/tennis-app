@@ -15,7 +15,7 @@
 
 .tournament-modal {
   width: 100%;
-  max-width: 560px;
+  max-width: clamp(320px, 90vw, 560px);
   max-height: 85vh;
   background: var(--court-bg, #071912);
   border: 1px solid var(--border-default, #1a4828);
@@ -52,7 +52,7 @@
 }
 
 .modal-close:hover {
-  color: var(--alert-red, #ef4444);
+  color: var(--alert-red, var(--clr-error));
 }
 
 /* Tabs */
@@ -68,9 +68,9 @@
   border: none;
   border-bottom: 2px solid transparent;
   color: var(--text-secondary, #8fb8a4);
-  font-size: 0.85rem;
+  font-size: var(--font-scale-body);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--transition-normal);
 }
 
 .modal-tab:hover {
@@ -78,8 +78,8 @@
 }
 
 .modal-tab.active {
-  border-bottom-color: var(--accent-gold, #eab308);
-  color: var(--accent-gold, #eab308);
+  border-bottom-color: var(--clr-yellow);
+  color: var(--clr-yellow);
   font-weight: 600;
 }
 
@@ -129,7 +129,7 @@
 .form-field select:focus,
 .form-field textarea:focus {
   outline: none;
-  border-color: var(--accent-gold, #eab308);
+  border-color: var(--clr-yellow);
 }
 
 .form-field textarea {
@@ -174,8 +174,8 @@
 .btn-remove-category {
   background: none;
   border: none;
-  color: var(--alert-red, #ef4444);
-  font-size: 0.75rem;
+  color: var(--alert-red, var(--clr-error));
+  font-size: var(--font-scale-sm);
   cursor: pointer;
   padding: 2px 8px;
 }
@@ -186,7 +186,7 @@
   border: 1px dashed var(--border-default, #1a4828);
   border-radius: 8px;
   color: var(--text-secondary, #8fb8a4);
-  font-size: 0.85rem;
+  font-size: var(--font-scale-body);
   cursor: pointer;
   transition:
     border-color 0.2s,
@@ -194,8 +194,8 @@
 }
 
 .btn-add-category:hover {
-  border-color: var(--accent-gold, #eab308);
-  color: var(--accent-gold, #eab308);
+  border-color: var(--clr-yellow);
+  color: var(--clr-yellow);
 }
 
 /* Error */
@@ -203,8 +203,8 @@
   padding: 10px 20px;
   background: rgba(239, 68, 68, 0.1);
   border-top: 1px solid rgba(239, 68, 68, 0.2);
-  color: var(--alert-red, #ef4444);
-  font-size: 0.85rem;
+  color: var(--alert-red, var(--clr-error));
+  font-size: var(--font-scale-body);
   text-align: center;
 }
 
@@ -235,7 +235,7 @@
 
 .btn-save {
   padding: 10px 24px;
-  background: var(--accent-gold, #eab308);
+  background: var(--clr-yellow);
   color: #000;
   border: none;
   border-radius: 6px;
@@ -252,4 +252,15 @@
 .btn-save:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

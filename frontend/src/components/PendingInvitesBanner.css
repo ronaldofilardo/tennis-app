@@ -17,12 +17,12 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 12px;
-  font-size: 0.85rem;
+  font-size: var(--font-scale-body);
   color: #f59e0b;
 }
 
 .pending-invites-icon {
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
 }
 
 .pending-invites-list {
@@ -60,7 +60,7 @@
   align-items: center;
   justify-content: center;
   font-size: 1.2rem;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--clr-surface-light);
   border-radius: 8px;
   flex-shrink: 0;
 }
@@ -81,7 +81,7 @@
 }
 
 .pending-invite-date {
-  font-size: 0.75rem;
+  font-size: var(--font-scale-sm);
   color: #64748b;
 }
 
@@ -107,4 +107,15 @@
 .pending-invite-confirm-btn:disabled {
   opacity: 0.6;
   cursor: default;
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

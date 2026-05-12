@@ -75,6 +75,7 @@ vi.mock('../../core/scoring/TennisScoring', () => {
     canRedo = vi.fn(() => false);
     setTokenProvider = vi.fn();
     getPointsHistory = vi.fn(() => []);
+    getLastPointDetails = vi.fn(() => null);
     getAvailableActions = vi.fn(() => [
       { label: '1º Saque', action: 'FIRST_SERVE', enabled: true },
       { label: '2º Saque', action: 'SECOND_SERVE', enabled: true },
@@ -430,6 +431,12 @@ describe('ScoreboardV2 - Cobertura Avançada', () => {
         name: /Correção \(Undo\)/i,
       });
       fireEvent.click(undoButton);
+
+      // Modal de confirmação de undo abre — confirmar
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Confirmar/i })).toBeInTheDocument();
+      });
+      fireEvent.click(screen.getByRole('button', { name: /Confirmar/i }));
 
       // Verifica se a função de atualização foi chamada após desfazer
       await waitFor(() => {

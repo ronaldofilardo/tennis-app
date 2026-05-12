@@ -146,7 +146,7 @@ export const EndMatchModal: React.FC<EndMatchModalProps> = ({
           <button
             className="end-match-modal-btn-confirm"
             onClick={handleConfirm}
-            disabled={isLoading}
+            disabled={isLoading || (status === 'FINISHED' && !winner)}
           >
             {isLoading ? 'Encerrando...' : `${statusLabel[status]} Partida`}
           </button>

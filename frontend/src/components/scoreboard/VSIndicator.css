@@ -26,11 +26,11 @@
   color: var(--accent-gold);
   text-transform: uppercase;
   letter-spacing: 1px;
-  background: rgba(234, 179, 8, 0.12);
+  background: var(--clr-yellow-light);
   border: 1px solid rgba(234, 179, 8, 0.35);
   border-radius: 10px;
   padding: 0.4rem 0.6rem;
-  animation: glow-gold 2s ease-in-out infinite;
+  animation: glow-gold 2s var(--ease-in-out) infinite;
 }
 
 .vs-match-tb {
@@ -42,12 +42,12 @@
   border: 1px solid rgba(239, 68, 68, 0.35);
   border-radius: 10px;
   padding: 0.4rem 0.6rem;
-  animation: glow-red 1.5s ease-in-out infinite;
+  animation: glow-red 1.5s var(--ease-in-out) infinite;
 }
 
 .vs-deuce {
   font-size: 1.8rem;
-  animation: deuce-pulse 1.4s ease-in-out infinite;
+  animation: deuce-pulse 1.4s var(--ease-in-out) infinite;
 }
 
 .vs-icon {
@@ -55,7 +55,7 @@
 }
 
 .vs-deuce-icon {
-  font-size: 2rem;
+  font-size: var(--font-scale-h1);
 }
 
 .vs-side-hint {
@@ -71,7 +71,7 @@
     box-shadow: 0 0 0 0 rgba(234, 179, 8, 0);
   }
   50% {
-    box-shadow: 0 0 10px rgba(234, 179, 8, 0.4);
+    box-shadow: 0 0 10px var(--clr-yellow-hover);
   }
 }
 
@@ -92,5 +92,16 @@
   }
   50% {
     transform: scale(1.15);
+  }
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

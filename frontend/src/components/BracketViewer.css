@@ -54,7 +54,7 @@
 }
 
 .bracket-match:hover {
-  border-color: var(--accent-gold, #eab308);
+  border-color: var(--clr-yellow);
   transform: translateY(-1px);
 }
 
@@ -144,7 +144,7 @@
 }
 
 .bracket-error {
-  color: var(--alert-red, #ef4444);
+  color: var(--alert-red, var(--clr-error));
 }
 
 /* Responsivo */
@@ -155,6 +155,17 @@
 
   .bracket-player {
     padding: 6px 8px;
-    font-size: 0.75rem;
+    font-size: var(--font-scale-sm);
+  }
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

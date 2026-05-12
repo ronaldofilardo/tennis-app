@@ -52,7 +52,7 @@
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 150ms ease;
+  transition: background-color var(--transition-fast) var(--ease-in-out), border-color var(--transition-fast) var(--ease-in-out), color var(--transition-fast) var(--ease-in-out), transform var(--transition-fast) var(--ease-in-out);
   white-space: nowrap;
   user-select: none;
 }
@@ -94,7 +94,7 @@
   height: 18px;
   padding: 0 4px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--clr-border-light);
   font-size: 10px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;

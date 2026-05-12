@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--clr-overlay-dark, rgba(0, 0, 0, 0.5));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12,10 +12,10 @@
 }
 
 .end-match-modal-content {
-  background-color: #1a1a1a;
-  border: 1px solid #444;
+  background-color: var(--clr-surface, #181d27);
+  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
   border-radius: 8px;
-  max-width: 450px;
+  max-width: clamp(240px, 75vw, 450px);
   width: 90%;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
   display: flex;
@@ -27,21 +27,21 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
 }
 
 .end-match-modal-header h2 {
   margin: 0;
-  font-size: 1.25rem;
-  color: #fff;
+  font-size: var(--font-scale-h3);
+  color: var(--clr-text, #e8eaf0);
   font-weight: 600;
 }
 
 .end-match-modal-close {
   background: none;
   border: none;
-  color: #999;
-  font-size: 1.5rem;
+  color: var(--clr-text-muted, #6b7280);
+  font-size: var(--font-scale-h2);
   cursor: pointer;
   padding: 0;
   width: 24px;
@@ -56,8 +56,8 @@
 }
 
 .end-match-modal-close:hover {
-  background-color: #333;
-  color: #ccc;
+  background-color: var(--clr-surface-2, #1e2535);
+  color: var(--clr-text, #e8eaf0);
 }
 
 .end-match-modal-body {
@@ -67,7 +67,7 @@
 
 .end-match-modal-info {
   margin: 0 0 1.5rem 0;
-  color: #ccc;
+  color: var(--clr-text-muted, #6b7280);
   font-size: 0.95rem;
   line-height: 1.5;
 }
@@ -80,7 +80,7 @@
 }
 
 .end-match-modal-form-group label {
-  color: #ccc;
+  color: var(--clr-text-muted, #6b7280);
   font-size: 0.9rem;
   font-weight: 500;
 }
@@ -95,7 +95,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #ccc;
+  color: var(--clr-text-muted, #6b7280);
   cursor: pointer;
   font-size: 0.95rem;
   user-select: none;
@@ -113,10 +113,10 @@
 
 .end-match-modal-select {
   padding: 10px;
-  background-color: #2c2c2c;
-  border: 1px solid #555;
+  background-color: var(--clr-bg, #0f1117);
+  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
   border-radius: 4px;
-  color: #fff;
+  color: var(--clr-text, #e8eaf0);
   font-family: inherit;
   font-size: 0.95rem;
   cursor: pointer;
@@ -135,10 +135,10 @@
 
 .end-match-modal-textarea {
   padding: 10px;
-  background-color: #2c2c2c;
-  border: 1px solid #555;
+  background-color: var(--clr-bg, #0f1117);
+  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
   border-radius: 4px;
-  color: #fff;
+  color: var(--clr-text, #e8eaf0);
   font-family: inherit;
   font-size: 0.9rem;
   resize: vertical;
@@ -165,10 +165,10 @@
 
 .end-match-modal-error {
   padding: 10px;
-  background-color: rgba(255, 107, 107, 0.1);
-  border: 1px solid #ff6b6b;
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid var(--clr-error, #ef4444);
   border-radius: 4px;
-  color: #ff8787;
+  color: var(--clr-error, #ef4444);
   font-size: 0.9rem;
   margin-bottom: 1rem;
 }
@@ -177,7 +177,7 @@
   display: flex;
   gap: 1rem;
   padding: 20px;
-  border-top: 1px solid #333;
+  border-top: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
   justify-content: flex-end;
 }
 
@@ -189,18 +189,22 @@
   font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 150ms ease;
+  transition:
+    background-color var(--transition-fast) var(--ease-in-out),
+    border-color var(--transition-fast) var(--ease-in-out),
+    color var(--transition-fast) var(--ease-in-out),
+    transform var(--transition-fast) var(--ease-in-out);
   min-width: 120px;
 }
 
 .end-match-modal-btn-cancel {
-  background-color: #333;
-  color: #ccc;
+  background-color: var(--clr-surface-2, #1e2535);
+  color: var(--clr-text-muted, #6b7280);
 }
 
 .end-match-modal-btn-cancel:hover:not(:disabled) {
-  background-color: #444;
-  color: #fff;
+  background-color: var(--clr-surface-light, #2a3341);
+  color: var(--clr-text, #e8eaf0);
 }
 
 .end-match-modal-btn-confirm {
@@ -216,4 +220,15 @@
 .end-match-modal-btn-confirm:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

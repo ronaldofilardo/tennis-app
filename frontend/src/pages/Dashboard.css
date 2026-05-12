@@ -32,7 +32,7 @@
 
 .dashboard-header h2 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: var(--font-scale-h2);
   font-weight: 800;
   color: var(--clr-text);
   letter-spacing: -0.02em;
@@ -137,7 +137,7 @@
 }
 
 .dashboard-empty p {
-  font-size: 0.85rem;
+  font-size: var(--font-scale-body);
 
   /* ── Hero CTA (empty default view) ────────────────────────── */
 }
@@ -159,14 +159,14 @@
   height: 72px;
   border-radius: 50%;
   background: var(--clr-surface-2, #1e2535);
-  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  border: 1px solid var(--clr-border, var(--clr-border));
   color: var(--clr-accent, #22c55e);
   margin-bottom: 1.25rem;
   opacity: 0.8;
 }
 
 .dashboard-hero__title {
-  font-size: 1.15rem;
+  font-size: var(--font-scale-h3);
   font-weight: 800;
   color: var(--clr-text, #e8eaf0);
   margin: 0 0 0.5rem;
@@ -189,7 +189,7 @@
   align-items: center;
   justify-content: center;
   background: var(--clr-surface-2, #1e2535);
-  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  border: 1px solid var(--clr-border, var(--clr-border));
   border-radius: 6px;
   color: var(--clr-accent, #22c55e);
   padding: 4px;
@@ -274,7 +274,7 @@
 }
 
 .card-sport-label {
-  font-size: 0.7rem;
+  font-size: var(--font-scale-sm);
   font-weight: 800;
   letter-spacing: 0.1em;
   color: var(--clr-text-muted);
@@ -339,7 +339,7 @@
   height: 6px;
   border-radius: 50%;
   background: #f43f5e;
-  animation: pulse 1.4s ease-in-out infinite;
+  animation: pulse 1.4s var(--ease-in-out) infinite;
 }
 @keyframes pulse {
   0%,
@@ -462,14 +462,14 @@
 }
 
 .live-stat-value {
-  font-size: 1.15rem;
+  font-size: var(--font-scale-h3);
   font-weight: 900;
   color: var(--clr-text);
   line-height: 1;
 }
 
 .live-stat-sep {
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   color: var(--clr-text-muted);
   margin-bottom: 0;
   align-self: flex-end;
@@ -478,7 +478,7 @@
 
 .live-partials {
   margin-top: 0.45rem;
-  font-size: 0.72rem;
+  font-size: var(--font-scale-sm);
   color: var(--clr-text-muted);
   text-align: center;
   letter-spacing: 0.03em;
@@ -492,7 +492,7 @@
   border-radius: 10px;
   border: 1px solid var(--clr-border);
   padding: 0.55rem 0.9rem;
-  font-size: 0.85rem;
+  font-size: var(--font-scale-body);
   color: var(--clr-text-dim);
 }
 
@@ -530,7 +530,7 @@
 }
 
 .card-format {
-  font-size: 0.7rem;
+  font-size: var(--font-scale-sm);
   color: var(--clr-text-muted);
   white-space: nowrap;
   overflow: hidden;
@@ -539,7 +539,7 @@
 }
 
 .card-time {
-  font-size: 0.7rem;
+  font-size: var(--font-scale-sm);
   color: var(--clr-text-muted);
   white-space: nowrap;
 }
@@ -613,6 +613,31 @@
   transform: translateY(-1px);
 }
 
+.delete-match-btn {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  transition:
+    background 0.18s,
+    transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.delete-match-btn:hover {
+  background: rgba(239, 68, 68, 0.22);
+  transform: translateY(-1px);
+}
+
 /* ══════════════════════════════════════════════════════════
    MOBILE-FIRST IMPROVEMENTS
    ══════════════════════════════════════════════════════════ */
@@ -677,15 +702,15 @@
   }
 
   .live-stat-value {
-    font-size: 1rem;
+    font-size: var(--font-scale-body);
   }
 
   .card-vs {
-    font-size: 0.7rem;
+    font-size: var(--font-scale-sm);
   }
 
   .dashboard-section-title {
-    font-size: 0.72rem;
+    font-size: var(--font-scale-sm);
     margin: 12px 0 6px;
   }
 }
@@ -721,13 +746,13 @@
 }
 
 /* ── 480px–639px: Landscape mobile, tablets pequenos ── */
-@media (min-width: 480px) and (max-width: 639px) {
+@media (min-width: clamp(260px, 80vw, 480px)) and (max-width: 639px) {
   .dashboard {
     padding: 0.75rem 1.25rem calc(56px + env(safe-area-inset-bottom, 0px) + 24px);
   }
 
   .player-name {
-    font-size: 1rem;
+    font-size: var(--font-scale-body);
     max-width: 160px;
   }
 
@@ -772,7 +797,7 @@
   }
 
   .live-stat-value {
-    font-size: 1.25rem;
+    font-size: var(--font-scale-h3);
   }
 
   .live-stat {
@@ -821,22 +846,22 @@
   }
 
   .status-badge {
-    font-size: 0.72rem;
+    font-size: var(--font-scale-sm);
     padding: 4px 11px;
   }
 
   .court-type-badge {
-    font-size: 0.72rem;
+    font-size: var(--font-scale-sm);
     padding: 3px 10px;
   }
 
   .card-format {
-    font-size: 0.75rem;
+    font-size: var(--font-scale-sm);
     max-width: none;
   }
 
   .card-time {
-    font-size: 0.75rem;
+    font-size: var(--font-scale-sm);
   }
 
   .dashboard-section-title {
@@ -940,11 +965,11 @@
   background: transparent;
   border: 1px solid #2a2a3e;
   cursor: pointer;
-  transition: all 150ms ease;
+  transition: background-color var(--transition-fast) var(--ease-in-out), border-color var(--transition-fast) var(--ease-in-out), color var(--transition-fast) var(--ease-in-out), transform var(--transition-fast) var(--ease-in-out);
 }
 
 .annotated-section__tab:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--clr-border-lighter);
   color: #e2e8f0;
 }
 
@@ -973,7 +998,7 @@
 }
 
 .annotated-section__tab--active .annotated-section__tab-count {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--clr-border);
 }
 
 .annotated-section__list {
@@ -1145,7 +1170,7 @@
   gap: 8px;
   padding: 12px 14px;
   background: #0f0f1a;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--clr-border-light);
   border-radius: 10px;
   margin-bottom: 8px;
   cursor: pointer;
@@ -1228,7 +1253,7 @@
   border: none;
   cursor: pointer;
   color: var(--clr-text);
-  font-size: 0.85rem;
+  font-size: var(--font-scale-body);
   font-weight: 700;
   letter-spacing: 0.01em;
   gap: 0.5rem;
@@ -1238,7 +1263,7 @@
 }
 
 .open-matches-header:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--clr-surface-lighter);
 }
 
 .open-matches-header:focus-visible {
@@ -1266,7 +1291,7 @@
 }
 
 .open-matches-badge {
-  font-size: 0.7rem;
+  font-size: var(--font-scale-sm);
   font-weight: 800;
   color: var(--clr-accent);
   background: rgba(34, 197, 94, 0.12);

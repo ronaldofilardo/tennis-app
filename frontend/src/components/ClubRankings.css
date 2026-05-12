@@ -3,7 +3,7 @@
 }
 
 .club-rankings-title {
-  font-size: 1.25rem;
+  font-size: var(--font-scale-h3);
   font-weight: 700;
   color: var(--text-primary, #fff);
   margin: 0 0 0.25rem;
@@ -34,7 +34,7 @@
 .club-rankings-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.875rem;
+  font-size: var(--font-scale-body);
 }
 
 .club-rankings-table thead tr {
@@ -46,7 +46,7 @@
   text-align: left;
   font-weight: 600;
   color: var(--text-secondary, #aaa);
-  font-size: 0.75rem;
+  font-size: var(--font-scale-sm);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -54,11 +54,11 @@
 .club-rankings-table td {
   padding: 0.625rem 0.75rem;
   color: var(--text-primary, #fff);
-  border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.05));
+  border-bottom: 1px solid var(--border-subtle, var(--clr-border-lighter));
 }
 
 .club-rankings-table tbody tr:hover {
-  background: var(--bg-hover, rgba(255, 255, 255, 0.04));
+  background: var(--bg-hover, var(--clr-surface-lighter));
 }
 
 .col-pos {
@@ -78,7 +78,7 @@
 }
 
 .rank-num {
-  font-size: 0.85rem;
+  font-size: var(--font-scale-body);
   color: var(--text-secondary, #aaa);
   font-weight: 500;
 }

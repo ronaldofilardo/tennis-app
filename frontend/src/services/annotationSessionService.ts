@@ -16,12 +16,12 @@ export interface AnnotationSession {
   isActive: boolean;
   status: 'IN_PROGRESS' | 'COMPLETED' | 'ABANDONED';
   createdAt: string;
-  annotator: { id: string; name: string; email: string };
-  endorsements: Array<{
+  annotator?: { id?: string; name?: string | null; email?: string };
+  endorsements?: Array<{
     id: string;
     endorsedByUserId: string;
     endorsedAt: string;
-    endorsedBy: { id: string; name: string };
+    endorsedBy?: { id: string; name?: string };
   }>;
 }
 

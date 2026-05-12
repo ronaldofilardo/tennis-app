@@ -54,7 +54,7 @@
   border: 1px solid #555;
   color: #fff;
   border-radius: 4px;
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
 }
 
 .setup-form select {
@@ -125,7 +125,7 @@
   border: 1px solid #2a2a3e;
   border-radius: 8px;
   color: #e2e8f0;
-  font-size: 0.875rem;
+  font-size: var(--font-scale-body);
   padding: 0.5rem 0.75rem;
   outline: none;
   transition: border-color 150ms ease;
@@ -139,7 +139,7 @@
   border: 1px solid #2a2a3e;
   border-radius: 8px;
   color: #e2e8f0;
-  font-size: 0.875rem;
+  font-size: var(--font-scale-body);
   padding: 0.5rem 0.75rem;
   outline: none;
   transition: border-color 150ms ease;
@@ -159,20 +159,39 @@
 /* ── Form actions ────────────────────────────────────────── */
 
 .form-actions {
-  text-align: center;
+  display: flex;
+  gap: 12px;
   margin-top: 2rem;
+  flex-wrap: wrap;
 }
 
+.locate-button,
 .start-match-button {
-  background-color: #4caf50;
-  color: white;
   border: none;
   padding: 12px 24px;
   font-size: 1.2rem;
   font-weight: bold;
   border-radius: 8px;
   cursor: pointer;
-  width: 100%;
+  flex: 1;
+  min-width: 150px;
+  transition: all 150ms ease;
+}
+
+.locate-button {
+  background-color: var(--clr-surface-2);
+  color: var(--clr-text);
+  border: 1px solid var(--clr-border);
+}
+
+.locate-button:hover {
+  background-color: var(--clr-surface);
+  border-color: var(--clr-text-muted);
+}
+
+.start-match-button {
+  background-color: #4caf50;
+  color: white;
 }
 
 .start-match-button:hover {
@@ -224,7 +243,7 @@
 }
 
 .court-type-note {
-  font-size: 0.7rem;
+  font-size: var(--font-scale-sm);
   color: #888;
   letter-spacing: 0.03em;
 }
@@ -335,12 +354,12 @@
   }
 
   .match-setup-header h2 {
-    font-size: 1rem;
+    font-size: var(--font-scale-body);
   }
 
   .back-button {
     padding: 6px 10px;
-    font-size: 0.85rem;
+    font-size: var(--font-scale-body);
   }
 
   .setup-form .form-group {
@@ -348,7 +367,7 @@
   }
 
   .setup-form label {
-    font-size: 0.85rem;
+    font-size: var(--font-scale-body);
     margin-bottom: 0.35rem;
   }
 
@@ -408,10 +427,10 @@
 }
 
 /* ── 480px–639px: Landscape mobile, tablets pequenos ── */
-@media (min-width: 480px) and (max-width: 639px) {
+@media (min-width: clamp(260px, 80vw, 480px)) and (max-width: 639px) {
   .setup-form input,
   .setup-form select {
-    font-size: 1rem;
+    font-size: var(--font-scale-body);
     padding: 11px 14px;
   }
 
@@ -421,7 +440,7 @@
   }
 
   .player-inputs span {
-    font-size: 0.85rem;
+    font-size: var(--font-scale-body);
   }
 
   .court-type-btn {
@@ -440,7 +459,7 @@
 
   .player-inputs span {
     flex-shrink: 0;
-    font-size: 0.75rem;
+    font-size: var(--font-scale-sm);
     margin-bottom: 12px;
   }
 
@@ -458,7 +477,7 @@
   }
 
   .court-type-note {
-    font-size: 0.72rem;
+    font-size: var(--font-scale-sm);
   }
 
   .start-match-button {
@@ -480,13 +499,13 @@
   }
 
   .setup-form label {
-    font-size: 1rem;
+    font-size: var(--font-scale-body);
   }
 
   .setup-form input,
   .setup-form select {
     padding: 12px 16px;
-    font-size: 1rem;
+    font-size: var(--font-scale-body);
     border-radius: 8px;
   }
 
@@ -505,7 +524,7 @@
 
   .start-match-button {
     padding: 16px 32px;
-    font-size: 1.15rem;
+    font-size: var(--font-scale-h3);
     border-radius: 12px;
     max-width: 380px;
   }
@@ -539,7 +558,7 @@
 }
 
 .form-error {
-  color: var(--clr-error, #ef4444);
+  color: var(--clr-error, var(--clr-error));
   margin: 8px 0;
 }
 
@@ -563,7 +582,7 @@
   border: 1px solid #555;
   color: #fff;
   border-radius: 4px;
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   z-index: 1;
 }
 
@@ -643,7 +662,7 @@
   border: 1px solid #555;
   color: #fff;
   border-radius: 4px;
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   min-height: 44px;
 }
 
@@ -666,7 +685,7 @@
   border: 1px solid #555;
   color: #fff;
   border-radius: 4px;
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   min-height: 44px;
 }
 

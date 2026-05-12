@@ -18,12 +18,12 @@
 }
 
 .header-btn {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--clr-border-light);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
   border-radius: var(--radius-badge);
   padding: 0.4rem 0.9rem;
-  font-size: 0.85rem;
+  font-size: var(--font-scale-body);
   font-weight: 600;
   cursor: pointer;
   transition:
@@ -62,7 +62,7 @@
 }
 
 .header-sport-type {
-  font-size: 0.75rem;
+  font-size: var(--font-scale-sm);
   font-weight: 700;
   color: var(--text-secondary);
   text-transform: uppercase;
@@ -70,7 +70,7 @@
 }
 
 .header-elapsed {
-  font-size: 0.7rem;
+  font-size: var(--font-scale-sm);
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
@@ -107,7 +107,7 @@
 /* Toggle de modos */
 .view-mode-toggle {
   display: flex;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--clr-border-lighter);
   border-radius: var(--radius-btn);
   padding: 3px;
   gap: 2px;
@@ -124,7 +124,7 @@
   border: none;
   border-radius: calc(var(--radius-btn) - 3px);
   color: var(--text-muted);
-  font-size: 0.75rem;
+  font-size: var(--font-scale-sm);
   font-weight: 600;
   padding: 0.4rem 0.5rem;
   cursor: pointer;
@@ -134,7 +134,7 @@
 
 .view-mode-btn:hover {
   color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--clr-border-light);
 }
 
 .view-mode-btn-active {
@@ -154,5 +154,16 @@
 @media (min-width: 380px) {
   .view-mode-label {
     display: inline;
+  }
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

@@ -4,14 +4,14 @@
 .add-athlete-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.82);
+  background: var(--clr-overlay-dark);
   display: flex;
   align-items: flex-start;
   justify-content: center;
   z-index: 1100;
   padding: 16px 16px 32px;
   overflow-y: auto;
-  animation: aaFadeIn 0.2s ease-out;
+  animation: aaFadeIn 0.2s var(--ease-out);
   backdrop-filter: blur(4px);
 }
 
@@ -29,16 +29,16 @@
 /* ── Modal ────────────────────────────────────────────────────── */
 .add-athlete-modal {
   background: var(--clr-surface, #181d27);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-top: 3px solid var(--accent-gold, #eab308);
+  border: 1px solid var(--clr-border-light);
+  border-top: 3px solid var(--clr-yellow);
   border-radius: 20px;
   width: 100%;
-  max-width: 560px;
+  max-width: clamp(320px, 90vw, 560px);
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
   margin: auto;
-  font-family: var(--font-main, "Inter", sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
   color: var(--clr-text, #e8eaf0);
   overflow: hidden;
 }
@@ -50,11 +50,11 @@
   justify-content: space-between;
   gap: 12px;
   padding: 20px 24px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid var(--clr-border);
 }
 
 .add-athlete-header h2 {
-  font-size: 1.15rem;
+  font-size: var(--font-scale-h3);
   font-weight: 700;
   color: var(--clr-text, #e8eaf0);
   margin: 0 0 4px;
@@ -82,7 +82,7 @@
 
 .add-athlete-close:hover {
   color: var(--clr-text, #e8eaf0);
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--clr-surface-light);
 }
 
 /* ── Form ─────────────────────────────────────────────────────── */
@@ -97,7 +97,7 @@
 /* ── Sections ─────────────────────────────────────────────────── */
 .add-athlete-section {
   padding: 16px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--clr-border-lighter);
 }
 
 .add-athlete-section:last-of-type {
@@ -105,9 +105,9 @@
 }
 
 .add-athlete-section-title {
-  font-size: 0.72rem;
+  font-size: var(--font-scale-sm);
   font-weight: 700;
-  color: var(--accent-gold, #eab308);
+  color: var(--clr-yellow);
   text-transform: uppercase;
   letter-spacing: 0.07em;
   margin-bottom: 12px;
@@ -117,7 +117,7 @@
 }
 
 .add-athlete-section-hint {
-  font-size: 0.7rem;
+  font-size: var(--font-scale-sm);
   color: var(--clr-text-muted, #6b7280);
   text-transform: none;
   letter-spacing: 0;
@@ -133,26 +133,29 @@
 
 .add-athlete-role-btn {
   padding: 8px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--clr-border-light);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--clr-surface-lighter);
   color: var(--clr-text-muted, #6b7280);
-  font-size: 0.85rem;
+  font-size: var(--font-scale-body);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s;
+  transition:
+    border-color var(--transition-fast) var(--ease-in-out),
+    color var(--transition-fast) var(--ease-in-out),
+    background var(--transition-fast) var(--ease-in-out);
 }
 
 .add-athlete-role-btn:hover {
-  border-color: rgba(234, 179, 8, 0.4);
+  border-color: var(--clr-yellow-hover);
   color: var(--clr-text, #e8eaf0);
-  background: rgba(234, 179, 8, 0.06);
+  background: var(--clr-yellow-faint);
 }
 
 .add-athlete-role-btn.active {
-  border-color: var(--accent-gold, #eab308);
-  color: var(--accent-gold, #eab308);
-  background: rgba(234, 179, 8, 0.12);
+  border-color: var(--clr-yellow);
+  color: var(--clr-yellow);
+  background: var(--clr-yellow-light);
 }
 
 /* ── Grid de campos ───────────────────────────────────────────── */
@@ -173,12 +176,12 @@
 }
 
 .add-athlete-field.required label::after {
-  content: " *";
-  color: #ef4444;
+  content: ' *';
+  color: var(--clr-error);
 }
 
 .add-athlete-field label {
-  font-size: 0.75rem;
+  font-size: var(--font-scale-sm);
   font-weight: 600;
   color: var(--clr-text-muted, #6b7280);
   text-transform: uppercase;
@@ -189,10 +192,10 @@
 .add-athlete-field select {
   padding: 9px 12px;
   background: var(--clr-surface-2, #1e2535);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--clr-border-light);
   border-radius: 8px;
   color: var(--clr-text, #e8eaf0);
-  font-size: 0.875rem;
+  font-size: var(--font-scale-body);
   font-family: inherit;
   transition: border-color 0.15s;
   outline: none;
@@ -200,7 +203,7 @@
 
 .add-athlete-field input:focus,
 .add-athlete-field select:focus {
-  border-color: var(--accent-gold, #eab308);
+  border-color: var(--clr-yellow);
   box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.1);
 }
 
@@ -213,12 +216,12 @@
 }
 
 .add-athlete-error {
-  font-size: 0.72rem;
-  color: #ef4444;
+  font-size: var(--font-scale-sm);
+  color: var(--clr-error);
 }
 
 .add-athlete-hint {
-  font-size: 0.72rem;
+  font-size: var(--font-scale-sm);
   color: var(--clr-text-muted, #6b7280);
   font-style: italic;
 }
@@ -229,34 +232,36 @@
   justify-content: flex-end;
   gap: 10px;
   padding: 16px 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid var(--clr-border);
   background: var(--clr-surface-2, #1e2535);
 }
 
 .add-athlete-btn-cancel {
   padding: 9px 18px;
   background: none;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--clr-border-light);
   border-radius: 8px;
   color: var(--clr-text-muted, #6b7280);
-  font-size: 0.875rem;
+  font-size: var(--font-scale-body);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s;
+  transition:
+    border-color var(--transition-fast) var(--ease-in-out),
+    color var(--transition-fast) var(--ease-in-out);
 }
 
 .add-athlete-btn-cancel:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.25);
+  border-color: var(--clr-border);
   color: var(--clr-text, #e8eaf0);
 }
 
 .add-athlete-btn-save {
   padding: 9px 22px;
-  background: var(--accent-gold, #eab308);
+  background: var(--clr-yellow);
   color: #0f172a;
   border: none;
   border-radius: 8px;
-  font-size: 0.875rem;
+  font-size: var(--font-scale-body);
   font-weight: 700;
   cursor: pointer;
   display: flex;
@@ -299,7 +304,7 @@
 }
 
 /* ── Responsive ───────────────────────────────────────────────── */
-@media (max-width: 520px) {
+@media (max-width: clamp(280px, 85vw, 520px)) {
   .add-athlete-modal {
     border-radius: 16px 16px 0 0;
     margin-top: auto;
@@ -318,5 +323,16 @@
 
   .add-athlete-field--full {
     grid-column: 1;
+  }
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

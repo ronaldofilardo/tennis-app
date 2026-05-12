@@ -18,7 +18,7 @@
   height: 8px;
   border-radius: 50%;
   background: var(--clr-live, #f43f5e);
-  animation: pulse-live 1.4s ease-in-out infinite;
+  animation: pulse-live 1.4s var(--ease-in-out) infinite;
 }
 
 @keyframes pulse-live {
@@ -142,7 +142,7 @@
 }
 
 .live-card-score-set {
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   font-weight: 800;
   color: var(--clr-text, #e8eaf0);
 }
@@ -154,7 +154,7 @@
 }
 
 .live-card-score-sep {
-  font-size: 0.7rem;
+  font-size: var(--font-scale-sm);
   color: var(--clr-text-muted, #6b7280);
 }
 
@@ -182,4 +182,18 @@
 /* When there's only 1 live match, take full width */
 .live-carousel--single .live-card {
   width: 100%;
+}
+
+
+
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

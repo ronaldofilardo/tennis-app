@@ -18,7 +18,7 @@
   gap: 0.5rem;
   padding: 0 1rem;
   background: var(--clr-surface, #181d27);
-  border-bottom: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  border-bottom: 1px solid var(--clr-border);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
   box-sizing: border-box;
   overflow: hidden;
@@ -49,28 +49,39 @@
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 120px;
-  font-size: 0.75rem;
+  font-size: var(--font-scale-sm);
   color: var(--clr-text-muted, #6b7280);
 }
 
 .app-header button {
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--clr-surface-light);
   color: var(--clr-text-dim, #9ca3af);
-  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--clr-border-light);
   padding: 0.3rem 0.75rem;
   border-radius: 8px;
-  font-size: 0.75rem;
+  font-size: var(--font-scale-sm);
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: background 0.15s;
+  transition: background var(--transition-fast) var(--ease-in-out);
 }
 
 .app-header button:hover {
-  background: rgba(255, 255, 255, 0.13);
+  background: var(--clr-border-light);
 }
 
 main {
   width: 100%;
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

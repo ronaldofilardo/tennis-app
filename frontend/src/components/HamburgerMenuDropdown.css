@@ -10,11 +10,11 @@
   z-index: 100;
   min-width: 240px;
   background: var(--clr-surface, #181d27);
-  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  border: 1px solid var(--clr-border, var(--clr-border));
   border-radius: 12px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
   padding: 6px 0;
-  animation: hamburger-slide-down 0.2s ease-out;
+  animation: hamburger-slide-down 0.2s var(--ease-out);
   transform-origin: top right;
 }
 
@@ -99,7 +99,7 @@
 
 .hamburger-dropdown__badge--live {
   background: var(--clr-live, #f43f5e);
-  animation: badge-pulse 1.4s ease-in-out infinite;
+  animation: badge-pulse 1.4s var(--ease-in-out) infinite;
 }
 
 @keyframes badge-pulse {
@@ -116,7 +116,7 @@
 
 .hamburger-dropdown__divider {
   height: 1px;
-  background: var(--clr-border, rgba(255, 255, 255, 0.07));
+  background: var(--clr-border, var(--clr-border));
   margin: 2px 12px;
 }
 

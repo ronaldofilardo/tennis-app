@@ -66,7 +66,7 @@
 
 .resume-sets-list-header h4 {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--font-scale-body);
   color: #aaa;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -133,7 +133,7 @@
 }
 
 .resume-set-tb {
-  font-size: 0.72rem;
+  font-size: var(--font-scale-sm);
   color: #666;
   margin-left: auto;
 }
@@ -167,12 +167,12 @@
 
 .resume-set-title {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   color: #fff;
 }
 
 .resume-set-hint {
-  font-size: 0.72rem;
+  font-size: var(--font-scale-sm);
   color: #666;
 }
 
@@ -315,7 +315,7 @@
 }
 
 .resume-set-complete-text {
-  font-size: 0.85rem;
+  font-size: var(--font-scale-body);
   color: #86efac;
   flex: 1;
 }
@@ -437,7 +437,7 @@
   border-radius: 6px;
   padding: 0.65rem 0.9rem;
   color: #fca5a5;
-  font-size: 0.85rem;
+  font-size: var(--font-scale-body);
   line-height: 1.4;
 }
 
@@ -474,7 +474,7 @@
   color: #fff;
   border: none;
   padding: 10px 20px;
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   font-weight: 700;
   border-radius: 8px;
   cursor: pointer;
@@ -506,7 +506,7 @@
 
   .resume-tb-input {
     width: 48px;
-    font-size: 1rem;
+    font-size: var(--font-scale-body);
   }
 
   .resume-tb-input.large {
@@ -516,10 +516,21 @@
 
   .resume-player-name {
     max-width: 70px;
-    font-size: 0.75rem;
+    font-size: var(--font-scale-sm);
   }
 
   .resume-modal-actions {
     flex-direction: column;
+  }
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

@@ -144,7 +144,9 @@ const HamburgerMenuDropdown: React.FC<HamburgerMenuDropdownProps> = ({
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
           </svg>
         </span>
-        <span className="hamburger-dropdown__label">Partidas Anotadas</span>
+        <span className="hamburger-dropdown__label" title="Partidas que você anotou">
+          Partidas Anotadas
+        </span>
       </button>
 
       <div className="hamburger-dropdown__divider" role="separator" />
@@ -215,7 +217,12 @@ const HamburgerMenuDropdown: React.FC<HamburgerMenuDropdownProps> = ({
             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
           </svg>
         </span>
-        <span className="hamburger-dropdown__label">Aguardando Anotador</span>
+        <span
+          className="hamburger-dropdown__label"
+          title="Partidas aguardando anotação de jogadores"
+        >
+          Aguardando Anotador
+        </span>
         {pendingCount > 0 && (
           <span className="hamburger-dropdown__badge" data-testid="menu-pending-badge">
             {pendingCount > 99 ? '99+' : pendingCount}

@@ -32,7 +32,7 @@
 
 .confirm-delete-modal-header h2 {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: var(--font-scale-h3);
   color: #fff;
   font-weight: 600;
 }
@@ -41,7 +41,7 @@
   background: none;
   border: none;
   color: #999;
-  font-size: 1.5rem;
+  font-size: var(--font-scale-h2);
   cursor: pointer;
   padding: 0;
   width: 24px;
@@ -148,7 +148,7 @@
   font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 150ms ease;
+  transition: background-color var(--transition-fast) var(--ease-in-out), border-color var(--transition-fast) var(--ease-in-out), color var(--transition-fast) var(--ease-in-out), transform var(--transition-fast) var(--ease-in-out);
   min-width: 100px;
 }
 
@@ -175,4 +175,15 @@
 .confirm-delete-modal-btn-delete:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

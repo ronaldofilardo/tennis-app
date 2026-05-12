@@ -21,7 +21,7 @@
 }
 
 .completed-match-card__sport {
-  font-size: 0.7rem;
+  font-size: var(--font-scale-sm);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -32,7 +32,7 @@
 }
 
 .completed-match-card__format {
-  font-size: 0.7rem;
+  font-size: var(--font-scale-sm);
   color: #6b7280;
   background: rgba(107, 114, 128, 0.1);
   padding: 0.15rem 0.5rem;
@@ -40,7 +40,7 @@
 }
 
 .completed-match-card__date {
-  font-size: 0.7rem;
+  font-size: var(--font-scale-sm);
   color: #6b7280;
   margin-left: auto;
 }
@@ -75,7 +75,7 @@
 }
 
 .completed-match-card__vs {
-  font-size: 0.75rem;
+  font-size: var(--font-scale-sm);
   font-weight: 700;
   color: #4b5563;
   text-transform: uppercase;
@@ -98,7 +98,7 @@
   font-weight: 600;
   cursor: pointer;
   border: none;
-  transition: all 150ms ease;
+  transition: background-color var(--transition-fast) var(--ease-in-out), border-color var(--transition-fast) var(--ease-in-out), color var(--transition-fast) var(--ease-in-out), transform var(--transition-fast) var(--ease-in-out);
 }
 
 .completed-match-card__btn--stats {

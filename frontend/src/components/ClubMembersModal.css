@@ -22,10 +22,10 @@
 
 .club-members-modal {
   background: var(--clr-surface, #181d27);
-  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--clr-border, var(--clr-border-light));
   border-radius: 16px;
   width: 100%;
-  max-width: 560px;
+  max-width: clamp(320px, 90vw, 560px);
   max-height: 85vh;
   display: flex;
   flex-direction: column;
@@ -40,7 +40,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 20px 16px;
-  border-bottom: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  border-bottom: 1px solid var(--clr-border, var(--clr-border));
   flex-shrink: 0;
 }
 
@@ -51,19 +51,19 @@
 }
 
 .club-members-modal__icon {
-  font-size: 1.5rem;
+  font-size: var(--font-scale-h2);
   line-height: 1;
 }
 
 .club-members-modal__title h3 {
   margin: 0 0 2px;
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   font-weight: 700;
   color: var(--clr-text, #e8eaf0);
 }
 
 .club-members-modal__subtitle {
-  font-size: 0.75rem;
+  font-size: var(--font-scale-sm);
   color: var(--clr-text-muted, #6b7280);
 }
 
@@ -71,17 +71,17 @@
   background: none;
   border: none;
   color: var(--clr-text-muted, #6b7280);
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   cursor: pointer;
   padding: 6px 8px;
   border-radius: 6px;
-  transition: all 0.15s;
+  transition: all var(--transition-fast);
   line-height: 1;
   flex-shrink: 0;
 }
 
 .club-members-modal__close:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--clr-border-light);
   color: var(--clr-text, #e8eaf0);
 }
 
@@ -109,7 +109,7 @@
   width: 32px;
   height: 32px;
   border: 3px solid var(--clr-surface-2, #1e2535);
-  border-top-color: var(--alert-red, #ef4444);
+  border-top-color: var(--alert-red, var(--clr-error));
   border-radius: 50%;
   animation: members-spin 0.8s linear infinite;
 }
@@ -159,7 +159,7 @@
   align-items: center;
   gap: 8px;
   padding-bottom: 6px;
-  border-bottom: 1px solid var(--clr-border, rgba(255, 255, 255, 0.05));
+  border-bottom: 1px solid var(--clr-border, var(--clr-border-lighter));
 }
 
 .club-members-modal__group-title {
@@ -172,7 +172,7 @@
 }
 
 .club-members-modal__group-count {
-  font-size: 0.7rem;
+  font-size: var(--font-scale-sm);
   font-weight: 700;
   background: var(--clr-surface-2, #1e2535);
   color: var(--clr-text-muted, #6b7280);
@@ -193,7 +193,7 @@
 
 .club-members-modal__role-badge.role-gestor {
   background: rgba(234, 179, 8, 0.15);
-  color: var(--accent-gold, #eab308);
+  color: var(--clr-yellow);
 }
 
 .club-members-modal__role-badge.role-coach {
@@ -236,7 +236,7 @@
 }
 
 .club-members-modal__member:hover {
-  border-color: var(--clr-border, rgba(255, 255, 255, 0.08));
+  border-color: var(--clr-border, var(--clr-border-light));
 }
 
 .club-members-modal__avatar {
@@ -244,11 +244,11 @@
   height: 32px;
   border-radius: 50%;
   background: rgba(239, 68, 68, 0.12);
-  color: var(--alert-red, #ef4444);
+  color: var(--alert-red, var(--clr-error));
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
+  font-size: var(--font-scale-sm);
   font-weight: 700;
   flex-shrink: 0;
 }
@@ -262,7 +262,7 @@
 }
 
 .club-members-modal__member-name {
-  font-size: 0.85rem;
+  font-size: var(--font-scale-body);
   font-weight: 600;
   color: var(--clr-text, #e8eaf0);
   display: flex;
@@ -276,8 +276,8 @@
 .club-members-modal__guest-tag {
   font-size: 0.6rem;
   font-weight: 600;
-  background: rgba(234, 179, 8, 0.12);
-  color: var(--accent-gold, #eab308);
+  background: var(--clr-yellow-light);
+  color: var(--clr-yellow);
   padding: 1px 5px;
   border-radius: 6px;
   text-transform: uppercase;
@@ -286,7 +286,7 @@
 }
 
 .club-members-modal__member-email {
-  font-size: 0.75rem;
+  font-size: var(--font-scale-sm);
   color: var(--clr-text-muted, #6b7280);
   white-space: nowrap;
   overflow: hidden;
@@ -314,8 +314,8 @@
 }
 
 .club-members-modal__status.status-pending {
-  background: rgba(234, 179, 8, 0.12);
-  color: var(--accent-gold, #eab308);
+  background: var(--clr-yellow-light);
+  color: var(--clr-yellow);
 }
 
 .club-members-modal__joined {
@@ -325,7 +325,7 @@
 
 /* ── Responsive ──────────────────────────────────────────── */
 
-@media (max-width: 480px) {
+@media (max-width: clamp(260px, 80vw, 480px)) {
   .club-members-modal {
     max-height: 92vh;
     border-radius: 12px;
@@ -341,5 +341,16 @@
 
   .club-members-modal__member-meta {
     display: none;
+  }
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

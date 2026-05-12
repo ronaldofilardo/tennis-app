@@ -52,6 +52,7 @@ interface DashboardMatchCardProps {
   onStartMatch?: (match: DashboardMatch) => void;
   onContinueMatch?: (match: DashboardMatch, initialState?: unknown) => void;
   onEditMatch: (match: DashboardMatch) => void;
+  onDeleteMatch?: (matchId: string) => void;
   onViewStats: (matchId: string | number) => Promise<void>;
   fetchMatchStateForContinue: (matchId: string | number) => Promise<unknown>;
   onToastWarning: (msg: string, title: string) => void;
@@ -66,6 +67,7 @@ const DashboardMatchCard: React.FC<DashboardMatchCardProps> = ({
   onStartMatch,
   onContinueMatch,
   onEditMatch,
+  onDeleteMatch,
   onViewStats,
   fetchMatchStateForContinue,
   onToastWarning,
@@ -351,6 +353,38 @@ const DashboardMatchCard: React.FC<DashboardMatchCardProps> = ({
           )}
         </div>
         <div className="card-footer-actions">
+          {authUserId &&
+            match.createdByUserId === authUserId &&
+            match.status === 'NOT_STARTED' &&
+            onDeleteMatch && (
+              <button
+                className="delete-match-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDeleteMatch(String(match.id));
+                }}
+                title="Excluir partida"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                  <path d="M10 11v6" />
+                  <path d="M14 11v6" />
+                  <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                </svg>
+                Excluir
+              </button>
+            )}
           {authUserId && match.createdByUserId === authUserId && (
             <button
               className="edit-match-btn"

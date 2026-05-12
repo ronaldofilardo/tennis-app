@@ -1,0 +1,111 @@
+.undo-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.undo-confirm-modal {
+  background: var(--clr-surface, #1a1a2e);
+  border: 1px solid var(--clr-border, var(--clr-border-light));
+  border-radius: 16px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.undo-confirm-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 20px 12px;
+  border-bottom: 1px solid var(--clr-border, var(--clr-border-light));
+}
+
+.undo-confirm-icon {
+  font-size: 1.4rem;
+}
+
+.undo-confirm-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--clr-text, #f0f0f0);
+}
+
+.undo-confirm-body {
+  padding: 16px 20px 20px;
+}
+
+.undo-confirm-label {
+  margin: 0 0 6px;
+  font-size: 0.78rem;
+  color: var(--clr-text-muted, rgba(255, 255, 255, 0.5));
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.undo-confirm-point {
+  margin: 0 0 6px;
+  font-size: var(--font-scale-body);
+  font-weight: 600;
+  color: var(--clr-text, #f0f0f0);
+}
+
+.undo-confirm-context {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--clr-text-muted, rgba(255, 255, 255, 0.5));
+}
+
+.undo-confirm-footer {
+  display: flex;
+  gap: 10px;
+  padding: 0 20px 20px;
+}
+
+.undo-confirm-btn-cancel,
+.undo-confirm-btn-confirm {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.15s;
+}
+
+.undo-confirm-btn-cancel {
+  background: var(--clr-surface-raised, var(--clr-border-light));
+  color: var(--clr-text, #f0f0f0);
+}
+
+.undo-confirm-btn-confirm {
+  background: var(--clr-warning, #f59e0b);
+  color: #000;
+}
+
+.undo-confirm-btn-cancel:hover {
+  opacity: 0.8;
+}
+
+.undo-confirm-btn-confirm:hover {
+  opacity: 0.85;
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

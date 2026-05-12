@@ -1,6 +1,7 @@
 // frontend/src/pages/ScoreboardV2.tsx (Fluxo de saque final e correto)
 
-import React from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { httpClient } from '../config/httpClient';
 import MatchStatsModal from '../components/MatchStatsModal';
 import LoadingIndicator from '../components/LoadingIndicator';
 import ServerEffectModal from '../components/ServerEffectModal';
@@ -15,10 +16,19 @@ import VSIndicator from '../components/scoreboard/VSIndicator';
 import ContextBadges from '../components/scoreboard/ContextBadges';
 import ActionBar from '../components/scoreboard/ActionBar';
 import AnnotationSessionPanel from '../components/AnnotationSessionPanel';
+import CreatorEndMatchPanel from '../components/CreatorEndMatchPanel';
+import ReopenMatchPanel from '../components/ReopenMatchPanel';
+import ResumeAnnotationModal from '../components/ResumeAnnotationModal';
 import EditMatchModal from '../components/EditMatchModal';
 import type { EditableMatch } from '../components/EditMatchModal';
+import MatchManagerModal from '../components/MatchManagerModal';
 import SetupModal from '../components/scoreboard/SetupModal';
+import { UndoConfirmModal } from '../components/scoreboard/UndoConfirmModal';
+import { EditScoreModal } from '../components/scoreboard/EditScoreModal';
+import { ConfirmDeleteMatchModal } from '../components/ConfirmDeleteMatchModal';
 import { useScoreboardEngine } from '../hooks/useScoreboardEngine';
+import { useCreatorManagerMode } from '../hooks/useCreatorManagerMode';
+import { useShakeDetection } from '../hooks/useGestures';
 import '../styles/scoreboard-tokens.css';
 import './ScoreboardV2.css';
 
@@ -62,12 +72,65 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
     handlePointDetailsCancel,
     handleFault,
     handleUndo,
+    getLastPointDetails,
+    handleEditScore,
     handleServerEffectConfirm,
     handleServeErrorOpen,
     handleServeErrorConfirm,
     handleServeErrorCancel,
     fetchStats,
+    suspendedSession,
+    previousAnnotationPoints,
+    clearSuspendedSession,
   } = useScoreboardEngine(onEndMatch);
+
+  // ── Hook: Verificar se é criador em modo manager (DEVE vir no topo) ──────────
+  const isCreatorManager = useCreatorManagerMode(matchData);
+
+  const [undoModalOpen, setUndoModalOpen] = useState(false);
+  const [editScoreModalOpen, setEditScoreModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [showResumeModal, setShowResumeModal] = useState(false);
+
+  // Detectar sessão suspensa e abrir modal
+  useEffect(() => {
+    if (suspendedSession) {
+      setShowResumeModal(true);
+    }
+  }, [suspendedSession]);
+
+  // Handler para retomar anotação suspensa
+  const handleResumeAnnotation = useCallback(async () => {
+    if (!suspendedSession) return;
+    try {
+      // Reativar sessão existente
+      const res = await httpClient.patch(`/matches/${matchId}/sessions/${suspendedSession.id}`, {
+        isActive: true,
+        status: 'IN_PROGRESS',
+      });
+      if (res.ok) {
+        setShowResumeModal(false);
+        clearSuspendedSession();
+      }
+    } catch (err) {
+      console.error('Erro ao retomar anotação:', err);
+    }
+  }, [suspendedSession, matchId, clearSuspendedSession]);
+
+  // Handler para começar nova anotação
+  const handleStartNewAnnotation = useCallback(() => {
+    setShowResumeModal(false);
+    clearSuspendedSession();
+    // A sessão será criada automaticamente pelo próximo POST /sessions
+  }, [clearSuspendedSession]);
+  useShakeDetection({
+    onShake: useCallback(() => {
+      const sys = getSystem?.();
+      if (sys?.canUndo()) {
+        setUndoModalOpen(true);
+      }
+    }, [getSystem]),
+  });
 
   if (isLoading) return <LoadingIndicator />;
   if (error) {
@@ -93,7 +156,33 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
       </div>
     );
   }
-  // Derivar scoringSystem do ref para uso no render (read-only, imutável aqui)
+
+  if (isCreatorManager) {
+    return (
+      <MatchManagerModal
+        matchId={matchId}
+        matchData={matchData}
+        onClose={() => navigate('/dashboard')}
+        onDataUpdated={(updatedMatch) => {
+          setMatchData((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  nickname: updatedMatch.nickname,
+                  scheduledAt: updatedMatch.scheduledAt,
+                  venueId: updatedMatch.venueId,
+                  venue: updatedMatch.venue,
+                  visibility: updatedMatch.visibility,
+                  openForAnnotation: updatedMatch.openForAnnotation,
+                }
+              : null,
+          );
+        }}
+      />
+    );
+  }
+
+  // ── Derivar scoringSystem do ref para uso no render (read-only, imutável aqui) ──
   const scoringSystem = scoringSystemRef.current;
 
   if (!scoringSystem) {
@@ -133,8 +222,31 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
     );
   }
 
-  // Partidas finalizadas não devem chegar aqui - devem ser redirecionadas para stats
+  // Partidas finalizadas: verificar se há sessão ativa para continuar
   if (matchData?.status === 'FINISHED') {
+    // Se houver anotação em andamento, permitir continuar
+    const hasActiveSession = (matchData as any).annotationSessions?.some(
+      (s: any) => s.status === 'IN_PROGRESS' && s.isActive,
+    );
+
+    const isCreator = matchData.createdByUserId === currentUser?.id;
+
+    // Se há sessão ativa ou se é criador, mostrar opção de reabrir
+    if (hasActiveSession || isCreator) {
+      return (
+        <ReopenMatchPanel
+          matchId={matchId}
+          isCreator={isCreator}
+          hasActiveSession={hasActiveSession}
+          onReopened={() => {
+            // Recarregar dados da partida
+            window.location.reload();
+          }}
+        />
+      );
+    }
+
+    // Caso contrário, redirecionar para dashboard
     navigate('/dashboard');
     return null;
   }
@@ -255,6 +367,59 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         />
       )}
 
+      {/* Modal de confirmação de undo */}
+      <UndoConfirmModal
+        isOpen={undoModalOpen}
+        lastPoint={getLastPointDetails()}
+        playerNames={{ PLAYER_1: players.p1, PLAYER_2: players.p2 }}
+        onConfirm={() => {
+          setUndoModalOpen(false);
+          handleUndo();
+        }}
+        onCancel={() => setUndoModalOpen(false)}
+      />
+
+      {/* Modal de ajuste de placar */}
+      <EditScoreModal
+        isOpen={editScoreModalOpen}
+        matchFormat={matchData.format}
+        playerNames={players}
+        currentSets={state.sets ?? { PLAYER_1: 0, PLAYER_2: 0 }}
+        currentServer={state.server ?? 'PLAYER_1'}
+        onConfirm={(setWinners, server) => {
+          setEditScoreModalOpen(false);
+          handleEditScore(setWinners, server);
+        }}
+        onCancel={() => setEditScoreModalOpen(false)}
+      />
+
+      {/* Modal de deleção — só para partidas NOT_STARTED */}
+      {matchData && (
+        <ConfirmDeleteMatchModal
+          isOpen={deleteModalOpen}
+          matchId={matchData.id}
+          players={players}
+          onConfirm={async (matchId) => {
+            const { httpClient } = await import('../config/httpClient');
+            await httpClient.delete(`/matches/${matchId}`);
+            setDeleteModalOpen(false);
+            handleEndMatch();
+          }}
+          onCancel={() => setDeleteModalOpen(false)}
+        />
+      )}
+
+      {/* Modal de retomada de anotação suspensa */}
+      {suspendedSession && matchData && (
+        <ResumeAnnotationModal
+          isOpen={showResumeModal}
+          onResume={handleResumeAnnotation}
+          onStartNew={handleStartNewAnnotation}
+          annotatorName={currentUser?.name || 'Anotador'}
+          previousPointsCount={previousAnnotationPoints || 0}
+        />
+      )}
+
       <div
         className="scoreboard-v2-court"
         data-render={renderKey}
@@ -279,6 +444,19 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
               : undefined
           }
         />
+
+        {/* Botão excluir partida — só para criador em NOT_STARTED */}
+        {currentUser?.id &&
+          matchData.createdByUserId === currentUser.id &&
+          matchData.status === 'NOT_STARTED' && (
+            <button
+              className="sb-delete-match-btn"
+              onClick={() => setDeleteModalOpen(true)}
+              title="Excluir esta partida"
+            >
+              🗑 Excluir Partida
+            </button>
+          )}
 
         {/* Annotators badge */}
         {annotatorCount > 0 && (
@@ -343,8 +521,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
               disabled={state.isFinished}
               onPress={() => handlePointDetailsOpen('PLAYER_1')}
               onSwipeDown={() => {
-                if (scoringSystem?.canUndo() && window.confirm('Desfazer último ponto?'))
-                  handleUndo();
+                if (scoringSystem?.canUndo()) setUndoModalOpen(true);
               }}
             />
 
@@ -383,8 +560,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
               disabled={state.isFinished}
               onPress={() => handlePointDetailsOpen('PLAYER_2')}
               onSwipeDown={() => {
-                if (scoringSystem?.canUndo() && window.confirm('Desfazer último ponto?'))
-                  handleUndo();
+                if (scoringSystem?.canUndo()) setUndoModalOpen(true);
               }}
             />
           </div>
@@ -417,7 +593,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
           serveStep={serveStep}
           server={state.server ?? 'PLAYER_1'}
           playerNames={{ PLAYER_1: players.p1, PLAYER_2: players.p2 }}
-          onUndo={handleUndo}
+          onUndo={() => setUndoModalOpen(true)}
           onAce={() => {
             setIsServerEffectOpen(true);
             setPlayerInFocus(state.server);
@@ -430,6 +606,9 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
           fontScale={fontScale}
           onFontScaleInc={handleFontScaleInc}
           onFontScaleDec={handleFontScaleDec}
+          onEditScore={() => setEditScoreModalOpen(true)}
+          isModalOpen={isServeErrorModalOpen}
+          isMatchFinalized={matchData?.status === 'FINISHED'}
         />
 
         {/* Painel de sessões de anotação */}
@@ -439,6 +618,21 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
             matchStatus={matchData?.status ?? 'NOT_STARTED'}
             currentUserId={currentUser.id}
             userRole={currentUser.activeRole}
+          />
+        )}
+
+        {/* Painel para criador encerrar partida manualmente */}
+        {matchId && currentUser && matchData && (
+          <CreatorEndMatchPanel
+            matchId={matchId}
+            isCreator={matchData.createdByUserId === currentUser.id}
+            matchStatus={matchData.status}
+            onMatchEnded={() => {
+              // Após encerrar, atualizar status local
+              if (matchData) {
+                setMatchData({ ...matchData, status: 'FINISHED' });
+              }
+            }}
           />
         )}
 

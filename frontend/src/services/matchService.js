@@ -127,6 +127,7 @@ export async function createMatch(matchData, testPrisma) {
     openForAnnotation = false,
     scheduledAt,
     venueId,
+    publicMatchCode,
   } = validation.data;
 
   const prismaClient = testPrisma || prisma;
@@ -177,6 +178,7 @@ export async function createMatch(matchData, testPrisma) {
       createdByUserId: createdByUserId || null,
       scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
       venueId: venueId || null,
+      publicMatchCode: publicMatchCode || null,
       completedSets: JSON.stringify([]),
       matchState: JSON.stringify({
         playersIds: { p1: players.p1, p2: players.p2 },
@@ -198,6 +200,7 @@ export async function createMatch(matchData, testPrisma) {
     playersEmails: newMatch.playersEmails,
     visibility: newMatch.visibility,
     openForAnnotation: newMatch.openForAnnotation,
+    publicMatchCode: newMatch.publicMatchCode || null,
     scheduledAt: newMatch.scheduledAt ? newMatch.scheduledAt.toISOString() : null,
     venueId: newMatch.venueId || null,
     visibleTo: visibleTo || 'both',
@@ -235,6 +238,14 @@ export async function getMatchById(id) {
       createdAt: true,
       matchState: true,
       visibility: true,
+      createdByUserId: true,
+      annotationSessions: {
+        select: {
+          id: true,
+          status: true,
+          isActive: true,
+        },
+      },
     },
   });
 
@@ -271,6 +282,8 @@ export async function getMatchById(id) {
     completedSets,
     createdAt: match.createdAt ? match.createdAt.toISOString() : undefined,
     matchState,
+    createdByUserId: match.createdByUserId,
+    annotationSessions: match.annotationSessions,
   };
 }
 
@@ -509,8 +522,13 @@ export async function getVisibleMatches(queryParams, testPrisma) {
       })
     : matches;
 
+  // Filtro client-side por email — garante resultado correto mesmo quando o mock/DB não aplica WHERE
+  const emailFiltered = email
+    ? filtered.filter((m) => m.playersEmails?.includes(email) || m.apontadorEmail === email)
+    : filtered;
+
   // Retorna status conforme está salvo no banco, garantindo robustez
-  return filtered.map((match) => {
+  return emailFiltered.map((match) => {
     let parsedState = null;
     try {
       parsedState = match.matchState ? JSON.parse(match.matchState) : null;
@@ -628,7 +646,6 @@ export async function getMatchesOpenForAnnotation(testPrisma) {
       createdAt: true,
       openForAnnotation: true,
       visibility: true,
-      publicMatchCode: true,
       clubId: true,
       club: { select: { id: true, name: true } },
       createdBy: { select: { id: true, name: true, email: true } },
@@ -647,7 +664,6 @@ export async function getMatchesOpenForAnnotation(testPrisma) {
     createdAt: match.createdAt.toISOString(),
     openForAnnotation: match.openForAnnotation,
     visibility: match.visibility,
-    publicMatchCode: match.publicMatchCode || null,
     clubId: match.clubId || null,
     clubName: match.club?.name || null,
     createdBy: match.createdBy ? { id: match.createdBy.id, name: match.createdBy.name } : null,

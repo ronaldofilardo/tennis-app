@@ -20,13 +20,13 @@
 
 .tournament-club-tag {
   font-size: 0.8rem;
-  color: var(--accent-gold, #eab308);
+  color: var(--clr-yellow);
   margin-left: 8px;
 }
 
 .btn-create-tournament {
   padding: 10px 20px;
-  background: var(--accent-gold, #eab308);
+  background: var(--clr-yellow);
   color: #000;
   border: none;
   border-radius: 8px;
@@ -60,18 +60,18 @@
   color: var(--text-secondary, #8fb8a4);
   font-size: 0.8rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--transition-normal);
 }
 
 .filter-btn:hover {
-  border-color: var(--accent-gold, #eab308);
+  border-color: var(--clr-yellow);
   color: var(--text-primary, #f8fafc);
 }
 
 .filter-btn.active {
   background: rgba(234, 179, 8, 0.15);
-  border-color: var(--accent-gold, #eab308);
-  color: var(--accent-gold, #eab308);
+  border-color: var(--clr-yellow);
+  color: var(--clr-yellow);
   font-weight: 600;
 }
 
@@ -86,7 +86,7 @@
 }
 
 .tournament-error {
-  color: var(--alert-red, #ef4444);
+  color: var(--alert-red, var(--clr-error));
 }
 
 .tournament-empty p {
@@ -113,7 +113,7 @@
 }
 
 .tournament-card:hover {
-  border-color: var(--accent-gold, #eab308);
+  border-color: var(--clr-yellow);
   transform: translateY(-2px);
 }
 
@@ -133,7 +133,7 @@
 .tournament-status {
   padding: 3px 10px;
   border-radius: 12px;
-  font-size: 0.7rem;
+  font-size: var(--font-scale-sm);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -160,7 +160,7 @@
 
 .status-cancelled {
   background: rgba(239, 68, 68, 0.12);
-  color: #ef4444;
+  color: var(--clr-error);
 }
 
 /* Detalhes do card */
@@ -179,14 +179,14 @@
 }
 
 .detail-label {
-  font-size: 0.7rem;
+  font-size: var(--font-scale-sm);
   color: var(--text-muted, #5a8a70);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .detail-value {
-  font-size: 0.85rem;
+  font-size: var(--font-scale-body);
   color: var(--text-primary, #f8fafc);
   font-weight: 500;
 }
@@ -194,8 +194,19 @@
 /* Data */
 
 .tournament-card-date {
-  font-size: 0.75rem;
+  font-size: var(--font-scale-sm);
   color: var(--text-secondary, #8fb8a4);
   border-top: 1px solid var(--border-subtle, #1a482820);
   padding-top: 8px;
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

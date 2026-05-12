@@ -11,7 +11,7 @@
   border: 1px solid #2a2a3e;
   border-radius: 8px;
   color: #e2e8f0;
-  font-size: 0.875rem;
+  font-size: var(--font-scale-body);
   padding: 0.5rem 2rem 0.5rem 0.75rem;
   outline: none;
   transition: border-color 150ms ease;
@@ -68,7 +68,7 @@
   align-items: center;
   gap: 0.5rem;
   transition: background 100ms ease;
-  font-size: 0.875rem;
+  font-size: var(--font-scale-body);
   color: #e2e8f0;
 }
 
@@ -82,7 +82,7 @@
 }
 
 .venue-select__option-city {
-  font-size: 0.75rem;
+  font-size: var(--font-scale-sm);
   color: #9ca3af;
 }
 

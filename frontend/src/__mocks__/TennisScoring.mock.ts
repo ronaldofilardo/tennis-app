@@ -101,6 +101,7 @@ export const mockTennisScoring = {
   setEndedAt: vi.fn(),
   setTokenProvider: vi.fn(),
   getPointsHistory: vi.fn(() => []),
+  getLastPointDetails: vi.fn(() => null),
 };
 
 export function __resetMockTennisScoring(overrides: Partial<typeof mockTennisScoring> = {}) {
@@ -126,6 +127,7 @@ export function __resetMockTennisScoring(overrides: Partial<typeof mockTennisSco
   mockTennisScoring.setEndedAt = vi.fn();
   mockTennisScoring.setTokenProvider = vi.fn();
   mockTennisScoring.getPointsHistory = vi.fn(() => []);
+  mockTennisScoring.getLastPointDetails = vi.fn(() => null);
 
   Object.assign(mockTennisScoring, overrides);
 }

@@ -65,7 +65,7 @@
 }
 
 .score-display .separator {
-  font-size: 1.5rem;
+  font-size: var(--font-scale-h2);
   color: #777;
 }
 
@@ -122,7 +122,7 @@
 
 .partials h4 {
   margin: 0 0 0.75rem 0;
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   text-transform: uppercase;
   letter-spacing: 1px;
   color: #bbb;
@@ -166,7 +166,7 @@
   border-radius: 8px;
   margin: 1rem 0;
   font-weight: bold;
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
 }
 
 .match-status.in-progress {
@@ -208,4 +208,15 @@
   0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
   70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
   100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

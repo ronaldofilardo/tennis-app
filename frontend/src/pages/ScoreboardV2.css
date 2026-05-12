@@ -226,7 +226,7 @@
 
 .scoreboard-header h3 {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   font-weight: 600;
   color: #666;
   text-transform: uppercase;
@@ -265,17 +265,17 @@
 }
 
 .points-info {
-  font-size: 0.85rem;
+  font-size: var(--font-scale-body);
   color: #6c757d;
   font-weight: 500;
 }
 
 .side-indicator {
   font-weight: 700;
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  transition: all 0.3s ease;
+  transition: background-color var(--transition-slow) var(--ease-in-out), border-color var(--transition-slow) var(--ease-in-out), color var(--transition-slow) var(--ease-in-out), transform var(--transition-slow) var(--ease-in-out);
 }
 
 .side-indicator.left {
@@ -355,7 +355,7 @@
 }
 
 .games-count {
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   color: #666;
 }
 
@@ -393,7 +393,7 @@
   color: white;
   padding: 4px 8px;
   border-radius: 12px;
-  font-size: 0.75rem;
+  font-size: var(--font-scale-sm);
   font-weight: bold;
   text-align: center;
   white-space: nowrap;
@@ -413,7 +413,7 @@
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-normal) ease;
   color: white;
   min-height: 60px;
 }
@@ -453,12 +453,12 @@
 
 .undo-button {
   padding: 0.8rem 1.5rem;
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   font-weight: 600;
   border: 2px solid #ff9800;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-normal) ease;
   background: white;
   color: #ff9800;
   min-width: 180px;
@@ -482,12 +482,12 @@
 /* Botão do Modo Detalhado */
 .detailed-mode-button {
   padding: 0.8rem 1.5rem;
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   font-weight: 600;
   border: 2px solid #4299e1;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-normal) ease;
   background: white;
   color: #4299e1;
   min-width: 180px;
@@ -566,7 +566,7 @@
   border: 2px solid #e0e0e0;
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-normal) ease;
   color: #333;
 }
 
@@ -587,7 +587,7 @@
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
 }
 
 .cancel-button:hover {
@@ -595,7 +595,7 @@
 }
 
 /* Responsivo */
-@media (max-width: 480px) {
+@media (max-width: clamp(260px, 80vw, 480px)) {
   .scoreboard-v2 {
     padding: 0.75rem;
   }
@@ -606,12 +606,12 @@
 
   .point-button {
     padding: 0.75rem 1rem;
-    font-size: 1rem;
+    font-size: var(--font-scale-body);
     min-height: 50px;
   }
 
   .player-name {
-    font-size: 1rem;
+    font-size: var(--font-scale-body);
   }
 }
 
@@ -620,7 +620,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  font-size: 0.85rem;
+  font-size: var(--font-scale-body);
   color: #666;
   margin-top: 0.5rem;
 }
@@ -663,7 +663,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 520px;
+  max-width: clamp(280px, 85vw, 520px);
   margin: 0 auto;
   min-height: 100dvh;
   background: var(--court-bg);
@@ -695,7 +695,7 @@
   justify-content: center;
   gap: 0.75rem;
   width: 100%;
-  max-width: 480px;
+  max-width: clamp(260px, 80vw, 480px);
   position: relative;
   z-index: 1;
 }
@@ -707,7 +707,7 @@
 
 /* Legenda modo família */
 .family-caption {
-  font-size: 0.85rem;
+  font-size: var(--font-scale-body);
   color: var(--text-secondary);
   text-align: center;
   background: rgba(234, 179, 8, 0.08);
@@ -722,7 +722,7 @@
 }
 
 .family-help-btn {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--clr-surface-light);
   border: 1px solid var(--border-subtle);
   color: var(--text-muted);
   border-radius: var(--radius-btn);
@@ -738,7 +738,7 @@
 }
 
 .family-help-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--clr-border-light);
   color: var(--text-secondary);
 }
 
@@ -760,7 +760,7 @@
 }
 
 .match-finished-banner h2 {
-  font-size: 1.5rem;
+  font-size: var(--font-scale-h2);
   font-weight: 800;
   color: var(--accent-gold);
   margin: 0;
@@ -776,14 +776,14 @@
 }
 
 .match-finished-banner .winner-name {
-  font-size: 2rem;
+  font-size: var(--font-scale-h1);
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
 }
 
 .match-finished-banner .final-score {
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   color: var(--text-secondary);
   margin: 0;
 }
@@ -797,7 +797,7 @@
 }
 
 .finished-action-btn {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--clr-border-light);
   border: 1px solid var(--border-default);
   color: var(--text-primary);
   border-radius: var(--radius-btn);
@@ -830,7 +830,7 @@
   border-radius: 20px 20px 0 0;
   padding: 1.25rem 1rem 2rem;
   width: 100%;
-  max-width: 480px;
+  max-width: clamp(260px, 80vw, 480px);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -870,11 +870,11 @@
 .context-menu-item {
   width: 100%;
   padding: 0.85rem 1rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--clr-border-lighter);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-btn);
   color: var(--text-primary);
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   font-weight: 600;
   cursor: pointer;
   text-align: left;
@@ -882,7 +882,7 @@
 }
 
 .context-menu-item:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--clr-border-light);
 }
 
 .context-menu-item:disabled {
@@ -920,7 +920,7 @@
   border: none;
   border-radius: var(--radius-btn);
   padding: 0.6rem 1.5rem;
-  font-size: 1rem;
+  font-size: var(--font-scale-body);
   cursor: pointer;
 }
 
@@ -942,7 +942,7 @@
 }
 
 .server-button {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--clr-surface-light);
   border: 2px solid var(--border-default);
   color: var(--text-primary);
 }
@@ -962,4 +962,35 @@
   border-bottom: 1px solid rgba(99, 102, 241, 0.2);
   font-size: 12px;
   color: #a5b4fc;
+}
+
+
+.sb-delete-match-btn {
+  display: block;
+  width: max-content;
+  margin: 4px auto 0;
+  padding: 6px 14px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.sb-delete-match-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+/* ── Accessibility: Respect motion preferences ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

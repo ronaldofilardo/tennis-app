@@ -70,7 +70,7 @@
   gap: 32px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: clamp(260px, 80vw, 480px)) {
   .match-report__content {
     padding: 16px 12px 80px;
     gap: 24px;
@@ -422,7 +422,7 @@
   font-weight: 600;
   cursor: pointer;
   border: none;
-  transition: all 150ms ease;
+  transition: background-color var(--transition-fast) var(--ease-in-out), border-color var(--transition-fast) var(--ease-in-out), color var(--transition-fast) var(--ease-in-out), transform var(--transition-fast) var(--ease-in-out);
   text-decoration: none;
 }
 
@@ -447,7 +447,7 @@
 }
 
 .match-report__btn--ghost:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--clr-border-lighter);
   color: #e2e8f0;
 }
 
