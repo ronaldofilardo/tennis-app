@@ -1058,6 +1058,36 @@
   padding: 12px 0;
 }
 
+/* ── Suspended Sessions (Resumable Annotations) ────────── */
+.suspended-section {
+  margin: 12px 0 16px;
+  padding: 16px;
+  background: rgba(239, 68, 68, 0.08);
+  border-radius: 12px;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.suspended-header {
+  margin-bottom: 12px;
+}
+
+.suspended-header h3 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.suspended-subtitle {
+  margin: 0;
+  font-size: 12px;
+  color: #9ca3af;
+  letter-spacing: 0.02em;
+}
+
 /* ── Profile Panel ──────────────────────────────────────── */
 .profile-panel {
   display: flex;

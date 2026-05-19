@@ -169,6 +169,8 @@ const Dashboard: React.FC<DashboardProps> = ({
     completedMatches,
     setCompletedMatches,
     completedLoading,
+    suspendedMatches,
+    suspendedLoading,
     setOpenMatches,
     refetchCompleted,
   } = useDashboardData(authUser);
@@ -403,29 +405,6 @@ const Dashboard: React.FC<DashboardProps> = ({
           />
         )}
 
-      {/* ── Debug: Mostrar estado se view é 'annotated' ── */}
-      {activeDashboardView === 'annotated' && (
-        <div
-          style={{
-            backgroundColor: '#f0f0f0',
-            padding: '1rem',
-            borderRadius: '8px',
-            marginBottom: '1rem',
-            fontSize: '12px',
-            fontFamily: 'monospace',
-          }}
-        >
-          <div>
-            <strong>DEBUG (Partidas Anotadas):</strong>
-          </div>
-          <div>loading: {String(loading)}</div>
-          <div>annotatedLoading: {String(annotatedLoading)}</div>
-          <div>activeDashboardView: {activeDashboardView}</div>
-          <div>annotatedMatches: {annotatedMatches.length}</div>
-          <div>annotatedByMe: {annotatedByMe.length}</div>
-        </div>
-      )}
-
       {/* ── Partidas Anotadas ── */}
       {!loading &&
         (activeDashboardView === 'history' || activeDashboardView === 'annotated') &&
@@ -507,6 +486,35 @@ const Dashboard: React.FC<DashboardProps> = ({
           onSwitchClub={switchClub}
           onLogout={logout}
         />
+      )}
+
+      {/* ── Suspended Matches (resumable annotations) ── */}
+      {suspendedMatches.length > 0 && (activeDashboardView === 'none' || activeDashboardView === 'history' || activeDashboardView === 'annotated') && (
+        <div className="suspended-section">
+          <div className="suspended-header">
+            <h3>🔴 Anotações Suspensas</h3>
+            <p className="suspended-subtitle">Clique para retomar suas anotações</p>
+          </div>
+          <div className="match-list">
+            {suspendedMatches.map((rawMatch) => (
+              <DashboardMatchCard
+                key={`${rawMatch.id}-suspended`}
+                rawMatch={rawMatch}
+                localMatchOverrides={localMatchOverrides}
+                authUserId={authUser?.id}
+                loadingMatchId={loadingMatchId}
+                canView={canViewMatch(rawMatch)}
+                onStartMatch={onStartMatch}
+                onContinueMatch={onContinueMatch}
+                onEditMatch={(match) => dispatchUI({ type: 'SET_EDITING_MATCH', match })}
+                onDeleteMatch={(matchId) => setDeletingMatchId(matchId)}
+                onViewStats={openStatsForMatch}
+                fetchMatchStateForContinue={fetchMatchStateForContinue}
+                onToastWarning={toast.warning}
+              />
+            ))}
+          </div>
+        </div>
       )}
 
       {/* ── Match Cards List ── */}

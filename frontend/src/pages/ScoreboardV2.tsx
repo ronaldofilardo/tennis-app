@@ -123,6 +123,14 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
     clearSuspendedSession();
     // A sessão será criada automaticamente pelo próximo POST /sessions
   }, [clearSuspendedSession]);
+
+  // Handler para descartar anotação suspensa
+  const handleDiscardAnnotation = useCallback(() => {
+    setShowResumeModal(false);
+    clearSuspendedSession();
+    navigate('/dashboard');
+  }, [clearSuspendedSession, navigate]);
+
   useShakeDetection({
     onShake: useCallback(() => {
       const sys = getSystem?.();
@@ -415,8 +423,14 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
           isOpen={showResumeModal}
           onResume={handleResumeAnnotation}
           onStartNew={handleStartNewAnnotation}
+          onDiscard={handleDiscardAnnotation}
           annotatorName={currentUser?.name || 'Anotador'}
           previousPointsCount={previousAnnotationPoints || 0}
+          matchScore={{
+            p1: matchData.sets?.PLAYER_1 ?? 0,
+            p2: matchData.sets?.PLAYER_2 ?? 0,
+            format: matchData.format,
+          }}
         />
       )}
 

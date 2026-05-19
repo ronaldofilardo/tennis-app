@@ -165,6 +165,37 @@
   transform: scale(0.98);
 }
 
+.resume-btn-discard {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.resume-btn-discard:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: #ef4444;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+}
+
+.resume-btn-discard:active {
+  transform: scale(0.98);
+}
+
+.resume-modal-score {
+  color: var(--clr-text-dim);
+  font-size: 0.95rem;
+  margin: 8px 0 12px 0;
+  padding: 8px 12px;
+  background: rgba(59, 130, 246, 0.1);
+  border-left: 3px solid #3b82f6;
+  border-radius: 4px;
+}
+
+.resume-modal-score strong {
+  color: var(--clr-text);
+  font-weight: 700;
+}
+
 /* Responsivo */
 @media (max-width: 480px) {
   .resume-annotation-modal {

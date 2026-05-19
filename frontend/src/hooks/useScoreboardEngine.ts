@@ -209,6 +209,9 @@ export function useScoreboardEngine(onEndMatch: () => void) {
   // Ref para o ID da sessão de anotação auto-iniciada; encerrada no handleEndMatch
   const annotationSessionIdRef = useRef<string | null>(null);
 
+  // Ref para evitar duplicate auto-finish PATCH calls
+  const autoFinishRef = useRef(false);
+
   const getSystem = () => scoringSystemRef.current;
 
   const forceRerender = useCallback(() => {
@@ -654,6 +657,30 @@ export function useScoreboardEngine(onEndMatch: () => void) {
         p2: resolvePlayerName(matchData!.players.p2),
       };
       const winnerName = newState.winner === 'PLAYER_1' ? players.p1 : players.p2;
+
+      // Auto-finish: se é criador e ainda não foi auto-finalizado, fazer PATCH
+      const isCreator = matchData?.createdByUserId === currentUser?.id;
+      if (isCreator && !autoFinishRef.current) {
+        autoFinishRef.current = true;
+        try {
+          const response = await httpClient.patch(`/matches/${matchId}`, {
+            action: 'endMatch',
+          });
+          if (response.ok) {
+            scoreLog.info('Partida auto-finalizada no DB com sucesso', { matchId });
+          } else {
+            scoreLog.warn('Falha ao auto-finalizar partida no DB', {
+              matchId,
+              status: response.status,
+            });
+          }
+        } catch (err) {
+          scoreLog.warn('Erro durante auto-finish PATCH', {
+            matchId,
+            error: err instanceof Error ? err.message : String(err),
+          });
+        }
+      }
 
       setTimeout(() => {
         toast.success(

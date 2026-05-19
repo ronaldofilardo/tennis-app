@@ -23,6 +23,9 @@ interface UseDashboardDataReturn {
   completedMatches: CompletedMatch[];
   setCompletedMatches: React.Dispatch<React.SetStateAction<CompletedMatch[]>>;
   completedLoading: boolean;
+  suspendedMatches: AnnotatedMatch[];
+  setSuspendedMatches: React.Dispatch<React.SetStateAction<AnnotatedMatch[]>>;
+  suspendedLoading: boolean;
   setOpenMatches: React.Dispatch<React.SetStateAction<OpenMatch[]>>;
   refetchCompleted: () => void;
 }
@@ -35,6 +38,8 @@ export function useDashboardData(authUser: AuthUser | null | undefined): UseDash
   const [annotatedLoading, setAnnotatedLoading] = useState(false);
   const [completedMatches, setCompletedMatches] = useState<CompletedMatch[]>([]);
   const [completedLoading, setCompletedLoading] = useState(false);
+  const [suspendedMatches, setSuspendedMatches] = useState<AnnotatedMatch[]>([]);
+  const [suspendedLoading, setSuspendedLoading] = useState(false);
 
   // ── Fetch open-for-annotation matches ────────────────────────────
   useEffect(() => {
@@ -135,6 +140,31 @@ export function useDashboardData(authUser: AuthUser | null | undefined): UseDash
     fetchCompleted();
   }, [fetchCompleted]);
 
+  // ── Fetch suspended sessions ────────────────────────────────────────────────
+  useEffect(() => {
+    if (!authUser) return;
+    setSuspendedLoading(true);
+    const _token = localStorage.getItem('racket_token') ?? '';
+    console.log('[useDashboardData] Fetching suspended sessions for:', authUser.email);
+    fetch(`${API_URL}/matches/suspended-sessions`, {
+      headers: { Authorization: `Bearer ${_token}` },
+      credentials: 'include',
+    })
+      .then((r) => {
+        console.log('[useDashboardData] Suspended sessions response status:', r.status);
+        return r.ok ? r.json() : [];
+      })
+      .then((data: unknown) => {
+        console.log('[useDashboardData] Suspended sessions data:', data, 'Count:', Array.isArray(data) ? data.length : 0);
+        setSuspendedMatches(Array.isArray(data) ? (data as AnnotatedMatch[]) : []);
+      })
+      .catch((err) => {
+        console.error('[useDashboardData] Error fetching suspended sessions:', err);
+        setSuspendedMatches([]);
+      })
+      .finally(() => setSuspendedLoading(false));
+  }, [authUser]);
+
   return {
     openMatches,
     openMatchesLoading,
@@ -146,6 +176,9 @@ export function useDashboardData(authUser: AuthUser | null | undefined): UseDash
     completedMatches,
     setCompletedMatches,
     completedLoading,
+    suspendedMatches,
+    setSuspendedMatches,
+    suspendedLoading,
     setOpenMatches,
     refetchCompleted: fetchCompleted,
   };

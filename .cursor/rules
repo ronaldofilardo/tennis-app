@@ -1,0 +1,42 @@
+{
+  "mcpServers": {
+    "ui-ux-pro-max-skill": {
+      "type": "github",
+      "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+      "description": "Design system avançado, componentes visuais, tokens"
+    },
+    "ultrareview": {
+      "type": "web",
+      "url": "https://code.claude.com/docs/en/ultrareview",
+      "description": "Análise profunda de código, padrões e performance"
+    },
+    "ux-mcp-server": {
+      "type": "npm",
+      "package": "@elsahafy/ux-mcp-server",
+      "description": "Integração MCP para UX e design tokens"
+    },
+    "qui-layouts-mcp": {
+      "type": "npm",
+      "package": "qui-layouts/mcp",
+      "description": "Gerenciador de layouts e grid systems"
+    },
+    "ui-expert-mcp": {
+      "type": "npm",
+      "package": "@johndoe20012/ui-expert-mcp",
+      "description": "Expertise em componentes e padrões UI"
+    },
+    "mcp-ui-server": {
+      "type": "npm",
+      "package": "@mcp-ui/server",
+      "description": "Servidor MCP para componentes UI reutilizáveis"
+    }
+  },
+  "rules": [
+    "Sempre usar design tokens de src/index.css",
+    "CSS vanilla apenas - sem Tailwind",
+    "TypeScript strict mode obrigatório",
+    "React 18+ com Vite",
+    "Componentes co-localizados: Component.tsx + Component.css",
+    "Testes: Vitest unitário + Playwright E2E"
+  ]
+}

@@ -1676,6 +1676,62 @@ app.get('/api/matches/my-shares', async (req, res) => {
   }
 });
 
+// Partidas com sessões suspensas do usuário
+app.get('/api/matches/suspended-sessions', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+
+    const suspendedSessions = await prisma.matchAnnotationSession.findMany({
+      where: {
+        annotator: {
+          email: ctx.email,
+        },
+        status: 'ABANDONED',
+      },
+      select: {
+        id: true,
+        matchId: true,
+        match: {
+          select: {
+            id: true,
+            sportType: true,
+            format: true,
+            courtType: true,
+            nickname: true,
+            playerP1: true,
+            playerP2: true,
+            player1: { select: { id: true, name: true } },
+            player2: { select: { id: true, name: true } },
+            status: true,
+            scheduledAt: true,
+            createdAt: true,
+            apontadorEmail: true,
+            playersEmails: true,
+            completedSets: true,
+            score: true,
+            matchState: true,
+            visibility: true,
+          },
+        },
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    res.json(
+      suspendedSessions.map((session) => ({
+        ...session.match,
+        suspendedSessionId: session.id,
+        suspendedAt: session.createdAt,
+      })),
+    );
+  } catch (error) {
+    console.error('[GET /api/matches/suspended-sessions] Erro:', error);
+    res.status(500).json({ error: 'Erro ao buscar sessões suspensas' });
+  }
+});
+
 // Sessões de anotação: GET lista, POST cria/retorna existente
 app.get('/api/matches/:id/sessions', async (req, res) => {
   try {

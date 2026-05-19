@@ -162,6 +162,7 @@ function parsePath(url) {
   const isAnnotatedByMe = seg === 'annotated-by-me';
   const isMyCompleted = seg === 'my-completed';
   const isTournamentSuggestions = seg === 'tournament-suggestions';
+  const isSuspendedSessions = seg === 'suspended-sessions';
   const isSpecialSeg =
     isVisible ||
     isOpenForAnnotation ||
@@ -170,7 +171,8 @@ function parsePath(url) {
     isAnnotatedForMe ||
     isAnnotatedByMe ||
     isMyCompleted ||
-    isTournamentSuggestions;
+    isTournamentSuggestions ||
+    isSuspendedSessions;
   const id = !isSpecialSeg ? seg : null;
   const isMetadata = sub === 'metadata';
   const isClaim = sub === 'claim';
@@ -186,6 +188,7 @@ function parsePath(url) {
     isAnnotatedForMe,
     isAnnotatedByMe,
     isMyCompleted,
+    isSuspendedSessions,
     isMetadata,
     isClaim,
     isTournamentSuggestions,
@@ -209,6 +212,7 @@ export default async function handler(req, res) {
       isAnnotatedForMe,
       isAnnotatedByMe,
       isMyCompleted,
+      isSuspendedSessions,
       isMetadata,
       isClaim,
       isTournamentSuggestions,
@@ -291,6 +295,62 @@ export default async function handler(req, res) {
           player1: m.player1,
           player2: m.player2,
           annotationCount: m._count.annotationSessions,
+        })),
+      );
+    }
+
+    // ─── GET /api/matches/suspended-sessions ────────────────────────────────
+    // Retorna partidas com sessões ABANDONED do usuário (que podem ser retomadas)
+    if (isSuspendedSessions) {
+      if (req.method !== 'GET') return methodNotAllowed(res, ['GET']);
+      const ctx = requireAuth(req, res);
+      if (!ctx) return;
+
+      // Encontra todas as sessões ABANDONED do usuário
+      const suspendedSessions = await prisma.matchAnnotationSession.findMany({
+        where: {
+          annotator: {
+            email: ctx.email,
+          },
+          status: 'ABANDONED',
+        },
+        select: {
+          id: true,
+          matchId: true,
+          match: {
+            select: {
+              id: true,
+              sportType: true,
+              format: true,
+              courtType: true,
+              nickname: true,
+              playerP1: true,
+              playerP2: true,
+              player1: { select: { id: true, name: true } },
+              player2: { select: { id: true, name: true } },
+              status: true,
+              scheduledAt: true,
+              createdAt: true,
+              apontadorEmail: true,
+              playersEmails: true,
+              completedSets: true,
+              score: true,
+              matchState: true,
+              visibility: true,
+            },
+          },
+          createdAt: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      return sendJson(
+        res,
+        200,
+        suspendedSessions.map((session) => ({
+          ...session.match,
+          suspendedSessionId: session.id,
+          suspendedAt: session.createdAt,
         })),
       );
     }

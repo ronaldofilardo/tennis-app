@@ -17,7 +17,7 @@
   --clr-bg: #0f1117;
   --clr-surface: #181d27;
   --clr-surface-2: #1e2535;
-  --clr-border: var(--clr-border);
+  --clr-border: rgba(255, 255, 255, 0.07);
   --clr-text: #e8eaf0;
   --clr-text-muted: #6b7280;
   --clr-text-dim: #9ca3af;
@@ -36,13 +36,13 @@
   --clr-info: var(--clr-blue);
 
   /* Surface variants with opacity */
-  --clr-surface-light: var(--clr-surface-light);
-  --clr-surface-lighter: var(--clr-surface-lighter);
+  --clr-surface-light: rgba(255, 255, 255, 0.05);
+  --clr-surface-lighter: rgba(255, 255, 255, 0.08);
   --clr-surface-dark: rgba(0, 0, 0, 0.4);
 
   /* Border variants */
-  --clr-border-light: var(--clr-border-light);
-  --clr-border-lighter: var(--clr-surface-lighter);
+  --clr-border-light: rgba(255, 255, 255, 0.04);
+  --clr-border-lighter: var(--clr-border-light);
 
   /* Overlay & translucent */
   --clr-overlay-dark: rgba(0, 0, 0, 0.82);
