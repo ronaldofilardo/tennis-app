@@ -118,6 +118,10 @@ export const MatchCreateSchema = z.object({
   visibleTo: z.string().optional().nullable(), // Legado
   clubId: z.string().optional().nullable(), // ID do clube dono da partida
   createdByUserId: z.string().optional().nullable(), // User que criou
+  player1Id: z.string().optional().nullable(), // AthleteProfile ID do jogador 1
+  player2Id: z.string().optional().nullable(), // AthleteProfile ID do jogador 2
+  homeClubId: z.string().optional().nullable(), // Clube do jogador 1
+  awayClubId: z.string().optional().nullable(), // Clube do jogador 2
   club_id: z.string().optional().nullable(),
   openForAnnotation: z.boolean().optional().default(false), // Permite qualquer autenticado anotar
   scheduledAt: z.string().datetime({ offset: true }).optional().nullable(), // Data/hora agendada ISO string

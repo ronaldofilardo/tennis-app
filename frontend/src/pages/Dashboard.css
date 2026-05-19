@@ -502,6 +502,37 @@
   letter-spacing: 0.02em;
 }
 
+/* ── Suspended Annotation Score ──────────────────────────── */
+
+.card-suspended-score {
+  margin: 0 1rem 0.75rem;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+  border-radius: 10px;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  padding: 0.6rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.card-suspended-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #22c55e;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.card-suspended-sets {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--clr-text);
+  letter-spacing: 0.02em;
+}
+
 /* ── Card Footer ─────────────────────────────────────────── */
 
 .card-footer {
@@ -965,7 +996,11 @@
   background: transparent;
   border: 1px solid #2a2a3e;
   cursor: pointer;
-  transition: background-color var(--transition-fast) var(--ease-in-out), border-color var(--transition-fast) var(--ease-in-out), color var(--transition-fast) var(--ease-in-out), transform var(--transition-fast) var(--ease-in-out);
+  transition:
+    background-color var(--transition-fast) var(--ease-in-out),
+    border-color var(--transition-fast) var(--ease-in-out),
+    color var(--transition-fast) var(--ease-in-out),
+    transform var(--transition-fast) var(--ease-in-out);
 }
 
 .annotated-section__tab:hover {

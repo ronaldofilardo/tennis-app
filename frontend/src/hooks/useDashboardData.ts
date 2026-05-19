@@ -155,7 +155,20 @@ export function useDashboardData(authUser: AuthUser | null | undefined): UseDash
         return r.ok ? r.json() : [];
       })
       .then((data: unknown) => {
-        console.log('[useDashboardData] Suspended sessions data:', data, 'Count:', Array.isArray(data) ? data.length : 0);
+        console.log(
+          '[useDashboardData] Suspended sessions data:',
+          data,
+          'Count:',
+          Array.isArray(data) ? data.length : 0,
+        );
+        if (Array.isArray(data)) {
+          data.forEach((item: unknown, idx: number) => {
+            const matchData = item as Record<string, unknown>;
+            console.log(
+              `  [${idx}] matchId: ${matchData.id}, suspendedSessionId: ${matchData.suspendedSessionId}`,
+            );
+          });
+        }
         setSuspendedMatches(Array.isArray(data) ? (data as AnnotatedMatch[]) : []);
       })
       .catch((err) => {

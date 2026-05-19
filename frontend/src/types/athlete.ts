@@ -102,32 +102,7 @@ export function createAthletesStateFromNames(
   };
 }
 
-/**
- * Converte MatchPlayers de volta para o formato legado { p1: string, p2: string }.
- * Usado para compatibilidade com APIs e componentes que ainda usam o formato antigo.
- */
-export function matchPlayersToLegacy(players: MatchPlayers): {
-  p1: string;
-  p2: string;
-} {
-  return {
-    p1: players.p1.displayName,
-    p2: players.p2.displayName,
-  };
-}
 
-/**
- * Converte o formato legado { p1: string, p2: string } para MatchPlayers.
- */
-export function legacyToMatchPlayers(legacy: {
-  p1: string;
-  p2: string;
-}): MatchPlayers {
-  return {
-    p1: { athleteId: generateLocalAthleteId(), displayName: legacy.p1 },
-    p2: { athleteId: generateLocalAthleteId(), displayName: legacy.p2 },
-  };
-}
 
 /**
  * Busca um atleta pelo ID no estado normalizado.

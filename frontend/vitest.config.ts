@@ -12,6 +12,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
+    threads: {
+      singleThread: true,
+    },
     exclude: [
       'e2e/**',
       '**/e2e/**',
@@ -26,14 +29,6 @@ export default defineConfig({
       '**/node_modules/@testing-library/jest-dom/**/tests/**',
       '**/node_modules/@testing-library/jest-dom/types/__tests__/**',
     ],
-    pool: 'forks',
-    poolOptions: {
-      forks: {
-        maxForks: 2,
-        minForks: 1,
-        execArgv: ['--max-old-space-size=4096'],
-      },
-    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
@@ -59,5 +54,8 @@ export default defineConfig({
         'playwright-e2e/',
       ],
     },
+  },
+  define: {
+    'import.meta.env.VITEST': true,
   },
 });

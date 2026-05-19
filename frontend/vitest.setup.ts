@@ -1,8 +1,13 @@
-import { vi } from 'vitest'
-import '@testing-library/jest-dom'
+import { vi } from 'vitest';
+import '@testing-library/jest-dom';
+
+// Mock de CSS usando pattern regex
+vi.mock(/\.css$/, () => ({}), { virtual: true });
+vi.mock(/\.css\?/, () => ({}), { virtual: true });
 
 // Adiciona variável de ambiente DATABASE_URL para testes Prisma
-process.env.DATABASE_URL = 'postgresql://postgres:123456@localhost:5432/racket_mvp?schema=public&sslmode=disable';
+process.env.DATABASE_URL =
+  'postgresql://postgres:123456@localhost:5432/racket_mvp?schema=public&sslmode=disable';
 
 // Armazena as funções originais do console
 const originalWarn = console.warn;
@@ -33,7 +38,7 @@ const setupGlobalMocks = () => {
 };
 
 // Configura mocks globais
-setupGlobalMocks()// Função utilitária para resetar mocks globais
+setupGlobalMocks(); // Função utilitária para resetar mocks globais
 
 // Mock global de PrismaClient ANTES de qualquer importação
 vi.mock('@prisma/client', () => {
@@ -64,7 +69,10 @@ try {
   (global as any).resetGlobalMocks = (globalThis as any).resetGlobalMocks;
 } catch {}
 // Debug: Confirma registro global
-if (typeof (globalThis as any).resetGlobalMocks !== 'function' && typeof (global as any).resetGlobalMocks !== 'function') {
+if (
+  typeof (globalThis as any).resetGlobalMocks !== 'function' &&
+  typeof (global as any).resetGlobalMocks !== 'function'
+) {
   // eslint-disable-next-line no-console
   console.error('resetGlobalMocks NÃO está disponível no global!');
 } else {

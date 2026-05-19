@@ -489,33 +489,36 @@ const Dashboard: React.FC<DashboardProps> = ({
       )}
 
       {/* ── Suspended Matches (resumable annotations) ── */}
-      {suspendedMatches.length > 0 && (activeDashboardView === 'none' || activeDashboardView === 'history' || activeDashboardView === 'annotated') && (
-        <div className="suspended-section">
-          <div className="suspended-header">
-            <h3>🔴 Anotações Suspensas</h3>
-            <p className="suspended-subtitle">Clique para retomar suas anotações</p>
+      {suspendedMatches.length > 0 &&
+        (activeDashboardView === 'none' ||
+          activeDashboardView === 'history' ||
+          activeDashboardView === 'annotated') && (
+          <div className="suspended-section">
+            <div className="suspended-header">
+              <h3>🔴 Anotações Suspensas</h3>
+              <p className="suspended-subtitle">Clique para retomar suas anotações</p>
+            </div>
+            <div className="match-list">
+              {suspendedMatches.map((rawMatch) => (
+                <DashboardMatchCard
+                  key={`${rawMatch.id}-suspended`}
+                  rawMatch={rawMatch}
+                  localMatchOverrides={localMatchOverrides}
+                  authUserId={authUser?.id}
+                  loadingMatchId={loadingMatchId}
+                  canView={canViewMatch(rawMatch)}
+                  onStartMatch={onStartMatch}
+                  onContinueMatch={onContinueMatch}
+                  onEditMatch={(match) => dispatchUI({ type: 'SET_EDITING_MATCH', match })}
+                  onDeleteMatch={(matchId) => setDeletingMatchId(matchId)}
+                  onViewStats={openStatsForMatch}
+                  fetchMatchStateForContinue={fetchMatchStateForContinue}
+                  onToastWarning={toast.warning}
+                />
+              ))}
+            </div>
           </div>
-          <div className="match-list">
-            {suspendedMatches.map((rawMatch) => (
-              <DashboardMatchCard
-                key={`${rawMatch.id}-suspended`}
-                rawMatch={rawMatch}
-                localMatchOverrides={localMatchOverrides}
-                authUserId={authUser?.id}
-                loadingMatchId={loadingMatchId}
-                canView={canViewMatch(rawMatch)}
-                onStartMatch={onStartMatch}
-                onContinueMatch={onContinueMatch}
-                onEditMatch={(match) => dispatchUI({ type: 'SET_EDITING_MATCH', match })}
-                onDeleteMatch={(matchId) => setDeletingMatchId(matchId)}
-                onViewStats={openStatsForMatch}
-                fetchMatchStateForContinue={fetchMatchStateForContinue}
-                onToastWarning={toast.warning}
-              />
-            ))}
-          </div>
-        </div>
-      )}
+        )}
 
       {/* ── Match Cards List ── */}
       {activeDashboardView === 'history' && (

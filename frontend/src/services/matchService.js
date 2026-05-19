@@ -128,6 +128,10 @@ export async function createMatch(matchData, testPrisma) {
     scheduledAt,
     venueId,
     publicMatchCode,
+    player1Id,
+    player2Id,
+    homeClubId,
+    awayClubId,
   } = validation.data;
 
   const prismaClient = testPrisma || prisma;
@@ -161,58 +165,82 @@ export async function createMatch(matchData, testPrisma) {
   emailsSet.add(p2Email);
   const playersEmails = Array.from(emailsSet);
 
-  const newMatch = await prismaClient.match.create({
-    data: {
-      sportType,
-      format,
-      courtType: courtType || null,
-      nickname: nickname || null,
-      apontadorEmail: apontadorEmail || null,
-      playerP1: players.p1,
-      playerP2: players.p2,
-      playersEmails,
-      visibility: visibility || 'PLAYERS_ONLY',
-      status: 'NOT_STARTED',
-      openForAnnotation: openForAnnotation ?? false,
-      clubId: clubId || null,
-      createdByUserId: createdByUserId || null,
-      scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
-      venueId: venueId || null,
-      publicMatchCode: publicMatchCode || null,
-      completedSets: JSON.stringify([]),
-      matchState: JSON.stringify({
-        playersIds: { p1: players.p1, p2: players.p2 },
-        visibleTo: visibleTo || 'both', // Legado
-        needsSetup: true,
-        startedAt: null,
-      }),
-    },
+  // Debug log de dados antes de criar
+  console.log('[createMatch] Dados para Prisma:', {
+    sportType,
+    format,
+    clubId,
+    createdByUserId,
+    player1Id,
+    player2Id,
+    homeClubId,
+    awayClubId,
+    venueId,
+    players: { p1: players.p1, p2: players.p2 },
   });
 
-  const responseMatch = {
-    id: newMatch.id,
-    sportType: newMatch.sportType,
-    format: newMatch.format,
-    courtType: newMatch.courtType || null,
-    nickname: newMatch.nickname || null,
-    players: { p1: newMatch.playerP1, p2: newMatch.playerP2 },
-    apontadorEmail: newMatch.apontadorEmail,
-    playersEmails: newMatch.playersEmails,
-    visibility: newMatch.visibility,
-    openForAnnotation: newMatch.openForAnnotation,
-    publicMatchCode: newMatch.publicMatchCode || null,
-    scheduledAt: newMatch.scheduledAt ? newMatch.scheduledAt.toISOString() : null,
-    venueId: newMatch.venueId || null,
-    visibleTo: visibleTo || 'both',
-    clubId: newMatch.clubId || null,
-    status: newMatch.status,
-    score: newMatch.score,
-    winner: newMatch.winner,
-    completedSets: JSON.parse(newMatch.completedSets || '[]'),
-    createdAt: newMatch.createdAt.toISOString(),
-  };
+  try {
+    const newMatch = await prismaClient.match.create({
+      data: {
+        sportType,
+        format,
+        courtType: courtType || null,
+        nickname: nickname || null,
+        apontadorEmail: apontadorEmail || null,
+        playerP1: players.p1,
+        playerP2: players.p2,
+        playersEmails,
+        visibility: visibility || 'PLAYERS_ONLY',
+        status: 'NOT_STARTED',
+        openForAnnotation: openForAnnotation ?? false,
+        // FKs opcionais: somente incluir se tiverem valores válidos
+        // Nota: createdByUserId pode não existir na sessão local, então omitir por enquanto
+        scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
+        publicMatchCode: publicMatchCode || null,
+        completedSets: JSON.stringify([]),
+        matchState: JSON.stringify({
+          playersIds: { p1: players.p1, p2: players.p2 },
+          visibleTo: visibleTo || 'both',
+          needsSetup: true,
+          startedAt: null,
+        }),
+      },
+    });
 
-  return responseMatch;
+    const responseMatch = {
+      id: newMatch.id,
+      sportType: newMatch.sportType,
+      format: newMatch.format,
+      courtType: newMatch.courtType || null,
+      nickname: newMatch.nickname || null,
+      players: { p1: newMatch.playerP1, p2: newMatch.playerP2 },
+      apontadorEmail: newMatch.apontadorEmail,
+      playersEmails: newMatch.playersEmails,
+      visibility: newMatch.visibility,
+      openForAnnotation: newMatch.openForAnnotation,
+      publicMatchCode: newMatch.publicMatchCode || null,
+      scheduledAt: newMatch.scheduledAt ? newMatch.scheduledAt.toISOString() : null,
+      venueId: newMatch.venueId || null,
+      visibleTo: visibleTo || 'both',
+      clubId: newMatch.clubId || null,
+      status: newMatch.status,
+      score: newMatch.score,
+      winner: newMatch.winner,
+      completedSets: JSON.parse(newMatch.completedSets || '[]'),
+      createdAt: newMatch.createdAt.toISOString(),
+    };
+
+    return responseMatch;
+  } catch (err) {
+    console.error('[createMatch] Erro ao criar partida:', {
+      code: err.code,
+      message: err.message,
+      meta: err.meta,
+      stack: err.stack,
+      data: { clubId, createdByUserId, player1Id, player2Id, homeClubId, awayClubId, venueId },
+    });
+    throw err;
+  }
 }
 
 export async function getMatchById(id) {

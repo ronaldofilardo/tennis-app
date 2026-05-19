@@ -300,23 +300,27 @@ export default async function handler(req, res) {
     }
 
     // ─── GET /api/matches/suspended-sessions ────────────────────────────────
-    // Retorna partidas com sessões ABANDONED do usuário (que podem ser retomadas)
+    // Retorna partidas com sessões suspensas (ABANDONED ou IN_PROGRESS inativo) do usuário
     if (isSuspendedSessions) {
       if (req.method !== 'GET') return methodNotAllowed(res, ['GET']);
       const ctx = requireAuth(req, res);
       if (!ctx) return;
 
-      // Encontra todas as sessões ABANDONED do usuário
+      // Encontra todas as sessões suspensas do usuário (ABANDONED ou IN_PROGRESS com isActive=false)
+      // Inclui partidas em qualquer status (NOT_STARTED, IN_PROGRESS, FINISHED)
+      // pois a anotação pode estar suspensa mesmo que a partida tenha sido encerrada
       const suspendedSessions = await prisma.matchAnnotationSession.findMany({
         where: {
           annotator: {
             email: ctx.email,
           },
-          status: 'ABANDONED',
+          isActive: false,
+          status: { in: ['IN_PROGRESS', 'ABANDONED'] },
         },
         select: {
           id: true,
           matchId: true,
+          matchStateSnapshot: true,
           match: {
             select: {
               id: true,
@@ -340,19 +344,32 @@ export default async function handler(req, res) {
             },
           },
           createdAt: true,
+          status: true,
         },
         orderBy: { createdAt: 'desc' },
       });
 
-      return sendJson(
-        res,
-        200,
-        suspendedSessions.map((session) => ({
-          ...session.match,
-          suspendedSessionId: session.id,
-          suspendedAt: session.createdAt,
-        })),
+      // ─── Deduplication: Keep only the most recent session per matchId ───
+      const deduplicatedByMatch = new Map();
+      for (const session of suspendedSessions) {
+        if (!deduplicatedByMatch.has(session.matchId)) {
+          deduplicatedByMatch.set(session.matchId, session);
+        }
+      }
+
+      const result = Array.from(deduplicatedByMatch.values()).map((session) => ({
+        ...session.match,
+        suspendedSessionId: session.id,
+        suspendedAt: session.createdAt,
+        suspendedStatus: session.status,
+        matchStateSnapshot: session.matchStateSnapshot,
+      }));
+
+      console.log(
+        `[GET /suspended-sessions] Before dedup: ${suspendedSessions.length} sessions, After: ${result.length} matches`,
       );
+
+      return sendJson(res, 200, result);
     }
 
     // ─── GET /api/matches/annotated-for-me ───────────────────────────────────
@@ -756,7 +773,15 @@ export default async function handler(req, res) {
       if (req.method === 'GET') {
         const sessions = await prisma.matchAnnotationSession.findMany({
           where: { matchId: id },
-          include: {
+          select: {
+            id: true,
+            annotatorUserId: true,
+            isActive: true,
+            startedAt: true,
+            endedAt: true,
+            matchStateSnapshot: true,
+            status: true,
+            createdAt: true,
             annotator: { select: { id: true, name: true, email: true } },
             endorsements: {
               include: { endorsedBy: { select: { id: true, name: true } } },
@@ -785,42 +810,64 @@ export default async function handler(req, res) {
             error: 'Spectators cannot annotate matches',
           });
 
-        // ─── 1. Buscar sessão ATIVA (prioritário) ───────────────────────────────
-        const existingSession = await prisma.matchAnnotationSession.findFirst({
-          where: { matchId: id, annotatorUserId: ctx.userId, isActive: true },
-          include: {
-            annotator: { select: { id: true, name: true, email: true } },
-          },
-        });
-        if (existingSession) return sendJson(res, 200, existingSession);
-
-        // ─── 2. Buscar sessão SUSPENSA (abandonada) para retomada ────────────────
-        // Se anotador saiu e voltou, oferecer retomada da sessão anterior
-        const suspendedSession = await prisma.matchAnnotationSession.findFirst({
+        // ─── 1. Consolidar sessions: buscar TODAS e reutilizar / eliminar duplicatas ───
+        // Permite anotador retomar infinitamente sem criar orphaned sessions
+        const allSessions = await prisma.matchAnnotationSession.findMany({
           where: {
             matchId: id,
             annotatorUserId: ctx.userId,
-            isActive: false,
-            status: { in: ['IN_PROGRESS', 'ABANDONED'] },
           },
           include: {
             annotator: { select: { id: true, name: true, email: true } },
           },
-          orderBy: { updatedAt: 'desc' }, // Última sessão
+          orderBy: { createdAt: 'desc' },
         });
 
-        if (suspendedSession) {
-          // Retornar sessão suspensa com flag para frontend oferecer retomada
+        if (allSessions.length > 0) {
+          const mostRecentSession = allSessions[0];
+          const olderSessions = allSessions.slice(1);
+
+          // Marcar sessions antigas como ABANDONED para consolidar
+          if (olderSessions.length > 0) {
+            await prisma.matchAnnotationSession.updateMany({
+              where: {
+                id: { in: olderSessions.map((s) => s.id) },
+              },
+              data: {
+                status: 'ABANDONED',
+                isActive: false,
+                endedAt: new Date(),
+              },
+            });
+          }
+
+          // Reativar a mais recente se estava suspensa
+          const reactivatedSession = await prisma.matchAnnotationSession.update({
+            where: { id: mostRecentSession.id },
+            data: {
+              isActive: true,
+              status: 'IN_PROGRESS',
+              matchStateSnapshot: null,
+            },
+            include: {
+              annotator: { select: { id: true, name: true, email: true } },
+            },
+          });
+
+          // Flag: true se estava suspensa, false se já ativa
+          const wasSuspended = mostRecentSession.isActive === false;
+
           return sendJson(res, 200, {
-            ...suspendedSession,
-            suspended: true, // Flag: é retomada, não nova
-            previousState: suspendedSession.matchStateSnapshot
-              ? JSON.parse(suspendedSession.matchStateSnapshot)
-              : null,
+            ...reactivatedSession,
+            suspended: wasSuspended,
+            previousState:
+              wasSuspended && mostRecentSession.matchStateSnapshot
+                ? JSON.parse(mostRecentSession.matchStateSnapshot)
+                : null,
           });
         }
 
-        // ─── 3. Criar NOVA sessão ────────────────────────────────────────────────
+        // ─── 2. Criar NOVA sessão (nenhuma encontrada) ────────────────────────────
         const session = await prisma.matchAnnotationSession.create({
           data: {
             matchId: id,
@@ -1118,14 +1165,14 @@ export default async function handler(req, res) {
             },
           });
 
-          // Encerrar todas as sessões de anotação IN_PROGRESS
+          // [BUG 3 FIX] Encerrar todas as sessões de anotação IN_PROGRESS ou ABANDONED
           const inProgressSessions = await prisma.matchAnnotationSession.findMany({
-            where: { matchId: id, status: 'IN_PROGRESS' },
+            where: { matchId: id, status: { in: ['IN_PROGRESS', 'ABANDONED'] } },
           });
 
           if (inProgressSessions.length > 0) {
             await prisma.matchAnnotationSession.updateMany({
-              where: { matchId: id, status: 'IN_PROGRESS' },
+              where: { matchId: id, status: { in: ['IN_PROGRESS', 'ABANDONED'] } },
               data: {
                 status: 'COMPLETED',
                 isActive: false,
@@ -1318,22 +1365,87 @@ export default async function handler(req, res) {
         }
       }
 
-      // ── Auto-derivar homeClubId / awayClubId dos atletas ──────────────────
+      // ── Validação abrangente de Foreign Keys ──────────────────────────────────
       let derivedHomeClubId;
       let derivedAwayClubId;
+      let validPlayer1Id;
+      let validPlayer2Id;
+      const { venueId } = req.body;
+
+      // Validar player1Id e derivar homeClubId
       if (player1Id) {
         const p1 = await prisma.athleteProfile.findUnique({
           where: { id: player1Id },
           select: { clubId: true },
         });
-        derivedHomeClubId = p1?.clubId ?? undefined;
+        if (!p1) {
+          return sendJson(res, 400, {
+            error: `Atleta jogador 1 não encontrado (ID: ${player1Id}). Verifique se o ID é válido.`,
+          });
+        }
+        derivedHomeClubId = p1.clubId ?? undefined;
+        validPlayer1Id = player1Id;
       }
+
+      // Validar player2Id e derivar awayClubId
       if (player2Id) {
         const p2 = await prisma.athleteProfile.findUnique({
           where: { id: player2Id },
           select: { clubId: true },
         });
-        derivedAwayClubId = p2?.clubId ?? undefined;
+        if (!p2) {
+          return sendJson(res, 400, {
+            error: `Atleta jogador 2 não encontrado (ID: ${player2Id}). Verifique se o ID é válido.`,
+          });
+        }
+        derivedAwayClubId = p2.clubId ?? undefined;
+        validPlayer2Id = player2Id;
+      }
+
+      // Validar clubId do contexto se fornecido
+      if (ctx.clubId) {
+        const club = await prisma.club.findUnique({
+          where: { id: ctx.clubId },
+          select: { id: true },
+        });
+        if (!club) {
+          return sendJson(res, 400, {
+            error: `Clube não encontrado (ID: ${ctx.clubId}). Verifique sua sessão.`,
+          });
+        }
+      }
+
+      // Validar createdByUserId do contexto se fornecido
+      if (ctx.userId) {
+        const user = await prisma.user.findUnique({
+          where: { id: ctx.userId },
+          select: { id: true },
+        });
+        if (!user) {
+          return sendJson(res, 400, {
+            error: `Usuário não encontrado (ID: ${ctx.userId}). Verifique sua sessão.`,
+          });
+        }
+      }
+
+      // Validar venueId se fornecido (com fallback gracioso se tabela não existir)
+      if (venueId) {
+        try {
+          const venue = await prisma.venue.findUnique({
+            where: { id: venueId },
+            select: { id: true },
+          });
+          if (!venue) {
+            return sendJson(res, 400, {
+              error: `Local de jogo não encontrado (ID: ${venueId}). Verifique se o ID é válido.`,
+            });
+          }
+        } catch (err) {
+          // Se tabela Venue não existe, continuar normalmente
+          if (err.code !== 'P1000' && !err.message?.includes('no such table')) {
+            throw err;
+          }
+        }
       }
 
       const matchData = {
@@ -1342,6 +1454,9 @@ export default async function handler(req, res) {
         createdByUserId: ctx.userId,
         homeClubId: derivedHomeClubId,
         awayClubId: derivedAwayClubId,
+        // Somente incluir player IDs se foram validados
+        ...(validPlayer1Id && { player1Id: validPlayer1Id }),
+        ...(validPlayer2Id && { player2Id: validPlayer2Id }),
         // Novos metadados de contexto (sanitizar para evitar injeção)
         tournamentName: req.body.tournamentName
           ? String(req.body.tournamentName).slice(0, 200)
@@ -1368,6 +1483,22 @@ export default async function handler(req, res) {
       const maxRetries = 10;
       while (retries < maxRetries) {
         try {
+          console.log('[POST /api/matches] Tentativa de criar match com dados:', {
+            num_attempt: retries + 1,
+            ctx: { userId: ctx.userId, clubId: ctx.clubId, role: ctx.role },
+            matchData: {
+              sportType: matchData.sportType,
+              format: matchData.format,
+              clubId: matchData.clubId,
+              createdByUserId: matchData.createdByUserId,
+              player1Id: matchData.player1Id,
+              player2Id: matchData.player2Id,
+              homeClubId: matchData.homeClubId,
+              awayClubId: matchData.awayClubId,
+              venueId: matchData.venueId,
+              players: matchData.players,
+            },
+          });
           result = await createMatch(matchData);
           break;
         } catch (err) {

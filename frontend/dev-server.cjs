@@ -1687,11 +1687,13 @@ app.get('/api/matches/suspended-sessions', async (req, res) => {
         annotator: {
           email: ctx.email,
         },
-        status: 'ABANDONED',
+        isActive: false,
+        status: { in: ['IN_PROGRESS', 'ABANDONED'] },
       },
       select: {
         id: true,
         matchId: true,
+        matchStateSnapshot: true,
         match: {
           select: {
             id: true,
@@ -1719,13 +1721,26 @@ app.get('/api/matches/suspended-sessions', async (req, res) => {
       orderBy: { createdAt: 'desc' },
     });
 
-    res.json(
-      suspendedSessions.map((session) => ({
-        ...session.match,
-        suspendedSessionId: session.id,
-        suspendedAt: session.createdAt,
-      })),
+    // ─── Deduplication: Keep only the most recent session per matchId ───
+    const deduplicatedByMatch = new Map();
+    for (const session of suspendedSessions) {
+      if (!deduplicatedByMatch.has(session.matchId)) {
+        deduplicatedByMatch.set(session.matchId, session);
+      }
+    }
+
+    const result = Array.from(deduplicatedByMatch.values()).map((session) => ({
+      ...session.match,
+      suspendedSessionId: session.id,
+      suspendedAt: session.createdAt,
+      matchStateSnapshot: session.matchStateSnapshot,
+    }));
+
+    console.log(
+      `[GET /api/matches/suspended-sessions] Before dedup: ${suspendedSessions.length} sessions, After: ${result.length} matches`,
     );
+
+    res.json(result);
   } catch (error) {
     console.error('[GET /api/matches/suspended-sessions] Erro:', error);
     res.status(500).json({ error: 'Erro ao buscar sessões suspensas' });
@@ -1739,7 +1754,16 @@ app.get('/api/matches/:id/sessions', async (req, res) => {
     if (!ctx) return res.status(401).json({ error: 'Authentication required' });
     const sessions = await prisma.matchAnnotationSession.findMany({
       where: { matchId: req.params.id },
-      select: { id: true, annotatorUserId: true, isActive: true, startedAt: true, endedAt: true },
+      select: {
+        id: true,
+        annotatorUserId: true,
+        isActive: true,
+        startedAt: true,
+        endedAt: true,
+        matchStateSnapshot: true,
+        status: true,
+        createdAt: true,
+      },
       orderBy: { startedAt: 'asc' },
     });
     res.json(sessions);
@@ -1753,19 +1777,69 @@ app.post('/api/matches/:id/sessions', async (req, res) => {
   try {
     const ctx = await extractCtx(req);
     if (!ctx) return res.status(401).json({ error: 'Authentication required' });
-    // Idempotente: retorna sessão ativa existente se já houver
-    const existing = await prisma.matchAnnotationSession.findFirst({
-      where: { matchId: req.params.id, annotatorUserId: ctx.userId, isActive: true },
+
+    // ─── Consolidation: Mark old ABANDONED sessions, reuse most recent ───
+    const allSessions = await prisma.matchAnnotationSession.findMany({
+      where: { matchId: req.params.id, annotatorUserId: ctx.userId },
+      orderBy: { createdAt: 'desc' },
     });
-    if (existing) return res.status(200).json(existing);
+
+    // If there's an active session, reactivate it
+    const activeSession = allSessions.find((s) => s.isActive);
+    if (activeSession) {
+      console.log(
+        `[POST /api/matches/${req.params.id}/sessions] Reusing active session: ${activeSession.id}`,
+      );
+      return res.status(200).json(activeSession);
+    }
+
+    // If there are inactive sessions, mark older ones ABANDONED and reuse the most recent
+    if (allSessions.length > 0) {
+      const mostRecent = allSessions[0];
+      const olderSessions = allSessions.slice(1);
+
+      // Mark all older sessions as ABANDONED with endedAt
+      if (olderSessions.length > 0) {
+        await prisma.matchAnnotationSession.updateMany({
+          where: {
+            id: { in: olderSessions.map((s) => s.id) },
+          },
+          data: {
+            status: 'ABANDONED',
+            endedAt: new Date(),
+          },
+        });
+        console.log(
+          `[POST /api/matches/${req.params.id}/sessions] Marked ${olderSessions.length} old sessions as ABANDONED`,
+        );
+      }
+
+      // Reactivate the most recent session
+      const reactivated = await prisma.matchAnnotationSession.update({
+        where: { id: mostRecent.id },
+        data: {
+          isActive: true,
+          status: 'IN_PROGRESS',
+        },
+      });
+
+      console.log(
+        `[POST /api/matches/${req.params.id}/sessions] Reactivated session: ${reactivated.id}`,
+      );
+      return res.status(200).json(reactivated);
+    }
+
+    // No existing sessions, create new one
     const session = await prisma.matchAnnotationSession.create({
       data: {
         matchId: req.params.id,
         annotatorUserId: ctx.userId,
         isActive: true,
         startedAt: new Date(),
+        status: 'IN_PROGRESS',
       },
     });
+    console.log(`[POST /api/matches/${req.params.id}/sessions] Created new session: ${session.id}`);
     res.status(201).json(session);
   } catch (error) {
     console.error(`[POST /api/matches/${req.params.id}/sessions] Erro:`, error);
@@ -1773,27 +1847,81 @@ app.post('/api/matches/:id/sessions', async (req, res) => {
   }
 });
 
+// PATCH /api/matches/:id/sessions/:sessionId → update session status (COMPLETED, ABANDONED, IN_PROGRESS)
 app.patch('/api/matches/:id/sessions/:sessionId', async (req, res) => {
   try {
     const ctx = await extractCtx(req);
     if (!ctx) return res.status(401).json({ error: 'Authentication required' });
-    const { finalState } = req.body;
-    const updated = await prisma.matchAnnotationSession.update({
-      where: { id: req.params.sessionId },
-      data: {
-        endedAt: new Date(),
-        isActive: false,
-        status: 'COMPLETED',
-        ...(finalState ? { finalStateSnapshot: JSON.stringify(finalState) } : {}),
+
+    const { id, sessionId } = req.params;
+
+    const session = await prisma.matchAnnotationSession.findUnique({
+      where: { id: sessionId },
+      select: {
+        id: true,
+        matchId: true,
+        annotatorUserId: true,
+        isActive: true,
       },
     });
-    res.json(updated);
+
+    if (!session || session.matchId !== id) {
+      return res.status(404).json({ error: 'Session not found' });
+    }
+
+    // Only annotator or ADMIN can end/abandon session
+    if (session.annotatorUserId !== ctx.userId && ctx.role !== 'ADMIN') {
+      return res.status(403).json({
+        error: 'Only the annotator or admin can end a session',
+      });
+    }
+
+    if (!session.isActive) {
+      return res.status(400).json({ error: 'Session already ended' });
+    }
+
+    // Validate status if provided
+    const newStatus = req.body?.status || 'COMPLETED';
+    if (!['COMPLETED', 'ABANDONED', 'IN_PROGRESS'].includes(newStatus)) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+
+    // Get current match state for snapshot
+    const match = await prisma.match.findUnique({
+      where: { id },
+      select: { matchState: true },
+    });
+
+    const updateData = {
+      status: newStatus,
+      ...(newStatus === 'ABANDONED' && {
+        isActive: false,
+        matchStateSnapshot: req.body?.matchStateSnapshot || match?.matchState || null,
+      }),
+      ...(newStatus === 'COMPLETED' && {
+        isActive: false,
+        endedAt: new Date(),
+        finalStateSnapshot: req.body?.finalState
+          ? JSON.stringify(req.body.finalState)
+          : match?.matchState || null,
+      }),
+    };
+
+    const updated = await prisma.matchAnnotationSession.update({
+      where: { id: sessionId },
+      data: updateData,
+      include: {
+        annotator: { select: { id: true, name: true, email: true } },
+      },
+    });
+
+    res.status(200).json(updated);
   } catch (error) {
     console.error(
       `[PATCH /api/matches/${req.params.id}/sessions/${req.params.sessionId}] Erro:`,
       error,
     );
-    res.status(500).json({ error: 'Erro ao encerrar sessão' });
+    res.status(500).json({ error: 'Erro ao atualizar sessão' });
   }
 });
 
@@ -1878,11 +2006,27 @@ app.get('/api/matches', async (req, res) => {
 app.post('/api/matches', async (req, res) => {
   try {
     const ctx = await extractCtx(req);
+
+    // Verificar se createdByUserId existe no banco antes de passar para createMatch
+    let resolvedUserId = null;
+    if (ctx?.userId) {
+      const userExists = await prisma.user.findUnique({
+        where: { id: ctx.userId },
+        select: { id: true },
+      });
+      resolvedUserId = userExists ? ctx.userId : null;
+      if (!userExists) {
+        console.warn(
+          `[POST /api/matches] userId ${ctx.userId} não encontrado no banco — omitindo createdByUserId`,
+        );
+      }
+    }
+
     const svc = await getMatchService();
     const matchData = {
       ...req.body,
       clubId: ctx?.clubId || req.body.clubId || null,
-      createdByUserId: ctx?.userId || null,
+      createdByUserId: resolvedUserId,
     };
     const result = await svc.createMatch(matchData);
     console.log(`[POST /api/matches] Partida criada: ${result.id} (clubId: ${matchData.clubId})`);

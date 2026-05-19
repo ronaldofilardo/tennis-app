@@ -405,23 +405,12 @@ export function useScoreboardEngine(onEndMatch: () => void) {
         if (active && session) {
           annotationSessionIdRef.current = session.id;
           dispatch({ type: 'ANNOTATOR_COUNT_SET', count: Math.max(annotatorCount, 1) });
-
-          // Detectar se sessão é suspensa e abrir modal
-          if (session.suspended && session.previousState) {
-            const pointsCount = session.previousState.pointsHistory?.length ?? 0;
-            dispatch({
-              type: 'SUSPENDED_SESSION_SET',
-              session,
-              pointsCount,
-            });
-          }
         }
       } catch {
         // fire-and-forget: não crítico, anotação continua sem contagem
       }
       try {
-        // SECURITY: usa httpClient que injeta o Authorization header automaticamente
-        // via token mantido no AuthContext — sem ler localStorage diretamente.
+        // Buscar TODAS as sessões para encontrar a suspensa (com matchStateSnapshot)
         const res = await httpClient.get<{ sessions?: unknown[] } | unknown[]>(
           `/matches/${matchId}/sessions`,
         );
@@ -430,9 +419,50 @@ export function useScoreboardEngine(onEndMatch: () => void) {
           const sessions = Array.isArray(data)
             ? data
             : ((data as { sessions?: unknown[] })?.sessions ?? []);
+
           // Contar apenas sessões ATIVAS (anotadores cobrindo AGORA)
           const activeSessions = (sessions as any[]).filter((s) => s.isActive === true);
           dispatch({ type: 'ANNOTATOR_COUNT_SET', count: activeSessions.length || 1 });
+
+          // Detectar sessão suspensa COM matchStateSnapshot (retomável)
+          // Ordena por: 1) createdAt DESC (mais recente), 2) isActive DESC (ativa primeiro), 3) ID
+          const suspendedWithState = (sessions as any[])
+            .filter(
+              (s) =>
+                s.matchStateSnapshot && (s.status === 'IN_PROGRESS' || s.status === 'ABANDONED'),
+            )
+            .sort((a, b) => {
+              const timeCompare = new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+              if (timeCompare !== 0) return timeCompare; // Mais recente primeiro
+              // Tiebreaker: sessões ativas primeiro
+              if (a.isActive !== b.isActive) return a.isActive ? -1 : 1;
+              // Final tiebreaker: por ID
+              return b.id.localeCompare(a.id);
+            })[0];
+
+          // DEBUG: Log which session is selected
+          if (suspendedWithState) {
+            console.log(
+              `🔍 DEBUG: Selected suspended session: ID=${suspendedWithState.id.substring(0, 15)}..., Active=${suspendedWithState.isActive}, Status=${suspendedWithState.status}`,
+            );
+          }
+
+          if (suspendedWithState) {
+            // Contar pontos a partir do matchStateSnapshot
+            let pointsCount = 0;
+            try {
+              const state = JSON.parse(suspendedWithState.matchStateSnapshot);
+              pointsCount = state.pointsHistory?.length ?? 0;
+            } catch {
+              // Se não conseguir parsear, usa 0
+              pointsCount = 0;
+            }
+            dispatch({
+              type: 'SUSPENDED_SESSION_SET',
+              session: suspendedWithState,
+              pointsCount,
+            });
+          }
         }
       } catch (err) {
         scoreLog.warn('Falha ao buscar sessões de anotação (não crítico)', { matchId });
@@ -500,38 +530,6 @@ export function useScoreboardEngine(onEndMatch: () => void) {
       if (pollInterval) window.clearInterval(pollInterval);
     };
   }, [matchId, matchData?.status]);
-
-  // ── useEffect: Cleanup ao desmontar (marca sessão como ABANDONED) ──
-  // Quando usuário sai SEM finalizar a partida, marca como ABANDONED para retomada
-  useEffect(() => {
-    return () => {
-      const markSessionAbandoned = async () => {
-        const sessionId = annotationSessionIdRef.current;
-        const currentMatchId = matchIdRef.current;
-
-        // Só marcar como ABANDONED se não foi finalizado (não fazer duplo cleanup)
-        if (sessionId && currentMatchId && matchData?.status !== 'FINISHED') {
-          try {
-            await httpClient.patch(`/matches/${currentMatchId}/sessions/${sessionId}`, {
-              status: 'ABANDONED',
-            });
-            scoreLog.info('Sessão marcada como ABANDONED (usuário saiu)', {
-              matchId: currentMatchId,
-              sessionId,
-            });
-          } catch (err) {
-            scoreLog.warn('Falha ao marcar sessão como ABANDONED', {
-              matchId: currentMatchId,
-              sessionId,
-              error: err instanceof Error ? err.message : String(err),
-            });
-          }
-        }
-      };
-
-      markSessionAbandoned();
-    };
-  }, [matchData?.status]);
 
   // ── Handlers ──
 
@@ -763,6 +761,9 @@ export function useScoreboardEngine(onEndMatch: () => void) {
         winner: (winner === 'p1' ? 'PLAYER_1' : 'PLAYER_2') as Player,
       }));
 
+      // Preservar histórico de pontos do set atual
+      const currentPointsHistory = currentState.currentGame.pointsHistory || [];
+
       const newState: MatchState = {
         ...currentState,
         sets: { PLAYER_1: p1Sets, PLAYER_2: p2Sets },
@@ -775,6 +776,7 @@ export function useScoreboardEngine(onEndMatch: () => void) {
           server: newServer,
           isTiebreak: false,
           isMatchTiebreak: false,
+          pointsHistory: currentPointsHistory,
         },
         server: newServer,
         isFinished: false,
@@ -908,6 +910,7 @@ export function useScoreboardEngine(onEndMatch: () => void) {
 
             await httpClient.patch(`/matches/${matchIdValue}/sessions/${sessionId}`, {
               status: 'ABANDONED',
+              isActive: false,
               matchStateSnapshot: stateSnapshot,
             });
 

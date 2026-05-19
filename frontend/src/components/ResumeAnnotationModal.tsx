@@ -53,7 +53,10 @@ export const ResumeAnnotationModal: React.FC<ResumeAnnotationModalProps> = ({
 
           {matchScore && (
             <p className="resume-modal-score">
-              Placar: <strong>{matchScore.p1} x {matchScore.p2}</strong>
+              Placar:{' '}
+              <strong>
+                {matchScore.p1} x {matchScore.p2}
+              </strong>
               {matchScore.format && ` (${matchScore.format})`}
             </p>
           )}

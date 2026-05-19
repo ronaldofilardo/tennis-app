@@ -6,8 +6,6 @@ export {
   generateLocalAthleteId,
   createAthleteFromName,
   createAthletesStateFromNames,
-  matchPlayersToLegacy,
-  legacyToMatchPlayers,
   getAthleteById,
   upsertAthlete,
 } from './athlete';

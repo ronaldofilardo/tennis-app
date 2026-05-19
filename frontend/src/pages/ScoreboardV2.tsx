@@ -109,13 +109,30 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         status: 'IN_PROGRESS',
       });
       if (res.ok) {
+        // Se houver matchStateSnapshot, restaurar no TennisScoring
+        if (suspendedSession.matchStateSnapshot) {
+          try {
+            const system = getSystem?.();
+            if (system) {
+              const restoredState = JSON.parse(suspendedSession.matchStateSnapshot);
+              system.loadState(restoredState);
+              console.log('[ScoreboardV2] Estado anterior restaurado da sessão suspensa', {
+                matchId,
+                pointsCount: restoredState.pointsHistory?.length ?? 0,
+              });
+            }
+          } catch (parseErr) {
+            console.warn('[ScoreboardV2] Falha ao restaurar estado anterior:', parseErr);
+          }
+        }
+
         setShowResumeModal(false);
         clearSuspendedSession();
       }
     } catch (err) {
       console.error('Erro ao retomar anotação:', err);
     }
-  }, [suspendedSession, matchId, clearSuspendedSession]);
+  }, [suspendedSession, matchId, clearSuspendedSession, getSystem]);
 
   // Handler para começar nova anotação
   const handleStartNewAnnotation = useCallback(() => {
@@ -225,7 +242,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         players={players}
         format={matchData.format}
         onConfirm={handleSetupConfirm}
-        onCancel={handleEndMatch}
+        onCancel={() => navigate('/dashboard')}
       />
     );
   }
@@ -394,6 +411,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         playerNames={players}
         currentSets={state.sets ?? { PLAYER_1: 0, PLAYER_2: 0 }}
         currentServer={state.server ?? 'PLAYER_1'}
+        completedSets={state.completedSets ?? []}
         onConfirm={(setWinners, server) => {
           setEditScoreModalOpen(false);
           handleEditScore(setWinners, server);
@@ -411,7 +429,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
             const { httpClient } = await import('../config/httpClient');
             await httpClient.delete(`/matches/${matchId}`);
             setDeleteModalOpen(false);
-            handleEndMatch();
+            navigate('/dashboard');
           }}
           onCancel={() => setDeleteModalOpen(false)}
         />
@@ -450,7 +468,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
           sportType={matchData.sportType}
           completedSets={state.completedSets ?? []}
           elapsed={elapsed}
-          onBack={handleEndMatch}
+          onBack={() => navigate('/dashboard')}
           onMenu={fetchStats}
           onEdit={
             currentUser?.id && matchData.createdByUserId === currentUser.id

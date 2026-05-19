@@ -27,6 +27,8 @@ type DashboardMatch = {
   apontadorEmail?: string;
   playersEmails?: string[];
   matchState?: Record<string, unknown> | null;
+  matchStateSnapshot?: string | null;
+  suspendedSessionId?: string;
 };
 
 const FORMAT_LABELS: Record<string, string> = {
@@ -137,6 +139,33 @@ const DashboardMatchCard: React.FC<DashboardMatchCardProps> = ({
   if (Array.isArray(match.completedSets)) completedSetsArr = match.completedSets;
   else if (Array.isArray(ms?.['completedSets']))
     completedSetsArr = ms!['completedSets'] as unknown[];
+
+  // ── Suspended annotation data (from matchStateSnapshot) ─────────────────
+  let suspendedAnnotationSets: string[] = [];
+  let isSuspendedAnnotation = Boolean(match.matchStateSnapshot && match.suspendedSessionId);
+  if (isSuspendedAnnotation && match.matchStateSnapshot) {
+    try {
+      const snapshot = JSON.parse(match.matchStateSnapshot) as Record<string, unknown>;
+      const completedSetsFromSnapshot = Array.isArray(snapshot.completedSets)
+        ? (snapshot.completedSets as unknown[])
+        : [];
+      suspendedAnnotationSets = buildPartials(completedSetsFromSnapshot);
+
+      // Add current set if exists
+      if (snapshot.currentSetState && typeof snapshot.currentSetState === 'object') {
+        const css = snapshot.currentSetState as Record<string, unknown>;
+        const games = css['games'] as Record<string, number> | undefined;
+        if (games) {
+          const g1 = games.PLAYER_1 ?? 0;
+          const g2 = games.PLAYER_2 ?? 0;
+          suspendedAnnotationSets.push(`${g1}/${g2}`);
+        }
+      }
+    } catch (err) {
+      console.warn('[DashboardMatchCard] Error parsing matchStateSnapshot:', err);
+      isSuspendedAnnotation = false;
+    }
+  }
 
   const setsPartials = buildPartials(completedSetsArr);
 
@@ -260,6 +289,14 @@ const DashboardMatchCard: React.FC<DashboardMatchCardProps> = ({
           <span className="player-name">{p2Name}</span>
         </div>
       </div>
+
+      {/* ── Suspended Annotation Score ── */}
+      {isSuspendedAnnotation && suspendedAnnotationSets.length > 0 && (
+        <div className="card-suspended-score">
+          <span className="card-suspended-label">📝 Anotação em Progresso</span>
+          <div className="card-suspended-sets">{suspendedAnnotationSets.join('  ·  ')}</div>
+        </div>
+      )}
 
       {/* ── Live score (IN_PROGRESS only) ── */}
       {match.status === 'IN_PROGRESS' && ms && (

@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import type { TennisFormat, Player } from '../../core/scoring/types';
+import {
+  validateSetResult,
+  validatePartialSetResult,
+  parseSetResultString,
+  getServerForNextSet,
+  type SetResult,
+  type SetValidation,
+  type PartialSetValidation,
+} from '../../core/scoring/setResultValidator';
 import './EditScoreModal.css';
 
 interface EditScoreModalProps {
@@ -8,6 +17,7 @@ interface EditScoreModalProps {
   playerNames: { p1: string; p2: string };
   currentSets: { PLAYER_1: number; PLAYER_2: number };
   currentServer: Player;
+  completedSets?: Array<{ games: Record<Player, number>; winner: Player }>;
   onConfirm: (setWinners: Array<'p1' | 'p2'>, server: Player) => void;
   onCancel: () => void;
 }
@@ -34,142 +44,252 @@ export const EditScoreModal: React.FC<EditScoreModalProps> = ({
   playerNames,
   currentSets,
   currentServer,
+  completedSets = [],
   onConfirm,
   onCancel,
 }) => {
-  const maxSets = totalSetsForFormat(matchFormat);
+  if (!isOpen) return null;
 
-  // Reconstruct initial setWinners from currentSets
-  const buildInitialSetWinners = (): Array<'p1' | 'p2' | null> => {
-    const total = currentSets.PLAYER_1 + currentSets.PLAYER_2;
-    const winners: Array<'p1' | 'p2' | null> = Array(maxSets).fill(null);
-    // Preenche os sets já disputados de forma fictícia (não sabemos a ordem real)
-    let p1Remaining = currentSets.PLAYER_1;
-    let p2Remaining = currentSets.PLAYER_2;
-    for (let i = 0; i < total && i < maxSets; i++) {
-      if (p1Remaining > 0) {
-        winners[i] = 'p1';
-        p1Remaining--;
-      } else if (p2Remaining > 0) {
-        winners[i] = 'p2';
-        p2Remaining--;
+  const maxSets = totalSetsForFormat(matchFormat);
+  const isContinuing = completedSets.length > 0;
+
+  // Build completed set winners array
+  const buildCompletedSetWinners = (): Array<'p1' | 'p2'> => {
+    const winners: Array<'p1' | 'p2'> = [];
+    completedSets.forEach((set) => {
+      if (set.games.PLAYER_1 > set.games.PLAYER_2) {
+        winners.push('p1');
+      } else {
+        winners.push('p2');
       }
-    }
+    });
     return winners;
   };
 
-  const [setWinners, setSetWinners] = useState<Array<'p1' | 'p2' | null>>(buildInitialSetWinners);
-  const [server, setServer] = useState<Player>(currentServer);
+  const [resultInput, setResultInput] = useState('');
+  const [validation, setValidation] = useState<PartialSetValidation | null>(null);
+  const [completedSetWinners, setCompletedSetWinners] = useState<Array<'p1' | 'p2'>>(
+    buildCompletedSetWinners(),
+  );
+  const [nextServer, setNextServer] = useState<Player>(currentServer);
+  const [editingSetIndex, setEditingSetIndex] = useState(completedSetWinners.length);
+  const [currentPartialGames, setCurrentPartialGames] = useState<{ p1: number; p2: number } | null>(
+    null,
+  );
 
-  // Reset ao abrir
+  // Reset quando modal abre
   useEffect(() => {
     if (isOpen) {
-      setSetWinners(buildInitialSetWinners());
-      setServer(currentServer);
+      setResultInput('');
+      setValidation(null);
+      setCompletedSetWinners(buildCompletedSetWinners());
+      setEditingSetIndex(buildCompletedSetWinners().length);
+      setNextServer(currentServer);
+      setCurrentPartialGames(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  // Validar input em tempo real (aceita completo ou parcial)
+  const handleResultChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const input = e.target.value;
+    setResultInput(input);
 
-  const handleSetWinner = (setIndex: number, winner: 'p1' | 'p2' | null): void => {
-    setSetWinners((prev) => {
-      const next = [...prev];
-      next[setIndex] = winner;
-      // Limpar sets posteriores se este foi desmarcado
-      if (winner === null) {
-        for (let i = setIndex + 1; i < next.length; i++) {
-          next[i] = null;
-        }
-      }
-      return next;
-    });
+    if (input.trim() === '') {
+      setValidation(null);
+      setCurrentPartialGames(null);
+      return;
+    }
+
+    const parsed = parseSetResultString(input);
+    if (!parsed) {
+      setValidation({
+        isValid: false,
+        error: 'Digite no formato: 6x4, 7-6, etc',
+        p1Games: 0,
+        p2Games: 0,
+        isCompleted: false,
+      });
+      setCurrentPartialGames(null);
+      return;
+    }
+
+    const result = validatePartialSetResult(parsed, matchFormat);
+    setValidation(result);
+    setCurrentPartialGames({ p1: result.p1Games, p2: result.p2Games });
+
+    // Se resultado é válido e tem vencedor, determinar próximo servidor
+    if (result.isValid && result.winner) {
+      const player = result.winner === 'PLAYER_1' ? 'PLAYER_1' : 'PLAYER_2';
+      const nextSrv = getServerForNextSet(
+        player,
+        currentServer,
+        completedSetWinners.length,
+        matchFormat,
+      );
+      setNextServer(nextSrv);
+    }
   };
 
-  const p1Sets = setWinners.filter((w) => w === 'p1').length;
-  const p2Sets = setWinners.filter((w) => w === 'p2').length;
+  // Confirmar resultado do set e ir para próximo
+  const handleConfirmSetResult = async (): Promise<void> => {
+    if (!validation?.isValid) return;
 
-  const handleConfirm = (): void => {
-    const played = setWinners.filter((w) => w !== null) as Array<'p1' | 'p2'>;
-    onConfirm(played, server);
+    let newWinners: Array<'p1' | 'p2'>;
+
+    // Se tem vencedor (set completo), adiciona à lista de vencedores
+    if (validation.winner) {
+      const winner = validation.winner === 'PLAYER_1' ? 'p1' : 'p2';
+      newWinners = [...completedSetWinners, winner];
+      setCompletedSetWinners(newWinners);
+    } else {
+      // Se é parcial, apenas avança para próximo set (sem vencedor)
+      newWinners = [...completedSetWinners, 'p1']; // placeholder
+      setCompletedSetWinners(newWinners);
+    }
+
+    // Reset para próximo set
+    setResultInput('');
+    setValidation(null);
+    setCurrentPartialGames(null);
+    setEditingSetIndex((prev) => prev + 1);
   };
 
-  const setIndices = Array.from({ length: maxSets }, (_, i) => i);
+  // Confirmar todos os sets e fechar modal
+  const handleConfirmAllSets = (): void => {
+    onConfirm(completedSetWinners, nextServer);
+  };
+
+  const canConfirmSetResult = validation?.isValid || false;
+  const canConfirmMatch = completedSetWinners.length > 0;
+
   const isFirstSetOnly = maxSets === 1;
 
   return (
     <div className="edit-score-overlay" onClick={onCancel}>
       <div className="edit-score-modal" onClick={(e) => e.stopPropagation()}>
         <div className="edit-score-header">
-          <span className="edit-score-icon">✏️</span>
-          <h2 className="edit-score-title">Ajustar Placar</h2>
+          <span className="edit-score-icon">{isContinuing ? '▶️' : '✏️'}</span>
+          <h2 className="edit-score-title">
+            {isContinuing ? 'Continuar Placar' : 'Ajustar Placar'}
+          </h2>
           <button className="edit-score-close" onClick={onCancel}>
             ✕
           </button>
         </div>
 
         <div className="edit-score-body">
-          <p className="edit-score-warning">⚠️ O histórico de pontos anteriores será apagado.</p>
+          <p className="edit-score-info">
+            ✅ Você pode retomar a anotação de onde parou. Digite o resultado de cada set e continue
+            anotando.
+          </p>
 
-          {!isFirstSetOnly && (
+          {/* Seção: Sets já finalizados */}
+          {completedSetWinners.length > 0 && (
             <div className="edit-score-section">
-              <p className="edit-score-section-label">Vencedor de cada set</p>
-              <div className="edit-score-sets">
-                {setIndices.map((i) => (
-                  <div key={i} className="edit-score-set-row">
-                    <span className="edit-score-set-num">Set {i + 1}</span>
-                    <div className="edit-score-set-btns">
-                      <button
-                        className={`edit-score-set-btn ${setWinners[i] === 'p1' ? 'active' : ''}`}
-                        onClick={() => handleSetWinner(i, setWinners[i] === 'p1' ? null : 'p1')}
-                      >
-                        {playerNames.p1}
-                      </button>
-                      <button
-                        className={`edit-score-set-btn ${setWinners[i] === 'p2' ? 'active' : ''}`}
-                        onClick={() => handleSetWinner(i, setWinners[i] === 'p2' ? null : 'p2')}
-                      >
-                        {playerNames.p2}
-                      </button>
-                    </div>
+              <p className="edit-score-section-label">📊 Sets Finalizados</p>
+              <div className="edit-score-completed-sets">
+                {completedSets.map((set, idx) => (
+                  <div key={idx} className="edit-score-completed-set-row">
+                    <span className="edit-score-set-num">Set {idx + 1}</span>
+                    <span className="edit-score-set-result">
+                      {set.games.PLAYER_1}x{set.games.PLAYER_2}
+                    </span>
+                    <span
+                      className={`edit-score-set-winner ${set.winner === 'PLAYER_1' ? 'p1' : 'p2'}`}
+                    >
+                      {set.winner === 'PLAYER_1' ? playerNames.p1 : playerNames.p2}
+                    </span>
                   </div>
                 ))}
               </div>
+            </div>
+          )}
 
+          {/* Seção: Set em edição */}
+          {!isFirstSetOnly && editingSetIndex < maxSets && (
+            <div className="edit-score-section edit-score-section-active">
+              <p className="edit-score-section-label">✏️ Placar do Set {editingSetIndex + 1}</p>
+              <div className="edit-score-input-group">
+                <label className="edit-score-input-label">Digite o resultado (ex: 6x4, 7-6):</label>
+                <input
+                  type="text"
+                  className={`edit-score-input ${
+                    validation?.isValid ? 'valid' : validation?.error ? 'invalid' : ''
+                  }`}
+                  value={resultInput}
+                  onChange={handleResultChange}
+                  placeholder="6x4"
+                  autoFocus
+                />
+                {validation?.error && <p className="edit-score-error">{validation.error}</p>}
+                {validation?.isValid && (
+                  <div className="edit-score-success">
+                    {validation.isCompleted && validation.winner ? (
+                      <>
+                        <p className="edit-score-success-winner">
+                          {validation.winner === 'PLAYER_1' ? playerNames.p1 : playerNames.p2}{' '}
+                          venceu o set
+                        </p>
+                        {editingSetIndex < maxSets - 1 && (
+                          <p className="edit-score-success-server">
+                            Próximo saque:{' '}
+                            <strong>
+                              {nextServer === 'PLAYER_1' ? playerNames.p1 : playerNames.p2}
+                            </strong>
+                          </p>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <p className="edit-score-success-partial">
+                          📝 Set em andamento: {validation.p1Games}x{validation.p2Games}
+                        </p>
+                        <p className="edit-score-success-info">
+                          Você pode continuar anotando daqui em diante
+                        </p>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {editingSetIndex < maxSets - 1 && (
+                <button
+                  className={`edit-score-btn-next-set ${canConfirmSetResult ? 'active' : ''}`}
+                  onClick={handleConfirmSetResult}
+                  disabled={!canConfirmSetResult}
+                >
+                  {validation?.isCompleted ? '➜ Próximo Set' : '✓ Continuar Anotando'}
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Se completou todos os sets necessários */}
+          {editingSetIndex >= maxSets && (
+            <div className="edit-score-section edit-score-section-complete">
+              <p className="edit-score-section-label">✅ Placar Completo</p>
               <div className="edit-score-summary">
                 <span>{playerNames.p1}</span>
                 <span className="edit-score-summary-score">
-                  {p1Sets} — {p2Sets}
+                  {completedSetWinners.filter((w) => w === 'p1').length} —{' '}
+                  {completedSetWinners.filter((w) => w === 'p2').length}
                 </span>
                 <span>{playerNames.p2}</span>
               </div>
             </div>
           )}
-
-          <div className="edit-score-section">
-            <p className="edit-score-section-label">Quem saca agora?</p>
-            <div className="edit-score-server-btns">
-              <button
-                className={`edit-score-server-btn ${server === 'PLAYER_1' ? 'active' : ''}`}
-                onClick={() => setServer('PLAYER_1')}
-              >
-                {playerNames.p1}
-              </button>
-              <button
-                className={`edit-score-server-btn ${server === 'PLAYER_2' ? 'active' : ''}`}
-                onClick={() => setServer('PLAYER_2')}
-              >
-                {playerNames.p2}
-              </button>
-            </div>
-          </div>
         </div>
 
         <div className="edit-score-footer">
           <button className="edit-score-btn-cancel" onClick={onCancel}>
             Cancelar
           </button>
-          <button className="edit-score-btn-confirm" onClick={handleConfirm}>
+          <button
+            className="edit-score-btn-confirm"
+            onClick={handleConfirmAllSets}
+            disabled={!canConfirmMatch}
+          >
             Confirmar Placar
           </button>
         </div>
