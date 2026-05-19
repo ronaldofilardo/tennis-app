@@ -1,6 +1,6 @@
 // frontend/src/components/PlanGate.tsx
 // Componente de feature-gating por plano.
-// Esconde conteúdo ou mostra upgrade prompt baseado no plano do clube.
+// Esconde conteúdo ou mostra upgrade prompt baseado no plano do usuário.
 
 import React from "react";
 import type { ReactNode } from "react";
@@ -31,7 +31,7 @@ function meetsMinPlan(current: PlanType, required: PlanType): boolean {
 }
 
 /**
- * Componente que controla a visibilidade baseado no plano do clube.
+ * Componente que controla a visibilidade baseado no plano do usuário.
  *
  * Uso com feature:
  * ```tsx
@@ -43,7 +43,7 @@ function meetsMinPlan(current: PlanType, required: PlanType): boolean {
  * Uso com plano mínimo:
  * ```tsx
  * <PlanGate requiredPlan="PREMIUM">
- *   <TournamentManager />
+ *   <PremiumContent />
  * </PlanGate>
  * ```
  */
@@ -97,10 +97,6 @@ export const PlanGate: React.FC<PlanGateProps> = ({
 /**
  * Hook helper para verificação inline de features.
  * Útil quando não se quer usar o componente PlanGate.
- *
- * ```tsx
- * const canUseTournaments = usePlanCheck("tournaments");
- * ```
  */
 export function usePlanCheck(feature: Feature): boolean {
   const { hasFeature } = useSubscription();
