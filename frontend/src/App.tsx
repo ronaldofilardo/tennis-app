@@ -208,15 +208,7 @@ const AppContent: React.FC = () => {
             <Route
               path="*"
               element={
-                <Navigate
-                  to={
-                    isAuthenticated
-                      ? isAdmin
-                        ? '/admin'
-                        : '/dashboard'
-                      : '/login'
-                  }
-                />
+                <Navigate to={isAuthenticated ? (isAdmin ? '/admin' : '/dashboard') : '/login'} />
               }
             />
           </Routes>

@@ -1,6 +1,5 @@
 // Barrel file — re-exports all public components
 
-export { default as AddAthleteModal } from './AddAthleteModal';
 export { default as AnnotatedMatchCard } from './AnnotatedMatchCard';
 export { default as AnnotationSessionPanel } from './AnnotationSessionPanel';
 export { default as AthleteHeader } from './AthleteHeader';

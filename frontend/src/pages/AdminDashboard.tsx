@@ -9,10 +9,8 @@ import { useToast } from '../components/Toast';
 import type { AdminTabType } from '../types/admin';
 import { PAGE_SIZE } from '../types/admin';
 import AdminOverviewTab from '../components/admin/AdminOverviewTab';
-import AdminClubsTab from '../components/admin/AdminClubsTab';
 import AdminUsersTab from '../components/admin/AdminUsersTab';
 import AdminMatchesTab from '../components/admin/AdminMatchesTab';
-import CreateClubModal from '../components/admin/CreateClubModal';
 import { useAdminData } from '../hooks/useAdminData';
 import './AdminDashboard.css';
 
@@ -24,21 +22,12 @@ const AdminDashboard: React.FC = () => {
   const {
     state,
     fetchStats,
-    fetchClubs,
     fetchUsers,
     fetchAllMatches,
-    handleShowMembers,
-    handleCloseMembers,
-    handleClubSearch,
-    handleUserSearch,
-    handleCreateClub,
-    handleCreateClubFieldChange,
     handleSyncPasswords,
     setActiveTab,
-    setClubSearch,
     setUserSearch,
     setMatchStatusFilter,
-    setShowCreateClub,
   } = useAdminData(toast);
 
   const {
@@ -46,11 +35,6 @@ const AdminDashboard: React.FC = () => {
     stats,
     loadingStats,
     error,
-    clubs,
-    clubsTotal,
-    clubsOffset,
-    loadingClubs,
-    clubSearch,
     users,
     usersTotal,
     usersOffset,
@@ -61,21 +45,12 @@ const AdminDashboard: React.FC = () => {
     matchesOffset,
     loadingMatches,
     matchStatusFilter,
-    selectedClub,
-    clubMembers,
-    loadingMembers,
-    showCreateClub,
-    createClubForm,
-    creatingClub,
     syncingPasswords,
   } = state;
 
   const isAdmin = currentUser?.activeRole === 'ADMIN';
 
   // === Pagination ===
-  const clubsPage = Math.floor(clubsOffset / PAGE_SIZE) + 1;
-  const clubsTotalPages = Math.ceil(clubsTotal / PAGE_SIZE);
-
   const usersPage = Math.floor(usersOffset / PAGE_SIZE) + 1;
   const usersTotalPages = Math.ceil(usersTotal / PAGE_SIZE);
 
@@ -126,7 +101,6 @@ const AdminDashboard: React.FC = () => {
         {(
           [
             { key: 'overview', label: 'Visão Geral', icon: '📊' },
-            { key: 'clubs', label: 'Clubes', icon: '🏢' },
             { key: 'users', label: 'Usuários', icon: '👥' },
             { key: 'matches', label: 'Partidas', icon: '🎾' },
           ] as Array<{
@@ -171,24 +145,7 @@ const AdminDashboard: React.FC = () => {
         )}
 
         {activeTab === 'overview' && stats && (
-          <AdminOverviewTab stats={stats} onSwitchToClubs={() => setActiveTab('clubs')} />
-        )}
-
-        {activeTab === 'clubs' && (
-          <AdminClubsTab
-            clubs={clubs}
-            clubsTotal={clubsTotal}
-            clubSearch={clubSearch}
-            loadingClubs={loadingClubs}
-            clubsPage={clubsPage}
-            clubsTotalPages={clubsTotalPages}
-            onSearchChange={setClubSearch}
-            onSearch={handleClubSearch}
-            onPageChange={(offset) => fetchClubs(offset, clubSearch)}
-            onShowMembers={handleShowMembers}
-            onCreateClick={() => setShowCreateClub(true)}
-            clubsOffset={clubsOffset}
-          />
+          <AdminOverviewTab stats={stats} />
         )}
 
         {activeTab === 'users' && (
@@ -221,16 +178,6 @@ const AdminDashboard: React.FC = () => {
           />
         )}
       </div>
-
-      {showCreateClub && (
-        <CreateClubModal
-          form={createClubForm}
-          creating={creatingClub}
-          onFieldChange={handleCreateClubFieldChange}
-          onCreate={handleCreateClub}
-          onClose={() => setShowCreateClub(false)}
-        />
-      )}
     </div>
   );
 };

@@ -67,7 +67,6 @@ const AdminMatchesTab: React.FC<AdminMatchesTabProps> = ({
             <span>Jogadores</span>
             <span>Status</span>
             <span>Placar</span>
-            <span>Clube</span>
             <span>Criador</span>
             <span>Data</span>
           </div>
@@ -86,7 +85,6 @@ const AdminMatchesTab: React.FC<AdminMatchesTabProps> = ({
               <span className="cell-score">
                 {match.score || <span className="cell-muted">—</span>}
               </span>
-              <span className="cell-muted">{match.clubName || '—'}</span>
               <span className="cell-muted">{match.createdByName || '—'}</span>
               <span className="cell-date">
                 {new Date(match.createdAt).toLocaleDateString('pt-BR')}

@@ -126,9 +126,6 @@ function formatMatchFromDB(match) {
     createdAt: match.createdAt ? match.createdAt.toISOString() : null,
     updatedAt: match.updatedAt ? match.updatedAt.toISOString() : null,
     visibleTo: matchState?.visibleTo || 'both',
-    scheduledAt: match.scheduledAt ? match.scheduledAt.toISOString() : null,
-    venueId: match.venueId || null,
-    venue: match.venue || null,
     createdByUserId: match.createdByUserId || null,
     visibility: match.visibility || 'PLAYERS_ONLY',
     openForAnnotation: match.openForAnnotation ?? false,
@@ -320,7 +317,6 @@ app.post('/api/auth/register-athlete-independent', async (req, res) => {
         fatherCpf: fatherCpf ? fatherCpf.replace(/\D/g, '') : null,
         motherName: motherName || null,
         motherCpf: motherCpf ? motherCpf.replace(/\D/g, '') : null,
-        clubId: null,
         isPublic: true,
       },
     });
@@ -335,10 +331,6 @@ app.post('/api/auth/register-athlete-independent', async (req, res) => {
   }
 });
 
-// ─── Clubes ──────────────────────────────────────────────────────────────────
-
-// GET /api/clubs — clubes do usuário autenticado
-// Endpoint PÚBLICO — permite acesso anônimo (para Scorer Avulso)
 app.get('/api/athletes', async (req, res) => {
   try {
     const ctx = await extractCtx(req); // pode ser null para anônimos
@@ -423,7 +415,7 @@ app.post('/api/athletes', async (req, res) => {
   }
 });
 
-// PATCH /api/athletes/:id — edita perfil de atleta (gestor do clube ou próprio atleta)
+// PATCH /api/athletes/:id — edita perfil de atleta (próprio atleta ou admin)
 app.patch('/api/athletes/:id', async (req, res) => {
   try {
     const ctx = await extractCtx(req);
@@ -593,7 +585,6 @@ app.get('/api/matches/my-completed', async (req, res) => {
         courtType: true,
         playerP1: true,
         playerP2: true,
-        scheduledAt: true,
         createdAt: true,
         player1: { select: { id: true, name: true } },
         player2: { select: { id: true, name: true } },
@@ -609,7 +600,6 @@ app.get('/api/matches/my-completed', async (req, res) => {
       courtType: m.courtType,
       playerP1: m.playerP1,
       playerP2: m.playerP2,
-      scheduledAt: m.scheduledAt ? m.scheduledAt.toISOString() : null,
       createdAt: m.createdAt ? m.createdAt.toISOString() : null,
       player1: m.player1,
       player2: m.player2,
@@ -652,13 +642,11 @@ app.get('/api/matches/annotated-for-me', async (req, res) => {
         courtType: true,
         playerP1: true,
         playerP2: true,
-        scheduledAt: true,
         status: true,
         createdAt: true,
         updatedAt: true,
         player1: { select: { id: true, name: true } },
         player2: { select: { id: true, name: true } },
-        club: { select: { id: true, name: true } },
         annotationSessions: {
           where: {
             OR: [{ status: 'COMPLETED' }, { isActive: false, endedAt: { not: null } }],
@@ -689,12 +677,10 @@ app.get('/api/matches/annotated-for-me', async (req, res) => {
       courtType: m.courtType,
       playerP1: m.playerP1,
       playerP2: m.playerP2,
-      scheduledAt: m.scheduledAt,
       status: m.status,
       createdAt: m.createdAt,
       player1: m.player1,
       player2: m.player2,
-      club: m.club,
       completedAnnotations: m.annotationSessions.map((s) => ({
         id: s.id,
         annotatorId: s.annotatorUserId,
@@ -750,12 +736,10 @@ app.get('/api/matches/annotated-by-me', async (req, res) => {
             courtType: true,
             playerP1: true,
             playerP2: true,
-            scheduledAt: true,
             status: true,
             createdAt: true,
             player1: { select: { id: true, name: true } },
             player2: { select: { id: true, name: true } },
-            club: { select: { id: true, name: true } },
             annotationSessions: {
               where: {
                 OR: [{ status: 'COMPLETED' }, { isActive: false, endedAt: { not: null } }],
@@ -814,11 +798,9 @@ app.get('/api/matches/:id/sessions/:sessionId/report-data', async (req, res) => 
             courtType: true,
             playerP1: true,
             playerP2: true,
-            scheduledAt: true,
             matchState: true,
             player1: { select: { name: true } },
             player2: { select: { name: true } },
-            club: { select: { name: true } },
           },
         },
         annotator: { select: { id: true, name: true } },
@@ -884,10 +866,9 @@ app.patch('/api/matches/:id/metadata', async (req, res) => {
     if (match.createdByUserId !== ctx.userId && ctx.role !== 'ADMIN') {
       return res.status(403).json({ error: 'Apenas o criador da partida pode editar os dados' });
     }
-    const { scheduledAt, venueId, nickname, visibility, openForAnnotation } = req.body || {};
+    const { nickname, visibility, openForAnnotation } = req.body || {};
     const data = {};
-    if (scheduledAt !== undefined) data.scheduledAt = scheduledAt ? new Date(scheduledAt) : null;
-    if (venueId !== undefined) data.venueId = venueId || null;
+
     if (nickname !== undefined) data.nickname = nickname || null;
     if (visibility !== undefined) data.visibility = visibility;
     if (openForAnnotation !== undefined) data.openForAnnotation = Boolean(openForAnnotation);

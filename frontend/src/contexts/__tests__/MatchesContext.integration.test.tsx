@@ -52,8 +52,6 @@ describe('MatchesContext integração com estados', () => {
             email: 'test@test.com',
             name: 'Test User',
             role: 'COACH',
-            clubs: [],
-            activeClubId: null,
             activeRole: 'COACH',
           });
         return null;

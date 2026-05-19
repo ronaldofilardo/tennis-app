@@ -1,14 +1,14 @@
 // frontend/src/pages/AuthPage.tsx
 // Página de Login e Registro unificada — Fase 1: Identidade
 
-import React, { useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
-import { useNavigation } from "../contexts/NavigationContext";
-import ScorerRegisterModal from "../components/ScorerRegisterModal";
-import AthleteIndependentRegisterModal from "../components/AthleteIndependentRegisterModal";
-import "./AuthPage.css";
+import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigation } from '../contexts/NavigationContext';
+import ScorerRegisterModal from '../components/ScorerRegisterModal';
+import AthleteIndependentRegisterModal from '../components/AthleteIndependentRegisterModal';
+import './AuthPage.css';
 
-type AuthMode = "login" | "register";
+type AuthMode = 'login' | 'register';
 
 const AuthPage: React.FC = () => {
   const {
@@ -22,16 +22,13 @@ const AuthPage: React.FC = () => {
     currentUser,
     activeClub,
   } = useAuth();
-  const {
-    navigateToDashboard,
-    navigateToAdminDashboard,
-  } = useNavigation();
+  const { navigateToDashboard, navigateToAdminDashboard } = useNavigation();
 
-  const [mode, setMode] = useState<AuthMode>("login");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [mode, setMode] = useState<AuthMode>('login');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
   const [showScorerModal, setShowScorerModal] = useState(false);
   const [showAthleteModal, setShowAthleteModal] = useState(false);
@@ -39,7 +36,7 @@ const AuthPage: React.FC = () => {
   // Se já autenticado, redirecionar com base no papel
   React.useEffect(() => {
     if (isAuthenticated && currentUser) {
-      if (currentUser.platformRole === "ADMIN") {
+      if (currentUser.platformRole === 'ADMIN') {
         navigateToAdminDashboard();
       } else {
         navigateToDashboard();
@@ -52,17 +49,17 @@ const AuthPage: React.FC = () => {
     setLocalError(null);
     clearError();
 
-    if (mode === "register") {
+    if (mode === 'register') {
       if (!name.trim()) {
-        setLocalError("Informe seu nome.");
+        setLocalError('Informe seu nome.');
         return;
       }
       if (password.length < 6) {
-        setLocalError("Senha deve ter pelo menos 6 caracteres.");
+        setLocalError('Senha deve ter pelo menos 6 caracteres.');
         return;
       }
       if (password !== confirmPassword) {
-        setLocalError("As senhas não conferem.");
+        setLocalError('As senhas não conferem.');
         return;
       }
       await register(name.trim(), email.trim(), password);
@@ -72,10 +69,10 @@ const AuthPage: React.FC = () => {
   };
 
   const toggleMode = () => {
-    setMode((m) => (m === "login" ? "register" : "login"));
+    setMode((m) => (m === 'login' ? 'register' : 'login'));
     setLocalError(null);
     clearError();
-    setConfirmPassword("");
+    setConfirmPassword('');
   };
 
   // Callback chamado pelos modais de auto-cadastro após registro bem-sucedido
@@ -93,14 +90,12 @@ const AuthPage: React.FC = () => {
           <span className="auth-logo-icon">🎾</span>
           <h1>RacketApp</h1>
           <p className="auth-subtitle">
-            {mode === "login"
-              ? "Entre na sua conta"
-              : "Crie sua conta gratuitamente"}
+            {mode === 'login' ? 'Entre na sua conta' : 'Crie sua conta gratuitamente'}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form">
-          {mode === "register" && (
+          {mode === 'register' && (
             <div className="auth-field">
               <label htmlFor="auth-name">Nome completo</label>
               <input
@@ -136,18 +131,14 @@ const AuthPage: React.FC = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder={
-                mode === "register" ? "Mínimo 6 caracteres" : "Sua senha"
-              }
+              placeholder={mode === 'register' ? 'Mínimo 6 caracteres' : 'Sua senha'}
               disabled={loading}
-              autoComplete={
-                mode === "register" ? "new-password" : "current-password"
-              }
+              autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
               required
             />
           </div>
 
-          {mode === "register" && (
+          {mode === 'register' && (
             <div className="auth-field">
               <label htmlFor="auth-confirm">Confirmar senha</label>
               <input
@@ -170,25 +161,21 @@ const AuthPage: React.FC = () => {
           )}
 
           <button type="submit" className="auth-submit" disabled={loading}>
-            {loading
-              ? "Aguarde..."
-              : mode === "login"
-                ? "Entrar"
-                : "Criar conta"}
+            {loading ? 'Aguarde...' : mode === 'login' ? 'Entrar' : 'Criar conta'}
           </button>
         </form>
 
         <div className="auth-toggle">
-          {mode === "login" ? (
+          {mode === 'login' ? (
             <p>
-              Não tem conta?{" "}
+              Não tem conta?{' '}
               <button type="button" onClick={toggleMode} className="auth-link">
                 Registre-se
               </button>
             </p>
           ) : (
             <p>
-              Já tem conta?{" "}
+              Já tem conta?{' '}
               <button type="button" onClick={toggleMode} className="auth-link">
                 Faça login
               </button>
@@ -196,7 +183,7 @@ const AuthPage: React.FC = () => {
           )}
         </div>
 
-        {mode === "login" && (
+        {mode === 'login' && (
           <div className="auth-register-options">
             <p className="auth-register-label">Cadastre-se como:</p>
             <button
