@@ -30,10 +30,12 @@ export default async function handler(req: ApiRequest, res: ServerResponse): Pro
 
   try {
     console.log('[webhooks] Webhook received (subscription handling removed)');
-    return sendJson(res, 200, { received: true, message: 'Subscription webhooks no longer processed' });
+    return sendJson(res, 200, {
+      received: true,
+      message: 'Subscription webhooks no longer processed',
+    });
   } catch (err) {
     console.error('[webhooks] Error:', err);
     return sendJson(res, 500, { error: 'Internal server error' });
   }
 }
-

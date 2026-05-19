@@ -37,4 +37,3 @@ export { default as ServerEffectModal } from './ServerEffectModal';
 export { default as StatComparisonRow } from './StatComparisonRow';
 export { default as Toast } from './Toast';
 export { default as TournamentModal } from './TournamentModal';
-export { default as VenueSelect } from './VenueSelect';

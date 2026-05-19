@@ -93,18 +93,17 @@ export default async function handler(req: ApiRequest, res: ServerResponse): Pro
         const athlete = await prisma.athleteProfile.findUnique({ where: { id: athleteId } });
         if (!athlete) return sendJson(res, 404, { error: 'Athlete not found' });
         const isSelf = athlete.userId && athlete.userId === ctx.userId;
-        const response =
-          isSelf
-            ? athlete
-            : {
-                id: athlete.id,
-                globalId: athlete.globalId,
-                name: athlete.name,
-                nickname: athlete.nickname,
-                category: athlete.category,
-                gender: athlete.gender,
-                ranking: athlete.ranking,
-              };
+        const response = isSelf
+          ? athlete
+          : {
+              id: athlete.id,
+              globalId: athlete.globalId,
+              name: athlete.name,
+              nickname: athlete.nickname,
+              category: athlete.category,
+              gender: athlete.gender,
+              ranking: athlete.ranking,
+            };
         return sendJson(res, 200, response);
       } catch (err) {
         console.error('[athletes/:id GET]', err);
@@ -134,8 +133,7 @@ export default async function handler(req: ApiRequest, res: ServerResponse): Pro
         const updateData: Record<string, unknown> = {};
         if (name !== undefined) updateData.name = name.trim();
         if (nickname !== undefined) updateData.nickname = nickname?.trim() || null;
-        if (birthDate !== undefined)
-          updateData.birthDate = birthDate ? new Date(birthDate) : null;
+        if (birthDate !== undefined) updateData.birthDate = birthDate ? new Date(birthDate) : null;
         if (phone !== undefined) updateData.phone = phone?.trim() || null;
         if (category !== undefined) updateData.category = category?.trim() || null;
         if (gender !== undefined) updateData.gender = gender || null;

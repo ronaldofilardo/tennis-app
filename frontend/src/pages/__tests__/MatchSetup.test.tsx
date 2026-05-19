@@ -64,17 +64,6 @@ vi.mock('../../components/Toast', () => ({
   ToastProvider: ({ children }: any) => children,
 }));
 
-// Mock do VenueSelect
-vi.mock('../../components/VenueSelect', () => ({
-  default: ({ onChange, placeholder }: any) => (
-    <input
-      placeholder={placeholder ?? 'Buscar ou criar local...'}
-      aria-label="Local da partida"
-      onChange={() => onChange({ venueId: null, venueName: '' })}
-    />
-  ),
-}));
-
 // Mock do AthleteSearchInput — simula seleção via onChange para facilitar testes
 vi.mock('../../components/AthleteSearchInput', () => ({
   default: ({ id, label, placeholder, onSelect }: any) => (

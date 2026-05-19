@@ -9,8 +9,6 @@ import type { AthleteResult } from '../components/AthleteSearchInput';
 import { savePendingMatch } from '../services/offlineDb';
 import { ResumeScoreModal } from '../components/ResumeScoreModal';
 import type { OngoingMatchSetup } from '../components/ResumeScoreModal';
-import VenueSelect from '../components/VenueSelect';
-import type { VenueValue } from '../components/VenueSelect';
 import AvailableMatchesForAnnotation from '../components/AvailableMatchesForAnnotation';
 import { LocateMatchModal } from '../components/LocateMatchModal';
 import { TennisConfigFactory } from '../core/scoring/TennisConfigFactory';
@@ -109,7 +107,6 @@ const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreat
   const [openForAnnotation, setOpenForAnnotation] = useState(currentUser?.role === 'GESTOR');
   const [scheduledDate, setScheduledDate] = useState('');
   const [scheduledTime, setScheduledTime] = useState('');
-  const [venueValue, setVenueValue] = useState<VenueValue>({ venueId: null, venueName: '' });
   const [duplicateMatch, setDuplicateMatch] = useState<{
     id: string;
     playerP1?: string;
@@ -178,7 +175,6 @@ const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreat
         scheduledDate && scheduledTime
           ? new Date(`${scheduledDate}T${scheduledTime}`).toISOString()
           : null,
-      venueId: venueValue.venueId || null,
       // Novos metadados
       tournamentName: tournamentName.trim() || null,
       roundName: roundName.trim() || null,
@@ -199,7 +195,6 @@ const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreat
       openForAnnotation,
       scheduledDate,
       scheduledTime,
-      venueValue,
       tournamentName,
       roundName,
       bracketType,
@@ -302,7 +297,6 @@ const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreat
           scheduledDate && scheduledTime
             ? new Date(`${scheduledDate}T${scheduledTime}`).toISOString()
             : null,
-        venueId: venueValue.venueId || null,
         // Novos metadados
         tournamentName: tournamentName.trim() || null,
         roundName: roundName.trim() || null,
@@ -601,15 +595,6 @@ const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreat
               aria-label="Horário da partida"
             />
           </div>
-        </div>
-
-        <div className="form-group">
-          <label>Local da partida</label>
-          <VenueSelect
-            value={venueValue}
-            onChange={setVenueValue}
-            placeholder="Buscar ou criar local..."
-          />
         </div>
 
         {/* ─── Metadados de Contexto ─────────────────────────────────────────── */}

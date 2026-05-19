@@ -6,7 +6,6 @@ import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigation } from '../contexts/NavigationContext';
 import { useToast } from '../components/Toast';
-import ClubMembersModal from '../components/ClubMembersModal';
 import type { AdminTabType } from '../types/admin';
 import { PAGE_SIZE } from '../types/admin';
 import AdminOverviewTab from '../components/admin/AdminOverviewTab';
@@ -222,15 +221,6 @@ const AdminDashboard: React.FC = () => {
           />
         )}
       </div>
-
-      {selectedClub && (
-        <ClubMembersModal
-          clubName={selectedClub.name}
-          members={clubMembers}
-          loading={loadingMembers}
-          onClose={handleCloseMembers}
-        />
-      )}
 
       {showCreateClub && (
         <CreateClubModal

@@ -79,11 +79,7 @@ function loadStoredUser(): AuthUser | null {
     const parsed = JSON.parse(storedUser) as AuthUser;
 
     // Validação mínima de estrutura — garante que o objeto é um AuthUser válido
-    if (
-      !parsed ||
-      typeof parsed.id !== 'string' ||
-      typeof parsed.email !== 'string'
-    ) {
+    if (!parsed || typeof parsed.id !== 'string' || typeof parsed.email !== 'string') {
       clearAllSessionData();
       return null;
     }

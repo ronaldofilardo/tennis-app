@@ -1,10 +1,6 @@
 // frontend/api/_handlers/_auth.ts
 import type { ServerResponse } from 'node:http';
-import {
-  loginUser,
-  registerUser,
-  verifyToken,
-} from '../../src/services/authService.js';
+import { loginUser, registerUser, verifyToken } from '../../src/services/authService.js';
 import { handleCors, sendJson } from '../_lib/authMiddleware.js';
 import { hashPassword, derivarSenha } from '../_lib/passwordUtils.js';
 import prisma from '../_lib/prisma.js';

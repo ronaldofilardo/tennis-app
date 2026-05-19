@@ -4,8 +4,6 @@
 import React, { useState, useEffect } from 'react';
 import { httpClient } from '../config/httpClient';
 import { useToast } from './Toast';
-import VenueSelect from './VenueSelect';
-import type { VenueValue } from './VenueSelect';
 import './EditMatchModal.css';
 
 export interface EditableMatch {
@@ -56,10 +54,6 @@ const EditMatchModal: React.FC<EditMatchModalProps> = ({ match, isOpen, onClose,
       setNickname(match.nickname ?? '');
       setScheduledDate(isoToDateString(match.scheduledAt));
       setScheduledTime(isoToTimeString(match.scheduledAt));
-      setVenueValue({
-        venueId: match.venueId ?? null,
-        venueName: match.venue?.name ?? '',
-      });
       setVisibility((match.visibility as 'PUBLIC' | 'CLUB' | 'PLAYERS_ONLY') ?? 'PLAYERS_ONLY');
       setOpenForAnnotation(match.openForAnnotation ?? false);
     }

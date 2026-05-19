@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from 'vitest';
 import {
   createEmptyPlayerStats,
   createEmptyMatchStats,
@@ -6,11 +6,11 @@ import {
   calculateMatchStats,
   analyzePoint,
   updateStatsWithPoint,
-} from "../statsUtils";
+} from '../statsUtils';
 
-describe("statsUtils", () => {
-  describe("createEmptyPlayerStats", () => {
-    it("deve criar estatísticas vazias do jogador com valores zerados", () => {
+describe('statsUtils', () => {
+  describe('createEmptyPlayerStats', () => {
+    it('deve criar estatísticas vazias do jogador com valores zerados', () => {
       const stats = createEmptyPlayerStats();
       expect(stats).toEqual({
         pointsWon: 0,
@@ -43,8 +43,8 @@ describe("statsUtils", () => {
     });
   });
 
-  describe("createEmptyMatchStats", () => {
-    it("deve criar estatísticas vazias da partida com valores zerados", () => {
+  describe('createEmptyMatchStats', () => {
+    it('deve criar estatísticas vazias da partida com valores zerados', () => {
       const stats = createEmptyMatchStats();
       expect(stats).toEqual({
         avgRallyLength: 0,
@@ -55,8 +55,8 @@ describe("statsUtils", () => {
     });
   });
 
-  describe("calculatePlayerPercentages", () => {
-    it("deve calcular porcentagens quando há dados suficientes", () => {
+  describe('calculatePlayerPercentages', () => {
+    it('deve calcular porcentagens quando há dados suficientes', () => {
       const stats = {
         totalServes: 10,
         firstServes: 7,
@@ -82,7 +82,7 @@ describe("statsUtils", () => {
       expect(stats.winnerToErrorRatio).toBeCloseTo(1.6, 1); // 8/(2+3)
     });
 
-    it("deve lidar com divisão por zero", () => {
+    it('deve lidar com divisão por zero', () => {
       const stats = {
         totalServes: 0,
         firstServes: 0,
@@ -109,15 +109,15 @@ describe("statsUtils", () => {
     });
   });
 
-  describe("analyzePoint", () => {
-    it("deve analisar um ace", () => {
+  describe('analyzePoint', () => {
+    it('deve analisar um ace', () => {
       const point = {
-        serve: { type: "ACE", isFirstServe: true },
+        serve: { type: 'ACE', isFirstServe: true },
         rally: { ballExchanges: 1 },
-        result: { winner: "PLAYER_1", type: "WINNER" },
+        result: { winner: 'PLAYER_1', type: 'WINNER' },
       };
 
-      const stats = analyzePoint(point, "PLAYER_1", "PLAYER_2");
+      const stats = analyzePoint(point, 'PLAYER_1', 'PLAYER_2');
 
       expect(stats.PLAYER_1).toEqual({
         isServer: true,
@@ -142,14 +142,14 @@ describe("statsUtils", () => {
       });
     });
 
-    it("deve analisar uma dupla falta", () => {
+    it('deve analisar uma dupla falta', () => {
       const point = {
-        serve: { type: "DOUBLE_FAULT" },
+        serve: { type: 'DOUBLE_FAULT' },
         rally: { ballExchanges: 0 },
-        result: { winner: "PLAYER_2", type: "FORCED_ERROR" },
+        result: { winner: 'PLAYER_2', type: 'FORCED_ERROR' },
       };
 
-      const stats = analyzePoint(point, "PLAYER_1", "PLAYER_2");
+      const stats = analyzePoint(point, 'PLAYER_1', 'PLAYER_2');
 
       expect(stats.PLAYER_1).toEqual({
         isServer: true,
@@ -174,14 +174,14 @@ describe("statsUtils", () => {
       });
     });
 
-    it("deve analisar um winner", () => {
+    it('deve analisar um winner', () => {
       const point = {
-        serve: { type: "IN", isFirstServe: true },
+        serve: { type: 'IN', isFirstServe: true },
         rally: { ballExchanges: 3 },
-        result: { winner: "PLAYER_2", type: "WINNER" },
+        result: { winner: 'PLAYER_2', type: 'WINNER' },
       };
 
-      const stats = analyzePoint(point, "PLAYER_1", "PLAYER_2");
+      const stats = analyzePoint(point, 'PLAYER_1', 'PLAYER_2');
 
       expect(stats.PLAYER_1).toEqual({
         isServer: true,
@@ -206,14 +206,14 @@ describe("statsUtils", () => {
       });
     });
 
-    it("deve analisar um erro não-forçado", () => {
+    it('deve analisar um erro não-forçado', () => {
       const point = {
-        serve: { type: "IN", isFirstServe: true },
+        serve: { type: 'IN', isFirstServe: true },
         rally: { ballExchanges: 2 },
-        result: { winner: "PLAYER_2", type: "UNFORCED_ERROR" },
+        result: { winner: 'PLAYER_2', type: 'UNFORCED_ERROR' },
       };
 
-      const stats = analyzePoint(point, "PLAYER_1", "PLAYER_2");
+      const stats = analyzePoint(point, 'PLAYER_1', 'PLAYER_2');
 
       expect(stats.PLAYER_1).toEqual({
         isServer: true,
@@ -239,8 +239,8 @@ describe("statsUtils", () => {
     });
   });
 
-  describe("updateStatsWithPoint", () => {
-    it("deve atualizar estatísticas com um ace", () => {
+  describe('updateStatsWithPoint', () => {
+    it('deve atualizar estatísticas com um ace', () => {
       const stats = {
         p1: createEmptyPlayerStats(),
         p2: createEmptyPlayerStats(),
@@ -248,12 +248,12 @@ describe("statsUtils", () => {
       };
 
       const point = {
-        serve: { type: "ACE", isFirstServe: true },
+        serve: { type: 'ACE', isFirstServe: true },
         rally: { ballExchanges: 1 },
-        result: { winner: "PLAYER_1", type: "WINNER" },
+        result: { winner: 'PLAYER_1', type: 'WINNER' },
       };
 
-      updateStatsWithPoint(stats, point, "PLAYER_1", "PLAYER_2");
+      updateStatsWithPoint(stats, point, 'PLAYER_1', 'PLAYER_2');
 
       expect(stats.p1).toMatchObject({
         aces: 1,
@@ -265,7 +265,7 @@ describe("statsUtils", () => {
       });
     });
 
-    it("deve atualizar estatísticas com uma dupla falta", () => {
+    it('deve atualizar estatísticas com uma dupla falta', () => {
       const stats = {
         p1: createEmptyPlayerStats(),
         p2: createEmptyPlayerStats(),
@@ -273,12 +273,12 @@ describe("statsUtils", () => {
       };
 
       const point = {
-        serve: { type: "DOUBLE_FAULT" },
+        serve: { type: 'DOUBLE_FAULT' },
         rally: { ballExchanges: 0 },
-        result: { winner: "PLAYER_2", type: "FORCED_ERROR" },
+        result: { winner: 'PLAYER_2', type: 'FORCED_ERROR' },
       };
 
-      updateStatsWithPoint(stats, point, "PLAYER_1", "PLAYER_2");
+      updateStatsWithPoint(stats, point, 'PLAYER_1', 'PLAYER_2');
 
       expect(stats.p1).toMatchObject({
         doubleFaults: 1,
@@ -291,7 +291,7 @@ describe("statsUtils", () => {
       });
     });
 
-    it("deve atualizar estatísticas com um winner após rally", () => {
+    it('deve atualizar estatísticas com um winner após rally', () => {
       const stats = {
         p1: createEmptyPlayerStats(),
         p2: createEmptyPlayerStats(),
@@ -299,12 +299,12 @@ describe("statsUtils", () => {
       };
 
       const point = {
-        serve: { type: "IN", isFirstServe: true },
+        serve: { type: 'IN', isFirstServe: true },
         rally: { ballExchanges: 3 },
-        result: { winner: "p2", type: "WINNER" },
+        result: { winner: 'p2', type: 'WINNER' },
       };
 
-      updateStatsWithPoint(stats, point, "PLAYER_1", "PLAYER_2");
+      updateStatsWithPoint(stats, point, 'PLAYER_1', 'PLAYER_2');
 
       expect(stats.p1).toMatchObject({
         totalServes: 1,
@@ -327,8 +327,8 @@ describe("statsUtils", () => {
   });
 });
 
-describe("calculateMatchStats", () => {
-  it("deve retornar estatísticas vazias se o histórico for vazio", () => {
+describe('calculateMatchStats', () => {
+  it('deve retornar estatísticas vazias se o histórico for vazio', () => {
     const result = calculateMatchStats([]);
     expect(result.totalPoints).toBe(0);
     expect(result.player1).toBeDefined();
@@ -337,21 +337,21 @@ describe("calculateMatchStats", () => {
     expect(result.pointsHistory).toEqual([]);
   });
 
-  it("deve calcular estatísticas corretamente para um histórico simples", () => {
+  it('deve calcular estatísticas corretamente para um histórico simples', () => {
     const pointsHistory = [
       {
-        server: "p1",
-        winner: "p1",
-        serve: { type: "ACE", isFirstServe: true },
+        server: 'p1',
+        winner: 'p1',
+        serve: { type: 'ACE', isFirstServe: true },
         rally: { ballExchanges: 1 },
-        result: { winner: "p1", type: "WINNER" },
+        result: { winner: 'p1', type: 'WINNER' },
       },
       {
-        server: "p2",
-        winner: "p2",
-        serve: { type: "IN", isFirstServe: true },
+        server: 'p2',
+        winner: 'p2',
+        serve: { type: 'IN', isFirstServe: true },
         rally: { ballExchanges: 5 },
-        result: { winner: "p2", type: "WINNER" },
+        result: { winner: 'p2', type: 'WINNER' },
       },
     ];
     const result = calculateMatchStats(pointsHistory);

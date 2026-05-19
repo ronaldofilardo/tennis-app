@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { httpClient } from '../config/httpClient';
 import { useToast } from './Toast';
 import { useAuth } from '../contexts/AuthContext';
-import VenueSelect from './VenueSelect';
 import AnnotationSessionPanel from './AnnotationSessionPanel';
-import type { VenueValue } from './VenueSelect';
 import type { EditableMatch } from './EditMatchModal';
 import './MatchManagerModal.css';
 
@@ -44,7 +42,6 @@ export const MatchManagerModal: React.FC<MatchManagerModalProps> = ({
   const [nickname, setNickname] = useState('');
   const [scheduledDate, setScheduledDate] = useState('');
   const [scheduledTime, setScheduledTime] = useState('');
-  const [venueValue, setVenueValue] = useState<VenueValue>({ venueId: null, venueName: '' });
   const [visibility, setVisibility] = useState<'PUBLIC' | 'CLUB' | 'PLAYERS_ONLY'>('PLAYERS_ONLY');
   const [openForAnnotation, setOpenForAnnotation] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -55,10 +52,6 @@ export const MatchManagerModal: React.FC<MatchManagerModalProps> = ({
       setNickname(matchData.nickname ?? '');
       setScheduledDate(isoToDateString(matchData.scheduledAt));
       setScheduledTime(isoToTimeString(matchData.scheduledAt));
-      setVenueValue({
-        venueId: matchData.venueId ?? null,
-        venueName: matchData.venue?.name ?? '',
-      });
       setVisibility((matchData.visibility as 'PUBLIC' | 'CLUB' | 'PLAYERS_ONLY') ?? 'PLAYERS_ONLY');
       setOpenForAnnotation(matchData.openForAnnotation ?? false);
     }
@@ -80,7 +73,6 @@ export const MatchManagerModal: React.FC<MatchManagerModalProps> = ({
       const payload = {
         nickname: nickname.trim() || null,
         scheduledAt,
-        venueId: venueValue.venueId || null,
         visibility,
         openForAnnotation,
       };
@@ -163,11 +155,6 @@ export const MatchManagerModal: React.FC<MatchManagerModalProps> = ({
                     required
                   />
                 </div>
-              </div>
-
-              <div className="match-manager-field">
-                <label htmlFor="mm-venue">Local</label>
-                <VenueSelect value={venueValue} onChange={setVenueValue} />
               </div>
 
               <div className="match-manager-field">

@@ -7,7 +7,6 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { MatchesProvider, useMatches } from './contexts/MatchesContext';
 import { NavigationProvider, useNavigation } from './contexts/NavigationContext';
 import { ToastProvider } from './components/Toast';
-import ClubSelector from './components/ClubSelector';
 import OfflineBanner from './components/OfflineBanner';
 import LoadingIndicator from './components/LoadingIndicator';
 import BottomTabBar, { type TabId } from './components/BottomTabBar';
@@ -16,11 +15,8 @@ const Dashboard = React.lazy(() => import('./pages/Dashboard'));
 const MatchSetup = React.lazy(() => import('./pages/MatchSetup'));
 const ScoreboardV2 = React.lazy(() => import('./pages/ScoreboardV2'));
 const AuthPage = React.lazy(() => import('./pages/AuthPage'));
-const TournamentDashboard = React.lazy(() => import('./pages/TournamentDashboard'));
 
-const GestorDashboard = React.lazy(() => import('./pages/GestorDashboard'));
 const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
-const JoinClubPage = React.lazy(() => import('./pages/JoinClub'));
 const MatchDiscovery = React.lazy(() => import('./pages/MatchDiscovery'));
 const MatchReport = React.lazy(() => import('./pages/MatchReport'));
 const MatchComparisonPage = React.lazy(() => import('./pages/MatchComparisonPage'));
@@ -87,7 +83,6 @@ const AppContent: React.FC = () => {
         <h1>RacketApp</h1>
         {isAuthenticated && (
           <div className="ml-auto flex items-center gap-3">
-            <ClubSelector variant="dropdown" />
             {isAdmin && (
               <button
                 onClick={navigateToAdminDashboard}
