@@ -4,7 +4,6 @@ import type { ReactNode } from 'react';
 
 interface NavigationContextType {
   navigateToDashboard: () => void;
-  navigateToGestorDashboard: () => void;
   navigateToAdminDashboard: () => void;
   navigateToMatch: (matchId: string, initialState?: unknown) => void;
   navigateToNewMatch: () => void;
@@ -35,10 +34,6 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
     navigate(`/match/${matchId}`, options);
   };
 
-  const navigateToGestorDashboard = () => {
-    navigate('/gestor', { replace: false });
-  };
-
   const navigateToAdminDashboard = () => {
     navigate('/admin', { replace: false });
   };
@@ -65,7 +60,6 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
 
   const value: NavigationContextType = {
     navigateToDashboard,
-    navigateToGestorDashboard,
     navigateToAdminDashboard,
     navigateToMatch,
     navigateToNewMatch,

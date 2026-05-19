@@ -25,7 +25,6 @@ const AuthPage: React.FC = () => {
   const {
     navigateToDashboard,
     navigateToAdminDashboard,
-    navigateToGestorDashboard,
   } = useNavigation();
 
   const [mode, setMode] = useState<AuthMode>("login");
@@ -37,19 +36,16 @@ const AuthPage: React.FC = () => {
   const [showScorerModal, setShowScorerModal] = useState(false);
   const [showAthleteModal, setShowAthleteModal] = useState(false);
 
-  // Se já autenticado, redirecionar com base no papel do clube ativo
+  // Se já autenticado, redirecionar com base no papel
   React.useEffect(() => {
     if (isAuthenticated && currentUser) {
-      const role = activeClub?.role || currentUser.activeRole;
-      if (role === "ADMIN") {
+      if (currentUser.platformRole === "ADMIN") {
         navigateToAdminDashboard();
-      } else if (role === "GESTOR") {
-        navigateToGestorDashboard();
       } else {
         navigateToDashboard();
       }
     }
-  }, [isAuthenticated, activeClub?.role, currentUser?.activeRole]);
+  }, [isAuthenticated, currentUser?.platformRole]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

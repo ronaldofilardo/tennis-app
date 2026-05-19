@@ -207,9 +207,6 @@ const AppContent: React.FC = () => {
               }
             />
 
-            {/* Entrar no Clube via convite (público) */}
-            <Route path="/join/:code" element={<JoinClubPage />} />
-
             {/* Descobrir partidas */}
             <Route
               path="/partidas"
