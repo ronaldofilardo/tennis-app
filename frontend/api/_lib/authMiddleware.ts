@@ -45,7 +45,7 @@ export function requireAuth(req: ApiRequest, res: ServerResponse): UserContext |
   return ctx;
 }
 
-const ROLE_HIERARCHY = ['ADMIN', 'GESTOR', 'COACH', 'ATHLETE', 'SPECTATOR'];
+const ROLE_HIERARCHY = ['ADMIN', 'COACH', 'ATHLETE', 'SPECTATOR', 'SCORER', 'INDEPENDENT_ATHLETE', 'MEMBER', 'SPECTATOR'];
 
 /** Exige autenticação + uma das roles permitidas. Envia 401/403 automaticamente. */
 export function requireRole(
@@ -67,34 +67,6 @@ export function requireRole(
     );
     return null;
   }
-  return ctx;
-}
-
-/** Exige que o usuário tenha acesso ao clube especificado. */
-export function requireClubAccess(
-  req: ApiRequest,
-  res: ServerResponse,
-  clubId: string,
-  ...allowedRoles: string[]
-): UserContext | null {
-  const ctx =
-    allowedRoles.length > 0 ? requireRole(req, res, ...allowedRoles) : requireAuth(req, res);
-
-  if (!ctx) return null;
-
-  if (ctx.role === 'ADMIN') return ctx;
-
-  if (ctx.clubId !== clubId) {
-    res.writeHead(403, { ...corsHeaders, 'Content-Type': 'application/json' });
-    res.end(
-      JSON.stringify({
-        error: 'Access denied to this club',
-        detail: 'You can only access data from your active club',
-      }),
-    );
-    return null;
-  }
-
   return ctx;
 }
 

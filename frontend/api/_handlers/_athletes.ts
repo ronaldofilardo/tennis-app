@@ -118,7 +118,7 @@ export default async function handler(req: ApiRequest, res: ServerResponse): Pro
         const isSelf = athlete.userId && athlete.userId === ctx.userId;
         if (!isSelf && ctx.role !== 'ADMIN')
           return sendJson(res, 403, {
-            error: 'Apenas o gestor do clube pode editar perfis de atletas e técnicos.',
+            error: 'You can only edit your own profile or must be admin.',
           });
         const { name, nickname, birthDate, phone, category, gender, ranking } = (req.body ??
           {}) as {

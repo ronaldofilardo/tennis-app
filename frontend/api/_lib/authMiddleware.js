@@ -40,7 +40,7 @@ export function handleCors(req, res) {
 /**
  * Extrai e verifica o contexto de autenticação do request.
  * @param {import('http').IncomingMessage} req
- * @returns {{ userId: string, email: string, clubId?: string, role?: string, planType?: string, subscriptionStatus?: string } | null}
+ * @returns {{ userId: string, email: string, role?: string } | null}
  */
 export function extractContext(req) {
   const auth = req.headers?.authorization;
@@ -73,7 +73,7 @@ export function requireAuth(req, res) {
  * Hierarquia de roles (da mais alta para a mais baixa).
  * Usado por requireRole para verificar role mínima.
  */
-const ROLE_HIERARCHY = ['ADMIN', 'GESTOR', 'COACH', 'ATHLETE', 'SPECTATOR'];
+const ROLE_HIERARCHY = ['ADMIN', 'COACH', 'ATHLETE', 'SPECTATOR', 'SCORER', 'INDEPENDENT_ATHLETE', 'MEMBER'];
 
 /**
  * Exige autenticação + uma das roles permitidas.
@@ -98,40 +98,6 @@ export function requireRole(req, res, ...allowedRoles) {
     );
     return null;
   }
-  return ctx;
-}
-
-/**
- * Exige que o usuário tenha acesso ao clube especificado.
- * Verifica se o clubId do JWT corresponde ao clubId do request.
- * ADMIN bypassa esta verificação.
- * @param {import('http').IncomingMessage} req
- * @param {import('http').ServerResponse} res
- * @param {string} clubId — ID do clube que está sendo acessado
- * @param {...string} allowedRoles — Roles permitidas (opcional, padrão: qualquer autenticado)
- * @returns {{ userId: string, email: string, clubId?: string, role?: string } | null}
- */
-export function requireClubAccess(req, res, clubId, ...allowedRoles) {
-  const ctx =
-    allowedRoles.length > 0 ? requireRole(req, res, ...allowedRoles) : requireAuth(req, res);
-
-  if (!ctx) return null; // 401 ou 403 já enviado
-
-  // ADMIN tem acesso a qualquer clube
-  if (ctx.role === 'ADMIN') return ctx;
-
-  // Verificar se o clube do JWT corresponde ao clube solicitado
-  if (ctx.clubId !== clubId) {
-    res.writeHead(403, { ...corsHeaders, 'Content-Type': 'application/json' });
-    res.end(
-      JSON.stringify({
-        error: 'Access denied to this club',
-        detail: 'You can only access data from your active club',
-      }),
-    );
-    return null;
-  }
-
   return ctx;
 }
 

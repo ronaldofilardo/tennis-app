@@ -2,9 +2,6 @@
 // Router consolidado — todas as rotas /api/auth/*
 //   POST /api/auth/login                        → login com email+senha, retorna JWT
 //   POST /api/auth/register                     → registro de novo usuário
-//   POST /api/auth/switch-club                  → troca clube ativo, re-emite JWT
-//   POST /api/auth/register-scorer              → auto-cadastro de anotador (sem clube)
-//   POST /api/auth/register-athlete-independent → auto-cadastro de atleta independente
 
 import {
   loginUser,
@@ -134,121 +131,7 @@ export default async function handler(req, res) {
     }
   }
 
-  // ─── POST /api/auth/switch-club ────────────────────────────────────────────
-  if (action === "switch-club") {
-    try {
-      const auth = req.headers?.authorization;
-      if (!auth || !auth.startsWith("Bearer ")) {
-        res.writeHead(401, {
-          ...corsHeaders,
-          "Content-Type": "application/json",
-        });
-        return res.end(JSON.stringify({ error: "Authentication required" }));
-      }
-      const tokenResult = verifyToken(auth.split(" ")[1]);
-      if (!tokenResult.valid) {
-        res.writeHead(401, {
-          ...corsHeaders,
-          "Content-Type": "application/json",
-        });
-        return res.end(JSON.stringify({ error: tokenResult.error }));
-      }
-      const { clubId } = req.body || {};
-      if (!clubId) {
-        res.writeHead(400, {
-          ...corsHeaders,
-          "Content-Type": "application/json",
-        });
-        return res.end(JSON.stringify({ error: "clubId is required" }));
-      }
-      const result = await switchClub(tokenResult.payload.userId, clubId);
-      res.writeHead(200, {
-        ...corsHeaders,
-        "Content-Type": "application/json",
-      });
-      return res.end(JSON.stringify(result));
-    } catch (err) {
-      if (err.message === "NOT_A_MEMBER") {
-        res.writeHead(403, {
-          ...corsHeaders,
-          "Content-Type": "application/json",
-        });
-        return res.end(JSON.stringify({ error: "Not a member of this club" }));
-      }
-      console.error("[auth/switch-club]", err);
-      res.writeHead(500, {
-        ...corsHeaders,
-        "Content-Type": "application/json",
-      });
-      return res.end(JSON.stringify({ error: "Internal server error" }));
-    }
-  }
-
-  // ─── POST /api/auth/register-scorer ──────────────────────────────────────
-  // Cria uma conta de anotador independente (sem vínculo a clube).
-  // Senha = DDMMAAAA (data de nascimento) ou 8 dígitos do CPF.
-  if (action === "register-scorer") {
-    try {
-      const { name, email, cpf, phone, birthDate } = req.body || {};
-      if (!name || !name.trim())
-        return sendJson(res, 400, { error: "Nome é obrigatório." });
-
-      const cleanCpf = cpf ? cpf.replace(/\D/g, "").trim() : null;
-      if (cleanCpf && cleanCpf.length !== 11)
-        return sendJson(res, 400, {
-          error: "CPF inválido (deve ter 11 dígitos).",
-        });
-
-      const loginIdentifier =
-        cleanCpf || (email ? email.trim().toLowerCase() : null);
-      if (!loginIdentifier)
-        return sendJson(res, 400, {
-          error: "E-mail ou CPF é obrigatório para criar a conta.",
-        });
-
-      const existing = await prisma.user.findUnique({
-        where: { email: loginIdentifier },
-      });
-      if (existing)
-        return sendJson(res, 409, {
-          error: "Este CPF/e-mail já está cadastrado.",
-        });
-
-      const senha = derivarSenha(birthDate || null, cleanCpf);
-      const passwordHash = await hashPassword(senha);
-
-      await prisma.user.create({
-        data: {
-          email: loginIdentifier,
-          name: name.trim(),
-          passwordHash,
-          isActive: true,
-        },
-      });
-
-      const loginResult = await loginUser({
-        email: loginIdentifier,
-        password: senha,
-      });
-      res.writeHead(201, {
-        ...corsHeaders,
-        "Content-Type": "application/json",
-      });
-      return res.end(JSON.stringify(loginResult));
-    } catch (err) {
-      console.error("[auth/register-scorer]", err);
-      res.writeHead(500, {
-        ...corsHeaders,
-        "Content-Type": "application/json",
-      });
-      return res.end(
-        JSON.stringify({ error: "Erro interno ao cadastrar anotador." }),
-      );
-    }
-  }
-
   // ─── POST /api/auth/register-athlete-independent ─────────────────────────
-  // Cria conta + AthleteProfile para atleta sem vínculo a clube.
   // Senha = DDMMAAAA (data de nascimento obrigatória).
   if (action === "register-athlete-independent") {
     try {

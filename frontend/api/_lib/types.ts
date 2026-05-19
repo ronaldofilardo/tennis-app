@@ -18,11 +18,8 @@ export type ApiResponse = ServerResponse;
 export interface UserContext {
   userId: string;
   email: string;
-  clubId?: string;
   role?: string;
   platformRole?: string;
-  planType?: string;
-  subscriptionStatus?: string;
 }
 
 export function getErrorMessage(err: unknown): string {

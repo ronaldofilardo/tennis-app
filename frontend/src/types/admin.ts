@@ -1,44 +1,16 @@
 // frontend/src/types/admin.ts
 // Tipos e constantes compartilhados do AdminDashboard
 
-export interface ByPlanCount {
-  plan: string;
-  count: number;
-}
-
 export interface ByRoleCount {
   role: string;
   count: number;
 }
 
-export interface TopClub {
-  id: string;
-  name: string;
-  slug: string;
-  planType: string;
-  createdAt: string;
-  memberCount: number;
-}
-
-export interface RecentClub {
-  id: string;
-  name: string;
-  slug: string;
-  planType: string;
-  createdAt: string;
-  memberCount: number;
-}
-
 export interface AdminStats {
   totalUsers: number;
-  totalClubs: number;
   newUsersThisMonth: number;
-  newClubsThisMonth: number;
   activeUsersLastWeek: number;
-  clubsByPlan: ByPlanCount[];
   membershipsByRole: ByRoleCount[];
-  topClubsByMembers: TopClub[];
-  recentClubs: RecentClub[];
 }
 
 export interface AdminClub {
