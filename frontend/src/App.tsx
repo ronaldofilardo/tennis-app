@@ -41,7 +41,6 @@ const AppContent: React.FC = () => {
   const { matches, loading, error, addMatch } = useMatches();
   const {
     navigateToDashboard,
-    navigateToGestorDashboard,
     navigateToAdminDashboard,
     navigateToMatch,
     navigateToNewMatch,
@@ -91,14 +90,6 @@ const AppContent: React.FC = () => {
                 🔑 Admin
               </button>
             )}
-            {isGestor && (
-              <button
-                onClick={navigateToGestorDashboard}
-                className="cursor-pointer rounded-lg border border-yellow-500/25 bg-yellow-500/10 px-3 py-1 text-xs font-semibold text-yellow-500"
-              >
-                👔 Painel Gestor
-              </button>
-            )}
             {currentUser && (
               <span className="text-xs">{currentUser.name || currentUser.email}</span>
             )}
@@ -120,15 +111,13 @@ const AppContent: React.FC = () => {
             {/* Rota de Auth (Login/Registro) */}
             <Route path="/login" element={<AuthPage />} />
 
-            {/* Dashboard — ADMIN e GESTOR são redirecionados */}
+            {/* Dashboard — ADMIN é redirecionado */}
             <Route
               path="/dashboard"
               element={
                 isAuthenticated ? (
                   isAdmin ? (
                     <Navigate to="/admin" replace />
-                  ) : isGestor ? (
-                    <Navigate to="/gestor" replace />
                   ) : (
                     <Dashboard
                       onNewMatchClick={navigateToNewMatch}
@@ -173,22 +162,6 @@ const AppContent: React.FC = () => {
               element={
                 isAuthenticated ? (
                   <ScoreboardV2 onEndMatch={navigateToDashboard} />
-                ) : (
-                  <Navigate to="/login" />
-                )
-              }
-            />
-
-            {/* Painel do Gestor */}
-            <Route
-              path="/gestor"
-              element={
-                isAuthenticated ? (
-                  isGestor ? (
-                    <GestorDashboard />
-                  ) : (
-                    <Navigate to={isAdmin ? '/admin' : '/dashboard'} />
-                  )
                 ) : (
                   <Navigate to="/login" />
                 )
@@ -240,9 +213,7 @@ const AppContent: React.FC = () => {
                     isAuthenticated
                       ? isAdmin
                         ? '/admin'
-                        : isGestor
-                          ? '/gestor'
-                          : '/dashboard'
+                        : '/dashboard'
                       : '/login'
                   }
                 />
