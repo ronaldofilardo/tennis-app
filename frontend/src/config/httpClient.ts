@@ -8,7 +8,6 @@ import { API_URL } from './api';
 // === Tipos ===
 
 export interface TenantConfig {
-  clubId: string | null;
   tenantVersion: string;
 }
 
@@ -102,7 +101,6 @@ class HttpClient {
   private static _instance: HttpClient;
 
   private _tenantConfig: TenantConfig = {
-    clubId: null,
     tenantVersion: '1.0',
   };
 
@@ -332,10 +330,6 @@ class HttpClient {
 
     const headers: Record<string, string> = {};
 
-    if (this._tenantConfig.clubId) {
-      headers['X-Club-ID'] = this._tenantConfig.clubId;
-    }
-
     if (this._tenantConfig.tenantVersion) {
       headers['X-Tenant-Version'] = this._tenantConfig.tenantVersion;
     }
@@ -374,7 +368,6 @@ class HttpClient {
         _meta: {
           payloadVersion: version || '1.0',
           clientTimestamp: new Date().toISOString(),
-          clubId: this._tenantConfig.clubId,
         },
       };
     }
@@ -408,7 +401,7 @@ class HttpClient {
 
   /** Reset para testes */
   public _reset(): void {
-    this._tenantConfig = { clubId: null, tenantVersion: '1.0' };
+    this._tenantConfig = { tenantVersion: '1.0' };
     this._authConfig = { token: null, refreshToken: null };
     this._requestInterceptors = [];
     this._responseInterceptors = [];

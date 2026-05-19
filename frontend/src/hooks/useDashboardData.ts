@@ -8,7 +8,6 @@ interface AuthUser {
   id?: string;
   email?: string;
   name?: string;
-  activeClubId?: string | null;
   [key: string]: unknown;
 }
 
