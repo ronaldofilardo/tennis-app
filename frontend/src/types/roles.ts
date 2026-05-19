@@ -2,7 +2,6 @@
 // Shared role labels and icons used across Admin, Gestor, and Athlete dashboards
 
 export const ROLE_LABELS: Record<string, string> = {
-  GESTOR: 'Gestor',
   COACH: 'Treinador',
   ATHLETE: 'Atleta',
   SPECTATOR: 'Espectador',
@@ -10,7 +9,6 @@ export const ROLE_LABELS: Record<string, string> = {
 };
 
 export const ROLE_ICONS: Record<string, string> = {
-  GESTOR: '👔',
   COACH: '🎯',
   ATHLETE: '🎾',
   SPECTATOR: '👁️',

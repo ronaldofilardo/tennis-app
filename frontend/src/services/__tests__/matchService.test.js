@@ -171,15 +171,14 @@ describe('matchService', () => {
       await expect(matchService.createMatch(invalidData)).rejects.toThrow('Erro de validação');
     });
 
-    // ── Testes para clubId e createdByUserId (adicionados nesta conversa) ──
+    // ── Tests for createdByUserId ──
 
-    it('deve criar partida com clubId quando gestor está autenticado', async () => {
+    it('should create match when authenticated user provides createdByUserId', async () => {
       const matchData = {
         sportType: 'TENNIS',
         format: 'BEST_OF_3',
         players: { p1: 'Jogador 1', p2: 'Jogador 2' },
-        clubId: 'cmm4dw15v0001hpm0e6pxy7ns',
-        createdByUserId: 'user-gestor-id',
+        createdByUserId: 'user-creator-id',
       };
 
       const expectedResult = {
@@ -190,7 +189,6 @@ describe('matchService', () => {
         status: 'NOT_STARTED',
         score: null,
         winner: null,
-        clubId: 'cmm4dw15v0001hpm0e6pxy7ns',
         createdAt: expect.any(Date),
       };
 

@@ -252,13 +252,13 @@ describe("validationSchemas", () => {
         format: "BEST_OF_3",
         players: { p1: "Jogador 1", p2: "Jogador 2" },
         clubId: "cmm4dw15v0001hpm0e6pxy7ns",
-        createdByUserId: "user-gestor-99",
+        createdByUserId: "user-admin-99",
       };
       const result = MatchCreateSchema.safeParse(validData);
       expect(result.success).toBe(true);
       expect(result.data).toMatchObject({
         clubId: "cmm4dw15v0001hpm0e6pxy7ns",
-        createdByUserId: "user-gestor-99",
+        createdByUserId: "user-admin-99",
       });
     });
   });

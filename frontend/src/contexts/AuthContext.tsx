@@ -7,7 +7,7 @@ const authLog = logger.createModuleLogger('AuthContext');
 
 // === Tipos ===
 
-export type UserRole = 'ADMIN' | 'GESTOR' | 'COACH' | 'ATHLETE' | 'SPECTATOR';
+export type UserRole = 'ADMIN' | 'COACH' | 'ATHLETE' | 'SPECTATOR';
 
 export interface AuthUser {
   id: string;

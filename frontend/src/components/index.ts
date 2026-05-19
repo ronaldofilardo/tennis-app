@@ -14,7 +14,6 @@ export { default as ClubSelector } from './ClubSelector';
 export { default as CompletedMatchCard } from './CompletedMatchCard';
 export { default as ConfirmCloseDialog } from './ConfirmCloseDialog';
 export { default as EditMatchModal } from './EditMatchModal';
-export { default as EditMemberModal } from './EditMemberModal';
 export { ErrorBoundary } from './ErrorBoundary';
 export { default as FilterChips } from './FilterChips';
 export { default as FloatingActionButton } from './FloatingActionButton';

@@ -21,7 +21,6 @@ import ReopenMatchPanel from '../components/ReopenMatchPanel';
 import ResumeAnnotationModal from '../components/ResumeAnnotationModal';
 import EditMatchModal from '../components/EditMatchModal';
 import type { EditableMatch } from '../components/EditMatchModal';
-import MatchManagerModal from '../components/MatchManagerModal';
 import SetupModal from '../components/scoreboard/SetupModal';
 import { UndoConfirmModal } from '../components/scoreboard/UndoConfirmModal';
 import { EditScoreModal } from '../components/scoreboard/EditScoreModal';
@@ -183,28 +182,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
   }
 
   if (isCreatorManager) {
-    return (
-      <MatchManagerModal
-        matchId={matchId}
-        matchData={matchData}
-        onClose={() => navigate('/dashboard')}
-        onDataUpdated={(updatedMatch) => {
-          setMatchData((prev) =>
-            prev
-              ? {
-                  ...prev,
-                  nickname: updatedMatch.nickname,
-                  scheduledAt: updatedMatch.scheduledAt,
-                  venueId: updatedMatch.venueId,
-                  venue: updatedMatch.venue,
-                  visibility: updatedMatch.visibility,
-                  openForAnnotation: updatedMatch.openForAnnotation,
-                }
-              : null,
-          );
-        }}
-      />
-    );
+    // Creator/Admin mode: Show scoreboard normally, full functionality available
   }
 
   // ── Derivar scoringSystem do ref para uso no render (read-only, imutável aqui) ──

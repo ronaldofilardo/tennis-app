@@ -73,12 +73,9 @@ export interface PaginatedMatches {
 }
 
 export interface CreateClubForm {
+  // DEPRECATED: Club creation removed - kept for backward compatibility
   name: string;
   slug: string;
-  planType: string;
-  gestorName: string;
-  gestorEmail: string;
-  gestorPassword: string;
   alsoCoach: boolean;
 }
 
@@ -89,10 +86,6 @@ export const PAGE_SIZE = 20;
 export const INITIAL_CREATE_FORM: CreateClubForm = {
   name: '',
   slug: '',
-  planType: 'FREE',
-  gestorName: '',
-  gestorEmail: '',
-  gestorPassword: '',
   alsoCoach: false,
 };
 

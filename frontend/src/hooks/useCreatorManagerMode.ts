@@ -4,11 +4,11 @@ import type { MatchData } from '../types/scoreboard';
 
 /**
  * Hook que verifica se o usuário atual é criador de uma partida
- * E se tem permissão para gerenciar (role GESTOR ou ADMIN).
+ * E se tem permissão para gerenciar (role ADMIN ou é o criador).
  *
  * Retorna true se:
  * - matchData.createdByUserId === currentUser.id
- * - currentUser.role === 'GESTOR' ou 'ADMIN'
+ * - currentUser.role === 'ADMIN'
  */
 export function useCreatorManagerMode(matchData: MatchData | null): boolean {
   const { currentUser } = useAuth();
@@ -17,8 +17,8 @@ export function useCreatorManagerMode(matchData: MatchData | null): boolean {
     if (!matchData || !currentUser) return false;
 
     const isCreator = matchData.createdByUserId === currentUser.id;
-    const isManagerRole = currentUser.role === 'GESTOR' || currentUser.role === 'ADMIN';
+    const isAdmin = currentUser.role === 'ADMIN';
 
-    return isCreator && isManagerRole;
+    return isCreator || isAdmin;
   }, [matchData, currentUser]);
 }

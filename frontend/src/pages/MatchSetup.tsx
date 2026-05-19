@@ -94,17 +94,17 @@ const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreat
   const [player2, setPlayer2] = useState('');
   const [selectedAthlete1, setSelectedAthlete1] = useState<AthleteResult | null>(null);
   const [selectedAthlete2, setSelectedAthlete2] = useState<AthleteResult | null>(null);
-  // GESTOR cria partidas abertas por padrão; outros usuários as criam fechadas
+  // ADMIN creates public matches by default; other users create private
   const [visibility, setVisibility] = useState<'PUBLIC' | 'CLUB' | 'PLAYERS_ONLY'>(
-    currentUser?.role === 'GESTOR' ? 'PUBLIC' : 'PLAYERS_ONLY',
+    currentUser?.role === 'ADMIN' ? 'PUBLIC' : 'PLAYERS_ONLY',
   );
-  const [visibleTo, setVisibleTo] = useState<'both' | string>('both'); // Legado
+  const [visibleTo, setVisibleTo] = useState<'both' | string>('both'); // Legacy
   const [error, setError] = useState<string | null>(null);
   const [isResuming, setIsResuming] = useState(false);
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
   const [isLocateModalOpen, setIsLocateModalOpen] = useState(false);
-  // GESTOR cria partidas abertas para anotação por padrão
-  const [openForAnnotation, setOpenForAnnotation] = useState(currentUser?.role === 'GESTOR');
+  // ADMIN creates matches open for annotation by default
+  const [openForAnnotation, setOpenForAnnotation] = useState(currentUser?.role === 'ADMIN');
   const [scheduledDate, setScheduledDate] = useState('');
   const [scheduledTime, setScheduledTime] = useState('');
   const [duplicateMatch, setDuplicateMatch] = useState<{
@@ -750,7 +750,7 @@ const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreat
           <button type="submit" className="start-match-button">
             {isResuming
               ? 'Continuar →'
-              : currentUser?.role === 'GESTOR'
+              : currentUser?.role === 'ADMIN'
                 ? 'Registrar'
                 : 'Iniciar Partida'}
           </button>

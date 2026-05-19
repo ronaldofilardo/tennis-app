@@ -5,7 +5,7 @@
 /**
  * Roles possíveis no sistema — alinhadas com enum UserRole do Prisma.
  */
-export type UserRole = 'ADMIN' | 'GESTOR' | 'COACH' | 'ATHLETE' | 'SPECTATOR';
+export type UserRole = 'ADMIN' | 'COACH' | 'ATHLETE' | 'SPECTATOR';
 
 /**
  * Representa um usuário autenticado para verificação de permissão.
@@ -13,7 +13,6 @@ export type UserRole = 'ADMIN' | 'GESTOR' | 'COACH' | 'ATHLETE' | 'SPECTATOR';
 export interface AuthUser {
   email: string;
   role: UserRole;
-  clubId?: string;
   /** globalId do AthleteProfile — usado para verificar auto-anotação */
   globalId?: string;
   id?: string;
@@ -27,7 +26,6 @@ export interface MatchPermissionData {
   apontadorEmail?: string | null;
   playersEmails?: string[];
   visibleTo?: string;
-  clubId?: string;
   status?: string;
   /** globalId do AthleteProfile do jogador 1 */
   player1GlobalId?: string | null;
@@ -43,7 +41,7 @@ export interface MatchPermissionData {
 
 /**
  * Verifica se o usuário pode editar/pontuar uma partida.
- * - ADMIN/GESTOR: pode editar qualquer partida do clube
+ * - ADMIN: pode editar qualquer partida
  * - COACH: pode editar se é o apontador designado
  * - ATHLETE: pode pontuar se é participante e não há apontador
  * - SPECTATOR: nunca pode editar
@@ -57,8 +55,8 @@ export function canEditMatch(user: AuthUser | null, match: MatchPermissionData):
   // SPECTATOR nunca edita
   if (user.role === 'SPECTATOR') return false;
 
-  // ADMIN e GESTOR podem tudo (dentro do clube)
-  if (user.role === 'ADMIN' || user.role === 'GESTOR') {
+  // ADMIN pode tudo
+  if (user.role === 'ADMIN') {
     return true;
   }
 
@@ -85,13 +83,13 @@ export function canEditMatch(user: AuthUser | null, match: MatchPermissionData):
 /**
  * Verifica se o usuário pode visualizar estatísticas de uma partida.
  * - Partidas públicas: todos podem ver
- * - Partidas privadas: apenas participantes e membros do clube
+ * - Partidas privadas: apenas participantes
  */
 export function canViewStats(user: AuthUser | null, match: MatchPermissionData): boolean {
   if (!user) return false;
 
-  // ADMIN e GESTOR podem ver tudo
-  if (user.role === 'ADMIN' || user.role === 'GESTOR') return true;
+  // ADMIN pode ver tudo
+  if (user.role === 'ADMIN') return true;
 
   // Verificar visibilidade
   if (match.visibleTo === 'both') return true;
@@ -114,12 +112,12 @@ export function canUndoPoint(user: AuthUser | null, match: MatchPermissionData):
 
 /**
  * Verifica se o usuário pode excluir uma partida.
- * Regras: apenas ADMIN/GESTOR ou o apontador designado.
+ * Regras: apenas ADMIN ou o apontador designado.
  */
 export function canDeleteMatch(user: AuthUser | null, match: MatchPermissionData): boolean {
   if (!user) return false;
 
-  if (user.role === 'ADMIN' || user.role === 'GESTOR') return true;
+  if (user.role === 'ADMIN') return true;
   if (match.apontadorEmail === user.email) return true;
 
   return false;
@@ -127,11 +125,11 @@ export function canDeleteMatch(user: AuthUser | null, match: MatchPermissionData
 
 /**
  * Verifica se o usuário pode criar partidas.
- * ADMIN, GESTOR e COACH podem criar.
+ * ADMIN e COACH podem criar.
  */
 export function canCreateMatch(user: AuthUser | null): boolean {
   if (!user) return false;
-  return ['ADMIN', 'GESTOR', 'COACH'].includes(user.role);
+  return ['ADMIN', 'COACH'].includes(user.role);
 }
 
 /**
@@ -169,8 +167,8 @@ export function canAnnotateMatch(user: AuthUser | null, match: MatchPermissionDa
   // SPECTATOR nunca anota
   if (user.role === 'SPECTATOR') return false;
 
-  // ADMIN e GESTOR sempre podem
-  if (user.role === 'ADMIN' || user.role === 'GESTOR') return true;
+  // ADMIN sempre pode
+  if (user.role === 'ADMIN') return true;
 
   // Participante da partida NÃO pode ser seu anotador
   if (isMatchParticipant(user, match)) return false;
