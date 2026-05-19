@@ -386,13 +386,8 @@ export function useAdminData(toast: ToastHandle): UseAdminDataReturn {
   // === Create Club ===
   const handleCreateClub = useCallback(async () => {
     const { createClubForm, clubSearch } = state;
-    if (
-      !createClubForm.name.trim() ||
-      !createClubForm.gestorName.trim() ||
-      !createClubForm.gestorEmail.trim() ||
-      !createClubForm.gestorPassword
-    ) {
-      toast.error('Preencha todos os campos obrigatórios.');
+    if (!createClubForm.name.trim()) {
+      toast.error('Preencha o nome do clube.');
       return;
     }
     dispatch({ type: 'CREATE_CLUB_START' });
