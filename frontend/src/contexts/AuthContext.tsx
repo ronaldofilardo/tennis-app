@@ -9,35 +9,20 @@ const authLog = logger.createModuleLogger('AuthContext');
 
 export type UserRole = 'ADMIN' | 'GESTOR' | 'COACH' | 'ATHLETE' | 'SPECTATOR';
 
-export interface ClubMembership {
-  clubId: string;
-  clubName: string;
-  clubSlug: string;
-  role: UserRole;
-  planType?: string;
-  subscriptionStatus?: string;
-}
-
 export interface AuthUser {
   id: string;
   email: string;
   name: string;
   role: UserRole;
-  clubs: ClubMembership[];
-  activeClubId: string | null;
-  activeRole: UserRole;
-  planType?: string;
-  subscriptionStatus?: string;
+  avatarUrl: string | null;
 }
 
 interface AuthContextType {
   isAuthenticated: boolean;
   currentUser: AuthUser | null;
-  activeClub: ClubMembership | null;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
-  switchClub: (clubId: string) => Promise<void>;
   /** Aplica uma sessão a partir de uma resposta de API já obtida (ex: após auto-cadastro). */
   loginWithResult: (apiResponse: {
     token: string;
@@ -46,18 +31,8 @@ interface AuthContextType {
       id: string;
       email: string;
       name: string;
-      clubs: Array<{
-        clubId: string;
-        clubName: string;
-        clubSlug: string;
-        role: string;
-        planType?: string;
-        subscriptionStatus?: string;
-      }>;
-      activeClubId?: string;
-      activeRole?: string;
-      planType?: string;
-      subscriptionStatus?: string;
+      role: string;
+      avatarUrl?: string | null;
     };
   }) => void;
   loading: boolean;
@@ -107,20 +82,10 @@ function loadStoredUser(): AuthUser | null {
     if (
       !parsed ||
       typeof parsed.id !== 'string' ||
-      typeof parsed.email !== 'string' ||
-      !Array.isArray(parsed.clubs)
+      typeof parsed.email !== 'string'
     ) {
       clearAllSessionData();
       return null;
-    }
-
-    // Recalcular activeRole a partir do clube ativo (migração de sessão antiga)
-    if (parsed.clubs.length > 0 && parsed.activeClubId) {
-      const club = parsed.clubs.find((c) => c.clubId === parsed.activeClubId);
-      if (club) {
-        parsed.activeRole = club.role;
-        parsed.role = club.role;
-      }
     }
 
     return parsed;
@@ -142,18 +107,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const isAuthenticated = currentUser !== null;
 
-  const activeClub = currentUser?.clubs?.find((c) => c.clubId === currentUser.activeClubId) ?? null;
-
-  // Configurar httpClient com token e clubId armazenados
+  // Configurar httpClient com token
   useEffect(() => {
     const token = localStorage.getItem(STORAGE_KEYS.token);
     if (token) {
       httpClient.setAuthConfig({ token });
     }
-    if (currentUser?.activeClubId) {
-      httpClient.setTenantConfig({ clubId: currentUser.activeClubId });
-    }
-  }, [currentUser?.activeClubId]);
+  }, []);
 
   // Redirecionar ao login em caso de 401
   useEffect(() => {
@@ -173,10 +133,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(user));
     localStorage.setItem(STORAGE_KEYS.schemaVersion, CURRENT_SCHEMA_VERSION);
     httpClient.setAuthConfig({ token, refreshToken });
-    if (user.activeClubId) {
-      httpClient.setTenantConfig({ clubId: user.activeClubId });
-    }
-    logger.setGlobalContext({ userId: user.email, clubId: user.activeClubId });
+    logger.setGlobalContext({ userId: user.email });
   };
 
   const performLogout = () => {
@@ -184,7 +141,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setCurrentUser(null);
     setError(null);
     httpClient.setAuthConfig({ token: null, refreshToken: null });
-    httpClient.setTenantConfig({ clubId: null });
     logger.clearGlobalContext();
     authLog.info('Logout realizado');
   };
@@ -196,21 +152,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       id: string;
       email: string;
       name: string;
-      clubs: Array<{
-        clubId: string;
-        clubName: string;
-        clubSlug: string;
-        role: string;
-        planType?: string;
-        subscriptionStatus?: string;
-      }>;
-      activeClubId?: string;
-      activeRole?: string;
-      planType?: string;
-      subscriptionStatus?: string;
+      role: string;
+      avatarUrl?: string | null;
     };
   }): { token: string; refreshToken?: string; user: AuthUser } => {
-    const firstClub = data.user.clubs[0];
     return {
       token: data.token,
       refreshToken: data.refreshToken,
@@ -218,16 +163,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         id: data.user.id,
         email: data.user.email,
         name: data.user.name,
-        role: (data.user.activeRole || firstClub?.role || 'ATHLETE') as UserRole,
-        clubs: data.user.clubs.map((c) => ({
-          ...c,
-          role: c.role as UserRole,
-        })),
-        activeClubId: data.user.activeClubId || firstClub?.clubId || null,
-        activeRole: (data.user.activeRole || firstClub?.role || 'ATHLETE') as UserRole,
-        planType: data.user.planType || firstClub?.planType || 'FREE',
-        subscriptionStatus:
-          data.user.subscriptionStatus || firstClub?.subscriptionStatus || 'ACTIVE',
+        role: (data.user.role || 'ATHLETE') as UserRole,
+        avatarUrl: data.user.avatarUrl ?? null,
       },
     };
   };
@@ -246,14 +183,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           id: string;
           email: string;
           name: string;
-          clubs: Array<{
-            clubId: string;
-            clubName: string;
-            clubSlug: string;
-            role: string;
-          }>;
-          activeClubId?: string;
-          activeRole?: string;
+          role: string;
+          avatarUrl?: string | null;
         };
       }>('/auth/login', { email, password }, { skipAuthHeaders: true });
 
@@ -263,7 +194,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       authLog.info('Login bem-sucedido via API', {
         email: user.email,
-        clubId: user.activeClubId,
       });
     } catch (err: unknown) {
       const message =
@@ -291,14 +221,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             id: string;
             email: string;
             name: string;
-            clubs: Array<{
-              clubId: string;
-              clubName: string;
-              clubSlug: string;
-              role: string;
-            }>;
-            activeClubId?: string;
-            activeRole?: string;
+            role: string;
+            avatarUrl?: string | null;
           };
         }>('/auth/register', { name, email, password }, { skipAuthHeaders: true });
 
@@ -322,58 +246,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     [],
   );
 
-  const switchClub = useCallback(async (clubId: string): Promise<void> => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await httpClient.post<{
-        token: string;
-        club: {
-          clubId: string;
-          clubName: string;
-          clubSlug: string;
-          role: string;
-          planType?: string;
-          subscriptionStatus?: string;
-        };
-      }>('/auth/switch-club', { clubId });
-
-      const newToken = response.data.token;
-      const club = response.data.club;
-
-      // Atualizar user mantendo clubs existentes
-      setCurrentUser((prev) => {
-        if (!prev) return null;
-        const updated: AuthUser = {
-          ...prev,
-          activeClubId: club.clubId,
-          activeRole: club.role as UserRole,
-          role: club.role as UserRole,
-          planType: club.planType || 'FREE',
-          subscriptionStatus: club.subscriptionStatus || 'ACTIVE',
-        };
-        persistSession(
-          newToken,
-          localStorage.getItem(STORAGE_KEYS.refreshToken) ?? undefined,
-          updated,
-        );
-        return updated;
-      });
-
-      authLog.info('Clube alternado', { clubId, role: club.role });
-    } catch (err: unknown) {
-      const message =
-        err && typeof err === 'object' && 'responseData' in err
-          ? ((err as { responseData: { error?: string } }).responseData?.error ??
-            'Erro ao trocar clube.')
-          : 'Erro ao conectar. Tente novamente.';
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   const logout = useCallback(() => {
     performLogout();
   }, []);
@@ -392,11 +264,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value: AuthContextType = {
     isAuthenticated,
     currentUser,
-    activeClub,
     login,
     register,
     logout,
-    switchClub,
     loginWithResult,
     loading,
     error,

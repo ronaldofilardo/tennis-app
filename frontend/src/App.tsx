@@ -17,6 +17,7 @@ const MatchSetup = React.lazy(() => import('./pages/MatchSetup'));
 const ScoreboardV2 = React.lazy(() => import('./pages/ScoreboardV2'));
 const AuthPage = React.lazy(() => import('./pages/AuthPage'));
 const TournamentDashboard = React.lazy(() => import('./pages/TournamentDashboard'));
+
 const GestorDashboard = React.lazy(() => import('./pages/GestorDashboard'));
 const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
 const JoinClubPage = React.lazy(() => import('./pages/JoinClub'));
@@ -40,7 +41,7 @@ function App() {
 }
 
 const AppContent: React.FC = () => {
-  const { isAuthenticated, currentUser, activeClub, logout } = useAuth();
+  const { isAuthenticated, currentUser, logout } = useAuth();
   const { matches, loading, error, addMatch } = useMatches();
   const {
     navigateToDashboard,
@@ -54,15 +55,11 @@ const AppContent: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isGestor = activeClub?.role === 'GESTOR';
-  const isAdmin = activeClub?.role === 'ADMIN';
-  const showBottomTabBar = isAuthenticated && !isAdmin && !isGestor;
+  const showBottomTabBar = isAuthenticated;
 
   // Derive active tab from current route
   const activeTab: TabId = (() => {
-    const path = location.pathname;
-    if (path.startsWith('/tournaments')) return 'tournaments';
-    if (path === '/dashboard') return 'home';
+    if (location.pathname === '/dashboard') return 'home';
     return 'home';
   })();
 
@@ -71,9 +68,6 @@ const AppContent: React.FC = () => {
       switch (tab) {
         case 'home':
           navigate('/dashboard');
-          break;
-        case 'tournaments':
-          navigate('/tournaments');
           break;
         case 'profile':
           navigate('/dashboard');
@@ -216,12 +210,6 @@ const AppContent: React.FC = () => {
                   <Navigate to={isAuthenticated ? '/dashboard' : '/login'} />
                 )
               }
-            />
-
-            {/* Torneios */}
-            <Route
-              path="/tournaments"
-              element={isAuthenticated ? <TournamentDashboard /> : <Navigate to="/login" />}
             />
 
             {/* Entrar no Clube via convite (público) */}

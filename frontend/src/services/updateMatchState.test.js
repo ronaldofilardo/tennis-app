@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import * as matchService from "./matchService.js";
+import * as matchService from "./matchService.ts";
 
 describe("updateMatchState", () => {
   let mockPrisma;

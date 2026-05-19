@@ -38,7 +38,7 @@ if (globalThis.__prisma) {
 let _matchService = null;
 async function getMatchService() {
   if (!_matchService) {
-    _matchService = await import('./src/services/matchService.js');
+    _matchService = await import('./src/services/matchService.ts');
   }
   return _matchService;
 }

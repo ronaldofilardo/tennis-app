@@ -28,19 +28,12 @@ if (globalThis.__prisma) {
 }
 
 export async function getAllMatches(
-  clubId: string | null = null,
-  userRole: string | null = null,
+  _userRole: string | null = null,
   _userId: string | null = null,
 ): Promise<object[]> {
-  const whereClause: Record<string, unknown> = {};
-  if (userRole === 'ADMIN') {
-    // ADMIN vê todas as partidas
-  } else if (clubId) {
-    const orConditions = [{ clubId }, { visibility: 'PUBLIC' }];
-    whereClause.OR = orConditions;
-  } else {
-    whereClause.visibility = 'PUBLIC';
-  }
+  const whereClause: { visibility: 'PUBLIC' | 'PLAYERS_ONLY' } = {
+    visibility: 'PUBLIC' as const,
+  };
 
   const matches = await prisma.match.findMany({
     where: whereClause,
@@ -116,11 +109,8 @@ export async function createMatch(matchData: unknown, testPrisma?: PrismaClient)
     visibility = 'PLAYERS_ONLY',
     apontadorEmail,
     visibleTo,
-    clubId,
     createdByUserId,
     openForAnnotation = false,
-    scheduledAt,
-    venueId,
     tournamentName,
     roundName,
     bracketType,
@@ -171,10 +161,7 @@ export async function createMatch(matchData: unknown, testPrisma?: PrismaClient)
       visibility: visibility ?? 'PLAYERS_ONLY',
       status: 'NOT_STARTED',
       openForAnnotation: openForAnnotation ?? false,
-      clubId: clubId ?? null,
       createdByUserId: createdByUserId ?? null,
-      scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
-      venueId: venueId ?? null,
       tournamentName: tournamentName ?? null,
       roundName: roundName ?? null,
       bracketType: bracketType ?? null,
@@ -202,8 +189,6 @@ export async function createMatch(matchData: unknown, testPrisma?: PrismaClient)
     playersEmails: newMatch.playersEmails,
     visibility: newMatch.visibility,
     openForAnnotation: newMatch.openForAnnotation,
-    scheduledAt: newMatch.scheduledAt ? newMatch.scheduledAt.toISOString() : null,
-    venueId: newMatch.venueId ?? null,
     tournamentName: newMatch.tournamentName ?? null,
     roundName: newMatch.roundName ?? null,
     bracketType: newMatch.bracketType ?? null,
@@ -211,7 +196,6 @@ export async function createMatch(matchData: unknown, testPrisma?: PrismaClient)
     humidity: newMatch.humidity ?? null,
     publicMatchCode: newMatch.publicMatchCode ?? null,
     visibleTo: visibleTo ?? 'both',
-    clubId: newMatch.clubId ?? null,
     status: newMatch.status,
     score: newMatch.score,
     winner: newMatch.winner,
@@ -665,8 +649,6 @@ export async function getMatchesOpenForAnnotation(testPrisma?: PrismaClient): Pr
       createdAt: true,
       openForAnnotation: true,
       visibility: true,
-      clubId: true,
-      club: { select: { id: true, name: true } },
       createdBy: { select: { id: true, name: true, email: true } },
     },
     orderBy: { createdAt: 'desc' },
@@ -682,8 +664,6 @@ export async function getMatchesOpenForAnnotation(testPrisma?: PrismaClient): Pr
     createdAt: Date;
     openForAnnotation: boolean;
     visibility: string;
-    clubId: string | null;
-    club?: { id: string; name: string } | null;
     createdBy?: { id: string; name: string; email: string } | null;
   }>;
 
@@ -698,8 +678,6 @@ export async function getMatchesOpenForAnnotation(testPrisma?: PrismaClient): Pr
     createdAt: match.createdAt.toISOString(),
     openForAnnotation: match.openForAnnotation,
     visibility: match.visibility,
-    clubId: match.clubId ?? null,
-    clubName: match.club?.name ?? null,
     createdBy: match.createdBy ? { id: match.createdBy.id, name: match.createdBy.name } : null,
   }));
 }

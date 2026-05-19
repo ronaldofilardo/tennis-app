@@ -102,15 +102,10 @@ export function createAthletesStateFromNames(
   };
 }
 
-
-
 /**
  * Busca um atleta pelo ID no estado normalizado.
  */
-export function getAthleteById(
-  state: AthletesState,
-  id: string,
-): Athlete | undefined {
+export function getAthleteById(state: AthletesState, id: string): Athlete | undefined {
   return state.byId[id];
 }
 
@@ -118,10 +113,7 @@ export function getAthleteById(
  * Adiciona ou atualiza um atleta no estado normalizado.
  * Retorna um novo estado (imutável).
  */
-export function upsertAthlete(
-  state: AthletesState,
-  athlete: Athlete,
-): AthletesState {
+export function upsertAthlete(state: AthletesState, athlete: Athlete): AthletesState {
   const isNew = !state.byId[athlete.id];
   return {
     byId: {

@@ -5,26 +5,26 @@
 
 ## .cjs Scripts
 
-| Script | Propósito |
-|--------|-----------|
-| `check_*.cjs` | Inspecionar estado de dados no banco (usuários, sessões, atletas) |
-| `create_play_user.cjs` | Setup inicial: criar usuário teste para anotações |
-| `create_test_abandoned.cjs` | Criar sessão de anotação abandonada para testes |
-| `query_pupilo.cjs` | Query específica de pupilo (lógica de negócio antiga) |
-| `test_*.cjs` | Testes ad-hoc: deduplicação, endpoint suspenso |
-| `find_scored_matches.cjs` | Localizar partidas já anotadas |
-| `fix_players_emails.cjs` | Correção em lote de emails de jogadores |
-| `show_scored_example.cjs` | Exibir exemplo de partida anotada |
-| `list_users.cjs` | Listar usuários do banco |
-| `verify_consolidation.cjs` | Validar consolidação de sessões |
-| `http_test_api.cjs` | Testes HTTP diretos contra API local |
+| Script                      | Propósito                                                         |
+| --------------------------- | ----------------------------------------------------------------- |
+| `check_*.cjs`               | Inspecionar estado de dados no banco (usuários, sessões, atletas) |
+| `create_play_user.cjs`      | Setup inicial: criar usuário teste para anotações                 |
+| `create_test_abandoned.cjs` | Criar sessão de anotação abandonada para testes                   |
+| `query_pupilo.cjs`          | Query específica de pupilo (lógica de negócio antiga)             |
+| `test_*.cjs`                | Testes ad-hoc: deduplicação, endpoint suspenso                    |
+| `find_scored_matches.cjs`   | Localizar partidas já anotadas                                    |
+| `fix_players_emails.cjs`    | Correção em lote de emails de jogadores                           |
+| `show_scored_example.cjs`   | Exibir exemplo de partida anotada                                 |
+| `list_users.cjs`            | Listar usuários do banco                                          |
+| `verify_consolidation.cjs`  | Validar consolidação de sessões                                   |
+| `http_test_api.cjs`         | Testes HTTP diretos contra API local                              |
 
 ## .sql Scripts
 
-| Script | Propósito |
-|--------|-----------|
-| `check_*.sql` | Queries de inspeção (sessões, atletas, VINCULOs) |
-| `cleanup_sessions.sql` | Limpeza manual de sessões órfãs ou incompletas |
+| Script                 | Propósito                                        |
+| ---------------------- | ------------------------------------------------ |
+| `check_*.sql`          | Queries de inspeção (sessões, atletas, VINCULOs) |
+| `cleanup_sessions.sql` | Limpeza manual de sessões órfãs ou incompletas   |
 
 ## Como Usar
 

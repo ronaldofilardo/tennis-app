@@ -6,7 +6,7 @@ import {
   calculateMatchStats,
   analyzePoint,
   updateStatsWithPoint,
-} from "../statsUtils.js";
+} from "../statsUtils";
 
 describe("statsUtils", () => {
   describe("createEmptyPlayerStats", () => {

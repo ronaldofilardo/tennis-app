@@ -1,6 +1,5 @@
 // frontend/api/_handlers/_cron.ts
 import type { ServerResponse } from 'node:http';
-import { checkAndSuspendExpiredSubscriptions } from '../../src/services/subscriptionService.js';
 import { sendJson } from '../_lib/authMiddleware.js';
 import type { ApiRequest } from '../_lib/types.js';
 
@@ -23,18 +22,16 @@ export default async function handler(req: ApiRequest, res: ServerResponse): Pro
   }
 
   try {
-    console.log('[cron] Starting subscription check...');
-    const result = await checkAndSuspendExpiredSubscriptions();
-    console.log('[cron] Done:', result);
+    console.log('[cron] Cron job executed (subscription check removed)');
     return sendJson(res, 200, {
       success: true,
       timestamp: new Date().toISOString(),
-      ...result,
+      message: 'Subscription checks no longer performed',
     });
   } catch (err) {
     console.error('[cron] Error:', err);
     return sendJson(res, 500, {
-      error: 'Error checking subscriptions',
+      error: 'Error in cron job',
       message: err instanceof Error ? err.message : 'Unknown error',
     });
   }

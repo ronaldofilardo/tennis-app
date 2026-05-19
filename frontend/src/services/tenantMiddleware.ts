@@ -8,8 +8,6 @@ import { verifyToken } from './authService.js';
 export interface TenantContext {
   userId: string;
   email: string;
-  clubId: string | null;
-  role: string;
 }
 
 export interface ExtendedIncomingMessage extends IncomingMessage {
@@ -80,10 +78,6 @@ export function authMiddleware(
   const context: TenantContext = {
     userId: payload.userId as string,
     email: payload.email as string,
-    clubId: (payload.clubId ?? (req.headers['x-club-id'] as string | undefined) ?? null) as
-      | string
-      | null,
-    role: (payload.role ?? 'ATHLETE') as string,
   };
 
   req.tenantContext = context;
@@ -93,27 +87,17 @@ export function authMiddleware(
 
 /**
  * Middleware de autorização por role.
+ * Note: Role-based access control has been removed. This now just enforces authentication.
  */
 export function requireRole(
   req: ExtendedIncomingMessage,
   res: ServerResponse,
-  allowedRoles: string[],
+  _allowedRoles?: string[],
 ): boolean {
   const ctx = req.tenantContext;
   if (!ctx) {
     res.writeHead(401, { ...corsHeaders, 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Not authenticated', code: 'NO_CONTEXT' }));
-    return false;
-  }
-
-  if (!allowedRoles.includes(ctx.role)) {
-    res.writeHead(403, { ...corsHeaders, 'Content-Type': 'application/json' });
-    res.end(
-      JSON.stringify({
-        error: `Insufficient permissions. Required: ${allowedRoles.join('|')}`,
-        code: 'INSUFFICIENT_ROLE',
-      }),
-    );
     return false;
   }
 

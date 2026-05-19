@@ -27,116 +27,7 @@ async function main() {
   console.log('🌱 Iniciando seed do banco de dados...\n');
 
   try {
-    // 1. Criar ou buscar admin
-    const adminEmail = 'admin@tennis.com';
-    let admin = await prisma.user.findUnique({
-      where: { email: adminEmail },
-    });
-
-    if (!admin) {
-      const passwordHash = await hashPassword('123456');
-      admin = await prisma.user.create({
-        data: {
-          email: adminEmail,
-          name: 'Admin Tennis',
-          passwordHash,
-          isActive: true,
-          platformRole: 'ADMIN',
-        },
-      });
-      console.log(`✅ Usuário admin criado: ${admin.email} (ID: ${admin.id})`);
-    } else {
-      console.log(`⚠️  Usuário admin já existe: ${admin.email}`);
-    }
-
-    // 2. Criar ou buscar clube padrão
-    let defaultClub = await prisma.club.findUnique({
-      where: { slug: 'clube-teste' },
-    });
-
-    if (!defaultClub) {
-      defaultClub = await prisma.club.create({
-        data: {
-          name: 'Clube Teste',
-          slug: 'clube-teste',
-          planType: 'ENTERPRISE',
-        },
-      });
-      console.log(`✅ Clube padrão criado: ${defaultClub.name} (ID: ${defaultClub.id})`);
-    } else {
-      console.log(`⚠️  Clube padrão já existe: ${defaultClub.name}`);
-    }
-
-    // 3. Criar vinculação admin → clube com role ADMIN
-    const existingMembership = await prisma.clubMembership.findUnique({
-      where: {
-        userId_clubId: {
-          userId: admin.id,
-          clubId: defaultClub.id,
-        },
-      },
-    });
-
-    if (!existingMembership) {
-      const membership = await prisma.clubMembership.create({
-        data: {
-          userId: admin.id,
-          clubId: defaultClub.id,
-          role: 'ADMIN',
-          status: 'ACTIVE',
-        },
-      });
-      console.log(`✅ Membership criado: ${admin.email} → ${defaultClub.name} (role: ADMIN)`);
-    } else {
-      console.log(`⚠️  Membership já existe: ${admin.email} → ${defaultClub.name}`);
-    }
-
-    // 4. Criar ou buscar gestor do clube
-    const gestorEmail = 'gestor@clubeteste.com';
-    let gestor = await prisma.user.findUnique({
-      where: { email: gestorEmail },
-    });
-
-    if (!gestor) {
-      const passwordHash = await hashPassword('gestor123');
-      gestor = await prisma.user.create({
-        data: {
-          email: gestorEmail,
-          name: 'Gestor Clube Teste',
-          passwordHash,
-          isActive: true,
-        },
-      });
-      console.log(`✅ Usuário gestor criado: ${gestor.email} (ID: ${gestor.id})`);
-    } else {
-      console.log(`⚠️  Usuário gestor já existe: ${gestor.email}`);
-    }
-
-    // 5. Criar vinculação gestor → clube com role GESTOR
-    const extistingGestorMembership = await prisma.clubMembership.findUnique({
-      where: {
-        userId_clubId: {
-          userId: gestor.id,
-          clubId: defaultClub.id,
-        },
-      },
-    });
-
-    if (!extistingGestorMembership) {
-      const gestorlMembership = await prisma.clubMembership.create({
-        data: {
-          userId: gestor.id,
-          clubId: defaultClub.id,
-          role: 'GESTOR',
-          status: 'ACTIVE',
-        },
-      });
-      console.log(`✅ Membership criado: ${gestor.email} → ${defaultClub.name} (role: GESTOR)`);
-    } else {
-      console.log(`⚠️  Membership gestor já existe: ${gestor.email} → ${defaultClub.name}`);
-    }
-
-    // 6. Criar ou buscar atleta
+    // Criar atleta único
     const athleteEmail = 'play@email.com';
     let athlete = await prisma.user.findUnique({
       where: { email: athleteEmail },
@@ -157,31 +48,7 @@ async function main() {
       console.log(`⚠️  Usuário atleta já existe: ${athlete.email}`);
     }
 
-    // 7. Criar vinculação atleta → clube com role ATHLETE
-    const existingAthleteMembership = await prisma.clubMembership.findUnique({
-      where: {
-        userId_clubId: {
-          userId: athlete.id,
-          clubId: defaultClub.id,
-        },
-      },
-    });
-
-    if (!existingAthleteMembership) {
-      await prisma.clubMembership.create({
-        data: {
-          userId: athlete.id,
-          clubId: defaultClub.id,
-          role: 'ATHLETE',
-          status: 'ACTIVE',
-        },
-      });
-      console.log(`✅ Membership criado: ${athlete.email} → ${defaultClub.name} (role: ATHLETE)`);
-    } else {
-      console.log(`⚠️  Membership atleta já existe: ${athlete.email} → ${defaultClub.name}`);
-    }
-
-    // 8. Criar AthleteProfile para o atleta
+    // Criar AthleteProfile para o atleta
     const existingProfile = await prisma.athleteProfile.findUnique({
       where: { userId: athlete.id },
     });
@@ -195,7 +62,6 @@ async function main() {
           category: 'ADULTO',
           gender: 'MALE',
           isPublic: true,
-          clubId: defaultClub.id,
           cpf: '87545772920',
         },
       });
@@ -204,77 +70,9 @@ async function main() {
       console.log(`⚠️  AthleteProfile já existe para ${athlete.email}`);
     }
 
-    // 9. Criar ou buscar anotador
-    const anotadorEmail = 'anotador@clubeteste.com';
-    let anotador = await prisma.user.findUnique({
-      where: { email: anotadorEmail },
-    });
-
-    if (!anotador) {
-      const passwordHash = await hashPassword('anotador');
-      anotador = await prisma.user.create({
-        data: {
-          email: anotadorEmail,
-          name: 'Anotador',
-          passwordHash,
-          isActive: true,
-        },
-      });
-      console.log(`✅ Usuário anotador criado: ${anotador.email} (ID: ${anotador.id})`);
-    } else {
-      console.log(`⚠️  Usuário anotador já existe: ${anotador.email}`);
-    }
-
-    // 10. Membership do anotador como COACH no clube
-    const existingAnotadorMembership = await prisma.clubMembership.findUnique({
-      where: { userId_clubId: { userId: anotador.id, clubId: defaultClub.id } },
-    });
-
-    if (!existingAnotadorMembership) {
-      await prisma.clubMembership.create({
-        data: {
-          userId: anotador.id,
-          clubId: defaultClub.id,
-          role: 'COACH',
-          status: 'ACTIVE',
-        },
-      });
-      console.log(`✅ Membership criado: ${anotador.email} → ${defaultClub.name} (role: COACH)`);
-    } else {
-      console.log(`⚠️  Membership anotador já existe: ${anotador.email} → ${defaultClub.name}`);
-    }
-
-    // 11. AthleteProfile do anotador
-    const anotadorProfile = await prisma.athleteProfile.findUnique({
-      where: { userId: anotador.id },
-    });
-
-    if (!anotadorProfile) {
-      await prisma.athleteProfile.create({
-        data: {
-          userId: anotador.id,
-          name: 'Anotador',
-          nickname: 'Anotador',
-          category: 'ADULTO',
-          gender: 'MALE',
-          isPublic: true,
-          clubId: defaultClub.id,
-          cpf: '12345678901',
-          birthDate: new Date('1974-10-24'),
-        },
-      });
-      console.log(`✅ AthleteProfile criado para anotador (CPF: 12345678901)`);
-    } else {
-      console.log(`⚠️  AthleteProfile anotador já existe`);
-    }
-
     console.log('\n✨ Seed concluído com sucesso!');
-    console.log(`\n📋 Dados criados/verificados:`);
-    console.log(`   • Admin: ${admin.email} / 5978rdf`);
-    console.log(`   • Clube: ${defaultClub.name}`);
-    console.log(`   • Gestor: ${gestor.email} / gestor123`);
+    console.log(`\n📋 Usuário criado:`);
     console.log(`   • Atleta: ${athlete.email} / 123 (CPF: 87545772920)`);
-    console.log(`   • Anotador: ${anotador.email} / anotador (CPF: 12345678901, nasc: 24/10/1974)`);
   } catch (error) {
     console.error('❌ Erro durante seed:', error);
     process.exit(1);

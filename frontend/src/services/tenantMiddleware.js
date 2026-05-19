@@ -54,28 +54,19 @@ export function authMiddleware(req, res, options = { required: true }) {
     const context = {
         userId: payload.userId,
         email: payload.email,
-        clubId: (payload.clubId ?? req.headers['x-club-id'] ?? null),
-        role: (payload.role ?? 'ATHLETE'),
     };
     req.tenantContext = context;
     return { authenticated: true, context };
 }
 /**
  * Middleware de autorização por role.
+ * Note: Role-based access control has been removed. This now just enforces authentication.
  */
-export function requireRole(req, res, allowedRoles) {
+export function requireRole(req, res, _allowedRoles) {
     const ctx = req.tenantContext;
     if (!ctx) {
         res.writeHead(401, { ...corsHeaders, 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Not authenticated', code: 'NO_CONTEXT' }));
-        return false;
-    }
-    if (!allowedRoles.includes(ctx.role)) {
-        res.writeHead(403, { ...corsHeaders, 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({
-            error: `Insufficient permissions. Required: ${allowedRoles.join('|')}`,
-            code: 'INSUFFICIENT_ROLE',
-        }));
         return false;
     }
     return true;

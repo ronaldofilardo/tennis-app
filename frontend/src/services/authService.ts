@@ -85,11 +85,7 @@ function base64urlDecode(str: string): string {
 export interface JwtPayload {
   userId: string;
   email: string;
-  clubId?: string | null;
-  role?: string;
   platformRole?: string;
-  planType?: string;
-  subscriptionStatus?: string;
   iat?: number;
   exp?: number;
 }
@@ -101,11 +97,7 @@ export function generateToken(payload: JwtPayload): string {
     JSON.stringify({
       userId: payload.userId,
       email: payload.email,
-      clubId: payload.clubId,
-      role: payload.role,
-      platformRole: payload.platformRole,
-      planType: payload.planType ?? 'FREE',
-      subscriptionStatus: payload.subscriptionStatus ?? 'ACTIVE',
+      platformRole: payload.platformRole || 'MEMBER',
       iat: now,
       exp: now + JWT_EXPIRY_SECONDS,
     }),
@@ -183,31 +175,6 @@ export async function registerUser({
   return user;
 }
 
-interface ClubInfo {
-  id: string;
-  name: string;
-  slug: string;
-  planType: string;
-  subscription: { status: string; planType: string } | null;
-}
-
-interface MembershipInfo {
-  clubId: string;
-  role: string;
-  club: ClubInfo;
-}
-
-interface UserWithMemberships {
-  id: string;
-  email: string;
-  name: string;
-  avatarUrl: string | null;
-  platformRole: string;
-  isActive: boolean;
-  passwordHash: string;
-  memberships: MembershipInfo[];
-}
-
 export async function loginUser({
   email,
   password,
@@ -215,26 +182,9 @@ export async function loginUser({
   email: string;
   password: string;
 }): Promise<{ token: string; refreshToken: string; user: object }> {
-  const user = (await prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { email },
-    include: {
-      memberships: {
-        include: {
-          club: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-              planType: true,
-              subscription: {
-                select: { status: true, planType: true },
-              },
-            },
-          },
-        },
-      },
-    },
-  })) as UserWithMemberships | null;
+  });
 
   if (!user) throw new Error('INVALID_CREDENTIALS');
   if (!user.isActive) throw new Error('USER_INACTIVE');
@@ -242,21 +192,10 @@ export async function loginUser({
   const valid = await verifyPassword(password, user.passwordHash);
   if (!valid) throw new Error('INVALID_CREDENTIALS');
 
-  const defaultMembership = user.memberships[0] ?? null;
-  const defaultClubId = defaultMembership?.clubId ?? null;
-  const defaultRole = defaultMembership?.role ?? user.platformRole ?? 'ATHLETE';
-  const defaultClub = defaultMembership?.club ?? null;
-  const defaultPlanType = defaultClub?.subscription?.planType ?? defaultClub?.planType ?? 'FREE';
-  const defaultSubStatus = defaultClub?.subscription?.status ?? 'ACTIVE';
-
   const token = generateToken({
     userId: user.id,
     email: user.email,
-    clubId: defaultClubId,
-    role: defaultRole,
     platformRole: user.platformRole,
-    planType: defaultPlanType,
-    subscriptionStatus: defaultSubStatus,
   });
 
   const refreshToken = generateRefreshToken();
@@ -270,178 +209,8 @@ export async function loginUser({
       name: user.name,
       avatarUrl: user.avatarUrl,
       platformRole: user.platformRole,
-      clubs: user.memberships.map((m) => ({
-        clubId: m.club.id,
-        clubName: m.club.name,
-        clubSlug: m.club.slug,
-        role: m.role,
-        planType: m.club.subscription?.planType ?? m.club.planType,
-        subscriptionStatus: m.club.subscription?.status ?? 'ACTIVE',
-      })),
     },
   };
-}
-
-export async function switchClub(
-  userId: string,
-  clubId: string,
-): Promise<{ token: string; club: object }> {
-  const membership = (await prisma.clubMembership.findUnique({
-    where: { userId_clubId: { userId, clubId } },
-    include: {
-      club: {
-        include: {
-          subscription: {
-            select: { status: true, planType: true },
-          },
-        },
-      },
-      user: { select: { email: true } },
-    },
-  })) as {
-    clubId: string;
-    role: string;
-    club: {
-      id: string;
-      name: string;
-      slug: string;
-      planType: string;
-      subscription: { status: string; planType: string } | null;
-    };
-    user: { email: string };
-  } | null;
-
-  if (!membership) throw new Error('NOT_A_MEMBER');
-
-  const planType = membership.club.subscription?.planType ?? membership.club.planType ?? 'FREE';
-  const subscriptionStatus = membership.club.subscription?.status ?? 'ACTIVE';
-
-  const token = generateToken({
-    userId,
-    email: membership.user.email,
-    clubId: membership.clubId,
-    role: membership.role,
-    planType,
-    subscriptionStatus,
-  });
-
-  return {
-    token,
-    club: {
-      clubId: membership.club.id,
-      clubName: membership.club.name,
-      clubSlug: membership.club.slug,
-      role: membership.role,
-      planType,
-      subscriptionStatus,
-    },
-  };
-}
-
-// ========================================================
-// Serviço de Clubes
-// ========================================================
-
-export async function createClub({
-  name,
-  slug,
-  userId,
-}: {
-  name: string;
-  slug: string;
-  userId: string;
-}): Promise<object> {
-  const existing = await prisma.club.findUnique({ where: { slug } });
-  if (existing) throw new Error('SLUG_EXISTS');
-
-  const club = await prisma.club.create({
-    data: {
-      name,
-      slug,
-      memberships: {
-        create: { userId, role: 'GESTOR' },
-      },
-    },
-    include: {
-      memberships: {
-        include: { user: { select: { email: true, name: true } } },
-      },
-    },
-  });
-
-  return club;
-}
-
-const VALID_CLUB_ROLES = ['GESTOR', 'COACH', 'ATHLETE'];
-
-export async function addClubMember({
-  clubId,
-  userId,
-  role = 'ATHLETE',
-  invitedByUserId,
-}: {
-  clubId: string;
-  userId: string;
-  role?: string;
-  invitedByUserId?: string;
-}): Promise<object> {
-  if (!VALID_CLUB_ROLES.includes(role)) {
-    throw new Error(`INVALID_ROLE: must be one of ${VALID_CLUB_ROLES.join(', ')}`);
-  }
-
-  if (role === 'ATHLETE') {
-    const existingGestor = (await prisma.clubMembership.findUnique({
-      where: { userId_clubId: { userId, clubId } },
-    })) as { role?: string } | null;
-    if (existingGestor?.role === 'GESTOR') {
-      throw new Error('GESTOR_CANNOT_BE_ATHLETE: Gestor cannot also be Athlete in the same club');
-    }
-  }
-  if (role === 'GESTOR') {
-    const existingAthlete = (await prisma.clubMembership.findUnique({
-      where: { userId_clubId: { userId, clubId } },
-    })) as { role?: string } | null;
-    if (existingAthlete?.role === 'ATHLETE') {
-      throw new Error('ATHLETE_CANNOT_BE_GESTOR: Athlete cannot also be Gestor in the same club');
-    }
-  }
-
-  return prisma.clubMembership.create({
-    data: {
-      clubId,
-      userId,
-      role: role as 'GESTOR' | 'COACH' | 'ATHLETE',
-      invitedByUserId,
-      status: role === 'ATHLETE' ? 'PENDING' : 'ACTIVE',
-    },
-  });
-}
-
-export async function getClubMembers(
-  clubId: string,
-  excludeUserId: string | null = null,
-): Promise<object[]> {
-  return prisma.clubMembership.findMany({
-    where: {
-      clubId,
-      role: { notIn: ['ADMIN', 'SPECTATOR'] },
-      ...(excludeUserId ? { userId: { not: excludeUserId } } : {}),
-    },
-    include: {
-      user: {
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          avatarUrl: true,
-          athleteProfile: {
-            select: { id: true, globalId: true, cpf: true, birthDate: true },
-          },
-        },
-      },
-    },
-    orderBy: { joinedAt: 'asc' },
-  });
 }
 
 // Suppress unused variable warning for ITERATIONS (used for documentation purposes)

@@ -3,7 +3,6 @@ import type { ServerResponse } from 'node:http';
 import {
   loginUser,
   registerUser,
-  switchClub,
   verifyToken,
 } from '../../src/services/authService.js';
 import { handleCors, sendJson } from '../_lib/authMiddleware.js';
@@ -102,47 +101,6 @@ export default async function handler(req: ApiRequest, res: ServerResponse): Pro
         return;
       }
       console.error('[auth/register]', err);
-      res.writeHead(500, { ...corsHeaders, 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Internal server error' }));
-      return;
-    }
-  }
-
-  // ─── POST /api/auth/switch-club ───────────────────────────────────────────
-  if (action === 'switch-club') {
-    try {
-      const auth = req.headers?.authorization;
-      if (!auth || !auth.startsWith('Bearer ')) {
-        res.writeHead(401, { ...corsHeaders, 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Authentication required' }));
-        return;
-      }
-      const tokenResult = verifyToken(auth.split(' ')[1]);
-      if (!tokenResult.valid) {
-        res.writeHead(401, { ...corsHeaders, 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: tokenResult.error }));
-        return;
-      }
-      const { clubId } = (req.body ?? {}) as { clubId?: string };
-      if (!clubId) {
-        res.writeHead(400, { ...corsHeaders, 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'clubId is required' }));
-        return;
-      }
-      const result = await switchClub(
-        (tokenResult.payload as { userId: string }).userId,
-        clubId,
-      );
-      res.writeHead(200, { ...corsHeaders, 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(result));
-      return;
-    } catch (err) {
-      if (err instanceof Error && err.message === 'NOT_A_MEMBER') {
-        res.writeHead(403, { ...corsHeaders, 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Not a member of this club' }));
-        return;
-      }
-      console.error('[auth/switch-club]', err);
       res.writeHead(500, { ...corsHeaders, 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Internal server error' }));
       return;
@@ -269,7 +227,6 @@ export default async function handler(req: ApiRequest, res: ServerResponse): Pro
           fatherCpf: cleanFatherCpf || null,
           motherName: motherName?.trim() || null,
           motherCpf: cleanMotherCpf || null,
-          clubId: null,
           isPublic: true,
         },
       });

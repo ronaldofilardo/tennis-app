@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 
 /**
  * Testes para validar o fix do endpoint GET /api/matches/suspended-sessions
- * 
+ *
  * Mudanças desta conversa (19/05/2026):
  * - Removido campo inválido `players: true` do Prisma query em dev-server.cjs (~linha 1720)
  * - Removido campo inválido `players: true` de _matches.js (~linhas 318-340)
@@ -21,8 +21,8 @@ describe('Suspended Sessions Endpoint - players field removal', () => {
       'nickname',
       'playerP1',
       'playerP2',
-      'player1',      // ✅ Correct: nested select for player1
-      'player2',      // ✅ Correct: nested select for player2
+      'player1', // ✅ Correct: nested select for player1
+      'player2', // ✅ Correct: nested select for player2
       'status',
       'scheduledAt',
       'createdAt',

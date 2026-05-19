@@ -41,9 +41,7 @@
     "src/services/matchService.ts",
     "src/services/matchStatusService.ts",
     "src/services/statsUtils.ts",
-    "src/services/subscriptionService.ts",
     "src/services/tenantMiddleware.ts",
-    "src/services/tournamentService.ts",
     "src/services/validationSchemas.ts"
   ]
 }

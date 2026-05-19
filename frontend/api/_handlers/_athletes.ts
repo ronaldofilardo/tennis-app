@@ -26,7 +26,6 @@ export default async function handler(req: ApiRequest, res: ServerResponse): Pro
     try {
       const ctx = extractContext(req);
       const searchQuery = url.searchParams.get('q') ?? '';
-      const filterClubId = url.searchParams.get('clubId') ?? null;
       const excludeUserId = url.searchParams.get('excludeUserId') ?? null;
       const excludeAthleteId = url.searchParams.get('excludeAthleteId') ?? null;
       const limit = Math.min(parseInt(url.searchParams.get('limit') ?? '20'), 200);
@@ -46,7 +45,6 @@ export default async function handler(req: ApiRequest, res: ServerResponse): Pro
             { globalId: { contains: sanitized, mode: 'insensitive' as const } },
           ],
         }),
-        ...(filterClubId && { clubId: filterClubId }),
         ...(notClauses.length > 0 && {
           NOT: notClauses.length === 1 ? notClauses[0] : notClauses,
         }),
@@ -64,7 +62,6 @@ export default async function handler(req: ApiRequest, res: ServerResponse): Pro
           gender: true,
           ranking: true,
           userId: true,
-          clubId: true,
           user: { select: { name: true } },
         },
       });
@@ -76,8 +73,7 @@ export default async function handler(req: ApiRequest, res: ServerResponse): Pro
         category: a.category,
         gender: a.gender,
         ranking: a.ranking,
-        clubName: null,
-        ...(ctx ? { clubId: a.clubId, userId: a.userId } : {}),
+        ...(ctx ? { userId: a.userId } : {}),
       }));
       return sendJson(res, 200, { athletes: response });
     } catch (err) {
@@ -96,17 +92,15 @@ export default async function handler(req: ApiRequest, res: ServerResponse): Pro
       try {
         const athlete = await prisma.athleteProfile.findUnique({ where: { id: athleteId } });
         if (!athlete) return sendJson(res, 404, { error: 'Athlete not found' });
-        const isOwnClub = ctx.clubId && athlete.clubId === ctx.clubId;
         const isSelf = athlete.userId && athlete.userId === ctx.userId;
         const response =
-          isOwnClub || isSelf
+          isSelf
             ? athlete
             : {
                 id: athlete.id,
                 globalId: athlete.globalId,
                 name: athlete.name,
                 nickname: athlete.nickname,
-                clubId: athlete.clubId,
                 category: athlete.category,
                 gender: athlete.gender,
                 ranking: athlete.ranking,
@@ -123,9 +117,7 @@ export default async function handler(req: ApiRequest, res: ServerResponse): Pro
         const athlete = await prisma.athleteProfile.findUnique({ where: { id: athleteId } });
         if (!athlete) return sendJson(res, 404, { error: 'Athlete not found' });
         const isSelf = athlete.userId && athlete.userId === ctx.userId;
-        const isGestorOfClub =
-          (ctx.role === 'GESTOR' && ctx.clubId === athlete.clubId) || ctx.role === 'ADMIN';
-        if (!isSelf && !isGestorOfClub)
+        if (!isSelf && ctx.role !== 'ADMIN')
           return sendJson(res, 403, {
             error: 'Apenas o gestor do clube pode editar perfis de atletas e técnicos.',
           });
@@ -188,7 +180,6 @@ export default async function handler(req: ApiRequest, res: ServerResponse): Pro
       const athlete = await prisma.athleteProfile.create({
         data: {
           userId: ctx.userId,
-          clubId: ctx.clubId || null,
           name: name.trim(),
           nickname: nickname?.trim() || null,
           birthDate: birthDate ? new Date(birthDate) : null,

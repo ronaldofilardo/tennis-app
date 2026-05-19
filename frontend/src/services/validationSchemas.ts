@@ -36,7 +36,7 @@ export const MatchCreateSchema = z.object({
     { error: 'O objeto players é obrigatório.' },
   ),
   nickname: z.string().optional().nullable(),
-  visibility: z.enum(['PUBLIC', 'CLUB', 'PLAYERS_ONLY']).default('PLAYERS_ONLY'),
+  visibility: z.enum(['PUBLIC', 'PLAYERS_ONLY']).default('PLAYERS_ONLY'),
   apontadorEmail: emailOrCpf().optional().nullable(),
   visibleTo: z.string().optional().nullable(),
   clubId: z.string().optional().nullable(),

@@ -13,7 +13,7 @@ vi.mock("../matchService.js", () => ({
   updateMatchState: vi.fn(),
 }));
 
-import * as matchService from "../matchService.js";
+import * as matchService from "../matchService.ts";
 
 // Configuração centralizada de mocks
 beforeEach(() => {
