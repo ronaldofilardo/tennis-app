@@ -59,15 +59,13 @@ export const setupGlobalMocks = () => {
 /**
  * Chaves do localStorage relacionadas ao app.
  * Deve ser limpo entre execuções de teste para evitar
- * vazar dados de um "clube mockado" para outro teste.
+ * vazar dados entre testes.
  */
 const APP_LOCALSTORAGE_KEYS = [
   "racket_auth",
   "racket_user",
-  "racket_club",
   "racket_theme",
   "racket_session",
-  "racket_tenant",
 ];
 
 /**
@@ -100,16 +98,6 @@ export const setMockAuthUser = (
       "racket_user",
       JSON.stringify(user),
     );
-  }
-};
-
-/**
- * Injeta um clube mockado no localStorage para testes multi-tenant.
- */
-export const setMockClub = (clubId: string, clubName: string): void => {
-  const club = { id: clubId, name: clubName };
-  if (typeof localStorage !== "undefined") {
-    localStorage.setItem("racket_club", JSON.stringify(club));
   }
 };
 

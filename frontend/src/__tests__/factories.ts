@@ -1,8 +1,7 @@
 // frontend/src/__tests__/factories.ts
 // === AREA 6: Testes — Factories de Dados ===
-// Fábricas para gerar objetos de partida, atleta e clube nos testes.
-// Facilita criar cenários complexos (ex: "partida premium vs. free")
-// sem repetir código boilerplate.
+// Fábricas para gerar objetos de partida e atleta nos testes.
+// Facilita criar cenários complexos sem repetir código boilerplate.
 
 import type {
   MatchState,
@@ -17,14 +16,12 @@ import type { Athlete } from "../types/athlete";
 // Contadores para IDs únicos por execução de teste
 let _athleteCounter = 0;
 let _matchCounter = 0;
-let _clubCounter = 0;
 let _pointCounter = 0;
 
 /** Reseta contadores entre testes. Chamar em beforeEach. */
 export function resetFactoryCounters(): void {
   _athleteCounter = 0;
   _matchCounter = 0;
-  _clubCounter = 0;
   _pointCounter = 0;
 }
 
@@ -195,73 +192,6 @@ export function createMockAthlete(overrides: Partial<Athlete> = {}): Athlete {
   };
 }
 
-/**
- * Cria um Athlete de clube premium (para cenários multi-tenant).
- */
-export function createMockPremiumAthlete(
-  overrides: Partial<Athlete> = {},
-): Athlete {
-  return createMockAthlete({
-    clubId: "club_premium_001",
-    tags: ["premium", "verified"],
-    metadata: { plan: "premium", verified: true },
-    ...overrides,
-  });
-}
-
-/**
- * Cria um Athlete de clube free.
- */
-export function createMockFreeAthlete(
-  overrides: Partial<Athlete> = {},
-): Athlete {
-  return createMockAthlete({
-    clubId: "club_free_001",
-    tags: ["free"],
-    metadata: { plan: "free" },
-    ...overrides,
-  });
-}
-
-// ===========================
-// === FACTORY: Club =========
-// ===========================
-
-export interface MockClub {
-  id: string;
-  name: string;
-  plan: "free" | "premium" | "enterprise";
-  ownerId: string;
-  metadata?: Record<string, unknown>;
-}
-
-/**
- * Cria um clube de teste.
- */
-export function createMockClub(overrides: Partial<MockClub> = {}): MockClub {
-  _clubCounter++;
-  return {
-    id: `club_test_${_clubCounter}`,
-    name: `Clube de Teste ${_clubCounter}`,
-    plan: "free",
-    ownerId: `owner_${_clubCounter}`,
-    metadata: {},
-    ...overrides,
-  };
-}
-
-export function createMockPremiumClub(
-  overrides: Partial<MockClub> = {},
-): MockClub {
-  return createMockClub({ plan: "premium", ...overrides });
-}
-
-export function createMockEnterpriseClub(
-  overrides: Partial<MockClub> = {},
-): MockClub {
-  return createMockClub({ plan: "enterprise", ...overrides });
-}
-
 // ===========================
 // === FACTORY: Match ========
 // ===========================
@@ -277,7 +207,6 @@ export interface MockMatchApiData {
   apontadorEmail?: string;
   playersEmails?: string[];
   visibleTo?: string;
-  clubId?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -304,18 +233,6 @@ export function createMockMatchApiData(
     updatedAt: new Date().toISOString(),
     ...overrides,
   };
-}
-
-/**
- * Cria uma partida entre clube premium e clube free.
- * Útil para testar cenários multi-tenant.
- */
-export function createMockCrossClubMatch(): MockMatchApiData {
-  return createMockMatchApiData({
-    players: { p1: "Atleta Premium", p2: "Atleta Free" },
-    matchState: createMockMatchStateInProgress(),
-    status: "IN_PROGRESS",
-  });
 }
 
 // ===========================
