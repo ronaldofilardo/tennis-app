@@ -1,5 +1,5 @@
 // frontend/src/types/roles.ts
-// Shared role labels and icons used across Admin, Gestor, and Athlete dashboards
+// Shared role labels and icons used across Admin and Athlete dashboards
 
 export const ROLE_LABELS: Record<string, string> = {
   COACH: 'Treinador',
