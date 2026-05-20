@@ -1,9 +1,7 @@
 import { vi } from 'vitest';
 import '@testing-library/jest-dom';
 
-// Mock de CSS usando pattern regex
-vi.mock(/\.css$/, () => ({}), { virtual: true });
-vi.mock(/\.css\?/, () => ({}), { virtual: true });
+// CSS mocking desabilitado — Vite handle CSS imports
 
 // Adiciona variável de ambiente DATABASE_URL para testes Prisma
 process.env.DATABASE_URL =

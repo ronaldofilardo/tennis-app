@@ -100,6 +100,8 @@ vi.mock('../../hooks/useDashboardData', () => ({
     completedMatches: [],
     setCompletedMatches: vi.fn(),
     completedLoading: false,
+    suspendedMatches: [],
+    suspendedLoading: false,
     setOpenMatches: vi.fn(),
     refetchCompleted: vi.fn(),
   }),

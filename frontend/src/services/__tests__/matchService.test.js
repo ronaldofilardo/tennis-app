@@ -5,7 +5,7 @@ process.env.DATABASE_URL =
   'postgresql://postgres:123456@localhost:5432/racket_mvp?schema=public&sslmode=disable';
 
 // Mock do matchService
-vi.mock('../matchService.js', () => ({
+vi.mock('../matchService.ts', () => ({
   getAllMatches: vi.fn(),
   createMatch: vi.fn(),
   getMatchById: vi.fn(),
