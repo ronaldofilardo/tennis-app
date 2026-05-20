@@ -371,6 +371,30 @@ export const ResumeScoreModal: React.FC<ResumeScoreModalProps> = ({
                 currentSetNum={currentSetNum}
                 setHint={setHint}
               />
+
+              {/* Set complete status */}
+              {isSetComplete && (
+                <div className="resume-set-complete">
+                  <p className="resume-set-complete-text">Set completo</p>
+                  <p className="resume-set-winner-text">
+                    {setResult &&
+                    (setResult as { complete: true; winner: Player; isTiebreak: boolean })
+                      .winner === 'PLAYER_1'
+                      ? players.p1
+                      : players.p2}{' '}
+                    vence {p1G}×{p2G}
+                    {isSetTiebreakWin && ' (tie-break)'}
+                  </p>
+                  <button
+                    type="button"
+                    className="resume-confirm-set-btn"
+                    onClick={handleConfirmSet}
+                    aria-label={`Confirmar Set ${currentSetNum}`}
+                  >
+                    Confirmar Set {currentSetNum}
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Server selection */}

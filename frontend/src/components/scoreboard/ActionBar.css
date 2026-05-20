@@ -74,6 +74,30 @@
   color: #fca5a5;
 }
 
+.action-ace {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.3);
+  color: #86efac;
+}
+
+.action-ace:hover {
+  background: rgba(34, 197, 94, 0.25);
+  color: #86efac;
+}
+
+.action-out,
+.action-net {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+.action-out:hover,
+.action-net:hover {
+  background: rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+}
+
 /* ── Quem venceu o ponto ──────────────── */
 .point-winner-row {
   display: flex;

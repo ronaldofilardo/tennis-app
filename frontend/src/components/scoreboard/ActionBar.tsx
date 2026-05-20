@@ -89,13 +89,19 @@ const ActionBar: React.FC<ActionBarProps> = ({
           >
             {isSecondServe ? '2º Saque' : '1º Saque'}
           </button>
-          <button className="action-quick-btn" onClick={onAce}>
+          <button className="action-quick-btn action-ace" onClick={onAce}>
             Ace
           </button>
-          <button className="action-quick-btn action-quick-fault" onClick={handleOutClick}>
+          <button
+            className="action-quick-btn action-quick-fault action-out"
+            onClick={handleOutClick}
+          >
             Out
           </button>
-          <button className="action-quick-btn action-quick-fault" onClick={handleNetClick}>
+          <button
+            className="action-quick-btn action-quick-fault action-net"
+            onClick={handleNetClick}
+          >
             Net
           </button>
         </div>
