@@ -47,7 +47,7 @@ async function main() {
     SELECT id, "userId", "clubId", role, "invitedByUserId",
            status, "guardianEmail", "guardianConsentAt",
            "dataExportRequestedAt", "deletionRequestedAt",
-           "asaasPaymentId", "alsoCoach", "joinedAt"
+           "alsoCoach", "joinedAt"
     FROM club_memberships
     ORDER BY "joinedAt"
   `);

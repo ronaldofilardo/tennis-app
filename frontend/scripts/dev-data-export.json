@@ -87,7 +87,6 @@
       "guardianConsentAt": null,
       "dataExportRequestedAt": null,
       "deletionRequestedAt": null,
-      "asaasPaymentId": null,
       "alsoCoach": false,
       "joinedAt": "2026-03-17T21:48:56.048Z"
     },
@@ -102,7 +101,6 @@
       "guardianConsentAt": null,
       "dataExportRequestedAt": null,
       "deletionRequestedAt": null,
-      "asaasPaymentId": null,
       "alsoCoach": false,
       "joinedAt": "2026-03-17T21:48:56.125Z"
     },
@@ -117,7 +115,6 @@
       "guardianConsentAt": null,
       "dataExportRequestedAt": null,
       "deletionRequestedAt": null,
-      "asaasPaymentId": null,
       "alsoCoach": false,
       "joinedAt": "2026-03-17T21:48:56.191Z"
     },
@@ -132,7 +129,6 @@
       "guardianConsentAt": null,
       "dataExportRequestedAt": null,
       "deletionRequestedAt": null,
-      "asaasPaymentId": null,
       "alsoCoach": false,
       "joinedAt": "2026-03-17T23:27:05.753Z"
     },
@@ -147,7 +143,6 @@
       "guardianConsentAt": null,
       "dataExportRequestedAt": null,
       "deletionRequestedAt": null,
-      "asaasPaymentId": null,
       "alsoCoach": false,
       "joinedAt": "2026-03-19T04:26:19.064Z"
     }

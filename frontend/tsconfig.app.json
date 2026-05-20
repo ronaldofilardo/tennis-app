@@ -36,7 +36,6 @@
     "**/*.test.tsx",
     "src/test",
     "src/services/authService.ts",
-    "src/services/asaasService.ts",
     "src/services/businessLogic.ts",
     "src/services/matchService.ts",
     "src/services/matchStatusService.ts",

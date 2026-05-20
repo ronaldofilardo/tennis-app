@@ -117,7 +117,7 @@ async function main() {
            (id, "userId", "clubId", role, "invitedByUserId",
             status, "guardianEmail", "guardianConsentAt",
             "dataExportRequestedAt", "deletionRequestedAt",
-            "asaasPaymentId", "alsoCoach", "joinedAt")
+            "alsoCoach", "joinedAt")
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
         [
           r.id,
@@ -130,7 +130,6 @@ async function main() {
           toTsOrNull(r.guardianConsentAt),
           toTsOrNull(r.dataExportRequestedAt),
           toTsOrNull(r.deletionRequestedAt),
-          r.asaasPaymentId,
           r.alsoCoach,
           toTsOrNull(r.joinedAt),
         ],
