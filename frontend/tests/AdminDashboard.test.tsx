@@ -1,15 +1,10 @@
 // tests/AdminDashboard.test.tsx
 // Testes de acesso e conteúdo    do AdminDashboard
 
-import '../vitest.setup';
-
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-
-// ── Mocks de CSS ────────────────────────────────────────────
-vi.mock('../src/pages/AdminDashboard.css', () => ({}));
 
 // ── Mock do httpClient ───────────────────────────────────────
 const mockHttpGet = vi.fn();

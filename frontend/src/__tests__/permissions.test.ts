@@ -90,7 +90,8 @@ describe('RBAC - Role-Based Access Control', () => {
         role: 'ATHLETE',
       };
 
-      const canView = publicMatch.visibility === 'PUBLIC' || viewer.id === publicMatch.createdByUserId;
+      const canView =
+        publicMatch.visibility === 'PUBLIC' || viewer.id === publicMatch.createdByUserId;
 
       expect(canView).toBe(true);
     });
@@ -138,7 +139,8 @@ describe('RBAC - Role-Based Access Control', () => {
     it('should prevent claim of match by unauthorized user', () => {
       const unauthorizedUser: AuthUser = { ...authUser, id: 'user-999' };
       const isCreator = unauthorizedUser.id === match.createdByUserId;
-      const isPlayer = match.players.p1 === unauthorizedUser.id || match.players.p2 === unauthorizedUser.id;
+      const isPlayer =
+        match.players.p1 === unauthorizedUser.id || match.players.p2 === unauthorizedUser.id;
       const isAdmin = unauthorizedUser.role === 'ADMIN';
 
       const canClaim = isCreator || isPlayer || isAdmin;

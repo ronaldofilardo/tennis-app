@@ -11,6 +11,7 @@ import { ResumeScoreModal } from '../components/ResumeScoreModal';
 import type { OngoingMatchSetup } from '../components/ResumeScoreModal';
 import AvailableMatchesForAnnotation from '../components/AvailableMatchesForAnnotation';
 import { LocateMatchModal } from '../components/LocateMatchModal';
+import { MatchSetupFormFields } from '../components/MatchSetupFormFields';
 import { TennisConfigFactory } from '../core/scoring/TennisConfigFactory';
 import type { TennisFormat, MatchState, Player } from '../core/scoring/types';
 
@@ -380,382 +381,57 @@ const MatchSetup: React.FC<MatchSetupProps> = ({ onBackToDashboard, onMatchCreat
       </header>
       {error && <div className="form-error">{error}</div>}
       <AvailableMatchesForAnnotation />
-      <form className="setup-form" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="sport">Desporto</label>
-          <select id="sport" name="sport" value={sport} onChange={(e) => setSport(e.target.value)}>
-            <option value="TENNIS">Tênis</option>
-            <option value="PADEL">Padel</option>
-            <option value="BEACH_TENNIS">Beach Tennis</option>
-          </select>
-        </div>
-
-        {sport === 'TENNIS' && (
-          <div className="form-group">
-            <label>Tipo de Quadra</label>
-            <div className="court-type-selector">
-              <button
-                type="button"
-                className={`court-type-btn clay${courtType === 'CLAY' ? 'active' : ''}`}
-                onClick={() => setCourtType('CLAY')}
-              >
-                <span className="court-type-icon">🟤</span>
-                <span className="court-type-name">Saibro</span>
-                <span className="court-type-note">Roland Garros</span>
-              </button>
-              <button
-                type="button"
-                className={`court-type-btn hard${courtType === 'HARD' ? 'active' : ''}`}
-                onClick={() => setCourtType('HARD')}
-              >
-                <span className="court-type-icon">🔵</span>
-                <span className="court-type-name">Dura</span>
-                <span className="court-type-note">US Open</span>
-              </button>
-              <button
-                type="button"
-                className={`court-type-btn grass${courtType === 'GRASS' ? 'active' : ''}`}
-                onClick={() => setCourtType('GRASS')}
-              >
-                <span className="court-type-icon">🟢</span>
-                <span className="court-type-name">Grama</span>
-                <span className="court-type-note">Wimbledon</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        <div className="form-group">
-          <label>Jogadores</label>
-          <div className="player-inputs">
-            <AthleteSearchInput
-              id="player1-search"
-              label="Jogador 1"
-              placeholder="Buscar atleta..."
-              value={selectedAthlete1}
-              onSelect={(a) => {
-                setSelectedAthlete1(a);
-                if (a) setPlayer1(a.name);
-              }}
-              onQueryChange={(q) => {
-                setPlayer1(q);
-                if (selectedAthlete1 && q !== selectedAthlete1.name) {
-                  setSelectedAthlete1(null);
-                }
-              }}
-              excludeUserId={currentUser?.id}
-              excludeAthleteId={selectedAthlete2?.id}
-            />
-            <span>vs</span>
-            <AthleteSearchInput
-              id="player2-search"
-              label="Jogador 2"
-              placeholder="Buscar atleta..."
-              value={selectedAthlete2}
-              onSelect={(a) => {
-                setSelectedAthlete2(a);
-                if (a) setPlayer2(a.name);
-              }}
-              onQueryChange={(q) => {
-                setPlayer2(q);
-                if (selectedAthlete2 && q !== selectedAthlete2.name) {
-                  setSelectedAthlete2(null);
-                }
-              }}
-              excludeUserId={currentUser?.id}
-              excludeAthleteId={selectedAthlete1?.id}
-            />
-          </div>
-        </div>
-
-        <div className="form-group">
-          <label>Modo de jogo</label>
-          <select
-            id="format"
-            name="format"
-            value={format}
-            onChange={(e) => setFormat(e.target.value)}
-            data-testid="format-select"
-          >
-            <option value="BEST_OF_3">
-              Melhor de 3 sets com vantagem, Set tie-break em todos os sets
-            </option>
-            <option value="BEST_OF_3_MATCH_TB">
-              Melhor de 3 sets com vantagem, Set tie-break em 6-6, Match tie-break no 3º set
-            </option>
-            <option value="BEST_OF_5">
-              Melhor de 5 sets com vantagem, Set tie-break em todos os sets
-            </option>
-            <option value="SINGLE_SET">Set único com vantagem, Set tie-break em 6-6</option>
-            <option value="PRO_SET">Pro Set (8 games) com vantagem, Set tie-break em 8-8</option>
-            <option value="MATCH_TIEBREAK">
-              Match Tiebreak (10 pontos) sem vantagem, Primeiro a 10
-            </option>
-            <option value="SHORT_SET">Set curto (4 games) com vantagem, Tie-break em 4-4</option>
-            <option value="NO_AD">
-              Melhor de 3 sets método No-Ad (ponto decisivo em 40-40), Set tie-break em 6-6
-            </option>
-            <option value="FAST4">Fast4 Tennis (4 games) método No-Ad, Tie-break em 3-3</option>
-            <option value="SHORT_SET_NO_AD">
-              Set curto (4 games) método No-Ad, Tie-break em 4-4
-            </option>
-            <option value="NO_LET_TENNIS">
-              Melhor de 3 sets método No-Let (saque na rede está em jogo)
-            </option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label>Apelido da partida (opcional)</label>
-          <input
-            type="text"
-            placeholder="Ex: Desafio Amigos"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Visibilidade da partida</label>
-          <select
-            value={visibility}
-            onChange={(e) => setVisibility(e.target.value as 'PUBLIC' | 'CLUB' | 'PLAYERS_ONLY')}
-          >
-            <option value="PUBLIC">🌐 Pública (todos podem ver)</option>
-            <option value="CLUB">🏢 Clube (apenas membros do clube)</option>
-            <option value="PLAYERS_ONLY">🔒 Apenas Jogadores</option>
-          </select>
-        </div>
-
-        {/* Checkbox: Retomar jogo em andamento */}
-        <div className="form-group resume-check-group">
-          <label className="resume-check-label" htmlFor="resume-check">
-            <input
-              id="resume-check"
-              type="checkbox"
-              checked={isResuming}
-              onChange={(e) => setIsResuming(e.target.checked)}
-              className="resume-check-input"
-            />
-            <span>Retomar jogo em andamento</span>
-          </label>
-          {isResuming && (
-            <p className="resume-check-hint">
-              Após clicar em &ldquo;Iniciar Partida&rdquo;, você poderá inserir o placar atual antes
-              de continuar.
-            </p>
-          )}
-        </div>
-
-        {/* Checkbox: Abrir para anotação por qualquer usuário */}
-        <div className="form-group resume-check-group">
-          <label className="resume-check-label" htmlFor="open-annotation-check">
-            <input
-              id="open-annotation-check"
-              type="checkbox"
-              checked={openForAnnotation}
-              onChange={(e) => setOpenForAnnotation(e.target.checked)}
-              className="resume-check-input"
-            />
-            <span>Abrir para anotação por qualquer usuário</span>
-          </label>
-          {openForAnnotation && (
-            <p className="resume-check-hint">
-              A partida aparecerá no painel de outros usuários como disponível para anotação.
-            </p>
-          )}
-        </div>
-
-        {/* Data, hora e local da partida */}
-        <div className="form-group">
-          <label>
-            Data e horário <span className="required-mark">*</span>
-          </label>
-          <div className="match-datetime-row">
-            <input
-              id="scheduled-date"
-              type="date"
-              className="match-date-input"
-              value={scheduledDate}
-              onChange={(e) => {
-                setScheduledDate(e.target.value);
-                setError(null);
-              }}
-              aria-label="Data da partida"
-            />
-            <input
-              id="scheduled-time"
-              type="time"
-              className="match-time-input"
-              value={scheduledTime}
-              onChange={(e) => {
-                setScheduledTime(e.target.value);
-                setError(null);
-              }}
-              aria-label="Horário da partida"
-            />
-          </div>
-        </div>
-
-        {/* ─── Metadados de Contexto ─────────────────────────────────────────── */}
-        <div className="form-group form-group--combobox">
-          <label htmlFor="tournament-name">
-            Torneio <span className="form-optional">(opcional)</span>
-          </label>
-          <div className="combobox-wrapper">
-            <input
-              id="tournament-name"
-              ref={tournamentInputRef}
-              type="text"
-              className="match-setup-input"
-              placeholder="Ex: Copa Clube 2026"
-              value={tournamentName}
-              maxLength={200}
-              autoComplete="off"
-              onChange={(e) => setTournamentName(e.target.value)}
-              onFocus={() => setShowTournamentSuggestions(true)}
-              onBlur={() => setTimeout(() => setShowTournamentSuggestions(false), 150)}
-              aria-label="Nome do torneio"
-              aria-autocomplete="list"
-              aria-expanded={showTournamentSuggestions && tournamentSuggestions.length > 0}
-            />
-            {showTournamentSuggestions && tournamentSuggestions.length > 0 && (
-              <ul className="combobox-suggestions" role="listbox" aria-label="Sugestões de torneio">
-                {tournamentSuggestions
-                  .filter((s) => s.toLowerCase().includes(tournamentName.toLowerCase()))
-                  .map((s) => (
-                    <li
-                      key={s}
-                      role="option"
-                      className="combobox-suggestion-item"
-                      onMouseDown={() => {
-                        setTournamentName(s);
-                        setShowTournamentSuggestions(false);
-                        tournamentInputRef.current?.blur();
-                      }}
-                    >
-                      {s}
-                    </li>
-                  ))}
-              </ul>
-            )}
-          </div>
-        </div>
-
-        <div className="form-group form-group--combobox">
-          <label htmlFor="round-name">
-            Rodada <span className="form-optional">(opcional)</span>
-          </label>
-          <div className="combobox-wrapper">
-            <input
-              id="round-name"
-              ref={roundInputRef}
-              type="text"
-              className="match-setup-input"
-              placeholder="Ex: Oitavas, Semifinal, Final"
-              value={roundName}
-              maxLength={200}
-              autoComplete="off"
-              onChange={(e) => setRoundName(e.target.value)}
-              onFocus={() => setShowRoundSuggestions(true)}
-              onBlur={() => setTimeout(() => setShowRoundSuggestions(false), 150)}
-              aria-label="Nome da rodada"
-              aria-autocomplete="list"
-              aria-expanded={showRoundSuggestions && roundSuggestions.length > 0}
-            />
-            {showRoundSuggestions && roundSuggestions.length > 0 && (
-              <ul className="combobox-suggestions" role="listbox" aria-label="Sugestões de rodada">
-                {roundSuggestions
-                  .filter((s) => s.toLowerCase().includes(roundName.toLowerCase()))
-                  .map((s) => (
-                    <li
-                      key={s}
-                      role="option"
-                      className="combobox-suggestion-item"
-                      onMouseDown={() => {
-                        setRoundName(s);
-                        setShowRoundSuggestions(false);
-                        roundInputRef.current?.blur();
-                      }}
-                    >
-                      {s}
-                    </li>
-                  ))}
-              </ul>
-            )}
-          </div>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="bracket-type">
-            Tipo de Chave <span className="form-optional">(opcional)</span>
-          </label>
-          <select
-            id="bracket-type"
-            value={bracketType}
-            onChange={(e) => setBracketType(e.target.value as 'ELIMINATION' | 'GROUPS' | 'SWISS')}
-            aria-label="Tipo de chave do torneio"
-          >
-            <option value="ELIMINATION">Eliminatória</option>
-            <option value="GROUPS">Grupos</option>
-            <option value="SWISS">Suíço</option>
-          </select>
-        </div>
-
-        <div className="form-group match-conditions-row">
-          <div className="match-condition-field">
-            <label htmlFor="temperature">
-              Temperatura (°C) <span className="form-optional">(opcional)</span>
-            </label>
-            <input
-              id="temperature"
-              type="number"
-              className="match-setup-input"
-              placeholder="Ex: 28"
-              value={temperature}
-              min={-50}
-              max={60}
-              step={0.1}
-              onChange={(e) => setTemperature(e.target.value)}
-              aria-label="Temperatura em graus Celsius"
-            />
-          </div>
-          <div className="match-condition-field">
-            <label htmlFor="humidity">
-              Umidade — URA (%) <span className="form-optional">(opcional)</span>
-            </label>
-            <input
-              id="humidity"
-              type="number"
-              className="match-setup-input"
-              placeholder="Ex: 65"
-              value={humidity}
-              min={0}
-              max={100}
-              step={1}
-              onChange={(e) => setHumidity(e.target.value)}
-              aria-label="Umidade relativa do ar em porcentagem"
-            />
-          </div>
-        </div>
-
-        <div className="form-actions">
-          <button
-            type="button"
-            className="locate-button"
-            onClick={() => setIsLocateModalOpen(true)}
-          >
-            🔍 Localizar Partida
-          </button>
-          <button type="submit" className="start-match-button">
-            {isResuming
-              ? 'Continuar →'
-              : currentUser?.role === 'ADMIN'
-                ? 'Registrar'
-                : 'Iniciar Partida'}
-          </button>
-        </div>
-      </form>
+      <MatchSetupFormFields
+        sport={sport}
+        setSport={setSport}
+        format={format}
+        setFormat={setFormat}
+        courtType={courtType}
+        setCourtType={setCourtType}
+        nickname={nickname}
+        setNickname={setNickname}
+        player1={player1}
+        setPlayer1={setPlayer1}
+        player2={player2}
+        setPlayer2={setPlayer2}
+        selectedAthlete1={selectedAthlete1}
+        setSelectedAthlete1={setSelectedAthlete1}
+        selectedAthlete2={selectedAthlete2}
+        setSelectedAthlete2={setSelectedAthlete2}
+        visibility={visibility}
+        setVisibility={setVisibility}
+        isResuming={isResuming}
+        setIsResuming={setIsResuming}
+        openForAnnotation={openForAnnotation}
+        setOpenForAnnotation={setOpenForAnnotation}
+        scheduledDate={scheduledDate}
+        setScheduledDate={setScheduledDate}
+        scheduledTime={scheduledTime}
+        setScheduledTime={setScheduledTime}
+        tournamentName={tournamentName}
+        setTournamentName={setTournamentName}
+        roundName={roundName}
+        setRoundName={setRoundName}
+        bracketType={bracketType}
+        setBracketType={setBracketType}
+        temperature={temperature}
+        setTemperature={setTemperature}
+        humidity={humidity}
+        setHumidity={setHumidity}
+        tournamentSuggestions={tournamentSuggestions}
+        setShowTournamentSuggestions={setShowTournamentSuggestions}
+        showTournamentSuggestions={showTournamentSuggestions}
+        tournamentInputRef={tournamentInputRef}
+        roundSuggestions={roundSuggestions}
+        setShowRoundSuggestions={setShowRoundSuggestions}
+        showRoundSuggestions={showRoundSuggestions}
+        roundInputRef={roundInputRef}
+        currentUserId={currentUser?.id}
+        onSetError={setError}
+        onLocateClick={() => setIsLocateModalOpen(true)}
+        onSubmit={handleSubmit}
+        isSubmitting={false}
+      />
 
       {/* Modal de placar para partida em andamento */}
       <ResumeScoreModal

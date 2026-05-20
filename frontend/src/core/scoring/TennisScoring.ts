@@ -10,6 +10,7 @@ import type {
   EnhancedMatchState,
 } from './types';
 import { TennisConfigFactory } from './TennisConfigFactory';
+import { TennisStateTransitions } from './TennisStateTransitions';
 import { API_URL } from '../../config/api';
 
 // Lógica universal para todos os 8 formatos de tênis do PDF
@@ -18,12 +19,11 @@ export class TennisScoring {
   private config: TennisConfig;
   private matchId: string | null = null;
   private syncEnabled: boolean = false;
-  private tiebreakPointsPlayed: number = 0; // Contador para troca de sacador no tie-break
-  private history: MatchState[] = []; // Histórico de estados para undo
-  private historyPointsLengths: number[] = []; // Tamanho de pointsHistory em cada snapshot de history
-  private pointsHistory: PointDetails[] = []; // Histórico detalhado dos pontos
-  /** Prover de token injetado externamente — NEM localStorage NEM import direto */
+  private history: MatchState[] = [];
+  private historyPointsLengths: number[] = [];
+  private pointsHistory: PointDetails[] = [];
   private _tokenProvider: (() => string | null) | null = null;
+  private transitions: TennisStateTransitions;
 
   constructor(server: Player, format: TennisFormat = 'BEST_OF_3') {
     if (!TennisScoring.isValidPlayer(server)) {
@@ -31,8 +31,9 @@ export class TennisScoring {
     }
     this.config = TennisConfigFactory.getConfig(format);
     this.state = this.getInitialState(server);
-    this.history = []; // Inicializar histórico vazio
+    this.history = [];
     this.historyPointsLengths = [];
+    this.transitions = new TennisStateTransitions();
   }
 
   private static isValidPlayer(player: unknown): player is Player {
@@ -173,21 +174,17 @@ export class TennisScoring {
     }
     if (this.state.isFinished) return this.getState();
 
-    // Salvar estado atual antes de modificar
     this.saveToHistory();
 
-    // Registrar detalhes do ponto se fornecidos, enriquecendo com contexto do placar atual
     if (details) {
       const ctx = this.buildPointContext();
       this.recordPointDetails(player, { ...details, context: ctx });
     }
 
-    // Se é tiebreak ou match tiebreak, usa lógica numérica
     if (this.state.currentGame.isTiebreak || this.state.currentGame.isMatchTiebreak) {
-      return this.addTiebreakPoint(player);
+      return this.transitions.addTiebreakPoint(this.state, this.config, player);
     }
 
-    // Verifica se deve iniciar tie-break (regra geral: ambos atingem tiebreakAt games)
     const games = this.state.currentSetState.games;
     const tiebreakAt = this.config.tiebreakAt;
     if (
@@ -198,332 +195,10 @@ export class TennisScoring {
       games.PLAYER_1 === tiebreakAt &&
       games.PLAYER_2 === tiebreakAt
     ) {
-      this.startTiebreak();
-      return this.addTiebreakPoint(player);
+      return this.transitions.addTiebreakPoint(this.state, this.config, player);
     }
 
-    // Lógica normal de game (0, 15, 30, 40, AD)
-    return this.addRegularPoint(player);
-  }
-
-  private addRegularPoint(player: Player): MatchState {
-    const opponent: Player = player === 'PLAYER_1' ? 'PLAYER_2' : 'PLAYER_1';
-    const currentPoints = this.state.currentGame.points[player] as GamePoint;
-    const opponentPoints = this.state.currentGame.points[opponent] as GamePoint;
-
-    let newPoints: GamePoint;
-
-    // Verifica se precisa iniciar tie-break no SHORT_SET
-    if (this.config.format === 'SHORT_SET') {
-      const games = this.state.currentSetState.games;
-      if (
-        games.PLAYER_1 >= 4 &&
-        games.PLAYER_2 >= 4 &&
-        currentPoints === '0' &&
-        opponentPoints === '0'
-      ) {
-        this.startTiebreak();
-        return this.addTiebreakPoint(player);
-      }
-    }
-
-    switch (currentPoints) {
-      case '0':
-        newPoints = '15';
-        break;
-      case '15':
-        newPoints = '30';
-        break;
-      case '30':
-        newPoints = '40';
-        break;
-      case '40':
-        if (opponentPoints === '40') {
-          if (this.config.useAdvantage && !this.config.useNoAd) {
-            newPoints = 'AD'; // Vantagem
-          } else if (this.config.useNoAd) {
-            // Método No-Ad (Anexo V): Ponto decisivo
-            this.state.currentGame.isNoAdDecidingPoint = true;
-            this.winGame(player);
-            return this.getState();
-          } else {
-            // Sem vantagem (NO_AD, FAST4) - sudden death
-            this.winGame(player);
-            return this.getState();
-          }
-        } else if (opponentPoints === 'AD') {
-          // Oponente tinha vantagem, volta para 40-40
-          this.state.currentGame.points[opponent] = '40';
-          return this.getState();
-        } else {
-          // Ganhou o game
-          this.winGame(player);
-          return this.getState();
-        }
-        break;
-      case 'AD':
-        // Ganhou o game
-        this.winGame(player);
-        return this.getState();
-    }
-
-    this.state.currentGame.points[player] = newPoints;
-    return this.getState();
-  }
-
-  private addTiebreakPoint(player: Player): MatchState {
-    const currentPoints = this.state.currentGame.points[player] as number;
-    const opponent: Player = player === 'PLAYER_1' ? 'PLAYER_2' : 'PLAYER_1';
-    const opponentPoints = this.state.currentGame.points[opponent] as number;
-
-    this.state.currentGame.points[player] = currentPoints + 1;
-    const newPoints = currentPoints + 1;
-
-    // Aplicar lógica de troca de sacador no tie-break
-    this.handleTiebreakServerChange();
-
-    // Verifica se ganhou o tiebreak
-    const minPoints = this.state.currentGame.isMatchTiebreak ? this.config.tiebreakPoints : 7;
-
-    if (newPoints >= minPoints && newPoints - opponentPoints >= 2) {
-      // Resetar contador do tie-break ao finalizar
-      this.tiebreakPointsPlayed = 0;
-      if (this.state.currentGame.isMatchTiebreak) {
-        // Match tiebreak decide a partida
-        this.winMatch(player);
-      } else {
-        // Tiebreak normal decide o set
-        this.winSet(player);
-      }
-    }
-    return this.getState();
-  }
-
-  private winGame(player: Player) {
-    // Incrementa o contador de games
-    this.state.currentSetState.games[player]++;
-
-    const opponent: Player = player === 'PLAYER_1' ? 'PLAYER_2' : 'PLAYER_1';
-    const gamesWon = this.state.currentSetState.games[player];
-    const gamesLost = this.state.currentSetState.games[opponent];
-
-    // Verifica se deve iniciar tie-break imediatamente ao atingir tiebreakAt para ambos
-    const tiebreakAt = this.config.tiebreakAt;
-    if (
-      typeof tiebreakAt === 'number' &&
-      tiebreakAt > 0 &&
-      gamesWon === tiebreakAt &&
-      gamesLost === tiebreakAt &&
-      !this.state.currentGame.isTiebreak &&
-      !this.state.currentGame.isMatchTiebreak
-    ) {
-      this.startTiebreak();
-      return;
-    }
-
-    if (this.shouldWinSet(gamesWon, gamesLost)) {
-      this.winSet(player);
-    } else {
-      this.resetGame();
-    }
-  }
-
-  private shouldWinSet(gamesWon: number, gamesLost: number): boolean {
-    const { gamesPerSet } = this.config;
-
-    // Casos especiais
-    if (this.config.format === 'SHORT_SET') {
-      // Se ambos chegaram a 4, não pode vencer por diferença de 2, deve ir para tie-break
-      if (gamesWon === 4 && gamesLost === 4) return false;
-      return gamesWon >= 4 && gamesWon - gamesLost >= 2;
-    }
-
-    if (this.config.format === 'PRO_SET') {
-      return gamesWon >= 8 && gamesWon - gamesLost >= 2;
-    }
-
-    if (this.config.format === 'FAST4') {
-      return gamesWon >= 4 && gamesWon - gamesLost >= 2;
-    }
-
-    // Lógica padrão (6 games com vantagem de 2)
-    return gamesWon >= gamesPerSet && gamesWon - gamesLost >= 2;
-  }
-
-  private startTiebreak() {
-    this.tiebreakPointsPlayed = 0; // Reset contador para novo tie-break
-
-    // O jogador que sacaria o próximo game inicia o tie-break
-    // (não troca, pois já está no servidor correto)
-
-    this.state.currentGame = {
-      points: { PLAYER_1: 0, PLAYER_2: 0 },
-      server: this.state.server,
-      isTiebreak: true,
-    };
-  }
-
-  private winSet(player: Player) {
-    // Capturar resultado do tie-break se aplicável ANTES de alterar qualquer coisa
-    let tiebreakScore: { PLAYER_1: number; PLAYER_2: number } | undefined = undefined;
-    if (this.state.currentGame.isTiebreak && !this.state.currentGame.isMatchTiebreak) {
-      // O placar do tie-break deve refletir os pontos de cada jogador
-      tiebreakScore = {
-        PLAYER_1: this.state.currentGame.points.PLAYER_1 as number,
-        PLAYER_2: this.state.currentGame.points.PLAYER_2 as number,
-      };
-    }
-
-    // Se foi tie-break, incrementar o game do vencedor para refletir 7-6 ou 6-7
-    if (this.state.currentGame.isTiebreak && !this.state.currentGame.isMatchTiebreak) {
-      this.state.currentSetState.games[player]++;
-    }
-
-    // Capturar dados do set que acabou APÓS incrementar o game (se tie-break)
-    const finishedSetNumber = this.state.currentSet;
-    const gamesSnapshot = { ...this.state.currentSetState.games };
-
-    // Incrementa sets vencidos pelo jogador
-    this.state.sets[player]++;
-    const setsWon = this.state.sets[player];
-
-    // Armazena histórico de parciais
-    if (!this.state.completedSets) this.state.completedSets = [];
-    this.state.completedSets.push({
-      setNumber: finishedSetNumber,
-      games: gamesSnapshot,
-      winner: player,
-      tiebreakScore: tiebreakScore, // Adicionar score do tie-break
-    });
-
-    // Verifica se ganhou a partida
-    if (setsWon >= this.config.setsToWin) {
-      this.winMatch(player);
-      return;
-    }
-
-    // Prepara para o próximo set
-    this.state.currentSet++;
-    this.state.currentSetState = { games: { PLAYER_1: 0, PLAYER_2: 0 } };
-
-    // Alguns formatos poderiam ir para match tiebreak no set decisivo
-    if (this.shouldPlayMatchTiebreak()) {
-      this.startMatchTiebreak();
-    } else {
-      this.resetGame();
-    }
-  }
-
-  private shouldPlayMatchTiebreak(): boolean {
-    // Lógica para usar match tiebreak no set decisivo
-    const isLastSet = this.isDecidingSet();
-
-    // BEST_OF_3_MATCH_TB: Match tiebreak no 3º set quando 1-1
-    if (this.config.format === 'BEST_OF_3_MATCH_TB' && isLastSet) {
-      const sets = this.state.sets;
-      return sets.PLAYER_1 === 1 && sets.PLAYER_2 === 1;
-    }
-
-    // Fast4 é um set único de 4 games, não usa match tiebreak
-    // (removendo lógica incorreta que esperava 4 sets)
-
-    return false; // Por padrão, jogo normal
-  }
-
-  private isDecidingSet(): boolean {
-    const sets = this.state.sets;
-    const setsToWin = this.config.setsToWin;
-
-    // É o set decisivo se ambos estão a 1 set de ganhar
-    return sets.PLAYER_1 === setsToWin - 1 && sets.PLAYER_2 === setsToWin - 1;
-  }
-
-  private startMatchTiebreak() {
-    this.state.currentGame = {
-      points: { PLAYER_1: 0, PLAYER_2: 0 },
-      server: this.state.server,
-      isTiebreak: true,
-      isMatchTiebreak: true,
-    };
-  }
-
-  private winMatch(player: Player) {
-    // Se a partida foi decidida por um match-tiebreak, precisamos
-    // registrar o set final nas parciais (completedSets) e garantir
-    // que o contador de sets do vencedor seja incrementado.
-    try {
-      const finishedSetNumber = this.state.currentSet;
-
-      // Evitar duplicar um registro de set caso já tenha sido salvo
-      const alreadyRecorded =
-        Array.isArray(this.state.completedSets) &&
-        this.state.completedSets.some((s) => s.setNumber === finishedSetNumber);
-
-      if (!alreadyRecorded) {
-        const gamesSnapshot = { ...this.state.currentSetState.games };
-        let tiebreakScore: { PLAYER_1: number; PLAYER_2: number } | undefined = undefined;
-        if (this.state.currentGame && this.state.currentGame.isMatchTiebreak) {
-          const cg = this.state.currentGame;
-          tiebreakScore = {
-            PLAYER_1: Number(cg.points?.PLAYER_1 ?? 0),
-            PLAYER_2: Number(cg.points?.PLAYER_2 ?? 0),
-          };
-        }
-
-        if (!this.state.completedSets) this.state.completedSets = [];
-        this.state.completedSets.push({
-          setNumber: finishedSetNumber,
-          games: gamesSnapshot,
-          winner: player,
-          tiebreakScore: tiebreakScore,
-        });
-
-        // Incrementar o contador de sets do vencedor (apenas se ainda não incrementado)
-        if (typeof this.state.sets[player] === 'number') {
-          this.state.sets[player] = (this.state.sets[player] as number) + 1;
-        }
-      }
-    } catch (e) {
-      // Se algo falhar aqui não queremos bloquear a finalização da partida
-    }
-
-    this.state.winner = player;
-    this.state.isFinished = true;
-  }
-
-  private resetGame() {
-    // Aplicar regra explícita de troca de sacador
-    this.changeServer();
-
-    this.state.currentGame = {
-      points: { PLAYER_1: '0', PLAYER_2: '0' },
-      server: this.state.server,
-      isTiebreak: false,
-    };
-  }
-
-  // Método explícito para troca de sacador com regras específicas
-  private changeServer(): void {
-    this.state.server = this.state.server === 'PLAYER_1' ? 'PLAYER_2' : 'PLAYER_1';
-  }
-
-  // Lógica específica de troca no tie-break (a cada 2 pontos)
-  private handleTiebreakServerChange(): void {
-    this.tiebreakPointsPlayed++;
-
-    // Regra oficial do tie-break (Regra 5b):
-    // 1º ponto: sacador original
-    // 2º e 3º pontos: oponente saca
-    // 4º e 5º pontos: sacador original
-    // 6º e 7º pontos: oponente saca
-    // E assim por diante, alternando a cada 2 pontos após o primeiro
-
-    // Troca após pontos ímpares: 1, 3, 5, 7... = troca de servidor
-    if (this.tiebreakPointsPlayed % 2 === 1) {
-      this.changeServer();
-      // Atualiza o servidor do game atual
-      this.state.currentGame.server = this.state.server;
-    }
+    return this.transitions.addRegularPoint(this.state, this.config, player);
   }
 
   // Sincronizar estado atual com o backend

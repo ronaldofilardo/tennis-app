@@ -2,6 +2,7 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { TennisConfigFactory } from '../core/scoring/TennisConfigFactory';
 import type { TennisFormat, TennisConfig } from '../core/scoring/types';
 import ConfirmCloseDialog from './ConfirmCloseDialog';
+import { ResumeScoreInputs } from './ResumeScoreInputs';
 import './ResumeScoreModal.css';
 
 type Player = 'PLAYER_1' | 'PLAYER_2';
@@ -61,8 +62,6 @@ function validateSetScore(p1: number, p2: number, config: TennisConfig): SetVali
   const inTiebreak = !!(config.useTiebreak && tb > 0 && p1 === tb && p2 === tb);
   return { complete: false, inTiebreak };
 }
-
-const GAME_POINTS = ['0', '15', '30', '40', 'AD'];
 
 function formatHint(config: TennisConfig): string {
   if (config.gamesPerSet === 0) return '';
@@ -339,217 +338,39 @@ export const ResumeScoreModal: React.FC<ResumeScoreModalProps> = ({
               </div>
 
               {/* Games score row */}
-              {!isMatchTiebreakActive && (
-                <div className="resume-score-row">
-                  <div className="resume-player-score">
-                    <span className="resume-player-name">{players.p1}</span>
-                    <input
-                      type="number"
-                      min="0"
-                      max="50"
-                      value={p1G}
-                      onChange={(e) => {
-                        setP1G(e.target.value);
-                        setConfirmError(null);
-                      }}
-                      placeholder="0"
-                      aria-label={`Games de ${players.p1} no set ${currentSetNum}`}
-                      className="resume-games-input"
-                    />
-                  </div>
-
-                  <span className="resume-score-sep">×</span>
-
-                  <div className="resume-player-score reverse">
-                    <input
-                      type="number"
-                      min="0"
-                      max="50"
-                      value={p2G}
-                      onChange={(e) => {
-                        setP2G(e.target.value);
-                        setConfirmError(null);
-                      }}
-                      placeholder="0"
-                      aria-label={`Games de ${players.p2} no set ${currentSetNum}`}
-                      className="resume-games-input"
-                    />
-                    <span className="resume-player-name">{players.p2}</span>
-                  </div>
-                </div>
-              )}
-
-              {/* Tiebreak in progress (both at tiebreakAt, e.g., 6-6) */}
-              {isInTiebreak && (
-                <div className="resume-tiebreak-section">
-                  <h5>
-                    Tie-break em andamento{' '}
-                    <span className="resume-optional">(primeiro a {config.tiebreakPoints})</span>
-                  </h5>
-                  <div className="resume-score-row">
-                    <div className="resume-player-score">
-                      <span className="resume-player-name">{players.p1}</span>
-                      <input
-                        type="number"
-                        min="0"
-                        value={tbP1}
-                        onChange={(e) => setTbP1(e.target.value)}
-                        placeholder="0"
-                        aria-label={`Pontos tie-break ${players.p1}`}
-                        className="resume-tb-input"
-                      />
-                    </div>
-                    <span className="resume-score-sep">×</span>
-                    <div className="resume-player-score reverse">
-                      <input
-                        type="number"
-                        min="0"
-                        value={tbP2}
-                        onChange={(e) => setTbP2(e.target.value)}
-                        placeholder="0"
-                        aria-label={`Pontos tie-break ${players.p2}`}
-                        className="resume-tb-input"
-                      />
-                      <span className="resume-player-name">{players.p2}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Tiebreak score when confirming a completed tiebreak set (e.g., 7-6) */}
-              {isSetTiebreakWin && (
-                <div className="resume-tiebreak-section">
-                  <h5>
-                    Placar do tie-break <span className="resume-optional">(opcional)</span>
-                  </h5>
-                  <div className="resume-score-row">
-                    <div className="resume-player-score">
-                      <span className="resume-player-name">{players.p1}</span>
-                      <input
-                        type="number"
-                        min="0"
-                        value={tbP1}
-                        onChange={(e) => setTbP1(e.target.value)}
-                        placeholder="7"
-                        aria-label={`Pontos tie-break ${players.p1}`}
-                        className="resume-tb-input"
-                      />
-                    </div>
-                    <span className="resume-score-sep">×</span>
-                    <div className="resume-player-score reverse">
-                      <input
-                        type="number"
-                        min="0"
-                        value={tbP2}
-                        onChange={(e) => setTbP2(e.target.value)}
-                        placeholder=""
-                        aria-label={`Pontos tie-break ${players.p2}`}
-                        className="resume-tb-input"
-                      />
-                      <span className="resume-player-name">{players.p2}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Match tiebreak score */}
-              {isMatchTiebreakActive && (
-                <div className="resume-match-tiebreak-section">
-                  <p className="resume-mtb-hint">
-                    Primeiro a {config.tiebreakPoints} pontos com 2+ de vantagem
-                  </p>
-                  <div className="resume-score-row">
-                    <div className="resume-player-score">
-                      <span className="resume-player-name">{players.p1}</span>
-                      <input
-                        type="number"
-                        min="0"
-                        value={mtbP1}
-                        onChange={(e) => setMtbP1(e.target.value)}
-                        placeholder="0"
-                        aria-label={`Match tie-break pontos ${players.p1}`}
-                        className="resume-tb-input large"
-                      />
-                    </div>
-                    <span className="resume-score-sep">×</span>
-                    <div className="resume-player-score reverse">
-                      <input
-                        type="number"
-                        min="0"
-                        value={mtbP2}
-                        onChange={(e) => setMtbP2(e.target.value)}
-                        placeholder="0"
-                        aria-label={`Match tie-break pontos ${players.p2}`}
-                        className="resume-tb-input large"
-                      />
-                      <span className="resume-player-name">{players.p2}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Set complete notice + confirm button */}
-              {isSetComplete && (
-                <div className="resume-set-complete">
-                  <span className="resume-set-complete-text">
-                    Set completo —{' '}
-                    {(setResult as { complete: true; winner: Player }).winner === 'PLAYER_1'
-                      ? players.p1
-                      : players.p2}{' '}
-                    vence {p1G}×{p2G}
-                    {isSetTiebreakWin ? ' (tie-break)' : ''}
-                  </span>
-                  <button
-                    type="button"
-                    className="resume-confirm-set-btn"
-                    onClick={handleConfirmSet}
-                  >
-                    Confirmar Set {currentSetNum}
-                  </button>
-                </div>
-              )}
-
-              {/* Game score (optional – when set is in progress, not in tiebreak) */}
-              {isSetInProgress && !isMatchTiebreakActive && (
-                <div className="resume-game-score">
-                  <h5>
-                    Pontuação do game atual <span className="resume-optional">(opcional)</span>
-                  </h5>
-                  <div className="resume-score-row">
-                    <div className="resume-player-score">
-                      <span className="resume-player-name">{players.p1}</span>
-                      <select
-                        value={p1Pts}
-                        onChange={(e) => setP1Pts(e.target.value)}
-                        aria-label={`Pontos no game ${players.p1}`}
-                        className="resume-pts-select"
-                      >
-                        {GAME_POINTS.map((pt) => (
-                          <option key={pt} value={pt}>
-                            {pt}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <span className="resume-score-sep">×</span>
-                    <div className="resume-player-score reverse">
-                      <select
-                        value={p2Pts}
-                        onChange={(e) => setP2Pts(e.target.value)}
-                        aria-label={`Pontos no game ${players.p2}`}
-                        className="resume-pts-select"
-                      >
-                        {GAME_POINTS.map((pt) => (
-                          <option key={pt} value={pt}>
-                            {pt}
-                          </option>
-                        ))}
-                      </select>
-                      <span className="resume-player-name">{players.p2}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
+              <ResumeScoreInputs
+                players={players}
+                config={config}
+                p1G={p1G}
+                p2G={p2G}
+                setP1G={(val) => {
+                  setP1G(val);
+                  setConfirmError(null);
+                }}
+                setP2G={(val) => {
+                  setP2G(val);
+                  setConfirmError(null);
+                }}
+                tbP1={tbP1}
+                tbP2={tbP2}
+                setTbP1={setTbP1}
+                setTbP2={setTbP2}
+                mtbP1={mtbP1}
+                mtbP2={mtbP2}
+                setMtbP1={setMtbP1}
+                setMtbP2={setMtbP2}
+                p1Pts={p1Pts}
+                p2Pts={p2Pts}
+                setP1Pts={setP1Pts}
+                setP2Pts={setP2Pts}
+                isMatchTiebreakActive={isMatchTiebreakActive}
+                isInTiebreak={isInTiebreak}
+                isSetTiebreakWin={isSetTiebreakWin}
+                isSetInProgress={isSetInProgress}
+                isSetComplete={isSetComplete}
+                currentSetNum={currentSetNum}
+                setHint={setHint}
+              />
             </div>
 
             {/* Server selection */}

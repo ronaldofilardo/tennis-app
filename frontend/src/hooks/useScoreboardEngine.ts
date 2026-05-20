@@ -1,25 +1,21 @@
 import { useState, useReducer, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { TennisScoring } from '../core/scoring/TennisScoring';
-import type {
-  MatchState,
-  TennisFormat,
-  Player,
-  PointDetails,
-  RallyDetails,
-  MatchData,
-  AnnotationSession,
-} from '../core/scoring/types';
-import { getErrorMessage } from '../types/errors';
+import type { MatchState, TennisFormat, Player } from '../core/scoring/types';
 import type { MatchData } from '../types/scoreboard';
 export type { MatchData } from '../types/scoreboard';
 import { httpClient } from '../config/httpClient';
-import { resolvePlayerName } from '../data/players';
 import { useToast } from '../components/Toast';
 import { createLogger } from '../services/logger';
-import { startSession, endSession } from '../services/annotationSessionService';
-import { API_URL } from '../config/api';
+import { startSession } from '../services/annotationSessionService';
 import { useAuth } from '../contexts/AuthContext';
+import {
+  type ScoreboardUIState,
+  type ScoreboardUIAction,
+  scoreboardUIReducer,
+  createInitialUIState,
+} from './scoreboardUIState';
+import { useScoreboardHandlers } from './useScoreboardHandlers';
 
 // Função utilitária para pegar o estado mais profundo
 function getDeepMatchState(state: unknown): MatchState {
@@ -28,120 +24,6 @@ function getDeepMatchState(state: unknown): MatchState {
     current = (current as { matchState: unknown }).matchState;
   }
   return current as MatchState; // validated by API response contract
-}
-
-// ── Scoreboard UI State Reducer ───────────────────────────────────────────────
-
-type PendingServeError = { errorType: 'out' | 'net'; serveStep: 'first' | 'second' };
-type FirstServeError = { errorType?: 'out' | 'net'; serveEffect?: string; direction?: string };
-
-interface ScoreboardUIState {
-  isSetupOpen: boolean;
-  elapsed: number;
-  isServerEffectOpen: boolean;
-  playerInFocus: Player | null;
-  serveStep: 'none' | 'second';
-  renderKey: number;
-  isStatsOpen: boolean;
-  statsData: unknown;
-  isPointDetailsOpen: boolean;
-  pendingPointPlayer: Player | null;
-  isServeErrorModalOpen: boolean;
-  pendingServeError: PendingServeError | null;
-  firstServeError: FirstServeError | null;
-  annotatorCount: number;
-  editMatchOpen: boolean;
-  fontScale: number;
-  suspendedSession: AnnotationSession | null;
-  previousAnnotationPoints: number;
-}
-
-type ScoreboardUIAction =
-  | { type: 'SETUP_SET'; isOpen: boolean }
-  | { type: 'ELAPSED_SET'; value: number }
-  | { type: 'SERVER_EFFECT_OPEN' }
-  | { type: 'SERVER_EFFECT_CLOSE' }
-  | { type: 'SERVER_EFFECT_CONFIRM' }
-  | { type: 'PLAYER_IN_FOCUS_SET'; player: Player | null }
-  | { type: 'SERVE_STEP_SET'; step: 'none' | 'second' }
-  | { type: 'FORCE_RERENDER' }
-  | { type: 'STATS_OPEN'; data: unknown }
-  | { type: 'STATS_CLOSE' }
-  | { type: 'POINT_DETAILS_OPEN'; player: Player }
-  | { type: 'POINT_DETAILS_RESET' }
-  | { type: 'SERVE_ERROR_OPEN'; error: PendingServeError }
-  | { type: 'SERVE_ERROR_CLOSE' }
-  | { type: 'FIRST_SERVE_ERROR_SET'; err: FirstServeError }
-  | { type: 'FIRST_SERVE_ERROR_CLEAR' }
-  | { type: 'EDIT_MATCH_OPEN' }
-  | { type: 'EDIT_MATCH_CLOSE' }
-  | { type: 'FONT_SCALE_SET'; scale: number }
-  | { type: 'ANNOTATOR_COUNT_SET'; count: number }
-  | { type: 'SUSPENDED_SESSION_SET'; session: AnnotationSession; pointsCount: number }
-  | { type: 'SUSPENDED_SESSION_CLEAR' };
-
-function scoreboardUIReducer(
-  state: ScoreboardUIState,
-  action: ScoreboardUIAction,
-): ScoreboardUIState {
-  switch (action.type) {
-    case 'SETUP_SET':
-      return { ...state, isSetupOpen: action.isOpen };
-    case 'ELAPSED_SET':
-      return { ...state, elapsed: action.value };
-    case 'SERVER_EFFECT_OPEN':
-      return { ...state, isServerEffectOpen: true };
-    case 'SERVER_EFFECT_CLOSE':
-      return { ...state, isServerEffectOpen: false };
-    case 'SERVER_EFFECT_CONFIRM':
-      return { ...state, isServerEffectOpen: false, playerInFocus: null, firstServeError: null };
-    case 'PLAYER_IN_FOCUS_SET':
-      return { ...state, playerInFocus: action.player };
-    case 'SERVE_STEP_SET':
-      if (action.step === 'second' && state.serveStep !== 'none') return state;
-      return { ...state, serveStep: action.step };
-    case 'FORCE_RERENDER':
-      return { ...state, renderKey: state.renderKey + 1 };
-    case 'STATS_OPEN':
-      return { ...state, isStatsOpen: true, statsData: action.data };
-    case 'STATS_CLOSE':
-      return { ...state, isStatsOpen: false, statsData: null };
-    case 'POINT_DETAILS_OPEN':
-      return { ...state, isPointDetailsOpen: true, pendingPointPlayer: action.player };
-    case 'POINT_DETAILS_RESET':
-      return {
-        ...state,
-        isPointDetailsOpen: false,
-        pendingPointPlayer: null,
-        firstServeError: null,
-      };
-    case 'SERVE_ERROR_OPEN':
-      return { ...state, isServeErrorModalOpen: true, pendingServeError: action.error };
-    case 'SERVE_ERROR_CLOSE':
-      return { ...state, isServeErrorModalOpen: false, pendingServeError: null };
-    case 'FIRST_SERVE_ERROR_SET':
-      return { ...state, firstServeError: action.err };
-    case 'FIRST_SERVE_ERROR_CLEAR':
-      return { ...state, firstServeError: null };
-    case 'EDIT_MATCH_OPEN':
-      return { ...state, editMatchOpen: true };
-    case 'EDIT_MATCH_CLOSE':
-      return { ...state, editMatchOpen: false };
-    case 'FONT_SCALE_SET':
-      return { ...state, fontScale: action.scale };
-    case 'ANNOTATOR_COUNT_SET':
-      return { ...state, annotatorCount: action.count };
-    case 'SUSPENDED_SESSION_SET':
-      return {
-        ...state,
-        suspendedSession: action.session,
-        previousAnnotationPoints: action.pointsCount,
-      };
-    case 'SUSPENDED_SESSION_CLEAR':
-      return { ...state, suspendedSession: null, previousAnnotationPoints: 0 };
-    default:
-      return state;
-  }
 }
 
 export function useScoreboardEngine(onEndMatch: () => void) {
@@ -158,31 +40,7 @@ export function useScoreboardEngine(onEndMatch: () => void) {
   const [error, setError] = useState<string | null>(null);
 
   // ── UI state via reducer ───────────────────────────────────────────────────
-  const initialUIState: ScoreboardUIState = {
-    isSetupOpen: false,
-    elapsed: 0,
-    isServerEffectOpen: false,
-    playerInFocus: null,
-    serveStep: 'none',
-    renderKey: 0,
-    isStatsOpen: false,
-    statsData: null,
-    isPointDetailsOpen: false,
-    pendingPointPlayer: null,
-    isServeErrorModalOpen: false,
-    pendingServeError: null,
-    firstServeError: null,
-    annotatorCount: 0,
-    editMatchOpen: false,
-    fontScale: (() => {
-      const saved = localStorage.getItem('sb-font-scale');
-      const parsed = saved ? parseFloat(saved) : 1.0;
-      return isNaN(parsed) ? 1.0 : Math.min(2.0, Math.max(0.6, parsed));
-    })(),
-    suspendedSession: null,
-    previousAnnotationPoints: 0,
-  };
-  const [uiState, dispatch] = useReducer(scoreboardUIReducer, initialUIState);
+  const [uiState, dispatch] = useReducer(scoreboardUIReducer, undefined, createInitialUIState);
   const {
     isSetupOpen,
     elapsed,
@@ -257,80 +115,6 @@ export function useScoreboardEngine(onEndMatch: () => void) {
   const setEditMatchOpen = useCallback((isOpen: boolean) => {
     dispatch(isOpen ? { type: 'EDIT_MATCH_OPEN' } : { type: 'EDIT_MATCH_CLOSE' });
   }, []);
-
-  // Função para persistir o estado antes de fechar
-  const handleEndMatch = async () => {
-    const sys = getSystem();
-    let finalState: unknown = undefined;
-
-    // Sempre tentar capturar o estado final, mesmo se a sincronização falhar
-    if (sys) {
-      try {
-        // Tentar sincronizar com o backend (atualiza dados em tempo real)
-        if (matchData?.status && matchData.status !== 'NOT_STARTED') {
-          await sys.syncState();
-        }
-        // Capturar o estado final do sistema (com ou sem sync bem-sucedido)
-        finalState = sys.getState();
-        scoreLog.debug('Estado final capturado com sucesso', {
-          matchId: matchIdRef.current,
-          hasPointsHistory: !!finalState?.pointsHistory,
-          pointsCount: finalState?.pointsHistory?.length ?? 0,
-        });
-      } catch (err: unknown) {
-        // Sincronização falhou, mas tenta ainda assim capturar o estado local
-        scoreLog.warn('Falha no syncState ao encerrar partida (tentando capturar estado local)', {
-          matchId: matchIdRef.current,
-          error: getErrorMessage(err),
-        });
-        try {
-          finalState = sys.getState();
-          scoreLog.info('Estado local capturado após falha de sync', {
-            matchId: matchIdRef.current,
-          });
-        } catch (getStateErr) {
-          scoreLog.warn('Falha ao capturar estado local', { matchId: matchIdRef.current });
-        }
-      }
-    }
-
-    // Encerra a sessão de anotação auto-iniciada (salva finalStateSnapshot + status=COMPLETED)
-    const sessionId = annotationSessionIdRef.current;
-    const currentMatchId = matchIdRef.current;
-    if (sessionId && currentMatchId) {
-      try {
-        await endSession(currentMatchId, sessionId, finalState);
-        scoreLog.info('Sessão de anotação encerrada com sucesso', {
-          matchId: currentMatchId,
-          sessionId,
-          hasFinalState: !!finalState,
-        });
-      } catch (err) {
-        scoreLog.warn('Falha ao encerrar sessão de anotação', {
-          matchId: currentMatchId,
-          sessionId,
-          error: err instanceof Error ? err.message : String(err),
-        });
-      }
-      annotationSessionIdRef.current = null;
-    }
-
-    onEndMatch();
-  };
-
-  // Função para buscar estatísticas
-  const fetchStats = async () => {
-    dispatch({
-      type: 'STATS_OPEN',
-      data: {
-        totalPoints: 10,
-        player1: { pointsWon: 5 },
-        player2: { pointsWon: 5 },
-        match: {},
-        pointsHistory: [],
-      },
-    });
-  };
 
   // ── useEffect: fetch match data ──
   useEffect(() => {
@@ -534,408 +318,47 @@ export function useScoreboardEngine(onEndMatch: () => void) {
     };
   }, [matchId, matchData?.status]);
 
-  // ── Handlers ──
-
-  const handleSetupConfirm = async (firstServer: Player) => {
-    if (!matchData || !matchId) {
-      return;
-    }
-
-    try {
-      const system = new TennisScoring(firstServer, matchData.format as TennisFormat);
-      system.enableSync(matchId);
-      system.setStartedAt(new Date().toISOString());
-      const state = system.getState();
-      if ('needsSetup' in state) delete state.needsSetup;
-      if (!state.startedAt) state.startedAt = new Date().toISOString();
-      scoringSystemRef.current = system;
-      dispatch({ type: 'SETUP_SET', isOpen: false });
-
-      try {
-        const response = await httpClient.patch(`/matches/${matchId}/state`, {
-          matchState: state,
-        });
-        if (!response.ok) {
-          throw new Error(
-            `Falha na sincronização: ${response.status} - ${JSON.stringify(response.data)}`,
-          );
-        }
-      } catch (syncError) {
-        throw new Error(`Erro ao sincronizar partida: ${syncError.message}`);
-      }
-    } catch (error) {
-      setError('Erro ao iniciar partida. Tente novamente.');
-    }
-  };
-
-  const handlePointDetailsOpen = (player: Player) => {
-    dispatch({ type: 'POINT_DETAILS_OPEN', player });
-  };
-
-  const handlePointDetailsConfirm = (details: RallyDetails | undefined) => {
-    dispatch({ type: 'POINT_DETAILS_RESET' }); // closes modal + clears pendingPointPlayer + firstServeError
-    const isSecond = serveStep === 'second';
-    const firstFaultPayload =
-      isSecond && firstServeError
-        ? {
-            firstFault: {
-              errorType: firstServeError.errorType,
-              serveEffect: firstServeError.serveEffect as 'TopSpin' | 'Slice' | 'Flat' | undefined,
-              direction: firstServeError.direction as 'Fechado' | 'Centro' | 'Aberto' | undefined,
-            },
-          }
-        : {};
-    if (pendingPointPlayer) {
-      if (details) {
-        addPoint(pendingPointPlayer, {
-          rallyDetails: details,
-          result: {
-            winner: pendingPointPlayer,
-            type: 'WINNER',
-          },
-          serve: { isFirstServe: !isSecond, ...firstFaultPayload },
-          rally: { ballExchanges: 1 },
-        } as Partial<PointDetails>);
-      } else {
-        addPoint(pendingPointPlayer, {
-          serve: { isFirstServe: !isSecond, ...firstFaultPayload },
-          result: { winner: pendingPointPlayer, type: 'WINNER' },
-          rally: { ballExchanges: 1 },
-        } as Partial<PointDetails>);
-      }
-    }
-    // pendingPointPlayer + firstServeError already cleared by POINT_DETAILS_RESET above
-  };
-
-  const handlePointDetailsCancel = () => {
-    dispatch({ type: 'POINT_DETAILS_RESET' }); // clears modal + pendingPointPlayer
-  };
-
-  const addPoint = async (player: Player, details?: Partial<PointDetails>) => {
-    const scoringSystem = getSystem();
-    if (!scoringSystem) {
-      return;
-    }
-
-    const pointDetails: Partial<PointDetails> = details || {
-      serve: { isFirstServe: serveStep !== 'second' },
-      result: { winner: player, type: 'WINNER' },
-      rally: { ballExchanges: 1 },
-    };
-
-    if (details && !details.serve) {
-      pointDetails.serve = { isFirstServe: serveStep !== 'second' };
-    }
-
-    // Garante que shotPlayer sempre esteja preenchido — padrão: o vencedor do ponto
-    if (!pointDetails.shotPlayer) {
-      pointDetails.shotPlayer = player;
-    }
-
-    let newState: ReturnType<typeof scoringSystem.getState>;
-    try {
-      newState = scoringSystem.addPoint(player, pointDetails as PointDetails);
-    } catch (err) {
-      return;
-    }
-    setServeStepSafe('none');
-    forceRerender();
-
-    if (syncTimeoutRef.current) window.clearTimeout(syncTimeoutRef.current);
-    syncTimeoutRef.current = window.setTimeout(() => {
-      const sys = getSystem();
-      sys?.syncState()?.catch((err: unknown) => {
-        scoreLog.warn('Falha no syncState após ponto (retry automático na próxima sincronização)', {
-          matchId,
-        });
-      });
-    }, 250);
-
-    if (newState.isFinished && newState.winner) {
-      scoreLog.info(`Partida finalizada! Vencedor: ${newState.winner}`);
-      const players = {
-        p1: resolvePlayerName(matchData!.players.p1),
-        p2: resolvePlayerName(matchData!.players.p2),
-      };
-      const winnerName = newState.winner === 'PLAYER_1' ? players.p1 : players.p2;
-
-      // Auto-finish: se é criador e ainda não foi auto-finalizado, fazer PATCH
-      const isCreator = matchData?.createdByUserId === currentUser?.id;
-      if (isCreator && !autoFinishRef.current) {
-        autoFinishRef.current = true;
-        try {
-          const response = await httpClient.patch(`/matches/${matchId}`, {
-            action: 'endMatch',
-          });
-          if (response.ok) {
-            scoreLog.info('Partida auto-finalizada no DB com sucesso', { matchId });
-          } else {
-            scoreLog.warn('Falha ao auto-finalizar partida no DB', {
-              matchId,
-              status: response.status,
-            });
-          }
-        } catch (err) {
-          scoreLog.warn('Erro durante auto-finish PATCH', {
-            matchId,
-            error: err instanceof Error ? err.message : String(err),
-          });
-        }
-      }
-
-      setTimeout(() => {
-        toast.success(
-          `Vencedor: ${winnerName} | Placar: ${newState.sets.PLAYER_1} sets x ${newState.sets.PLAYER_2} sets`,
-          '🏆 Partida Finalizada!',
-        );
-        // Encerra a sessão de anotação (salva finalState) antes de navegar
-        handleEndMatch();
-      }, 500);
-    }
-  };
-
-  const handleFault = async () => {
-    const scoringSystem = getSystem();
-    if (!scoringSystem) {
-      return;
-    }
-
-    const currentServer = scoringSystem.getState().server;
-    const opponent = currentServer === 'PLAYER_1' ? 'PLAYER_2' : 'PLAYER_1';
-    const pointDetails: Partial<PointDetails> = {
-      serve: { type: 'DOUBLE_FAULT', isFirstServe: false },
-      result: { winner: opponent, type: 'FORCED_ERROR' },
-      rally: { ballExchanges: 1 },
-    };
-    addPoint(opponent, pointDetails);
-  };
-
-  const handleUndo = async () => {
-    const scoringSystem = getSystem();
-    if (!scoringSystem) {
-      return;
-    }
-
-    try {
-      const prevState = scoringSystem.undoLastPoint();
-      if (prevState) {
-        setServeStepSafe('none');
-        forceRerender();
-        if (syncTimeoutRef.current) window.clearTimeout(syncTimeoutRef.current);
-        syncTimeoutRef.current = window.setTimeout(() => {
-          const sys = getSystem();
-          sys?.syncState()?.catch((err: unknown) => {
-            scoreLog.warn(
-              'Falha no syncState após undo (retry automático na próxima sincronização)',
-              { matchId },
-            );
-          });
-        }, 250);
-      }
-    } catch (err) {
-      // Estado local já foi revertido pelo undoLastPoint — UI reflete corretamente
-      scoreLog.warn('Erro ao desfazer ponto (UI já revertida)', { matchId });
-    }
-  };
-
-  const getLastPointDetails = (): PointDetails | null => {
-    return getSystem()?.getLastPointDetails() ?? null;
-  };
-
-  const handleEditScore = async (
-    setWinners: Array<'p1' | 'p2'>,
-    newServer: Player,
-  ): Promise<void> => {
-    const scoringSystem = getSystem();
-    if (!scoringSystem) return;
-
-    try {
-      const currentState = scoringSystem.getState();
-
-      const p1Sets = setWinners.filter((w) => w === 'p1').length;
-      const p2Sets = setWinners.filter((w) => w === 'p2').length;
-
-      const completedSets = setWinners.map((winner, idx) => ({
-        setNumber: idx + 1,
-        games: {
-          PLAYER_1: winner === 'p1' ? 6 : 0,
-          PLAYER_2: winner === 'p2' ? 6 : 0,
-        } as Record<Player, number>,
-        winner: (winner === 'p1' ? 'PLAYER_1' : 'PLAYER_2') as Player,
-      }));
-
-      // Preservar histórico de pontos do set atual
-      const currentPointsHistory = currentState.currentGame.pointsHistory || [];
-
-      const newState: MatchState = {
-        ...currentState,
-        sets: { PLAYER_1: p1Sets, PLAYER_2: p2Sets },
-        currentSet: setWinners.length + 1,
-        currentSetState: {
-          games: { PLAYER_1: 0, PLAYER_2: 0 } as Record<Player, number>,
-        },
-        currentGame: {
-          points: { PLAYER_1: '0', PLAYER_2: '0' } as Record<Player, string>,
-          server: newServer,
-          isTiebreak: false,
-          isMatchTiebreak: false,
-          pointsHistory: currentPointsHistory,
-        },
-        server: newServer,
-        isFinished: false,
-        winner: undefined,
-        completedSets,
-        config: currentState.config,
-      };
-
-      scoringSystem.loadState(newState);
-      setServeStepSafe('none');
-      forceRerender();
-
-      if (syncTimeoutRef.current) window.clearTimeout(syncTimeoutRef.current);
-      syncTimeoutRef.current = window.setTimeout(() => {
-        const sys = getSystem();
-        sys?.syncState()?.catch(() => {
-          scoreLog.warn('Falha no syncState após edição de placar', { matchId });
-        });
-      }, 250);
-    } catch (err) {
-      scoreLog.warn('Erro ao editar placar', { matchId });
-    }
-  };
-
-  const handleServerEffectConfirm = (effect?: string, direction?: string) => {
-    if (!playerInFocus) return;
-    const isSecond = serveStep === 'second';
-    const pointDetails: Partial<PointDetails> = {
-      serve: {
-        type: 'ACE',
-        isFirstServe: !isSecond,
-        serveEffect: effect as 'TopSpin' | 'Slice' | 'Flat' | undefined,
-        direction: direction as 'Fechado' | 'Centro' | 'Aberto' | undefined,
-        ...(isSecond && firstServeError
-          ? {
-              firstFault: {
-                errorType: firstServeError.errorType,
-                serveEffect: firstServeError.serveEffect as
-                  | 'TopSpin'
-                  | 'Slice'
-                  | 'Flat'
-                  | undefined,
-                direction: firstServeError.direction as 'Fechado' | 'Centro' | 'Aberto' | undefined,
-              },
-            }
-          : {}),
-      },
-      result: {
-        winner: playerInFocus,
-        type: 'WINNER',
-      },
-      rally: { ballExchanges: 1 },
-    };
-    addPoint(playerInFocus, pointDetails);
-    dispatch({ type: 'SERVER_EFFECT_CONFIRM' }); // isServerEffectOpen=false, playerInFocus=null, firstServeError=null
-  };
-
-  const handleServeErrorOpen = (errorType: 'out' | 'net', step: 'first' | 'second') => {
-    dispatch({ type: 'SERVE_ERROR_OPEN', error: { errorType, serveStep: step } });
-  };
-
-  const handleServeErrorConfirm = (effect?: string, direction?: string) => {
-    dispatch({ type: 'SERVE_ERROR_CLOSE' }); // sets isServeErrorModalOpen=false + pendingServeError=null
-    // pendingServeError/firstServeError are read from current render's closure (dispatch defers until next render)
-    if (!pendingServeError) return;
-
-    if (pendingServeError.serveStep === 'first') {
-      dispatch({
-        type: 'FIRST_SERVE_ERROR_SET',
-        err: { errorType: pendingServeError.errorType, serveEffect: effect, direction },
-      });
-      dispatch({ type: 'SERVE_STEP_SET', step: 'second' });
-    } else {
-      dispatch({ type: 'FIRST_SERVE_ERROR_CLEAR' });
-      const scoringSystem = getSystem();
-      if (!scoringSystem) return;
-      const currentServer = scoringSystem.getState().server;
-      const opponent = currentServer === 'PLAYER_1' ? 'PLAYER_2' : 'PLAYER_1';
-      const pointDetails: Partial<PointDetails> = {
-        serve: {
-          type: 'DOUBLE_FAULT',
-          isFirstServe: false,
-          serveEffect: effect as 'TopSpin' | 'Slice' | 'Flat' | undefined,
-          direction: direction as 'Fechado' | 'Centro' | 'Aberto' | undefined,
-          errorType: pendingServeError.errorType,
-          ...(firstServeError
-            ? {
-                firstFault: {
-                  errorType: firstServeError.errorType,
-                  serveEffect: firstServeError.serveEffect as
-                    | 'TopSpin'
-                    | 'Slice'
-                    | 'Flat'
-                    | undefined,
-                  direction: firstServeError.direction as
-                    | 'Fechado'
-                    | 'Centro'
-                    | 'Aberto'
-                    | undefined,
-                },
-              }
-            : {}),
-        },
-        result: { winner: opponent, type: 'FORCED_ERROR' },
-        rally: { ballExchanges: 1 },
-      };
-      addPoint(opponent, pointDetails);
-      // firstServeError already cleared by FIRST_SERVE_ERROR_CLEAR above
-    }
-    // pendingServeError already cleared by SERVE_ERROR_CLOSE above
-  };
-
-  const handleServeErrorCancel = () => {
-    dispatch({ type: 'SERVE_ERROR_CLOSE' }); // sets isServeErrorModalOpen=false + pendingServeError=null
-  };
-
-  // ── useEffect: Cleanup ao desmontar ou navegar ──
-  // Marca sessão como ABANDONED quando usuário sai SEM finalizar partida
-  useEffect(() => {
-    return () => {
-      const markSessionAbandoned = async () => {
-        const sessionId = annotationSessionIdRef.current;
-        const matchIdValue = matchIdRef.current;
-        const sys = getSystem();
-        const currentState = sys?.getState();
-
-        if (sessionId && matchIdValue && currentState && !currentState.isFinished) {
-          try {
-            // Capturar snapshot do estado atual para retomada
-            const stateSnapshot = JSON.stringify(currentState);
-
-            await httpClient.patch(`/matches/${matchIdValue}/sessions/${sessionId}`, {
-              status: 'ABANDONED',
-              isActive: false,
-              matchStateSnapshot: stateSnapshot,
-            });
-
-            scoreLog.info('Sessão marcada como ABANDONED ao sair', {
-              matchId: matchIdValue,
-              sessionId,
-              hasState: !!currentState,
-            });
-          } catch (err: unknown) {
-            scoreLog.warn('Falha ao marcar sessão como ABANDONED', {
-              matchId: matchIdValue,
-              sessionId,
-              error: getErrorMessage(err),
-            });
-            // Silencioso: não interrompe o unmount
-          }
-        }
-      };
-
-      markSessionAbandoned();
-    };
-  }, []);
+  // ── Handlers (extracted to useScoreboardHandlers) ──
+  const {
+    handleEndMatch,
+    addPoint,
+    handleSetupConfirm,
+    handlePointDetailsOpen,
+    handlePointDetailsConfirm,
+    handlePointDetailsCancel,
+    handleFault,
+    handleUndo,
+    getLastPointDetails,
+    handleEditScore,
+    handleServerEffectConfirm,
+    handleServeErrorOpen,
+    handleServeErrorConfirm,
+    handleServeErrorCancel,
+    fetchStats,
+  } = useScoreboardHandlers({
+    scoringSystemRef,
+    matchData,
+    setMatchData,
+    setError,
+    matchId,
+    matchIdRef,
+    currentUser,
+    navigate,
+    toast,
+    scoreLog,
+    dispatch,
+    serveStep,
+    firstServeError,
+    pendingServeError,
+    pendingPointPlayer,
+    playerInFocus,
+    autoFinishRef,
+    syncTimeoutRef,
+    annotationSessionIdRef,
+    forceRerender,
+    setServeStepSafe,
+    onEndMatch,
+  });
 
   return {
     // Router / Auth

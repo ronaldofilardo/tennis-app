@@ -2,11 +2,9 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { httpClient } from '../config/httpClient';
-import MatchStatsModal from '../components/MatchStatsModal';
 import LoadingIndicator from '../components/LoadingIndicator';
-import ServerEffectModal from '../components/ServerEffectModal';
-import PointDetailsModal from '../components/PointDetailsModal';
 import type { PointDetails } from '../core/scoring/types';
+import type { EditableMatch } from '../components/EditMatchModal';
 import { resolvePlayerName } from '../data/players';
 import CourtBackground from '../components/scoreboard/CourtBackground';
 import MatchHeader from '../components/scoreboard/MatchHeader';
@@ -18,13 +16,8 @@ import ActionBar from '../components/scoreboard/ActionBar';
 import AnnotationSessionPanel from '../components/AnnotationSessionPanel';
 import CreatorEndMatchPanel from '../components/CreatorEndMatchPanel';
 import ReopenMatchPanel from '../components/ReopenMatchPanel';
-import ResumeAnnotationModal from '../components/ResumeAnnotationModal';
-import EditMatchModal from '../components/EditMatchModal';
-import type { EditableMatch } from '../components/EditMatchModal';
 import SetupModal from '../components/scoreboard/SetupModal';
-import { UndoConfirmModal } from '../components/scoreboard/UndoConfirmModal';
-import { EditScoreModal } from '../components/scoreboard/EditScoreModal';
-import { ConfirmDeleteMatchModal } from '../components/ConfirmDeleteMatchModal';
+import ScoreboardModals from '../components/ScoreboardModals';
 import { useScoreboardEngine } from '../hooks/useScoreboardEngine';
 import { useCreatorManagerMode } from '../hooks/useCreatorManagerMode';
 import { useShakeDetection } from '../hooks/useGestures';
@@ -296,139 +289,83 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
 
   return (
     <>
-      {/* Modais renderizados FORA do container overflow:hidden para evitar clip */}
-      <MatchStatsModal
-        isOpen={isStatsOpen}
-        onClose={() => setIsStatsOpen(false)}
+      {/* Modais centralizados */}
+      <ScoreboardModals
+        isStatsOpen={isStatsOpen}
+        onStatsClose={() => setIsStatsOpen(false)}
+        statsData={statsData}
         matchId={matchData.id}
         playerNames={players}
-        stats={statsData}
-      />
-      <ServerEffectModal
-        isOpen={isServerEffectOpen}
-        playerInFocus={playerInFocus || 'PLAYER_1'}
-        onConfirm={handleServerEffectConfirm}
-        onCancel={() => {
+        isServerEffectOpen={isServerEffectOpen}
+        onServerEffectClose={() => {
           setIsServerEffectOpen(false);
           setPlayerInFocus(null);
         }}
+        playerInFocus={playerInFocus}
+        onServerEffectConfirm={handleServerEffectConfirm}
         fontScale={fontScale}
-      />
-      {/* Modal de erro de saque (Out/Net) — 1º e 2º saque */}
-      <ServerEffectModal
-        isOpen={isServeErrorModalOpen}
-        playerInFocus={state.server ?? 'PLAYER_1'}
-        context="error"
-        errorType={pendingServeError?.errorType}
-        serveStep={pendingServeError?.serveStep ?? 'first'}
-        onConfirm={handleServeErrorConfirm}
-        onCancel={handleServeErrorCancel}
-        fontScale={fontScale}
-      />
-      <PointDetailsModal
-        isOpen={isPointDetailsOpen}
-        playerWinner={pendingPointPlayer || 'PLAYER_1'}
-        currentServer={state.server}
-        playerNames={playersWithCode}
-        onConfirm={handlePointDetailsConfirm}
-        onCancel={handlePointDetailsCancel}
-        fontScale={fontScale}
-      />
-
-      {/* Modal de edição da partida — só para o criador */}
-      {editMatchOpen && matchData && (
-        <EditMatchModal
-          match={{
-            id: matchData.id,
-            nickname: matchData.nickname,
-            scheduledAt: matchData.scheduledAt,
-            venueId: matchData.venueId,
-            venue: matchData.venue,
-            visibility: matchData.visibility,
-            openForAnnotation: matchData.openForAnnotation,
-            createdByUserId: matchData.createdByUserId,
-          }}
-          isOpen={editMatchOpen}
-          onClose={() => setEditMatchOpen(false)}
-          onSaved={(updated) => {
-            setMatchData((prev) =>
-              prev
-                ? {
-                    ...prev,
-                    nickname: (updated as EditableMatch).nickname ?? prev.nickname,
-                    scheduledAt: (updated as EditableMatch).scheduledAt ?? prev.scheduledAt,
-                    venueId: (updated as EditableMatch).venueId ?? prev.venueId,
-                    venue: (updated as EditableMatch).venue ?? prev.venue,
-                    visibility: (updated as EditableMatch).visibility ?? prev.visibility,
-                    openForAnnotation:
-                      (updated as EditableMatch).openForAnnotation ?? prev.openForAnnotation,
-                  }
-                : null,
-            );
-            setEditMatchOpen(false);
-          }}
-        />
-      )}
-
-      {/* Modal de confirmação de undo */}
-      <UndoConfirmModal
-        isOpen={undoModalOpen}
+        isServeErrorModalOpen={isServeErrorModalOpen}
+        pendingServeError={pendingServeError}
+        serverState={state.server}
+        onServeErrorConfirm={handleServeErrorConfirm}
+        onServeErrorCancel={handleServeErrorCancel}
+        isPointDetailsOpen={isPointDetailsOpen}
+        pendingPointPlayer={pendingPointPlayer}
+        playersWithCode={playersWithCode}
+        onPointDetailsConfirm={handlePointDetailsConfirm}
+        onPointDetailsCancel={handlePointDetailsCancel}
+        editMatchOpen={editMatchOpen}
+        matchData={matchData}
+        onEditMatchClose={() => setEditMatchOpen(false)}
+        onEditMatchSaved={(updated) => {
+          setMatchData((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  nickname: (updated as EditableMatch).nickname ?? prev.nickname,
+                  scheduledAt: (updated as EditableMatch).scheduledAt ?? prev.scheduledAt,
+                  venueId: (updated as EditableMatch).venueId ?? prev.venueId,
+                  venue: (updated as EditableMatch).venue ?? prev.venue,
+                  visibility: (updated as EditableMatch).visibility ?? prev.visibility,
+                  openForAnnotation:
+                    (updated as EditableMatch).openForAnnotation ?? prev.openForAnnotation,
+                }
+              : null,
+          );
+          setEditMatchOpen(false);
+        }}
+        undoModalOpen={undoModalOpen}
+        onUndoModalClose={() => setUndoModalOpen(false)}
         lastPoint={getLastPointDetails()}
-        playerNames={{ PLAYER_1: players.p1, PLAYER_2: players.p2 }}
-        onConfirm={() => {
+        onUndoConfirm={() => {
           setUndoModalOpen(false);
           handleUndo();
         }}
-        onCancel={() => setUndoModalOpen(false)}
-      />
-
-      {/* Modal de ajuste de placar */}
-      <EditScoreModal
-        isOpen={editScoreModalOpen}
-        matchFormat={matchData.format}
-        playerNames={players}
-        currentSets={state.sets ?? { PLAYER_1: 0, PLAYER_2: 0 }}
-        currentServer={state.server ?? 'PLAYER_1'}
-        completedSets={state.completedSets ?? []}
-        onConfirm={(setWinners, server) => {
+        playerNamesForUndo={{ PLAYER_1: players.p1, PLAYER_2: players.p2 }}
+        editScoreModalOpen={editScoreModalOpen}
+        onEditScoreClose={() => setEditScoreModalOpen(false)}
+        onEditScoreConfirm={(setWinners, server) => {
           setEditScoreModalOpen(false);
           handleEditScore(setWinners, server);
         }}
-        onCancel={() => setEditScoreModalOpen(false)}
+        currentSets={state.sets ?? { PLAYER_1: 0, PLAYER_2: 0 }}
+        completedSets={state.completedSets ?? []}
+        deleteModalOpen={deleteModalOpen}
+        onDeleteModalClose={() => setDeleteModalOpen(false)}
+        onDeleteConfirm={async (id) => {
+          const { httpClient } = await import('../config/httpClient');
+          await httpClient.delete(`/matches/${id}`);
+          setDeleteModalOpen(false);
+          navigate('/dashboard');
+        }}
+        showResumeModal={showResumeModal}
+        suspendedSession={suspendedSession}
+        currentUser={currentUser}
+        previousAnnotationPoints={previousAnnotationPoints}
+        onResumeAnnotation={handleResumeAnnotation}
+        onStartNewAnnotation={handleStartNewAnnotation}
+        onDiscardAnnotation={handleDiscardAnnotation}
       />
-
-      {/* Modal de deleção — só para partidas NOT_STARTED */}
-      {matchData && (
-        <ConfirmDeleteMatchModal
-          isOpen={deleteModalOpen}
-          matchId={matchData.id}
-          players={players}
-          onConfirm={async (matchId) => {
-            const { httpClient } = await import('../config/httpClient');
-            await httpClient.delete(`/matches/${matchId}`);
-            setDeleteModalOpen(false);
-            navigate('/dashboard');
-          }}
-          onCancel={() => setDeleteModalOpen(false)}
-        />
-      )}
-
-      {/* Modal de retomada de anotação suspensa */}
-      {suspendedSession && matchData && (
-        <ResumeAnnotationModal
-          isOpen={showResumeModal}
-          onResume={handleResumeAnnotation}
-          onStartNew={handleStartNewAnnotation}
-          onDiscard={handleDiscardAnnotation}
-          annotatorName={currentUser?.name || 'Anotador'}
-          previousPointsCount={previousAnnotationPoints || 0}
-          matchScore={{
-            p1: matchData.sets?.PLAYER_1 ?? 0,
-            p2: matchData.sets?.PLAYER_2 ?? 0,
-            format: matchData.format,
-          }}
-        />
-      )}
 
       <div
         className="scoreboard-v2-court"

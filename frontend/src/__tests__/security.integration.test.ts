@@ -39,7 +39,7 @@ describe('Security Integration Tests', () => {
         expect(key).toMatch(/password|secret|pin|ssn/i);
       });
     });
-  });;
+  });
 
   describe('XSS Prevention', () => {
     it('should sanitize user input before storing', () => {
@@ -67,9 +67,7 @@ describe('Security Integration Tests', () => {
 
     it('should prevent script tags from being executable after escaping', () => {
       const maliciousScript = '<script>alert("xss")</script>';
-      const escaped = maliciousScript
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
+      const escaped = maliciousScript.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
       expect(escaped).toBe('&lt;script&gt;alert("xss")&lt;/script&gt;');
       expect(escaped).not.toContain('<script>');
@@ -127,10 +125,7 @@ describe('Security Integration Tests', () => {
     });
 
     it('should validate origin in CORS requests', () => {
-      const allowedOrigins = [
-        'http://localhost:5173',
-        'https://racket.vercel.app',
-      ];
+      const allowedOrigins = ['http://localhost:5173', 'https://racket.vercel.app'];
 
       const requestOrigin = 'http://localhost:5173';
       expect(allowedOrigins).toContain(requestOrigin);
