@@ -1,0 +1,17 @@
+#!/bin/sh
+# .husky/pre-push — TypeScript strict mode validation
+
+# Executa validação de tipos antes de cada push
+cd frontend
+
+echo "🔍 Validando TypeScript strict mode..."
+npx tsc --noEmit
+
+if [ $? -ne 0 ]; then
+  echo "❌ Erros de TypeScript detectados. Push bloqueado."
+  echo "💡 Dica: Execute 'cd frontend && npx tsc --noEmit' para ver detalhes."
+  exit 1
+fi
+
+echo "✅ TypeScript validado com sucesso!"
+exit 0

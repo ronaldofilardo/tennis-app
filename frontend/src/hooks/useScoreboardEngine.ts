@@ -7,7 +7,10 @@ import type {
   Player,
   PointDetails,
   RallyDetails,
+  MatchData,
+  AnnotationSession,
 } from '../core/scoring/types';
+import { getErrorMessage } from '../types/errors';
 import type { MatchData } from '../types/scoreboard';
 export type { MatchData } from '../types/scoreboard';
 import { httpClient } from '../config/httpClient';
@@ -49,7 +52,7 @@ interface ScoreboardUIState {
   annotatorCount: number;
   editMatchOpen: boolean;
   fontScale: number;
-  suspendedSession: any | null;
+  suspendedSession: AnnotationSession | null;
   previousAnnotationPoints: number;
 }
 
@@ -74,7 +77,7 @@ type ScoreboardUIAction =
   | { type: 'EDIT_MATCH_CLOSE' }
   | { type: 'FONT_SCALE_SET'; scale: number }
   | { type: 'ANNOTATOR_COUNT_SET'; count: number }
-  | { type: 'SUSPENDED_SESSION_SET'; session: any; pointsCount: number }
+  | { type: 'SUSPENDED_SESSION_SET'; session: AnnotationSession; pointsCount: number }
   | { type: 'SUSPENDED_SESSION_CLEAR' };
 
 function scoreboardUIReducer(
@@ -274,11 +277,11 @@ export function useScoreboardEngine(onEndMatch: () => void) {
           hasPointsHistory: !!finalState?.pointsHistory,
           pointsCount: finalState?.pointsHistory?.length ?? 0,
         });
-      } catch (err) {
+      } catch (err: unknown) {
         // Sincronização falhou, mas tenta ainda assim capturar o estado local
         scoreLog.warn('Falha no syncState ao encerrar partida (tentando capturar estado local)', {
           matchId: matchIdRef.current,
-          error: err instanceof Error ? err.message : String(err),
+          error: getErrorMessage(err),
         });
         try {
           finalState = sys.getState();
@@ -919,11 +922,11 @@ export function useScoreboardEngine(onEndMatch: () => void) {
               sessionId,
               hasState: !!currentState,
             });
-          } catch (err) {
+          } catch (err: unknown) {
             scoreLog.warn('Falha ao marcar sessão como ABANDONED', {
               matchId: matchIdValue,
               sessionId,
-              error: err instanceof Error ? err.message : String(err),
+              error: getErrorMessage(err),
             });
             // Silencioso: não interrompe o unmount
           }
