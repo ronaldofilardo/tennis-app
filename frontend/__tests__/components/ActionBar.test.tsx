@@ -33,6 +33,8 @@ describe('ActionBar Component', () => {
     onOut: mockOnOut,
     onNet: mockOnNet,
     onFault: mockOnFault,
+    onFaultOut: mockOnOut,
+    onFaultNet: mockOnNet,
     onConfig: mockOnConfig,
     onEditScore: mockOnEditScore,
     onFontScaleInc: mockOnFontScaleInc,
@@ -185,12 +187,12 @@ describe('ActionBar Component', () => {
 
   it('calls onFault when Out is clicked on second serve', async () => {
     const user = userEvent.setup();
-    render(<ActionBar {...defaultProps} serveStep="second" />);
+    render(<ActionBar {...defaultProps} serveStep="second" onFaultOut={mockOnOut} />);
 
     const outButton = screen.getByText('Out');
     await user.click(outButton);
 
-    // onOut ou onFault deve ser chamado
+    // onFaultOut deve ser chamado em segundo saque
     expect(mockOnOut).toHaveBeenCalled();
   });
 

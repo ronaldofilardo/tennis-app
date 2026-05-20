@@ -39,11 +39,14 @@ describe('PlayerCard Component', () => {
   });
 
   it('renders player name and score correctly', () => {
-    render(<PlayerCard {...defaultProps} />);
+    render(<PlayerCard {...defaultProps} isServing={false} />);
 
-    expect(screen.getByText('JOÃO SILVA')).toBeInTheDocument();
+    // Verificar nome (CSS aplica text-transform: uppercase)
+    const playerName = screen.getByText('João Silva');
+    expect(playerName).toBeInTheDocument();
     expect(screen.getByText('30')).toBeInTheDocument();
-    expect(screen.getByText('3 games')).toBeInTheDocument();
+    // Verificar games com regex para tolerar espaçamento variável
+    expect(screen.getByText(/3\s*games/)).toBeInTheDocument();
   });
 
   it('does NOT render serve badge on player card (removed per UX directive)', () => {

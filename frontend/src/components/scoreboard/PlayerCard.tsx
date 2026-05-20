@@ -161,11 +161,6 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
       {/* Código do Atleta */}
       {code && <div className="player-card-code">{code}</div>}
 
-      {/* Indicador de saque */}
-      {isServing && (
-        <div className="serve-badge">🎾 {serveStep === 'second' ? '2º Saque' : '1º Saque'}</div>
-      )}
-
       {/* Pontuação */}
       <div className="player-card-score">
         {isAdvantage && player === 'PLAYER_1' && score === 'AD' ? (

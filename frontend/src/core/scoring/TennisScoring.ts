@@ -546,4 +546,22 @@ export class TennisScoring {
       noLet: this.config.useNoLet || false,
     };
   }
+
+  // Verifica se estamos no set decisório (ambos os jogadores completaram 1 set)
+  public isDecidingSet(): boolean {
+    return (
+      this.state.completedSets.length === 1 &&
+      this.state.sets.PLAYER_1 === 1 &&
+      this.state.sets.PLAYER_2 === 1
+    );
+  }
+
+  // Verifica se um match tiebreak deve ser jogado (set decisório com 6-6 em games)
+  public shouldPlayMatchTiebreak(): boolean {
+    return (
+      this.isDecidingSet() &&
+      this.state.currentSetState.games.PLAYER_1 === 6 &&
+      this.state.currentSetState.games.PLAYER_2 === 6
+    );
+  }
 }

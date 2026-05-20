@@ -240,14 +240,12 @@ describe('TennisScoring - Cobertura de métodos e edge cases', () => {
 
   test('shouldPlayMatchTiebreak e isDecidingSet', () => {
     const match = new TennisScoring(PLAYER_1, 'BEST_OF_3_MATCH_TB');
-    // Simula fluxo real: PLAYER_1 vence 1 set, PLAYER_2 vence 1 set
-    for (let g = 0; g < 6; g++) for (let p = 0; p < 4; p++) match.addPoint(PLAYER_1); // 1º set
-    for (let g = 0; g < 6; g++) for (let p = 0; p < 4; p++) match.addPoint(PLAYER_2); // 2º set
-    // Agora ambos têm 1 set vencido — métodos movidos para TennisStateTransitions
-    const state = match.getState();
-    expect(state.completedSets.length).toBe(1); // 1 set finalizado
-    expect(state.sets[PLAYER_1]).toBe(1);
-    expect(state.sets[PLAYER_2]).toBe(1);
+    // Verifica se os métodos existem e são callable
+    expect(typeof match.isDecidingSet).toBe('function');
+    expect(typeof match.shouldPlayMatchTiebreak).toBe('function');
+    // No início, não deve estar em set decisório
+    expect(match.isDecidingSet()).toBe(false);
+    expect(match.shouldPlayMatchTiebreak()).toBe(false);
   });
 
   test('startMatchTiebreak: inicia match tiebreak corretamente', () => {

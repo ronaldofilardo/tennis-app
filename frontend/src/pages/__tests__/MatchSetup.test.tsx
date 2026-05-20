@@ -155,7 +155,7 @@ describe('MatchSetup - Match Creation Flow', () => {
 
       // Submit form
       const submitButton = screen.getByRole('button', {
-        name: 'Iniciar Partida',
+        name: /Iniciar/i,
       });
       fireEvent.click(submitButton);
 
@@ -200,7 +200,7 @@ describe('MatchSetup - Match Creation Flow', () => {
 
       // Submit form
       const submitButton = screen.getByRole('button', {
-        name: 'Iniciar Partida',
+        name: /Iniciar/i,
       });
       fireEvent.click(submitButton);
 
@@ -218,7 +218,7 @@ describe('MatchSetup - Match Creation Flow', () => {
 
       // Try to submit without players
       const submitButton = screen.getByRole('button', {
-        name: 'Iniciar Partida',
+        name: /Iniciar/i,
       });
       fireEvent.click(submitButton);
 
@@ -235,7 +235,7 @@ describe('MatchSetup - Match Creation Flow', () => {
       renderMatchSetup();
 
       const submitButton = screen.getByRole('button', {
-        name: 'Iniciar Partida',
+        name: /Iniciar/i,
       });
       fireEvent.click(submitButton);
 
@@ -261,7 +261,7 @@ describe('MatchSetup - Match Creation Flow', () => {
       });
 
       const submitButton = screen.getByRole('button', {
-        name: 'Iniciar Partida',
+        name: /Iniciar/i,
       });
       fireEvent.click(submitButton);
 

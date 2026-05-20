@@ -91,9 +91,11 @@ Skills estão em `.claude/skills/`. Use `/skill-name` para invocar manualmente.
 
 1. **NUNCA quebre código existente** — verifique impacto antes de qualquer mudança
 2. **NUNCA modifique testes Vitest ou Playwright que passam** sem justificativa documentada
-3. **CSS vanilla com tokens** — este projeto NÃO usa Tailwind. Usar variáveis CSS de `src/index.css`
-4. **Client-Side somente** — Vite, não Next.js. Sem Server Components
-5. **TypeScript strict** — nunca `any`, nunca `@ts-ignore` sem comentário
+3. **SEMPRE rode os testes antes de sugerir código** — execute `pnpm --filter frontend test:ci` e valide que todas as suites passam (Vitest + Playwright)
+4. **NUNCA mexer em migrações sem testar** — qualquer alteração em `prisma/migrations/` DEVE ser validada com `npx prisma migrate dev` antes de sugerir. Rollback é responsabilidade sua
+5. **CSS vanilla com tokens** — este projeto NÃO usa Tailwind. Usar variáveis CSS de `src/index.css`
+6. **Client-Side somente** — Vite, não Next.js. Sem Server Components
+7. **TypeScript strict** — nunca `any`, nunca `@ts-ignore` sem comentário
 
 ### Padrões de Componente
 

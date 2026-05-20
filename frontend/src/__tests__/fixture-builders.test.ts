@@ -5,7 +5,7 @@ import {
   createAnnotationSession,
   createSetScore,
   createHttpError,
-} from '../fixture-builders';
+} from './fixture-builders';
 import type { MatchData, MatchState, AnnotationSession } from '../../types/scoreboard';
 
 describe('fixture builders — typed test factories', () => {

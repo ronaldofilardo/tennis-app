@@ -189,6 +189,7 @@ describe('matchService', () => {
         status: 'NOT_STARTED',
         score: null,
         winner: null,
+        clubId: 'cmm4dw15v0001hpm0e6pxy7ns',
         createdAt: expect.any(Date),
       };
 
