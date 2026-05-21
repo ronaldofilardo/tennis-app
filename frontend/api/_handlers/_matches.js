@@ -257,7 +257,7 @@ export default async function handler(req, res) {
       const profile = await prisma.athleteProfile.findFirst({ where: { userId: ctx.userId } });
       const matches = await prisma.match.findMany({
         where: {
-          status: 'FINISHED',
+          status: { in: ['NOT_STARTED', 'IN_PROGRESS', 'FINISHED'] },
           OR: [
             { createdByUserId: ctx.userId },
             ...(profile ? [{ player1Id: profile.id }, { player2Id: profile.id }] : []),
@@ -307,8 +307,7 @@ export default async function handler(req, res) {
       if (!ctx) return;
 
       // Encontra todas as sessões suspensas do usuário (ABANDONED ou IN_PROGRESS com isActive=false)
-      // Inclui partidas em qualquer status (NOT_STARTED, IN_PROGRESS, FINISHED)
-      // pois a anotação pode estar suspensa mesmo que a partida tenha sido encerrada
+      // Exclui partidas em status FINISHED (elas devem ir para histórico, não para suspensas)
       const suspendedSessions = await prisma.matchAnnotationSession.findMany({
         where: {
           annotator: {
@@ -316,6 +315,9 @@ export default async function handler(req, res) {
           },
           isActive: false,
           status: { in: ['IN_PROGRESS', 'ABANDONED'] },
+          match: {
+            status: { not: 'FINISHED' },
+          },
         },
         select: {
           id: true,
@@ -362,7 +364,11 @@ export default async function handler(req, res) {
         suspendedSessionId: session.id,
         suspendedAt: session.createdAt,
         suspendedStatus: session.status,
-        matchStateSnapshot: session.matchStateSnapshot,
+        matchStateSnapshot: session.matchStateSnapshot
+          ? typeof session.matchStateSnapshot === 'string'
+            ? session.matchStateSnapshot
+            : JSON.stringify(session.matchStateSnapshot)
+          : null,
       }));
 
       console.log(
@@ -498,6 +504,16 @@ export default async function handler(req, res) {
           id: s.id,
           endedAt: s.endedAt,
           hasFinalState: !!s.finalStateSnapshot,
+          finalStateSnapshot: s.finalStateSnapshot
+            ? typeof s.finalStateSnapshot === 'string'
+              ? s.finalStateSnapshot
+              : JSON.stringify(s.finalStateSnapshot)
+            : null,
+          matchStateSnapshot: s.matchStateSnapshot
+            ? typeof s.matchStateSnapshot === 'string'
+              ? s.matchStateSnapshot
+              : JSON.stringify(s.matchStateSnapshot)
+            : null,
         },
         completedAnnotations: s.match.annotationSessions.map((sa) => ({
           id: sa.id,
@@ -730,7 +746,21 @@ export default async function handler(req, res) {
           status: newStatus,
           ...(newStatus === 'ABANDONED' && {
             isActive: false,
-            matchStateSnapshot: req.body?.matchStateSnapshot || match?.matchState || null,
+            // Garantir que matchStateSnapshot é sempre uma STRING (JSON)
+            matchStateSnapshot: (() => {
+              const snapshot = req.body?.matchStateSnapshot;
+              if (snapshot) {
+                // Se é string, usa direto; se é object, stringify
+                return typeof snapshot === 'string' ? snapshot : JSON.stringify(snapshot);
+              }
+              // Fallback para matchState da partida (converter para string se for object)
+              if (match?.matchState) {
+                return typeof match.matchState === 'string'
+                  ? match.matchState
+                  : JSON.stringify(match.matchState);
+              }
+              return null;
+            })(),
           }),
           ...(newStatus === 'COMPLETED' && {
             isActive: false,

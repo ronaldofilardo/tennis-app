@@ -25,7 +25,13 @@ export interface AnnotatedMatch {
   comparisonAvailable: boolean;
   myShare?: { id: string; status: string } | null;
   isNew?: boolean;
-  mySession?: { id: string; endedAt: string | null; hasFinalState: boolean };
+  mySession?: {
+    id: string;
+    endedAt: string | null;
+    hasFinalState: boolean;
+    finalStateSnapshot?: string | null;
+    matchStateSnapshot?: string | null;
+  };
 }
 
 interface AnnotatedMatchCardProps {

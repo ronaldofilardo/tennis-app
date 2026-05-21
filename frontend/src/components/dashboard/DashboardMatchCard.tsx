@@ -28,7 +28,15 @@ type DashboardMatch = {
   playersEmails?: string[];
   matchState?: Record<string, unknown> | null;
   matchStateSnapshot?: string | null;
+  finalStateSnapshot?: string | null;
   suspendedSessionId?: string;
+  mySession?: {
+    id: string;
+    endedAt: string | null;
+    hasFinalState: boolean;
+    finalStateSnapshot?: string | null;
+    matchStateSnapshot?: string | null;
+  };
 };
 
 const FORMAT_LABELS: Record<string, string> = {
@@ -145,20 +153,27 @@ const DashboardMatchCard: React.FC<DashboardMatchCardProps> = ({
   let isSuspendedAnnotation = Boolean(match.matchStateSnapshot && match.suspendedSessionId);
   if (isSuspendedAnnotation && match.matchStateSnapshot) {
     try {
-      const snapshot = JSON.parse(match.matchStateSnapshot) as Record<string, unknown>;
-      const completedSetsFromSnapshot = Array.isArray(snapshot.completedSets)
-        ? (snapshot.completedSets as unknown[])
-        : [];
-      suspendedAnnotationSets = buildPartials(completedSetsFromSnapshot);
+      // Handle both string and already-parsed object formats
+      const snapshot =
+        typeof match.matchStateSnapshot === 'string'
+          ? JSON.parse(match.matchStateSnapshot)
+          : match.matchStateSnapshot;
 
-      // Add current set if exists
-      if (snapshot.currentSetState && typeof snapshot.currentSetState === 'object') {
-        const css = snapshot.currentSetState as Record<string, unknown>;
-        const games = css['games'] as Record<string, number> | undefined;
-        if (games) {
-          const g1 = games.PLAYER_1 ?? 0;
-          const g2 = games.PLAYER_2 ?? 0;
-          suspendedAnnotationSets.push(`${g1}/${g2}`);
+      if (snapshot && typeof snapshot === 'object') {
+        const completedSetsFromSnapshot = Array.isArray(snapshot.completedSets)
+          ? (snapshot.completedSets as unknown[])
+          : [];
+        suspendedAnnotationSets = buildPartials(completedSetsFromSnapshot);
+
+        // Add current set if exists
+        if (snapshot.currentSetState && typeof snapshot.currentSetState === 'object') {
+          const css = snapshot.currentSetState as Record<string, unknown>;
+          const games = css['games'] as Record<string, number> | undefined;
+          if (games) {
+            const g1 = games.PLAYER_1 ?? 0;
+            const g2 = games.PLAYER_2 ?? 0;
+            suspendedAnnotationSets.push(`${g1}/${g2}`);
+          }
         }
       }
     } catch (err) {
@@ -297,6 +312,30 @@ const DashboardMatchCard: React.FC<DashboardMatchCardProps> = ({
           <div className="card-suspended-sets">{suspendedAnnotationSets.join('  ·  ')}</div>
         </div>
       )}
+
+      {/* ── Completed Annotation Score (from finalStateSnapshot) ── */}
+      {match.mySession?.finalStateSnapshot &&
+        !isSuspendedAnnotation &&
+        (() => {
+          try {
+            const finalSnapshot = JSON.parse(match.mySession.finalStateSnapshot);
+            const finalSets = Array.isArray(finalSnapshot.completedSets)
+              ? (finalSnapshot.completedSets as unknown[])
+              : [];
+            const finalPartials = buildPartials(finalSets);
+            return (
+              finalPartials.length > 0 && (
+                <div className="card-suspended-score">
+                  <span className="card-suspended-label">✓ Anotação Concluída</span>
+                  <div className="card-suspended-sets">{finalPartials.join('  ·  ')}</div>
+                </div>
+              )
+            );
+          } catch (e) {
+            console.warn('[DashboardMatchCard] Error parsing finalStateSnapshot:', e);
+            return null;
+          }
+        })()}
 
       {/* ── Live score (IN_PROGRESS only) ── */}
       {match.status === 'IN_PROGRESS' && ms && (
