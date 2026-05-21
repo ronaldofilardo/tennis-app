@@ -1,7 +1,7 @@
 import React from 'react';
 import './BottomTabBar.css';
 
-export type TabId = 'home' | 'stats' | 'ranking' | 'tournaments' | 'profile';
+export type TabId = 'home' | 'stats' | 'ranking' | 'profile';
 
 export interface TabBadge {
   tabId: TabId;
@@ -18,7 +18,6 @@ const TABS: { id: TabId; icon: string; label: string }[] = [
   { id: 'home', icon: '🏠', label: 'Início' },
   { id: 'stats', icon: '📊', label: 'Stats' },
   { id: 'ranking', icon: '📈', label: 'Ranking' },
-  { id: 'tournaments', icon: '🏆', label: 'Torneios' },
   { id: 'profile', icon: '👤', label: 'Perfil' },
 ];
 
@@ -37,7 +36,7 @@ const BottomTabBar: React.FC<BottomTabBarProps> = ({ activeTab, onTabChange, bad
         return (
           <button
             key={tab.id}
-            className={`bottom-tab-item${isActive ? 'bottom-tab-item--active' : ''}`}
+            className={`bottom-tab-item${isActive ? ' bottom-tab-item--active' : ''}`}
             onClick={() => onTabChange(tab.id)}
             role="tab"
             aria-selected={isActive}

@@ -9,13 +9,12 @@ vi.mock('../BottomTabBar.css', () => ({}));
 const mockOnTabChange = vi.fn();
 
 describe('BottomTabBar', () => {
-  it('renderiza todas as 5 abas', () => {
+  it('renderiza todas as 4 abas', () => {
     render(<BottomTabBar activeTab="home" onTabChange={mockOnTabChange} />);
 
     expect(screen.getByTestId('tab-home')).toBeInTheDocument();
     expect(screen.getByTestId('tab-stats')).toBeInTheDocument();
     expect(screen.getByTestId('tab-ranking')).toBeInTheDocument();
-    expect(screen.getByTestId('tab-tournaments')).toBeInTheDocument();
     expect(screen.getByTestId('tab-profile')).toBeInTheDocument();
   });
 
@@ -36,9 +35,9 @@ describe('BottomTabBar', () => {
   });
 
   it('define aria-selected=true apenas na aba ativa', () => {
-    render(<BottomTabBar activeTab="tournaments" onTabChange={mockOnTabChange} />);
+    render(<BottomTabBar activeTab="ranking" onTabChange={mockOnTabChange} />);
 
-    expect(screen.getByTestId('tab-tournaments')).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByTestId('tab-ranking')).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByTestId('tab-home')).toHaveAttribute('aria-selected', 'false');
     expect(screen.getByTestId('tab-profile')).toHaveAttribute('aria-selected', 'false');
   });

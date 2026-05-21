@@ -16,7 +16,14 @@ import type {
   AdminTabType,
 } from '../types/admin';
 import { PAGE_SIZE, INITIAL_CREATE_FORM } from '../types/admin';
-import type { ClubMember } from '../components/ClubMembersModal';
+
+// Legacy type definition for club members (feature removed)
+interface ClubMember {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
 
 // ── State ─────────────────────────────────────────────────────────────────────
 

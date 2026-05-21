@@ -2,8 +2,8 @@
 // Receives all dependencies as parameters so the parent hook can remain under 500 lines.
 
 import React, { useCallback, useEffect } from 'react';
-import type { TennisScoring } from '../core/scoring/TennisScoring';
-import type { PointDetails, RallyDetails } from '../core/scoring/types';
+import { TennisScoring } from '../core/scoring/TennisScoring';
+import type { PointDetails, RallyDetails, TennisFormat } from '../core/scoring/types';
 import { getErrorMessage } from '../types/errors';
 import { httpClient } from '../config/httpClient';
 import { resolvePlayerName } from '../data/players';
@@ -11,9 +11,9 @@ import { endSession } from '../services/annotationSessionService';
 import type { ScoreboardUIAction } from './scoreboardUIState';
 import { useToast } from '../components/Toast';
 import { createLogger } from '../services/logger';
-import { ScoreboardHandlerDeps } from './ScoreboardHandlerDeps';
+import type { ScoreboardHandlerDeps } from './ScoreboardHandlerDeps';
 
-export { ScoreboardHandlerDeps } from './ScoreboardHandlerDeps';
+export type { ScoreboardHandlerDeps } from './ScoreboardHandlerDeps';
 
 export function useScoreboardHandlers(deps: ScoreboardHandlerDeps) {
   const {
@@ -190,26 +190,45 @@ export function useScoreboardHandlers(deps: ScoreboardHandlerDeps) {
 
   const handleSetupConfirm = useCallback(
     async (firstServer: Player) => {
-      if (!matchData || !matchId) return;
+      console.log(`[handleSetupConfirm] 🎬 Iniciado. firstServer=${firstServer}, matchId=${matchId}`);
+      
+      if (!matchData || !matchId) {
+        console.error(`[handleSetupConfirm] ❌ Dados insuficientes: matchData=${!!matchData}, matchId=${matchId}`);
+        setError('Dados da partida incompletos');
+        return;
+      }
+      
       try {
+        console.log(`[handleSetupConfirm] 🔄 Criando TennisScoring com format=${matchData.format}`);
         const system = new TennisScoring(firstServer, matchData.format as TennisFormat);
         system.enableSync(matchId);
         system.setStartedAt(new Date().toISOString());
         const state = system.getState();
+        
         if ('needsSetup' in state) delete (state as Record<string, unknown>).needsSetup;
         if (!state.startedAt) state.startedAt = new Date().toISOString();
+        
         scoringSystemRef.current = system;
         dispatch({ type: 'SETUP_SET', isOpen: false });
+        
+        console.log(`[handleSetupConfirm] 📤 Enviando PATCH /matches/${matchId}/state com state:`, state);
 
         const response = await httpClient.patch(`/matches/${matchId}/state`, {
           matchState: state,
         });
+        
+        console.log(`[handleSetupConfirm] 📥 Resposta PATCH:`, response);
+        
         if (!response.ok) {
-          throw new Error(
-            `Falha na sincronização: ${response.status} - ${JSON.stringify(response.data)}`,
-          );
+          const errMsg = `Falha na sincronização: ${response.status} - ${JSON.stringify(response.data)}`;
+          console.error(`[handleSetupConfirm] ❌ ${errMsg}`);
+          throw new Error(errMsg);
         }
-      } catch {
+        
+        console.log(`[handleSetupConfirm] ✅ Sucesso!`);
+      } catch (err) {
+        console.error(`[handleSetupConfirm] ❌ Erro geral:`, err instanceof Error ? err.message : String(err));
+        if (err instanceof Error) console.error(`[handleSetupConfirm] Stack:`, err.stack);
         setError('Erro ao iniciar partida. Tente novamente.');
       }
     },

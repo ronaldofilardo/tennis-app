@@ -21,15 +21,8 @@ export interface MatchSetupFormState {
   duplicateMatch: { id: string; playerP1?: string; playerP2?: string } | null;
   isDuplicateModalOpen: boolean;
   pendingDuplicatePayload: Record<string, unknown> | null;
-  tournamentName: string;
-  roundName: string;
-  bracketType: 'ELIMINATION' | 'GROUPS' | 'SWISS';
   temperature: string;
   humidity: string;
-  tournamentSuggestions: string[];
-  roundSuggestions: string[];
-  showTournamentSuggestions: boolean;
-  showRoundSuggestions: boolean;
 }
 
 export type MatchSetupFormAction =
@@ -53,15 +46,8 @@ export type MatchSetupFormAction =
   | { type: 'setDuplicateMatch'; payload: any }
   | { type: 'setIsDuplicateModalOpen'; payload: boolean }
   | { type: 'setPendingDuplicatePayload'; payload: Record<string, unknown> | null }
-  | { type: 'setTournamentName'; payload: string }
-  | { type: 'setRoundName'; payload: string }
-  | { type: 'setBracketType'; payload: 'ELIMINATION' | 'GROUPS' | 'SWISS' }
   | { type: 'setTemperature'; payload: string }
   | { type: 'setHumidity'; payload: string }
-  | { type: 'setTournamentSuggestions'; payload: string[] }
-  | { type: 'setRoundSuggestions'; payload: string[] }
-  | { type: 'setShowTournamentSuggestions'; payload: boolean }
-  | { type: 'setShowRoundSuggestions'; payload: boolean }
   | { type: 'reset' };
 
 function formReducer(
@@ -109,24 +95,10 @@ function formReducer(
       return { ...state, isDuplicateModalOpen: action.payload };
     case 'setPendingDuplicatePayload':
       return { ...state, pendingDuplicatePayload: action.payload };
-    case 'setTournamentName':
-      return { ...state, tournamentName: action.payload };
-    case 'setRoundName':
-      return { ...state, roundName: action.payload };
-    case 'setBracketType':
-      return { ...state, bracketType: action.payload };
     case 'setTemperature':
       return { ...state, temperature: action.payload };
     case 'setHumidity':
       return { ...state, humidity: action.payload };
-    case 'setTournamentSuggestions':
-      return { ...state, tournamentSuggestions: action.payload };
-    case 'setRoundSuggestions':
-      return { ...state, roundSuggestions: action.payload };
-    case 'setShowTournamentSuggestions':
-      return { ...state, showTournamentSuggestions: action.payload };
-    case 'setShowRoundSuggestions':
-      return { ...state, showRoundSuggestions: action.payload };
     case 'reset':
       return initialState;
     default:
@@ -155,15 +127,8 @@ const initialState: MatchSetupFormState = {
   duplicateMatch: null,
   isDuplicateModalOpen: false,
   pendingDuplicatePayload: null,
-  tournamentName: '',
-  roundName: '',
-  bracketType: 'ELIMINATION',
   temperature: '',
   humidity: '',
-  tournamentSuggestions: [],
-  roundSuggestions: [],
-  showTournamentSuggestions: false,
-  showRoundSuggestions: false,
 };
 
 export function useMatchSetupForm() {
