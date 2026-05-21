@@ -83,13 +83,15 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
   const [editScoreModalOpen, setEditScoreModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [showResumeModal, setShowResumeModal] = useState(false);
+  const [openEditScoreAfterResume, setOpenEditScoreAfterResume] = useState(false);
 
   // Detectar sessão suspensa e abrir modal
+  // IMPORTANTE: NÃO mostrar para partidas recém-criadas (NOT_STARTED) — elas devem configurar quem começa sacando primeiro
   useEffect(() => {
-    if (suspendedSession) {
+    if (suspendedSession && matchData?.status !== 'NOT_STARTED') {
       setShowResumeModal(true);
     }
-  }, [suspendedSession]);
+  }, [suspendedSession, matchData?.status]);
 
   // Handler para retomar anotação suspensa
   const handleResumeAnnotation = useCallback(async () => {
@@ -108,10 +110,15 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
             if (system) {
               const restoredState = JSON.parse(suspendedSession.matchStateSnapshot);
               system.loadState(restoredState);
-              console.log('[ScoreboardV2] Estado anterior restaurado da sessão suspensa', {
-                matchId,
-                pointsCount: restoredState.pointsHistory?.length ?? 0,
-              });
+              // ✅ loadState() chama automaticamente setSnapshotFloor()
+              // Mas podemos confirmar aqui se necessário
+              console.log(
+                '[ScoreboardV2] ✅ Snapshot floor definido automaticamente via loadState',
+                {
+                  matchId,
+                  pointsCount: restoredState.pointsHistory?.length ?? 0,
+                },
+              );
             }
           } catch (parseErr) {
             console.warn('[ScoreboardV2] Falha ao restaurar estado anterior:', parseErr);
@@ -119,6 +126,8 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         }
 
         setShowResumeModal(false);
+        // Abrir EditScoreModal para permitir edição do placar
+        setOpenEditScoreAfterResume(true);
         clearSuspendedSession();
       }
     } catch (err) {
@@ -129,6 +138,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
   // Handler para começar nova anotação
   const handleStartNewAnnotation = useCallback(() => {
     setShowResumeModal(false);
+    setOpenEditScoreAfterResume(false);
     clearSuspendedSession();
     // A sessão será criada automaticamente pelo próximo POST /sessions
   }, [clearSuspendedSession]);
@@ -136,9 +146,18 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
   // Handler para descartar anotação suspensa
   const handleDiscardAnnotation = useCallback(() => {
     setShowResumeModal(false);
+    setOpenEditScoreAfterResume(false);
     clearSuspendedSession();
     navigate('/dashboard');
   }, [clearSuspendedSession, navigate]);
+
+  // Abrir EditScoreModal quando retomar anotação
+  useEffect(() => {
+    if (openEditScoreAfterResume) {
+      setEditScoreModalOpen(true);
+      setOpenEditScoreAfterResume(false);
+    }
+  }, [openEditScoreAfterResume]);
 
   useShakeDetection({
     onShake: useCallback(() => {
@@ -344,9 +363,9 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         playerNamesForUndo={{ PLAYER_1: players.p1, PLAYER_2: players.p2 }}
         editScoreModalOpen={editScoreModalOpen}
         onEditScoreClose={() => setEditScoreModalOpen(false)}
-        onEditScoreConfirm={(setWinners, server) => {
+        onEditScoreConfirm={(setResults, server) => {
           setEditScoreModalOpen(false);
-          handleEditScore(setWinners, server);
+          handleEditScore(setResults, server);
         }}
         currentSets={state.sets ?? { PLAYER_1: 0, PLAYER_2: 0 }}
         completedSets={state.completedSets ?? []}

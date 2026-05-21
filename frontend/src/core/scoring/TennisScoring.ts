@@ -24,6 +24,7 @@ export class TennisScoring {
   private pointsHistory: PointDetails[] = [];
   private _tokenProvider: (() => string | null) | null = null;
   private transitions: TennisStateTransitions;
+  private minFloorState: MatchState | null = null; // Snapshot soberano ao retomar anotação
 
   constructor(server: Player, format: TennisFormat = 'BEST_OF_3') {
     if (!TennisScoring.isValidPlayer(server)) {
@@ -128,9 +129,99 @@ export class TennisScoring {
     // Limpar histórico de undo ao carregar um estado salvo
     this.history = [];
     this.historyPointsLengths = [];
+
+    // ✅ AUTO-SET FLOOR: Ao carregar estado (retomada), definir como piso soberano
+    this.setSnapshotFloor(savedState as MatchState);
   }
 
-  // Salvar estado atual no histórico antes de fazer mudanças
+  /**
+   * Define o placar mínimo (floor) como soberano.
+   * Quando um usuário retoma uma anotação abandonada, o estado anterior é armazenado
+   * como piso — nenhum ponto pode ser desfeito ou adicionado para resultar em placar menor.
+   */
+  public setSnapshotFloor(state: MatchState): void {
+    // Copiar estado para evitar mutação externa
+    this.minFloorState = JSON.parse(JSON.stringify(state));
+    console.log('[TennisScoring] Snapshot floor definido:', {
+      sets: this.minFloorState.sets,
+      currentSet: this.minFloorState.currentSet,
+      games: this.minFloorState.currentSetState.games,
+    });
+  }
+
+  /**
+   * Validar se um novo estado é um downgrade em relação ao floor.
+   * Comparar: sets ganhos, sets atuais, games no set atual, pontos no game.
+   */
+  private isStateDowngrade(newState: MatchState): boolean {
+    if (!this.minFloorState) {
+      // Sem floor, qualquer estado é válido
+      return false;
+    }
+
+    // ✅ COMPARAÇÃO 1: Sets ganhos nunca podem diminuir
+    if (
+      newState.sets.PLAYER_1 < this.minFloorState.sets.PLAYER_1 ||
+      newState.sets.PLAYER_2 < this.minFloorState.sets.PLAYER_2
+    ) {
+      return true;
+    }
+
+    // ✅ COMPARAÇÃO 2: Set atual não pode voltar
+    if (newState.currentSet < this.minFloorState.currentSet) {
+      return true;
+    }
+
+    // ✅ COMPARAÇÃO 3: Games no set atual não podem diminuir
+    if (newState.currentSet === this.minFloorState.currentSet) {
+      if (
+        newState.currentSetState.games.PLAYER_1 <
+          this.minFloorState.currentSetState.games.PLAYER_1 ||
+        newState.currentSetState.games.PLAYER_2 < this.minFloorState.currentSetState.games.PLAYER_2
+      ) {
+        return true;
+      }
+
+      // ✅ COMPARAÇÃO 4: Pontos no game atual (se mesmo set/games)
+      if (
+        newState.currentSetState.games.PLAYER_1 ===
+          this.minFloorState.currentSetState.games.PLAYER_1 &&
+        newState.currentSetState.games.PLAYER_2 ===
+          this.minFloorState.currentSetState.games.PLAYER_2
+      ) {
+        const newPoints1 = this.gameScoreToNumber(newState.currentGame.points.PLAYER_1);
+        const newPoints2 = this.gameScoreToNumber(newState.currentGame.points.PLAYER_2);
+        const floorPoints1 = this.gameScoreToNumber(this.minFloorState.currentGame.points.PLAYER_1);
+        const floorPoints2 = this.gameScoreToNumber(this.minFloorState.currentGame.points.PLAYER_2);
+
+        if (newPoints1 < floorPoints1 || newPoints2 < floorPoints2) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Converter score de game ('0', '15', '30', '40', 'AD') para número para comparação.
+   */
+  private gameScoreToNumber(score: GamePoint): number {
+    switch (score) {
+      case '0':
+        return 0;
+      case '15':
+        return 1;
+      case '30':
+        return 2;
+      case '40':
+        return 3;
+      case 'AD':
+        return 4; // Vantagem é maior que 40
+      default:
+        return 0;
+    }
+  }
   // Também persiste o comprimento atual de pointsHistory para que o undo possa
   // truncar precisamente, independentemente de o ponto ter details ou não.
   private saveToHistory(): void {
@@ -147,6 +238,7 @@ export class TennisScoring {
   // Desfazer último ponto (undo)
   // Restaura tanto o estado do jogo quanto o pointsHistory ao comprimento anterior,
   // garantindo stats consistentes independentemente de o ponto ter tido details ou não.
+  // ✅ Respeita o floor: não permite undo abaixo do snapshot soberano.
   public undoLastPoint(): MatchState | null {
     if (this.history.length === 0) {
       return null;
@@ -155,6 +247,21 @@ export class TennisScoring {
     const previousState = this.history.pop();
     const previousPointsLength = this.historyPointsLengths.pop() ?? this.pointsHistory.length;
     if (previousState) {
+      // Validar se novo estado respeita floor
+      if (this.isStateDowngrade(previousState)) {
+        // Restaurar history para manter coerência
+        this.history.push(previousState);
+        if (previousPointsLength !== undefined) {
+          this.historyPointsLengths.push(previousPointsLength);
+        }
+        // Retornar null indicando que undo foi bloqueado
+        console.warn('[TennisScoring] Undo bloqueado: placar não pode ser menor que o snapshot', {
+          floor: this.minFloorState,
+          attempted: previousState,
+        });
+        return null;
+      }
+
       this.state = previousState;
       this.pointsHistory = this.pointsHistory.slice(0, previousPointsLength);
       return this.getState();
@@ -181,24 +288,42 @@ export class TennisScoring {
       this.recordPointDetails(player, { ...details, context: ctx });
     }
 
+    // ✅ Calcular novo estado ANTES de aplicar (para validação)
+    let newState: MatchState;
     if (this.state.currentGame.isTiebreak || this.state.currentGame.isMatchTiebreak) {
-      return this.transitions.addTiebreakPoint(this.state, this.config, player);
+      newState = this.transitions.addTiebreakPoint(this.state, this.config, player);
+    } else {
+      const games = this.state.currentSetState.games;
+      const tiebreakAt = this.config.tiebreakAt;
+      if (
+        this.state.currentGame.points.PLAYER_1 === '0' &&
+        this.state.currentGame.points.PLAYER_2 === '0' &&
+        typeof tiebreakAt === 'number' &&
+        tiebreakAt > 0 &&
+        games.PLAYER_1 === tiebreakAt &&
+        games.PLAYER_2 === tiebreakAt
+      ) {
+        newState = this.transitions.addTiebreakPoint(this.state, this.config, player);
+      } else {
+        newState = this.transitions.addRegularPoint(this.state, this.config, player);
+      }
     }
 
-    const games = this.state.currentSetState.games;
-    const tiebreakAt = this.config.tiebreakAt;
-    if (
-      this.state.currentGame.points.PLAYER_1 === '0' &&
-      this.state.currentGame.points.PLAYER_2 === '0' &&
-      typeof tiebreakAt === 'number' &&
-      tiebreakAt > 0 &&
-      games.PLAYER_1 === tiebreakAt &&
-      games.PLAYER_2 === tiebreakAt
-    ) {
-      return this.transitions.addTiebreakPoint(this.state, this.config, player);
+    // ✅ Validar downgrade ANTES de aplicar
+    if (this.isStateDowngrade(newState)) {
+      // Desfazer saveToHistory (remover do undo stack)
+      this.history.pop();
+      this.historyPointsLengths.pop();
+
+      console.warn('[TennisScoring] Ponto rejeitado: placar não pode ser menor que o snapshot', {
+        floor: this.minFloorState,
+        attempted: newState,
+      });
+      return this.getState();
     }
 
-    return this.transitions.addRegularPoint(this.state, this.config, player);
+    this.state = newState;
+    return this.getState();
   }
 
   // Sincronizar estado atual com o backend

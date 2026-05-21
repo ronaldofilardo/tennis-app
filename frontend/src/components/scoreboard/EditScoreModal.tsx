@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactElement } from 'react';
 import type { TennisFormat, Player } from '../../core/scoring/types';
-import {
-  validateSetResult,
-  validatePartialSetResult,
-  parseSetResultString,
-  getServerForNextSet,
-  type SetResult,
-  type SetValidation,
-  type PartialSetValidation,
-} from '../../core/scoring/setResultValidator';
+import { getServerForNextSet } from '../../core/scoring/setResultValidator';
 import './EditScoreModal.css';
+
+export interface SetEditData {
+  p1Games: number;
+  p2Games: number;
+  isPartial: boolean;
+}
 
 interface EditScoreModalProps {
   isOpen: boolean;
@@ -18,7 +16,7 @@ interface EditScoreModalProps {
   currentSets: { PLAYER_1: number; PLAYER_2: number };
   currentServer: Player;
   completedSets?: Array<{ games: Record<Player, number>; winner: Player }>;
-  onConfirm: (setWinners: Array<'p1' | 'p2'>, server: Player) => void;
+  onConfirm: (setResults: SetEditData[], server: Player) => void;
   onCancel: () => void;
 }
 
@@ -32,137 +30,91 @@ function totalSetsForFormat(format: TennisFormat): number {
     case 'NO_AD':
     case 'NO_LET_TENNIS':
       return 3;
+    case 'MATCH_TIEBREAK':
+      return 2; // 1 set regular + 1 match tiebreak decisivo
     default:
-      // SINGLE_SET, PRO_SET, MATCH_TIEBREAK, SHORT_SET, FAST4, SHORT_SET_NO_AD
       return 1;
   }
 }
 
-export const EditScoreModal: React.FC<EditScoreModalProps> = ({
-  isOpen,
-  matchFormat,
-  playerNames,
-  currentSets,
-  currentServer,
-  completedSets = [],
-  onConfirm,
-  onCancel,
-}) => {
-  if (!isOpen) return null;
+/** Determina se um placar de set representa um set finalizado */
+function isSetComplete(p1: number, p2: number): boolean {
+  if (p1 === 0 && p2 === 0) return false;
+  // Normal: um lado >= 6 e diferença >= 2
+  if ((p1 >= 6 || p2 >= 6) && Math.abs(p1 - p2) >= 2) return true;
+  // Tiebreak: 7-6
+  if ((p1 === 7 && p2 === 6) || (p1 === 6 && p2 === 7)) return true;
+  return false;
+}
+
+export function EditScoreModal(props: EditScoreModalProps): ReactElement | null {
+  const {
+    isOpen,
+    matchFormat,
+    playerNames,
+    currentSets,
+    currentServer,
+    completedSets = [],
+    onConfirm,
+    onCancel,
+  } = props;
+
+  const [newSets, setNewSets] = useState<SetEditData[]>([]);
+  const [p1Input, setP1Input] = useState('');
+  const [p2Input, setP2Input] = useState('');
+  const [nextServer, setNextServer] = useState<Player>(currentServer);
+
+  useEffect(() => {
+    if (isOpen) {
+      setNewSets([]);
+      setP1Input('');
+      setP2Input('');
+      setNextServer(currentServer);
+    }
+  }, [isOpen, currentServer]);
+
+  if (!isOpen) {
+    return null;
+  }
 
   const maxSets = totalSetsForFormat(matchFormat);
   const isContinuing = completedSets.length > 0;
 
-  // Build completed set winners array
-  const buildCompletedSetWinners = (): Array<'p1' | 'p2'> => {
-    const winners: Array<'p1' | 'p2'> = [];
-    completedSets.forEach((set) => {
-      if (set.games.PLAYER_1 > set.games.PLAYER_2) {
-        winners.push('p1');
-      } else {
-        winners.push('p2');
-      }
-    });
-    return winners;
+  const p1Val = p1Input === '' ? NaN : parseInt(p1Input, 10);
+  const p2Val = p2Input === '' ? NaN : parseInt(p2Input, 10);
+  const bothFilled = !isNaN(p1Val) && !isNaN(p2Val) && p1Val >= 0 && p2Val >= 0;
+  const completed = bothFilled && isSetComplete(p1Val, p2Val);
+  const partial = bothFilled && !completed;
+
+  const totalEditedSets = completedSets.length + newSets.length;
+  const canAddNextSet = completed && totalEditedSets < maxSets - 1;
+  const canConfirm = newSets.length > 0 || bothFilled;
+
+  const handleAddSet = (): void => {
+    if (!completed) return;
+    const data: SetEditData = { p1Games: p1Val, p2Games: p2Val, isPartial: false };
+    const newList = [...newSets, data];
+    setNewSets(newList);
+    setP1Input('');
+    setP2Input('');
+    const winner: Player = p1Val > p2Val ? 'PLAYER_1' : 'PLAYER_2';
+    setNextServer(getServerForNextSet(winner, currentServer, totalEditedSets, matchFormat));
   };
 
-  const [resultInput, setResultInput] = useState('');
-  const [validation, setValidation] = useState<PartialSetValidation | null>(null);
-  const [completedSetWinners, setCompletedSetWinners] = useState<Array<'p1' | 'p2'>>(
-    buildCompletedSetWinners(),
-  );
-  const [nextServer, setNextServer] = useState<Player>(currentServer);
-  const [editingSetIndex, setEditingSetIndex] = useState(completedSetWinners.length);
-  const [currentPartialGames, setCurrentPartialGames] = useState<{ p1: number; p2: number } | null>(
-    null,
-  );
-
-  // Reset quando modal abre
-  useEffect(() => {
-    if (isOpen) {
-      setResultInput('');
-      setValidation(null);
-      setCompletedSetWinners(buildCompletedSetWinners());
-      setEditingSetIndex(buildCompletedSetWinners().length);
-      setNextServer(currentServer);
-      setCurrentPartialGames(null);
+  const handleConfirm = (): void => {
+    const finalSets = [...newSets];
+    if (bothFilled) {
+      finalSets.push({ p1Games: p1Val, p2Games: p2Val, isPartial: !completed });
     }
-  }, [isOpen]);
-
-  // Validar input em tempo real (aceita completo ou parcial)
-  const handleResultChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const input = e.target.value;
-    setResultInput(input);
-
-    if (input.trim() === '') {
-      setValidation(null);
-      setCurrentPartialGames(null);
-      return;
-    }
-
-    const parsed = parseSetResultString(input);
-    if (!parsed) {
-      setValidation({
-        isValid: false,
-        error: 'Digite no formato: 6x4, 7-6, etc',
-        p1Games: 0,
-        p2Games: 0,
-        isCompleted: false,
-      });
-      setCurrentPartialGames(null);
-      return;
-    }
-
-    const result = validatePartialSetResult(parsed, matchFormat);
-    setValidation(result);
-    setCurrentPartialGames({ p1: result.p1Games, p2: result.p2Games });
-
-    // Se resultado é válido e tem vencedor, determinar próximo servidor
-    if (result.isValid && result.winner) {
-      const player = result.winner === 'PLAYER_1' ? 'PLAYER_1' : 'PLAYER_2';
-      const nextSrv = getServerForNextSet(
-        player,
-        currentServer,
-        completedSetWinners.length,
-        matchFormat,
-      );
-      setNextServer(nextSrv);
-    }
+    onConfirm(finalSets, nextServer);
   };
 
-  // Confirmar resultado do set e ir para próximo
-  const handleConfirmSetResult = async (): Promise<void> => {
-    if (!validation?.isValid) return;
-
-    let newWinners: Array<'p1' | 'p2'>;
-
-    // Se tem vencedor (set completo), adiciona à lista de vencedores
-    if (validation.winner) {
-      const winner = validation.winner === 'PLAYER_1' ? 'p1' : 'p2';
-      newWinners = [...completedSetWinners, winner];
-      setCompletedSetWinners(newWinners);
-    } else {
-      // Se é parcial, apenas avança para próximo set (sem vencedor)
-      newWinners = [...completedSetWinners, 'p1']; // placeholder
-      setCompletedSetWinners(newWinners);
-    }
-
-    // Reset para próximo set
-    setResultInput('');
-    setValidation(null);
-    setCurrentPartialGames(null);
-    setEditingSetIndex((prev) => prev + 1);
-  };
-
-  // Confirmar todos os sets e fechar modal
-  const handleConfirmAllSets = (): void => {
-    onConfirm(completedSetWinners, nextServer);
-  };
-
-  const canConfirmSetResult = validation?.isValid || false;
-  const canConfirmMatch = completedSetWinners.length > 0;
-
-  const isFirstSetOnly = maxSets === 1;
+  const p1SetsWon =
+    completedSets.filter((s) => s.winner === 'PLAYER_1').length +
+    newSets.filter((s) => s.p1Games > s.p2Games).length;
+  const p2SetsWon =
+    completedSets.filter((s) => s.winner === 'PLAYER_2').length +
+    newSets.filter((s) => s.p2Games > s.p1Games).length;
 
   return (
     <div className="edit-score-overlay" onClick={onCancel}>
@@ -179,12 +131,11 @@ export const EditScoreModal: React.FC<EditScoreModalProps> = ({
 
         <div className="edit-score-body">
           <p className="edit-score-info">
-            ✅ Você pode retomar a anotação de onde parou. Digite o resultado de cada set e continue
-            anotando.
+            ✅ Informe o placar atual de cada set para retomar a anotação de onde parou.
           </p>
 
-          {/* Seção: Sets já finalizados */}
-          {completedSetWinners.length > 0 && (
+          {/* Sets já finalizados (do banco/engine — imutáveis) */}
+          {completedSets.length > 0 && (
             <div className="edit-score-section">
               <p className="edit-score-section-label">📊 Sets Finalizados</p>
               <div className="edit-score-completed-sets">
@@ -195,7 +146,7 @@ export const EditScoreModal: React.FC<EditScoreModalProps> = ({
                       {set.games.PLAYER_1}x{set.games.PLAYER_2}
                     </span>
                     <span
-                      className={`edit-score-set-winner ${set.winner === 'PLAYER_1' ? 'p1' : 'p2'}`}
+                      className={set.winner === 'PLAYER_1' ? 'edit-score-set-winner p1' : 'edit-score-set-winner p2'}
                     >
                       {set.winner === 'PLAYER_1' ? playerNames.p1 : playerNames.p2}
                     </span>
@@ -205,78 +156,89 @@ export const EditScoreModal: React.FC<EditScoreModalProps> = ({
             </div>
           )}
 
-          {/* Seção: Set em edição */}
-          {!isFirstSetOnly && editingSetIndex < maxSets && (
+          {/* Sets adicionados nesta sessão de edição */}
+          {newSets.length > 0 && (
+            <div className="edit-score-section">
+              <p className="edit-score-section-label">✅ Sets Adicionados</p>
+              <div className="edit-score-completed-sets">
+                {newSets.map((set, idx) => {
+                  const setIdx = completedSets.length + idx;
+                  return (
+                    <div key={idx} className="edit-score-completed-set-row">
+                      <span className="edit-score-set-num">Set {setIdx + 1}</span>
+                      <span className="edit-score-set-result">
+                        {set.p1Games}x{set.p2Games}
+                      </span>
+                      <span
+                        className={set.p1Games > set.p2Games ? 'edit-score-set-winner p1' : 'edit-score-set-winner p2'}
+                      >
+                        {set.p1Games > set.p2Games ? playerNames.p1 : playerNames.p2}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Input do set atual */}
+          {totalEditedSets < maxSets && (
             <div className="edit-score-section edit-score-section-active">
-              <p className="edit-score-section-label">✏️ Placar do Set {editingSetIndex + 1}</p>
-              <div className="edit-score-input-group">
-                <label className="edit-score-input-label">Digite o resultado (ex: 6x4, 7-6):</label>
+              <p className="edit-score-section-label">✏️ Set {totalEditedSets + 1}</p>
+              <div className="edit-score-dual-input-row">
+                <span className="edit-score-player-label">{playerNames.p1}</span>
                 <input
-                  type="text"
-                  className={`edit-score-input ${
-                    validation?.isValid ? 'valid' : validation?.error ? 'invalid' : ''
-                  }`}
-                  value={resultInput}
-                  onChange={handleResultChange}
-                  placeholder="6x4"
+                  type="number"
+                  min="0"
+                  max="13"
+                  className={bothFilled && p1Val > p2Val ? 'edit-score-games-input winner' : 'edit-score-games-input'}
+                  value={p1Input}
+                  onChange={(e) => setP1Input(e.target.value)}
+                  placeholder="0"
                   autoFocus
                 />
-                {validation?.error && <p className="edit-score-error">{validation.error}</p>}
-                {validation?.isValid && (
-                  <div className="edit-score-success">
-                    {validation.isCompleted && validation.winner ? (
-                      <>
-                        <p className="edit-score-success-winner">
-                          {validation.winner === 'PLAYER_1' ? playerNames.p1 : playerNames.p2}{' '}
-                          venceu o set
-                        </p>
-                        {editingSetIndex < maxSets - 1 && (
-                          <p className="edit-score-success-server">
-                            Próximo saque:{' '}
-                            <strong>
-                              {nextServer === 'PLAYER_1' ? playerNames.p1 : playerNames.p2}
-                            </strong>
-                          </p>
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        <p className="edit-score-success-partial">
-                          📝 Set em andamento: {validation.p1Games}x{validation.p2Games}
-                        </p>
-                        <p className="edit-score-success-info">
-                          Você pode continuar anotando daqui em diante
-                        </p>
-                      </>
-                    )}
-                  </div>
-                )}
+                <span className="edit-score-vs">×</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="13"
+                  className={bothFilled && p2Val > p1Val ? 'edit-score-games-input winner' : 'edit-score-games-input'}
+                  value={p2Input}
+                  onChange={(e) => setP2Input(e.target.value)}
+                  placeholder="0"
+                />
+                <span className="edit-score-player-label">{playerNames.p2}</span>
               </div>
 
-              {editingSetIndex < maxSets - 1 && (
-                <button
-                  className={`edit-score-btn-next-set ${canConfirmSetResult ? 'active' : ''}`}
-                  onClick={handleConfirmSetResult}
-                  disabled={!canConfirmSetResult}
-                >
-                  {validation?.isCompleted ? '➜ Próximo Set' : '✓ Continuar Anotando'}
+              {bothFilled && (
+                <p className={completed ? 'edit-score-set-feedback complete' : 'edit-score-set-feedback partial'}>
+                  {completed ? (
+                    <>
+                      <strong>{p1Val > p2Val ? playerNames.p1 : playerNames.p2}</strong> venceu o
+                      set
+                    </>
+                  ) : (
+                    <>📝 Set em andamento — você continuará a anotar daqui</>
+                  )}
+                </p>
+              )}
+
+              {canAddNextSet && (
+                <button className="edit-score-btn-next-set active" onClick={handleAddSet}>
+                  ➜ Próximo Set
                 </button>
               )}
             </div>
           )}
 
-          {/* Se completou todos os sets necessários */}
-          {editingSetIndex >= maxSets && (
-            <div className="edit-score-section edit-score-section-complete">
-              <p className="edit-score-section-label">✅ Placar Completo</p>
-              <div className="edit-score-summary">
-                <span>{playerNames.p1}</span>
-                <span className="edit-score-summary-score">
-                  {completedSetWinners.filter((w) => w === 'p1').length} —{' '}
-                  {completedSetWinners.filter((w) => w === 'p2').length}
-                </span>
-                <span>{playerNames.p2}</span>
-              </div>
+          {/* Resumo de sets */}
+          {(p1SetsWon > 0 || p2SetsWon > 0) && (
+            <div className="edit-score-summary">
+              <span>{playerNames.p1}</span>
+              <span className="edit-score-summary-score">
+                {p1SetsWon} — {p2SetsWon}
+              </span>
+              <span>{playerNames.p2}</span>
             </div>
           )}
         </div>
@@ -285,15 +247,11 @@ export const EditScoreModal: React.FC<EditScoreModalProps> = ({
           <button className="edit-score-btn-cancel" onClick={onCancel}>
             Cancelar
           </button>
-          <button
-            className="edit-score-btn-confirm"
-            onClick={handleConfirmAllSets}
-            disabled={!canConfirmMatch}
-          >
+          <button className="edit-score-btn-confirm" onClick={handleConfirm} disabled={!canConfirm}>
             Confirmar Placar
           </button>
         </div>
       </div>
     </div>
   );
-};
+}
