@@ -61,7 +61,7 @@ const DashboardOpenMatchesSection: React.FC<DashboardOpenMatchesSectionProps> = 
             aria-hidden="true"
             width={15}
             height={15}
-            className={`open-matches-chevron${isExpanded ? '' : 'open-matches-chevron--collapsed'}`}
+            className={`open-matches-chevron${isExpanded ? '' : ' open-matches-chevron--collapsed'}`}
           >
             <polyline points="6 9 12 15 18 9" />
           </svg>
@@ -69,7 +69,7 @@ const DashboardOpenMatchesSection: React.FC<DashboardOpenMatchesSectionProps> = 
       </button>
       <div
         id="open-matches-list"
-        className={`open-matches-body${isExpanded ? '' : 'open-matches-body--hidden'}`}
+        className={`open-matches-body${isExpanded ? '' : ' open-matches-body--hidden'}`}
       >
         {openMatchesLoading ? (
           <p className="open-matches-loading">Carregando...</p>
