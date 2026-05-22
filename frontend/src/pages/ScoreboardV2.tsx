@@ -5,19 +5,13 @@ import { httpClient } from '../config/httpClient';
 import LoadingIndicator from '../components/LoadingIndicator';
 import type { PointDetails } from '../core/scoring/types';
 import type { EditableMatch } from '../components/EditMatchModal';
+import type { SetEditData } from '../components/scoreboard/EditScoreModal';
 import { resolvePlayerName } from '../data/players';
-import CourtBackground from '../components/scoreboard/CourtBackground';
-import MatchHeader from '../components/scoreboard/MatchHeader';
-import PlayerCard from '../components/scoreboard/PlayerCard';
 import { ErrorBoundary } from '../components/ErrorBoundary';
-import VSIndicator from '../components/scoreboard/VSIndicator';
-import ContextBadges from '../components/scoreboard/ContextBadges';
-import ActionBar from '../components/scoreboard/ActionBar';
-import AnnotationSessionPanel from '../components/AnnotationSessionPanel';
-import CreatorEndMatchPanel from '../components/CreatorEndMatchPanel';
 import ReopenMatchPanel from '../components/ReopenMatchPanel';
 import SetupModal from '../components/scoreboard/SetupModal';
 import ScoreboardModals from '../components/ScoreboardModals';
+import { ScoreboardCourtView } from './ScoreboardCourtView';
 import { useScoreboardEngine } from '../hooks/useScoreboardEngine';
 import { useCreatorManagerMode } from '../hooks/useCreatorManagerMode';
 import { useShakeDetection } from '../hooks/useGestures';
@@ -365,9 +359,22 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         onEditScoreClose={() => setEditScoreModalOpen(false)}
         onEditScoreConfirm={(setResults, server) => {
           setEditScoreModalOpen(false);
-          handleEditScore(setResults, server);
+          // Guard: não fazer nada se array vazio
+          if (setResults.length === 0) return;
+
+          // Preservar sets já finalizados do engine como SetEditData
+          const existingSets = (state.completedSets ?? []).map((set) => ({
+            p1Games: set.games.PLAYER_1,
+            p2Games: set.games.PLAYER_2,
+            isPartial: false,
+          }));
+
+          // Concatenar: existing + novo + potencial parcial
+          const allSets = [...existingSets, ...(setResults as SetEditData[])];
+          handleEditScore(allSets, server);
         }}
-        currentSets={state.sets ?? { PLAYER_1: 0, PLAYER_2: 0 }}
+        currentSets={state.currentSetState?.games ?? { PLAYER_1: 0, PLAYER_2: 0 }}
+        currentGamePoints={state.currentGame?.points}
         completedSets={state.completedSets ?? []}
         deleteModalOpen={deleteModalOpen}
         onDeleteModalClose={() => setDeleteModalOpen(false)}
@@ -386,224 +393,62 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         onDiscardAnnotation={handleDiscardAnnotation}
       />
 
-      <div
-        className="scoreboard-v2-court"
-        data-render={renderKey}
-        data-court={courtAttr}
-        style={
-          {
-            '--sb-scale': String(fontScale),
-            '--score-size-user': `calc(var(--score-size) * ${fontScale})`,
-          } as React.CSSProperties
+      <ScoreboardCourtView
+        renderKey={renderKey}
+        courtAttr={courtAttr}
+        fontScale={fontScale}
+        courtRef={courtRef}
+        matchId={matchId!}
+        matchData={matchData}
+        currentUser={currentUser}
+        players={players}
+        elapsed={elapsed}
+        annotatorCount={annotatorCount}
+        state={state}
+        serveStep={serveStep}
+        canUndo={scoringSystem.canUndo()}
+        pointsHistory={pointsHistory}
+        isTiebreak={isTiebreak}
+        isDeuce={isDeuce}
+        p1HasAdv={p1HasAdv}
+        p2HasAdv={p2HasAdv}
+        p1Score={p1Score}
+        p2Score={p2Score}
+        p1Games={p1Games}
+        p2Games={p2Games}
+        p1Sets={p1Sets}
+        p2Sets={p2Sets}
+        p1MatchPt={p1MatchPt}
+        p2MatchPt={p2MatchPt}
+        p1AtSetPt={p1AtSetPt}
+        p2AtSetPt={p2AtSetPt}
+        isBreakPoint={isBreakPoint}
+        returner={returner}
+        onBack={() => navigate('/dashboard')}
+        onMenu={fetchStats}
+        onEditMatch={
+          currentUser?.id && matchData.createdByUserId === currentUser.id
+            ? () => setEditMatchOpen(true)
+            : undefined
         }
-      >
-        {/* Header */}
-        <MatchHeader
-          sportType={matchData.sportType}
-          completedSets={state.completedSets ?? []}
-          elapsed={elapsed}
-          onBack={() => navigate('/dashboard')}
-          onMenu={fetchStats}
-          onEdit={
-            currentUser?.id && matchData.createdByUserId === currentUser.id
-              ? () => setEditMatchOpen(true)
-              : undefined
-          }
-        />
-
-        {/* Botão excluir partida — só para criador em NOT_STARTED */}
-        {currentUser?.id &&
-          matchData.createdByUserId === currentUser.id &&
-          matchData.status === 'NOT_STARTED' && (
-            <button
-              className="sb-delete-match-btn"
-              onClick={() => setDeleteModalOpen(true)}
-              title="Excluir esta partida"
-            >
-              🗑 Excluir Partida
-            </button>
-          )}
-
-        {/* Annotators badge */}
-        {annotatorCount > 0 && (
-          <div
-            className="annotator-badge"
-            aria-label={`${annotatorCount} anotador${annotatorCount !== 1 ? 'es' : ''} cobrindo esta partida`}
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              aria-hidden="true"
-            >
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-            {annotatorCount} anotador{annotatorCount !== 1 ? 'es' : ''}
-          </div>
-        )}
-
-        {/* Quadra */}
-        <div className="court-container" ref={courtRef}>
-          <CourtBackground />
-
-          <ContextBadges
-            isTiebreak={isTiebreak}
-            isMatchTiebreak={state.currentGame?.isMatchTiebreak ?? false}
-            isMatchPoint={p1MatchPt || p2MatchPt}
-            isSetPoint={(p1AtSetPt || p2AtSetPt) && !(p1MatchPt || p2MatchPt)}
-            isBreakPoint={isBreakPoint && !(p1AtSetPt || p2AtSetPt)}
-            pointsHistory={pointsHistory}
-            elapsed={elapsed}
-            playerNames={{ PLAYER_1: players.p1, PLAYER_2: players.p2 }}
-            serverName={state.server === 'PLAYER_1' ? players.p1 : players.p2}
-          />
-
-          <div className="players-row">
-            <PlayerCard
-              player="PLAYER_1"
-              name={players.p1}
-              code={
-                matchData.player1GlobalId
-                  ? `[${matchData.player1GlobalId.slice(0, 8).toUpperCase()}]`
-                  : undefined
-              }
-              score={p1Score}
-              games={p1Games}
-              sets={p1Sets}
-              isServing={state.server === 'PLAYER_1'}
-              serveStep={serveStep}
-              isTiebreak={isTiebreak}
-              isMatchPoint={p1MatchPt}
-              isSetPoint={p1AtSetPt && !p1MatchPt}
-              isBreakPoint={isBreakPoint && returner === 'PLAYER_1'}
-              isAdvantage={p1HasAdv}
-              isDeuce={isDeuce}
-              disabled={state.isFinished}
-              onPress={() => handlePointDetailsOpen('PLAYER_1')}
-              onSwipeDown={() => {
-                if (scoringSystem?.canUndo()) setUndoModalOpen(true);
-              }}
-            />
-
-            <VSIndicator
-              isTiebreak={isTiebreak}
-              isMatchTiebreak={state.currentGame?.isMatchTiebreak ?? false}
-              isDeuce={isDeuce}
-              tiebreakChangeAt={6}
-              tiebreakTotalPoints={
-                isTiebreak
-                  ? (typeof p1Score === 'number' ? p1Score : 0) +
-                    (typeof p2Score === 'number' ? p2Score : 0)
-                  : 0
-              }
-            />
-
-            <PlayerCard
-              player="PLAYER_2"
-              name={players.p2}
-              code={
-                matchData.player2GlobalId
-                  ? `[${matchData.player2GlobalId.slice(0, 8).toUpperCase()}]`
-                  : undefined
-              }
-              score={p2Score}
-              games={p2Games}
-              sets={p2Sets}
-              isServing={state.server === 'PLAYER_2'}
-              serveStep={serveStep}
-              isTiebreak={isTiebreak}
-              isMatchPoint={p2MatchPt}
-              isSetPoint={p2AtSetPt && !p2MatchPt}
-              isBreakPoint={isBreakPoint && returner === 'PLAYER_2'}
-              isAdvantage={p2HasAdv}
-              isDeuce={isDeuce}
-              disabled={state.isFinished}
-              onPress={() => handlePointDetailsOpen('PLAYER_2')}
-              onSwipeDown={() => {
-                if (scoringSystem?.canUndo()) setUndoModalOpen(true);
-              }}
-            />
-          </div>
-
-          {/* Banner de partida finalizada */}
-          {state.isFinished && state.winner && (
-            <div className="match-finished-banner">
-              <h2>🏆 PARTIDA FINALIZADA!</h2>
-              <p className="winner-label-banner">VENCEDOR:</p>
-              <p className="winner-name">{state.winner === 'PLAYER_1' ? players.p1 : players.p2}</p>
-              <p className="final-score">
-                Placar Final: {state.sets.PLAYER_1} sets x {state.sets.PLAYER_2} sets
-              </p>
-              <div className="finished-actions">
-                <button className="finished-action-btn" onClick={() => navigate('/dashboard')}>
-                  <span aria-hidden="true">📊</span> Ver Estatísticas
-                </button>
-                <button className="finished-action-btn" onClick={() => navigate('/matches/new')}>
-                  <span aria-hidden="true">🎾</span> Nova Partida
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* ActionBar (saque + undo + quem venceu o ponto) */}
-        <ActionBar
-          canUndo={scoringSystem?.canUndo() ?? false}
-          isFinished={state.isFinished ?? false}
-          serveStep={serveStep}
-          server={state.server ?? 'PLAYER_1'}
-          playerNames={{ PLAYER_1: players.p1, PLAYER_2: players.p2 }}
-          onUndo={() => setUndoModalOpen(true)}
-          onAce={() => {
-            setIsServerEffectOpen(true);
-            setPlayerInFocus(state.server);
-          }}
-          onOut={() => handleServeErrorOpen('out', 'first')}
-          onNet={() => handleServeErrorOpen('net', 'first')}
-          onFault={handleFault}
-          onFaultOut={() => handleServeErrorOpen('out', 'second')}
-          onFaultNet={() => handleServeErrorOpen('net', 'second')}
-          fontScale={fontScale}
-          onFontScaleInc={handleFontScaleInc}
-          onFontScaleDec={handleFontScaleDec}
-          onEditScore={() => setEditScoreModalOpen(true)}
-          isModalOpen={isServeErrorModalOpen}
-          isMatchFinalized={matchData?.status === 'FINISHED'}
-        />
-
-        {/* Painel de sessões de anotação */}
-        {matchId && currentUser && (
-          <AnnotationSessionPanel
-            matchId={matchId}
-            matchStatus={matchData?.status ?? 'NOT_STARTED'}
-            currentUserId={currentUser.id}
-            userRole={currentUser.activeRole}
-          />
-        )}
-
-        {/* Painel para criador encerrar partida manualmente */}
-        {matchId && currentUser && matchData && (
-          <CreatorEndMatchPanel
-            matchId={matchId}
-            isCreator={matchData.createdByUserId === currentUser.id}
-            matchStatus={matchData.status}
-            onMatchEnded={() => {
-              // Após encerrar, atualizar status local
-              if (matchData) {
-                setMatchData({ ...matchData, status: 'FINISHED' });
-              }
-            }}
-          />
-        )}
-
-        {/* Explainer modo família removido */}
-      </div>
+        onDeleteMatch={() => setDeleteModalOpen(true)}
+        onPointDetailsOpen={handlePointDetailsOpen}
+        onServeErrorOpen={handleServeErrorOpen}
+        onFault={handleFault}
+        onUndoOpen={() => setUndoModalOpen(true)}
+        onAce={() => {
+          setIsServerEffectOpen(true);
+          setPlayerInFocus(state.server);
+        }}
+        onFontScaleInc={handleFontScaleInc}
+        onFontScaleDec={handleFontScaleDec}
+        onEditScore={() => setEditScoreModalOpen(true)}
+        isServeErrorModalOpen={isServeErrorModalOpen}
+        isMatchFinalized={matchData?.status === 'FINISHED'}
+        onMatchEnded={() => {
+          if (matchData) setMatchData({ ...matchData, status: 'FINISHED' });
+        }}
+      />
     </>
   );
 };

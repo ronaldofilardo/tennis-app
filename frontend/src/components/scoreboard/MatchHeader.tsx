@@ -29,9 +29,9 @@ function formatSetScore(set: CompletedSet): string {
   const { games, tiebreakScore, winner } = set;
   if (tiebreakScore) {
     const loserTb = winner === 'PLAYER_1' ? tiebreakScore.PLAYER_2 : tiebreakScore.PLAYER_1;
-    return `${games.PLAYER_1}-${games.PLAYER_2}(${loserTb})`;
+    return `${games.PLAYER_1}x${games.PLAYER_2}(${loserTb})`;
   }
-  return `${games.PLAYER_1}-${games.PLAYER_2}`;
+  return `${games.PLAYER_1}x${games.PLAYER_2}`;
 }
 
 const MatchHeader: React.FC<MatchHeaderProps> = ({

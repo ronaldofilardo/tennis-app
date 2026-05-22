@@ -5,7 +5,7 @@
 /**
  * Roles possíveis no sistema — alinhadas com enum UserRole do Prisma.
  */
-export type UserRole = 'ADMIN' | 'COACH' | 'ATHLETE' | 'SPECTATOR';
+export type UserRole = 'ADMIN' | 'GESTOR' | 'COACH' | 'ATHLETE' | 'SPECTATOR';
 
 /**
  * Representa um usuário autenticado para verificação de permissão.

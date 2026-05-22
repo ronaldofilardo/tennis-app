@@ -101,7 +101,13 @@ describe('useScoreboardEngine - handleEditScore & Undo', () => {
       const loadSpy = vi.spyOn(sys!, 'loadState');
 
       await act(async () => {
-        await result.current.handleEditScore(['p1', 'p2'], 'PLAYER_1');
+        await result.current.handleEditScore(
+          [
+            { p1Games: 6, p2Games: 0, isPartial: false },
+            { p1Games: 0, p2Games: 6, isPartial: false },
+          ],
+          'PLAYER_1',
+        );
       });
 
       expect(loadSpy).toHaveBeenCalled();
@@ -115,7 +121,10 @@ describe('useScoreboardEngine - handleEditScore & Undo', () => {
       });
 
       await act(async () => {
-        await result.current.handleEditScore(['p1'], 'PLAYER_1');
+        await result.current.handleEditScore(
+          [{ p1Games: 6, p2Games: 0, isPartial: false }],
+          'PLAYER_1',
+        );
       });
 
       const sys = result.current.getSystem?.();
@@ -134,7 +143,13 @@ describe('useScoreboardEngine - handleEditScore & Undo', () => {
       });
 
       await act(async () => {
-        await result.current.handleEditScore(['p1', 'p2'], 'PLAYER_2');
+        await result.current.handleEditScore(
+          [
+            { p1Games: 6, p2Games: 0, isPartial: false },
+            { p1Games: 0, p2Games: 6, isPartial: false },
+          ],
+          'PLAYER_2',
+        );
       });
 
       const sys = result.current.getSystem?.();
@@ -152,7 +167,14 @@ describe('useScoreboardEngine - handleEditScore & Undo', () => {
       });
 
       await act(async () => {
-        await result.current.handleEditScore(['p1', 'p2', 'p1'], 'PLAYER_1');
+        await result.current.handleEditScore(
+          [
+            { p1Games: 6, p2Games: 0, isPartial: false },
+            { p1Games: 0, p2Games: 6, isPartial: false },
+            { p1Games: 6, p2Games: 0, isPartial: false },
+          ],
+          'PLAYER_1',
+        );
       });
 
       const sys = result.current.getSystem?.();
@@ -173,7 +195,14 @@ describe('useScoreboardEngine - handleEditScore & Undo', () => {
       });
 
       await act(async () => {
-        await result.current.handleEditScore(['p1', 'p1', 'p2'], 'PLAYER_1');
+        await result.current.handleEditScore(
+          [
+            { p1Games: 6, p2Games: 0, isPartial: false },
+            { p1Games: 6, p2Games: 0, isPartial: false },
+            { p1Games: 0, p2Games: 6, isPartial: false },
+          ],
+          'PLAYER_1',
+        );
       });
 
       const sys = result.current.getSystem?.();
@@ -193,7 +222,10 @@ describe('useScoreboardEngine - handleEditScore & Undo', () => {
       const initialRenderKey = result.current.renderKey;
 
       await act(async () => {
-        await result.current.handleEditScore(['p1'], 'PLAYER_1');
+        await result.current.handleEditScore(
+          [{ p1Games: 6, p2Games: 0, isPartial: false }],
+          'PLAYER_1',
+        );
       });
 
       // renderKey should have changed (or at least function executed)

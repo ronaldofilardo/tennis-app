@@ -7,26 +7,15 @@
     "dev": "pnpm --filter frontend dev:full",
     "dev:only-vite": "pnpm -r dev",
     "build": "pnpm -r build",
-    "dev:backend": "pnpm --filter backend dev",
-    "buildCommand": "npm run build:frontend",
     "test:coverage": "pnpm --filter frontend run test:coverage",
-    "test": "cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" vitest run"
+    "test": "pnpm --filter frontend run test:ci"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^14.6.1",
-    "@vitest/coverage-v8": "^4.0.7",
-    "@vitest/ui": "^4.0.7",
     "concurrently": "^9.2.1",
-    "cpy-cli": "^6.0.0",
-    "jsdom": "^27.0.0",
-    "vitest": "^4.0.7"
+    "cpy-cli": "^6.0.0"
   },
-  "dependencies": {
-    "cross-env": "^10.1.0"
-  },
+  "dependencies": {},
   "pnpm": {
     "onlyBuiltDependencies": [
       "@prisma/client",

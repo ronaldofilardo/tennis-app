@@ -719,6 +719,7 @@ export default async function handler(req, res) {
             matchId: true,
             annotatorUserId: true,
             isActive: true,
+            status: true,
           },
         });
         if (!session || session.matchId !== id)
@@ -728,7 +729,9 @@ export default async function handler(req, res) {
           return sendJson(res, 403, {
             error: 'Only the annotator or admin can end a session',
           });
-        if (!session.isActive) return sendJson(res, 400, { error: 'Session already ended' });
+        // Rejeitar apenas se sessão está FINALIZADA (COMPLETED/ABANDONED), não se apenas suspensa
+        if (session.status === 'COMPLETED' || session.status === 'ABANDONED')
+          return sendJson(res, 400, { error: 'Session already ended' });
 
         // Validar status se fornecido
         const newStatus = req.body?.status || 'COMPLETED';
@@ -871,13 +874,12 @@ export default async function handler(req, res) {
             });
           }
 
-          // Reativar a mais recente se estava suspensa
+          // Reativar a mais recente se estava suspensa (preservar snapshot até confirmar sucesso)
           const reactivatedSession = await prisma.matchAnnotationSession.update({
             where: { id: mostRecentSession.id },
             data: {
               isActive: true,
               status: 'IN_PROGRESS',
-              matchStateSnapshot: null,
             },
             include: {
               annotator: { select: { id: true, name: true, email: true } },

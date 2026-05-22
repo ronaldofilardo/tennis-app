@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactElement } from 'react';
+import React, { useState, useEffect, useRef, ReactElement } from 'react';
 import type { TennisFormat, Player } from '../../core/scoring/types';
 import { getServerForNextSet } from '../../core/scoring/setResultValidator';
 import './EditScoreModal.css';
@@ -7,6 +7,7 @@ export interface SetEditData {
   p1Games: number;
   p2Games: number;
   isPartial: boolean;
+  currentGamePoints?: { PLAYER_1: number | string; PLAYER_2: number | string };
 }
 
 interface EditScoreModalProps {
@@ -16,6 +17,7 @@ interface EditScoreModalProps {
   currentSets: { PLAYER_1: number; PLAYER_2: number };
   currentServer: Player;
   completedSets?: Array<{ games: Record<Player, number>; winner: Player }>;
+  currentGamePoints?: { PLAYER_1: number | string; PLAYER_2: number | string };
   onConfirm: (setResults: SetEditData[], server: Player) => void;
   onCancel: () => void;
 }
@@ -55,6 +57,7 @@ export function EditScoreModal(props: EditScoreModalProps): ReactElement | null 
     currentSets,
     currentServer,
     completedSets = [],
+    currentGamePoints,
     onConfirm,
     onCancel,
   } = props;
@@ -62,37 +65,89 @@ export function EditScoreModal(props: EditScoreModalProps): ReactElement | null 
   const [newSets, setNewSets] = useState<SetEditData[]>([]);
   const [p1Input, setP1Input] = useState('');
   const [p2Input, setP2Input] = useState('');
+  const [p1Points, setP1Points] = useState<string>('0');
+  const [p2Points, setP2Points] = useState<string>('0');
   const [nextServer, setNextServer] = useState<Player>(currentServer);
+
+  // Rastrear se já foi inicializado nesta abertura para não resetar inputs ao digitar
+  const initializedRef = useRef(false);
+  const autoAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const maxSets = totalSetsForFormat(matchFormat);
+  const p1Val = p1Input === '' ? NaN : parseInt(p1Input, 10);
+  const p2Val = p2Input === '' ? NaN : parseInt(p2Input, 10);
+  const bothFilled = !isNaN(p1Val) && !isNaN(p2Val) && p1Val >= 0 && p2Val >= 0;
+  const completed = bothFilled && isSetComplete(p1Val, p2Val);
+  const totalEditedSets = completedSets.length + newSets.length;
+  const canAddNextSet = completed && totalEditedSets < maxSets - 1;
 
   useEffect(() => {
     if (isOpen) {
+      // Primeira vez abrindo o modal
       setNewSets([]);
-      setP1Input('');
-      setP2Input('');
       setNextServer(currentServer);
+      initializedRef.current = false; // Reset para próxima abertura
+    } else {
+      // Modal fechou
+      initializedRef.current = false;
     }
   }, [isOpen, currentServer]);
+
+  // Efeito separado para pré-carregar inputs apenas UMA VEZ quando modal abre em modo continue
+  useEffect(() => {
+    if (isOpen && !initializedRef.current) {
+      const isContinuing = completedSets.length > 0;
+      // Pré-carregar se há sets completos OU se há games em andamento (parcial)
+      if (isContinuing && (currentSets.PLAYER_1 > 0 || currentSets.PLAYER_2 > 0)) {
+        setP1Input(currentSets.PLAYER_1.toString());
+        setP2Input(currentSets.PLAYER_2.toString());
+      } else {
+        setP1Input('');
+        setP2Input('');
+      }
+      // Pré-carregar pontos do game se fornecidos
+      setP1Points(currentGamePoints?.PLAYER_1 != null ? String(currentGamePoints.PLAYER_1) : '0');
+      setP2Points(currentGamePoints?.PLAYER_2 != null ? String(currentGamePoints.PLAYER_2) : '0');
+      initializedRef.current = true; // Marcar como inicializado
+    }
+  }, [isOpen, completedSets.length, currentSets.PLAYER_1, currentSets.PLAYER_2, currentGamePoints]);
+
+  // Auto-avançar para o próximo set quando score estiver completo (exceto no último set do formato)
+  useEffect(() => {
+    if (autoAdvanceTimerRef.current) {
+      clearTimeout(autoAdvanceTimerRef.current);
+      autoAdvanceTimerRef.current = null;
+    }
+    if (!isOpen || !completed || !canAddNextSet) return;
+    autoAdvanceTimerRef.current = setTimeout(() => {
+      const data: SetEditData = { p1Games: p1Val, p2Games: p2Val, isPartial: false };
+      setNewSets((prev) => [...prev, data]);
+      setP1Input('');
+      setP2Input('');
+      const winner: Player = p1Val > p2Val ? 'PLAYER_1' : 'PLAYER_2';
+      setNextServer(getServerForNextSet(winner, currentServer, totalEditedSets, matchFormat));
+    }, 600);
+    return () => {
+      if (autoAdvanceTimerRef.current) clearTimeout(autoAdvanceTimerRef.current);
+    };
+  }, [p1Val, p2Val, completed, canAddNextSet, isOpen, currentServer, totalEditedSets, matchFormat]);
 
   if (!isOpen) {
     return null;
   }
 
-  const maxSets = totalSetsForFormat(matchFormat);
   const isContinuing = completedSets.length > 0;
-
-  const p1Val = p1Input === '' ? NaN : parseInt(p1Input, 10);
-  const p2Val = p2Input === '' ? NaN : parseInt(p2Input, 10);
-  const bothFilled = !isNaN(p1Val) && !isNaN(p2Val) && p1Val >= 0 && p2Val >= 0;
-  const completed = bothFilled && isSetComplete(p1Val, p2Val);
   const partial = bothFilled && !completed;
-
-  const totalEditedSets = completedSets.length + newSets.length;
-  const canAddNextSet = completed && totalEditedSets < maxSets - 1;
   const canConfirm = newSets.length > 0 || bothFilled;
 
   const handleAddSet = (): void => {
     if (!completed) return;
-    const data: SetEditData = { p1Games: p1Val, p2Games: p2Val, isPartial: false };
+    // Use isSetComplete() para determinar corretamente se set é parcial
+    const data: SetEditData = {
+      p1Games: p1Val,
+      p2Games: p2Val,
+      isPartial: !isSetComplete(p1Val, p2Val),
+    };
     const newList = [...newSets, data];
     setNewSets(newList);
     setP1Input('');
@@ -101,10 +156,42 @@ export function EditScoreModal(props: EditScoreModalProps): ReactElement | null 
     setNextServer(getServerForNextSet(winner, currentServer, totalEditedSets, matchFormat));
   };
 
+  const handleGameInputChange = (value: string, setter: (v: string) => void): void => {
+    // Allow empty string
+    if (value === '') {
+      setter('');
+      return;
+    }
+    // Only allow digits
+    if (!/^\d+$/.test(value)) {
+      return;
+    }
+    // Parse and limit to max 13
+    const num = parseInt(value, 10);
+    if (num > 13) {
+      setter('13');
+    } else {
+      setter(value.replace(/^0+(?=[1-9]|$)/, '')); // Remove leading zeros but keep single 0
+    }
+  };
+
+  const handlePointsSelectChange = (value: string, setter: (v: string) => void): void => {
+    // Select only accepts valid tennis points: 0, 15, 30, 40
+    setter(value);
+  };
+
   const handleConfirm = (): void => {
     const finalSets = [...newSets];
     if (bothFilled) {
-      finalSets.push({ p1Games: p1Val, p2Games: p2Val, isPartial: !completed });
+      const setData: SetEditData = { p1Games: p1Val, p2Games: p2Val, isPartial: !completed };
+      if (!completed) {
+        // Pontos do select são sempre válidos (0, 15, 30, 40)
+        setData.currentGamePoints = {
+          PLAYER_1: parseInt(p1Points || '0', 10),
+          PLAYER_2: parseInt(p2Points || '0', 10),
+        };
+      }
+      finalSets.push(setData);
     }
     onConfirm(finalSets, nextServer);
   };
@@ -134,6 +221,29 @@ export function EditScoreModal(props: EditScoreModalProps): ReactElement | null 
             ✅ Informe o placar atual de cada set para retomar a anotação de onde parou.
           </p>
 
+          {/* Se é retomação com set anterior (currentSets > 0) */}
+          {isContinuing && (currentSets.PLAYER_1 > 0 || currentSets.PLAYER_2 > 0) && (
+            <div
+              className="edit-score-section"
+              style={{ backgroundColor: 'rgba(34, 197, 94, 0.05)', borderColor: '#22c55e' }}
+            >
+              <p className="edit-score-section-label">📝 Set Anterior (Abandonado)</p>
+              <p style={{ margin: '8px 0', fontSize: '14px', color: '#9ca3af' }}>
+                Você estava anotando:{' '}
+                <strong>
+                  {playerNames.p1}: {currentSets.PLAYER_1}
+                </strong>{' '}
+                ×{' '}
+                <strong>
+                  {playerNames.p2}: {currentSets.PLAYER_2}
+                </strong>
+              </p>
+              <p style={{ margin: '0', fontSize: '12px', color: '#6b7280' }}>
+                ℹ️ Os campos abaixo já estão preenchidos. Você pode editar se necessário.
+              </p>
+            </div>
+          )}
+
           {/* Sets já finalizados (do banco/engine — imutáveis) */}
           {completedSets.length > 0 && (
             <div className="edit-score-section">
@@ -146,7 +256,11 @@ export function EditScoreModal(props: EditScoreModalProps): ReactElement | null 
                       {set.games.PLAYER_1}x{set.games.PLAYER_2}
                     </span>
                     <span
-                      className={set.winner === 'PLAYER_1' ? 'edit-score-set-winner p1' : 'edit-score-set-winner p2'}
+                      className={
+                        set.winner === 'PLAYER_1'
+                          ? 'edit-score-set-winner p1'
+                          : 'edit-score-set-winner p2'
+                      }
                     >
                       {set.winner === 'PLAYER_1' ? playerNames.p1 : playerNames.p2}
                     </span>
@@ -170,7 +284,11 @@ export function EditScoreModal(props: EditScoreModalProps): ReactElement | null 
                         {set.p1Games}x{set.p2Games}
                       </span>
                       <span
-                        className={set.p1Games > set.p2Games ? 'edit-score-set-winner p1' : 'edit-score-set-winner p2'}
+                        className={
+                          set.p1Games > set.p2Games
+                            ? 'edit-score-set-winner p1'
+                            : 'edit-score-set-winner p2'
+                        }
                       >
                         {set.p1Games > set.p2Games ? playerNames.p1 : playerNames.p2}
                       </span>
@@ -189,38 +307,91 @@ export function EditScoreModal(props: EditScoreModalProps): ReactElement | null 
                 <span className="edit-score-player-label">{playerNames.p1}</span>
                 <input
                   type="number"
-                  min="0"
-                  max="13"
-                  className={bothFilled && p1Val > p2Val ? 'edit-score-games-input winner' : 'edit-score-games-input'}
+                  className={
+                    bothFilled && p1Val > p2Val
+                      ? 'edit-score-games-input winner'
+                      : 'edit-score-games-input'
+                  }
                   value={p1Input}
-                  onChange={(e) => setP1Input(e.target.value)}
+                  onChange={(e) => handleGameInputChange(e.target.value, setP1Input)}
                   placeholder="0"
                   autoFocus
+                  min="0"
+                  max="13"
                 />
                 <span className="edit-score-vs">×</span>
                 <input
                   type="number"
+                  className={
+                    bothFilled && p2Val > p1Val
+                      ? 'edit-score-games-input winner'
+                      : 'edit-score-games-input'
+                  }
+                  value={p2Input}
+                  onChange={(e) => handleGameInputChange(e.target.value, setP2Input)}
+                  placeholder="0"
                   min="0"
                   max="13"
-                  className={bothFilled && p2Val > p1Val ? 'edit-score-games-input winner' : 'edit-score-games-input'}
-                  value={p2Input}
-                  onChange={(e) => setP2Input(e.target.value)}
-                  placeholder="0"
                 />
                 <span className="edit-score-player-label">{playerNames.p2}</span>
               </div>
 
               {bothFilled && (
-                <p className={completed ? 'edit-score-set-feedback complete' : 'edit-score-set-feedback partial'}>
+                <p
+                  className={
+                    completed
+                      ? 'edit-score-set-feedback complete'
+                      : 'edit-score-set-feedback partial'
+                  }
+                >
                   {completed ? (
-                    <>
-                      <strong>{p1Val > p2Val ? playerNames.p1 : playerNames.p2}</strong> venceu o
-                      set
-                    </>
+                    canAddNextSet ? (
+                      <>
+                        <strong>{p1Val > p2Val ? playerNames.p1 : playerNames.p2}</strong> venceu o
+                        set — avançando para Set {totalEditedSets + 2}…
+                      </>
+                    ) : (
+                      <>
+                        <strong>{p1Val > p2Val ? playerNames.p1 : playerNames.p2}</strong> venceu o
+                        set
+                      </>
+                    )
                   ) : (
-                    <>📝 Set em andamento — você continuará a anotar daqui</>
+                    <>📝 Set em andamento — informe os pontos do game abaixo</>
                   )}
                 </p>
+              )}
+
+              {/* Pontos do game em andamento — visível apenas quando set é parcial */}
+              {partial && (
+                <div className="edit-score-points-section">
+                  <p className="edit-score-points-label">🎾 Pontos do Game em Andamento</p>
+                  <div className="edit-score-dual-input-row">
+                    <span className="edit-score-player-label">{playerNames.p1}</span>
+                    <select
+                      className="edit-score-games-input edit-score-points-select"
+                      value={p1Points}
+                      onChange={(e) => handlePointsSelectChange(e.target.value, setP1Points)}
+                    >
+                      <option value="0">0</option>
+                      <option value="15">15</option>
+                      <option value="30">30</option>
+                      <option value="40">40</option>
+                    </select>
+                    <span className="edit-score-vs">×</span>
+                    <select
+                      className="edit-score-games-input edit-score-points-select"
+                      value={p2Points}
+                      onChange={(e) => handlePointsSelectChange(e.target.value, setP2Points)}
+                    >
+                      <option value="0">0</option>
+                      <option value="15">15</option>
+                      <option value="30">30</option>
+                      <option value="40">40</option>
+                    </select>
+                    <span className="edit-score-player-label">{playerNames.p2}</span>
+                  </div>
+                </div>
               )}
 
               {canAddNextSet && (

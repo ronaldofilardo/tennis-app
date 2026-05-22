@@ -16,15 +16,27 @@ const setupGlobalMocks = () => {
   // Mock global para fetch
   global.fetch = vi.fn();
 
-  // Mock global para localStorage
-  const localStorageMock = {
-    getItem: vi.fn(),
-    setItem: vi.fn(),
-    removeItem: vi.fn(),
-    clear: vi.fn(),
-    length: 0,
-    key: vi.fn(),
+  // Mock global para localStorage com persistência interna
+  const createLocalStorageMock = () => {
+    let store: Record<string, string> = {};
+    return {
+      getItem: vi.fn((key: string) => store[key] ?? null),
+      setItem: vi.fn((key: string, value: string) => {
+        store[key] = String(value);
+      }),
+      removeItem: vi.fn((key: string) => {
+        delete store[key];
+      }),
+      clear: vi.fn(() => {
+        store = {};
+      }),
+      get length() {
+        return Object.keys(store).length;
+      },
+      key: vi.fn((index: number) => Object.keys(store)[index] ?? null),
+    };
   };
+  const localStorageMock = createLocalStorageMock();
   Object.defineProperty(global, 'localStorage', {
     value: localStorageMock,
     writable: true,
@@ -40,7 +52,8 @@ setupGlobalMocks(); // Função utilitária para resetar mocks globais
 
 // Mock global de PrismaClient ANTES de qualquer importação
 vi.mock('@prisma/client', () => {
-  const mockPrismaClient = {
+  // Factory function que cria nova instância mock com vi.fn() frescos
+  const createMockPrismaClient = () => ({
     match: {
       findUnique: vi.fn(),
       update: vi.fn(),
@@ -50,10 +63,10 @@ vi.mock('@prisma/client', () => {
     },
     $connect: vi.fn(),
     $disconnect: vi.fn(),
-  };
+  });
 
   return {
-    PrismaClient: vi.fn(() => mockPrismaClient),
+    PrismaClient: vi.fn(createMockPrismaClient),
   };
 });
 

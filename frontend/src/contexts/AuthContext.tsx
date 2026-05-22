@@ -7,7 +7,7 @@ const authLog = logger.createModuleLogger('AuthContext');
 
 // === Tipos ===
 
-export type UserRole = 'ADMIN' | 'COACH' | 'ATHLETE' | 'SPECTATOR';
+export type UserRole = 'ADMIN' | 'GESTOR' | 'COACH' | 'ATHLETE' | 'SPECTATOR';
 
 export interface AuthUser {
   id: string;
@@ -148,10 +148,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       id: string;
       email: string;
       name: string;
-      role: string;
+      role?: string;
+      platformRole?: string;
       avatarUrl?: string | null;
     };
   }): { token: string; refreshToken?: string; user: AuthUser } => {
+    // Backend returns platformRole; map to UserRole for frontend consistency
+    const roleValue = data.user.role || data.user.platformRole || 'ATHLETE';
+    const roleMap: Record<string, UserRole> = {
+      ADMIN: 'ADMIN',
+      MEMBER: 'ATHLETE',
+      ATHLETE: 'ATHLETE',
+      SPECTATOR: 'SPECTATOR',
+      COACH: 'COACH',
+      GESTOR: 'GESTOR',
+    };
     return {
       token: data.token,
       refreshToken: data.refreshToken,
@@ -159,7 +170,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         id: data.user.id,
         email: data.user.email,
         name: data.user.name,
-        role: (data.user.role || 'ATHLETE') as UserRole,
+        role: (roleMap[roleValue] || 'ATHLETE') as UserRole,
         avatarUrl: data.user.avatarUrl ?? null,
       },
     };

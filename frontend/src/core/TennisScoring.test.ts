@@ -1,5 +1,6 @@
 import { TennisScoring } from './scoring/TennisScoring';
 import type { Player, TennisFormat } from './scoring/types';
+import { convertScoreToActualPoints, getTotalPointsPlayed } from './scoring/TennisStatsEngine';
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 
 describe('TennisScoring - Lógica Geral', () => {
@@ -276,13 +277,12 @@ describe('TennisScoring - Cobertura de métodos e edge cases', () => {
 
   test('convertScoreToActualPoints: cobre todos os cases', () => {
     const match = new TennisScoring(PLAYER_1, 'BEST_OF_3');
-    const fn = (match as any).convertScoreToActualPoints.bind(match);
-    expect(fn('0')).toBe(0);
-    expect(fn('15')).toBe(1);
-    expect(fn('30')).toBe(2);
-    expect(fn('40')).toBe(3);
-    expect(fn('AD')).toBe(4);
-    expect(fn('X')).toBe(0);
+    expect(convertScoreToActualPoints('0')).toBe(0);
+    expect(convertScoreToActualPoints('15')).toBe(1);
+    expect(convertScoreToActualPoints('30')).toBe(2);
+    expect(convertScoreToActualPoints('40')).toBe(3);
+    expect(convertScoreToActualPoints('AD')).toBe(4);
+    expect(convertScoreToActualPoints('X')).toBe(0);
   });
 
   test('getTotalPointsPlayed: cobre tie-break, vantagem e normal', () => {
@@ -298,7 +298,7 @@ describe('TennisScoring - Cobertura de métodos e edge cases', () => {
     match.addPoint(PLAYER_1); // 2
     match.addPoint(PLAYER_2); // 2
     match.addPoint(PLAYER_1); // 3
-    expect((match as any).getTotalPointsPlayed()).toBe(5);
+    expect(getTotalPointsPlayed(match.getState())).toBe(5);
 
     // Game normal com vantagem: simula 40-40, depois vantagem
     const match2 = new TennisScoring(PLAYER_1, 'BEST_OF_3');
@@ -308,14 +308,14 @@ describe('TennisScoring - Cobertura de métodos e edge cases', () => {
     }
     // 40-40
     match2.addPoint(PLAYER_1); // AD
-    expect((match2 as any).getTotalPointsPlayed()).toBeGreaterThanOrEqual(7);
+    expect(getTotalPointsPlayed(match2.getState())).toBeGreaterThanOrEqual(7);
 
     // Game normal sem vantagem
     const match3 = new TennisScoring(PLAYER_1, 'BEST_OF_3');
     match3.addPoint(PLAYER_1); // 15
     match3.addPoint(PLAYER_1); // 30
     match3.addPoint(PLAYER_2); // 15
-    expect((match3 as any).getTotalPointsPlayed()).toBe(3);
+    expect(getTotalPointsPlayed(match3.getState())).toBe(3);
   });
 
   test('enableSync, disableSync, syncState: cobre warnings e erros', async () => {

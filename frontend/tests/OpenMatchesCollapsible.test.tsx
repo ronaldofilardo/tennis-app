@@ -302,7 +302,7 @@ describe('Dashboard — Seção colapsável: Partidas aguardando anotador', () =
     await user.click(header);
 
     // Assert: SVG chevron com classe collapsed
-    const chevronSvg = header.querySelector('.open-matches-chevron--collapsed');
+    const chevronSvg = header.querySelector('svg.open-matches-chevron--collapsed');
     expect(chevronSvg).not.toBeNull();
   });
 });

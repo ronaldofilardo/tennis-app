@@ -50,6 +50,7 @@ const AppContent: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const isAdmin = currentUser?.role === 'ADMIN';
   const showBottomTabBar = isAuthenticated;
 
   // Derive active tab from current route

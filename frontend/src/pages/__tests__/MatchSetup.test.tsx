@@ -1,7 +1,7 @@
 import '../../../vitest.setup';
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import MatchSetup from '../MatchSetup';
 
@@ -142,22 +142,24 @@ describe('MatchSetup - Match Creation Flow', () => {
       // Preenche os campos usando o AthleteSearchInput mockado
       const [player1Input, player2Input] = screen.getAllByPlaceholderText('Buscar atleta...');
 
-      fireEvent.change(player1Input, { target: { value: 'Jogador 1' } });
-      fireEvent.change(player2Input, { target: { value: 'Jogador 2' } });
+      await act(async () => {
+        fireEvent.change(player1Input, { target: { value: 'Jogador 1' } });
+        fireEvent.change(player2Input, { target: { value: 'Jogador 2' } });
 
-      // Preenche data e horário (obrigatórios)
-      fireEvent.change(screen.getByLabelText('Data da partida'), {
-        target: { value: '2025-12-01' },
-      });
-      fireEvent.change(screen.getByLabelText('Horário da partida'), {
-        target: { value: '10:00' },
-      });
+        // Preenche data e horário (obrigatórios)
+        fireEvent.change(screen.getByLabelText('Data da partida'), {
+          target: { value: '2025-12-01' },
+        });
+        fireEvent.change(screen.getByLabelText('Horário da partida'), {
+          target: { value: '10:00' },
+        });
 
-      // Submit form
-      const submitButton = screen.getByRole('button', {
-        name: /Iniciar/i,
+        // Submit form
+        const submitButton = screen.getByRole('button', {
+          name: /Iniciar/i,
+        });
+        fireEvent.click(submitButton);
       });
-      fireEvent.click(submitButton);
 
       // Wait for API call
       await waitFor(() => {
@@ -187,22 +189,24 @@ describe('MatchSetup - Match Creation Flow', () => {
       // Preenche os campos usando o AthleteSearchInput mockado
       const [player1Input2, player2Input2] = screen.getAllByPlaceholderText('Buscar atleta...');
 
-      fireEvent.change(player1Input2, { target: { value: 'Jogador 1' } });
-      fireEvent.change(player2Input2, { target: { value: 'Jogador 2' } });
+      await act(async () => {
+        fireEvent.change(player1Input2, { target: { value: 'Jogador 1' } });
+        fireEvent.change(player2Input2, { target: { value: 'Jogador 2' } });
 
-      // Preenche data e horário (obrigatórios)
-      fireEvent.change(screen.getByLabelText('Data da partida'), {
-        target: { value: '2025-12-01' },
-      });
-      fireEvent.change(screen.getByLabelText('Horário da partida'), {
-        target: { value: '10:00' },
-      });
+        // Preenche data e horário (obrigatórios)
+        fireEvent.change(screen.getByLabelText('Data da partida'), {
+          target: { value: '2025-12-01' },
+        });
+        fireEvent.change(screen.getByLabelText('Horário da partida'), {
+          target: { value: '10:00' },
+        });
 
-      // Submit form
-      const submitButton = screen.getByRole('button', {
-        name: /Iniciar/i,
+        // Submit form
+        const submitButton = screen.getByRole('button', {
+          name: /Iniciar/i,
+        });
+        fireEvent.click(submitButton);
       });
-      fireEvent.click(submitButton);
 
       // Wait for error handling
       await waitFor(() => {
