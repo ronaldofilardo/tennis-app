@@ -68,6 +68,9 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
     suspendedSession,
     previousAnnotationPoints,
     clearSuspendedSession,
+    ballExchangeCount,
+    onBallExchangeIncrement,
+    onBallExchangeReset,
   } = useScoreboardEngine(onEndMatch);
 
   // ── Hook: Verificar se é criador em modo manager (DEVE vir no topo) ──────────
@@ -327,6 +330,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         playersWithCode={playersWithCode}
         onPointDetailsConfirm={handlePointDetailsConfirm}
         onPointDetailsCancel={handlePointDetailsCancel}
+        ballExchangeCount={ballExchangeCount}
         editMatchOpen={editMatchOpen}
         matchData={matchData}
         onEditMatchClose={() => setEditMatchOpen(false)}
@@ -445,6 +449,9 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         onEditScore={() => setEditScoreModalOpen(true)}
         isServeErrorModalOpen={isServeErrorModalOpen}
         isMatchFinalized={matchData?.status === 'FINISHED'}
+        ballExchangeCount={ballExchangeCount}
+        onBallExchangeIncrement={onBallExchangeIncrement}
+        onBallExchangeReset={onBallExchangeReset}
         onMatchEnded={() => {
           if (matchData) setMatchData({ ...matchData, status: 'FINISHED' });
         }}

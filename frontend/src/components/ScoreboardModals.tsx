@@ -10,6 +10,7 @@ import { ConfirmDeleteMatchModal } from './ConfirmDeleteMatchModal';
 import ResumeAnnotationModal from './ResumeAnnotationModal';
 import type { MatchData } from '../types/match';
 import type { FirstServeError } from '../state/scoreboardUIState';
+import type { RallyDetails } from '../core/scoring/types';
 
 interface ScoreboardModalsProps {
   // Stats
@@ -38,8 +39,9 @@ interface ScoreboardModalsProps {
   pendingPointPlayer: string | null;
   serverState: string;
   playersWithCode: { PLAYER_1: string; PLAYER_2: string };
-  onPointDetailsConfirm: () => void;
+  onPointDetailsConfirm: (details: RallyDetails | undefined, ballExchangeCount?: number) => void;
   onPointDetailsCancel: () => void;
+  ballExchangeCount?: number;
 
   // Edit Match
   editMatchOpen: boolean;
@@ -97,6 +99,7 @@ const ScoreboardModals: React.FC<ScoreboardModalsProps> = ({
   playersWithCode,
   onPointDetailsConfirm,
   onPointDetailsCancel,
+  ballExchangeCount,
   editMatchOpen,
   matchData,
   onEditMatchClose,
@@ -156,6 +159,7 @@ const ScoreboardModals: React.FC<ScoreboardModalsProps> = ({
         onConfirm={onPointDetailsConfirm}
         onCancel={onPointDetailsCancel}
         fontScale={fontScale}
+        ballExchangeCount={ballExchangeCount}
       />
       {editMatchOpen && matchData && (
         <EditMatchModal

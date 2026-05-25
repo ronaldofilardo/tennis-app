@@ -22,7 +22,7 @@ const ReopenMatchPanel: React.FC<ReopenMatchPanelProps> = ({
     setIsLoading(true);
     setError(null);
     try {
-      const response = await httpClient.patch(`/api/matches/${matchId}`, {
+      const response = await httpClient.patch(`/matches/${matchId}`, {
         action: 'reopenMatch',
       });
 

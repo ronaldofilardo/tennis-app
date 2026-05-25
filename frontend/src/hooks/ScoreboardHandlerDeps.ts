@@ -32,4 +32,5 @@ export interface ScoreboardHandlerDeps {
   forceRerender: () => void;
   setServeStepSafe: (step: 'none' | 'second') => void;
   onEndMatch: () => void;
+  ballExchangeCount: number;
 }

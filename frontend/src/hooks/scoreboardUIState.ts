@@ -30,6 +30,7 @@ export interface ScoreboardUIState {
   fontScale: number;
   suspendedSession: AnnotationSession | null;
   previousAnnotationPoints: number;
+  ballExchangeCount: number;
 }
 
 export type ScoreboardUIAction =
@@ -54,7 +55,10 @@ export type ScoreboardUIAction =
   | { type: 'FONT_SCALE_SET'; scale: number }
   | { type: 'ANNOTATOR_COUNT_SET'; count: number }
   | { type: 'SUSPENDED_SESSION_SET'; session: AnnotationSession; pointsCount: number }
-  | { type: 'SUSPENDED_SESSION_CLEAR' };
+  | { type: 'SUSPENDED_SESSION_CLEAR' }
+  | { type: 'BALL_EXCHANGE_INCREMENT' }
+  | { type: 'BALL_EXCHANGE_SET'; count: number }
+  | { type: 'BALL_EXCHANGE_RESET' };
 
 export function scoreboardUIReducer(
   state: ScoreboardUIState,
@@ -115,6 +119,12 @@ export function scoreboardUIReducer(
       };
     case 'SUSPENDED_SESSION_CLEAR':
       return { ...state, suspendedSession: null, previousAnnotationPoints: 0 };
+    case 'BALL_EXCHANGE_INCREMENT':
+      return { ...state, ballExchangeCount: state.ballExchangeCount + 1 };
+    case 'BALL_EXCHANGE_SET':
+      return { ...state, ballExchangeCount: Math.max(0, action.count) };
+    case 'BALL_EXCHANGE_RESET':
+      return { ...state, ballExchangeCount: 0 };
     default:
       return state;
   }
@@ -142,5 +152,6 @@ export function createInitialUIState(): ScoreboardUIState {
     fontScale: isNaN(parsed) ? 1.0 : Math.min(2.0, Math.max(0.6, parsed)),
     suspendedSession: null,
     previousAnnotationPoints: 0,
+    ballExchangeCount: 0,
   };
 }

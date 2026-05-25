@@ -66,6 +66,10 @@ interface ScoreboardCourtViewProps {
   // ActionBar misc
   isServeErrorModalOpen: boolean;
   isMatchFinalized: boolean;
+  // Ball exchanges
+  ballExchangeCount: number;
+  onBallExchangeIncrement: () => void;
+  onBallExchangeReset: () => void;
   // Session handlers
   onMatchEnded: () => void;
 }
@@ -115,6 +119,9 @@ export const ScoreboardCourtView: React.FC<ScoreboardCourtViewProps> = ({
   onEditScore,
   isServeErrorModalOpen,
   isMatchFinalized,
+  ballExchangeCount,
+  onBallExchangeIncrement,
+  onBallExchangeReset,
   onMatchEnded,
 }) => {
   return (
@@ -303,6 +310,8 @@ export const ScoreboardCourtView: React.FC<ScoreboardCourtViewProps> = ({
         onEditScore={onEditScore}
         isModalOpen={isServeErrorModalOpen}
         isMatchFinalized={isMatchFinalized}
+        ballExchangeCount={ballExchangeCount}
+        onBallExchangeIncrement={onBallExchangeIncrement}
       />
 
       {/* Painel de sessões de anotação */}

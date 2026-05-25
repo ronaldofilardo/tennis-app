@@ -1,5 +1,5 @@
 // frontend/src/components/PointDetailsModal.tsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ErrorBoundary } from './ErrorBoundary';
 import { useRallyDetails } from '../hooks/useRallyDetails';
@@ -40,15 +40,17 @@ import {
 import useConfirmClose from '../hooks/useConfirmClose';
 import ConfirmCloseDialog from './ConfirmCloseDialog';
 import './PointDetailsModal.css';
+import './PointDetailsModalAdvanced.css';
 
 interface PointDetailsModalProps {
   isOpen: boolean;
   playerWinner: Player;
   currentServer: Player;
   playerNames: { PLAYER_1: string; PLAYER_2: string };
-  onConfirm: (details: RallyDetails | undefined) => void;
+  onConfirm: (details: RallyDetails | undefined, ballExchangeCount?: number) => void;
   onCancel: () => void;
   fontScale?: number;
+  ballExchangeCount?: number;
 }
 
 function BtnGroup<T extends string>({
@@ -90,6 +92,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
   onConfirm,
   onCancel,
   fontScale = 1,
+  ballExchangeCount,
 }) => {
   const {
     sel,
@@ -104,6 +107,8 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
     reset,
   } = useRallyDetails();
 
+  const [ballExchanges, setBallExchanges] = useState<number>(1);
+
   // Sempre pede confirmação ao clicar fora — o ponto já foi atribuído
   const isFormDirty = true;
   const { isConfirmOpen, handleOverlayClick, confirmClose, cancelClose } = useConfirmClose(
@@ -112,8 +117,12 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
   );
 
   useEffect(() => {
-    if (isOpen) reset();
-  }, [isOpen, playerWinner]);
+    if (isOpen) {
+      reset();
+      const initialCount = (ballExchangeCount ?? 0) > 0 ? ballExchangeCount! : 1;
+      setBallExchanges(initialCount);
+    }
+  }, [isOpen, ballExchangeCount]);
 
   if (!isOpen) return null;
 
@@ -176,22 +185,6 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
   // Confirmar fica disponível assim que 'golpe' for selecionado (registro parcial permitido)
   const isComplete = !!sel.golpe;
 
-  function handleConfirm() {
-    if (!isComplete) return;
-    const details = {
-      vencedor,
-      situacao: sel.situacao!,
-      tipo: sel.tipo!,
-      golpe: sel.golpe!,
-      direcao: sel.direcao!,
-      ...(sel.efeito ? { efeito: sel.efeito } : {}),
-      ...(sel.golpe_esp ? { golpe_esp: sel.golpe_esp } : {}),
-      ...(sel.sub1 ? { subtipo1: sel.sub1 } : {}),
-      ...(sel.sub2 ? { subtipo2: sel.sub2 } : {}),
-    } as import('../core/scoring/types').RallyDetails;
-    onConfirm(details);
-  }
-
   let stepNum = 1;
 
   return createPortal(
@@ -201,6 +194,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
         className="point-details-modal"
         role="dialog"
         aria-modal="true"
+        onClick={(event) => event.stopPropagation()}
         style={{ '--sb-scale': String(fontScale) } as React.CSSProperties}
       >
         {/* Header */}
@@ -316,6 +310,31 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
               />
             </div>
           )}
+
+          {/* Trocas de Bolas */}
+          <div className="pd-advanced-section">
+            <div className="pd-advanced-field">
+              <label htmlFor="ball-exchanges-input" className="pd-advanced-label">
+                Trocas de Bolas
+              </label>
+              <div className="pd-advanced-input-group">
+                <input
+                  id="ball-exchanges-input"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={ballExchanges}
+                  onChange={(e) => {
+                    const parsed = parseInt(e.target.value, 10);
+                    if (!isNaN(parsed) && parsed >= 1) {
+                      setBallExchanges(parsed);
+                    }
+                  }}
+                  className="pd-advanced-input"
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Footer */}
@@ -324,7 +343,21 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
             <button
               className="pd-btn-confirm"
               disabled={!isComplete}
-              onClick={handleConfirm}
+              onClick={() => {
+                if (!isComplete) return;
+                const details = {
+                  vencedor,
+                  situacao: sel.situacao!,
+                  tipo: sel.tipo!,
+                  golpe: sel.golpe!,
+                  direcao: sel.direcao!,
+                  ...(sel.efeito ? { efeito: sel.efeito } : {}),
+                  ...(sel.golpe_esp ? { golpe_esp: sel.golpe_esp } : {}),
+                  ...(sel.sub1 ? { subtipo1: sel.sub1 } : {}),
+                  ...(sel.sub2 ? { subtipo2: sel.sub2 } : {}),
+                } as import('../core/scoring/types').RallyDetails;
+                onConfirm(details, ballExchanges);
+              }}
               type="button"
             >
               Confirmar Ponto

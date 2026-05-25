@@ -218,6 +218,22 @@ export default async function handler(req, res) {
       isTournamentSuggestions,
     } = parsePath(url);
 
+    // DEBUG: Log todas as requisições para matches
+    console.debug(
+      '[MatchesHandler] URL:',
+      url.pathname,
+      'Method:',
+      req.method,
+      'id:',
+      id,
+      'sub:',
+      sub,
+      'isMetadata:',
+      isMetadata,
+      'isClaim:',
+      isClaim,
+    );
+
     // ─── GET /api/matches/my-shares ───────────────────────────────────────────
     // Retorna MatchDashboardShare PENDING destinados ao usuário logado (ou ao seu clube)
     if (isMyShares) {
@@ -1083,7 +1099,18 @@ export default async function handler(req, res) {
     // ─── /api/matches/:id ────────────────────────────────────────────────────
     if (id) {
       const ctx = requireAuth(req, res);
-      if (!ctx) return;
+      if (!ctx) {
+        console.debug('[MatchesHandler] Auth failed or not provided');
+        return;
+      }
+      console.debug(
+        '[MatchesHandler] /api/matches/:id - id:',
+        id,
+        'method:',
+        req.method,
+        'userId:',
+        ctx.userId,
+      );
 
       // POST /api/matches/:id/claim — salva partida no histórico do usuário
       if (isClaim && req.method === 'POST') {
@@ -1169,14 +1196,41 @@ export default async function handler(req, res) {
         return sendJson(res, 200, match);
       }
       if (req.method === 'PATCH') {
+        console.debug(
+          '[EndMatch] PATCH request received - req.body:',
+          JSON.stringify(req.body),
+          'action:',
+          req.body?.action,
+        );
         // Ação especial: encerrar partida manualmente pelo criador
         if (req.body?.action === 'endMatch') {
+          console.debug(
+            '[EndMatch] Processing endMatch action for matchId:',
+            id,
+            'userId:',
+            ctx.userId,
+          );
           const matchToEnd = await prisma.match.findUnique({
             where: { id },
             select: { createdByUserId: true, status: true, matchState: true },
           });
-          if (!matchToEnd) return sendJson(res, 404, { error: 'Match not found' });
+          console.debug('[EndMatch] Match query result:', {
+            found: !!matchToEnd,
+            createdByUserId: matchToEnd?.createdByUserId,
+            status: matchToEnd?.status,
+            matchId: id,
+          });
+          if (!matchToEnd) {
+            console.error('[EndMatch] Match not found in database! matchId:', id);
+            return sendJson(res, 404, { error: 'Match not found', matchId: id });
+          }
           if (matchToEnd.createdByUserId !== ctx.userId && ctx.role !== 'ADMIN') {
+            console.debug(
+              '[EndMatch] Access denied - createdByUserId:',
+              matchToEnd.createdByUserId,
+              'ctx.userId:',
+              ctx.userId,
+            );
             return sendJson(res, 403, { error: 'Apenas o criador pode encerrar a partida' });
           }
           if (matchToEnd.status === 'FINISHED') {
@@ -1311,6 +1365,9 @@ export default async function handler(req, res) {
         });
         if (currentStatus?.status === 'FINISHED')
           return sendJson(res, 409, { error: 'Match already finished' });
+        console.debug(
+          '[PATCH Fallback] No action matched (not endMatch or reopenMatch), calling updateMatch',
+        );
         return sendJson(res, 200, await updateMatch(id, req.body));
       }
       if (req.method === 'DELETE') {

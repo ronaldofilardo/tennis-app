@@ -1493,6 +1493,103 @@ app.get('/api/matches/:id', async (req, res) => {
   }
 });
 
+// Atualizar partida com ações especiais (endMatch, reopen, etc.)
+app.patch('/api/matches/:id', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+
+    console.debug(
+      '[dev-server PATCH /api/matches/:id] req.body:',
+      JSON.stringify(req.body),
+      'action:',
+      req.body?.action,
+    );
+
+    // Ação especial: encerrar partida manualmente
+    if (req.body?.action === 'endMatch') {
+      console.debug(
+        '[dev-server endMatch] Processing for matchId:',
+        req.params.id,
+        'userId:',
+        ctx.userId,
+      );
+      const matchToEnd = await prisma.match.findUnique({
+        where: { id: req.params.id },
+        select: { createdByUserId: true, status: true, matchState: true },
+      });
+
+      if (!matchToEnd) {
+        return res.status(404).json({ error: 'Match not found', matchId: req.params.id });
+      }
+
+      if (matchToEnd.createdByUserId !== ctx.userId && ctx.role !== 'ADMIN') {
+        return res.status(403).json({ error: 'Apenas o criador pode encerrar a partida' });
+      }
+
+      if (matchToEnd.status === 'FINISHED') {
+        return res.status(409).json({ error: 'Match already finished' });
+      }
+
+      // Atualizar match para FINISHED
+      const endedMatch = await prisma.match.update({
+        where: { id: req.params.id },
+        data: {
+          status: 'FINISHED',
+          endedAt: new Date(),
+          ...(req.body.winner !== undefined ? { winner: req.body.winner } : {}),
+        },
+      });
+
+      // Finalizar todas as sessions deste match
+      await prisma.matchAnnotationSession.updateMany({
+        where: { matchId: req.params.id, isActive: true },
+        data: { isActive: false, status: 'COMPLETED', endedAt: new Date() },
+      });
+
+      console.debug('[dev-server endMatch] Match ended successfully:', endedMatch.id);
+      return res.json(formatMatchFromDB(endedMatch));
+    }
+
+    // Ação especial: reabrir partida finalizada
+    if (req.body?.action === 'reopenMatch') {
+      console.debug('[dev-server reopenMatch] Processing for matchId:', req.params.id);
+      const matchToReopen = await prisma.match.findUnique({
+        where: { id: req.params.id },
+        select: { createdByUserId: true, status: true },
+      });
+
+      if (!matchToReopen) {
+        return res.status(404).json({ error: 'Match not found' });
+      }
+
+      if (matchToReopen.createdByUserId !== ctx.userId && ctx.role !== 'ADMIN') {
+        return res.status(403).json({ error: 'Apenas o criador pode reabrir a partida' });
+      }
+
+      if (matchToReopen.status !== 'FINISHED') {
+        return res.status(400).json({ error: 'Only finished matches can be reopened' });
+      }
+
+      const reopenedMatch = await prisma.match.update({
+        where: { id: req.params.id },
+        data: { status: 'IN_PROGRESS', endedAt: null, winner: null },
+      });
+
+      console.debug('[dev-server reopenMatch] Match reopened successfully:', reopenedMatch.id);
+      return res.json(formatMatchFromDB(reopenedMatch));
+    }
+
+    // Fallback: delegue ao updateMatch service
+    const svc = await getMatchService();
+    const updated = await svc.updateMatch(req.params.id, req.body);
+    res.json(updated);
+  } catch (error) {
+    console.error(`[PATCH /api/matches/${req.params.id}] Erro:`, error);
+    res.status(500).json({ error: 'Erro ao atualizar partida', details: error.message });
+  }
+});
+
 // Estatísticas de uma partida — delega ao matchService.js
 app.get('/api/matches/:id/stats', async (req, res) => {
   try {

@@ -12,6 +12,8 @@ interface ActionBarProps {
   onOut: () => void;
   onNet: () => void;
   onFault: () => void;
+  ballExchangeCount?: number;
+  onBallExchangeIncrement?: () => void;
   /** Handlers específicos para Out/Net no 2º saque (fallback: onFault) */
   onFaultOut?: () => void;
   onFaultNet?: () => void;
@@ -48,9 +50,12 @@ const ActionBar: React.FC<ActionBarProps> = ({
   onFontScaleDec,
   isModalOpen = false,
   isMatchFinalized = false,
+  ballExchangeCount = 0,
+  onBallExchangeIncrement,
 }) => {
   const isSecondServe = serveStep === 'second';
   const disabled = isFinished || isMatchFinalized;
+  const isBallCountingActive = ballExchangeCount > 0;
 
   const handleOutClick = () => {
     if (isSecondServe) {
@@ -89,18 +94,27 @@ const ActionBar: React.FC<ActionBarProps> = ({
           >
             {isSecondServe ? '2º Saque' : '1º Saque'}
           </button>
-          <button className="action-quick-btn action-ace" onClick={onAce}>
+          <button
+            className="action-quick-btn action-ace"
+            onClick={onAce}
+            disabled={isBallCountingActive}
+            title={isBallCountingActive ? 'Desabilitar contador de bolas para continuar' : ''}
+          >
             Ace
           </button>
           <button
             className="action-quick-btn action-quick-fault action-out"
             onClick={handleOutClick}
+            disabled={isBallCountingActive}
+            title={isBallCountingActive ? 'Desabilitar contador de bolas para continuar' : ''}
           >
             Out
           </button>
           <button
             className="action-quick-btn action-quick-fault action-net"
             onClick={handleNetClick}
+            disabled={isBallCountingActive}
+            title={isBallCountingActive ? 'Desabilitar contador de bolas para continuar' : ''}
           >
             Net
           </button>
@@ -152,6 +166,27 @@ const ActionBar: React.FC<ActionBarProps> = ({
           >
             ✏️
           </button>
+        )}
+
+        {/* Ball Exchange Counter Inline */}
+        {onBallExchangeIncrement && (
+          <div className={`ball-exchange-inline ${ballExchangeCount > 0 ? 'active' : ''}`}>
+            {ballExchangeCount > 0 && (
+              <>
+                <span className="ball-exchange-label">BOLAS:</span>
+                <span className="ball-exchange-value">{ballExchangeCount}</span>
+              </>
+            )}
+            <button
+              className="ball-exchange-btn"
+              onClick={onBallExchangeIncrement}
+              title="Adicionar troca de bola"
+              aria-label="Adicionar troca de bola"
+              type="button"
+            >
+              +ball
+            </button>
+          </div>
         )}
       </div>
     </div>

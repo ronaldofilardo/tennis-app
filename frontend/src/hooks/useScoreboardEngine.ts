@@ -425,5 +425,10 @@ export function useScoreboardEngine(onEndMatch: () => void) {
     suspendedSession: uiState.suspendedSession,
     previousAnnotationPoints: uiState.previousAnnotationPoints,
     clearSuspendedSession: () => dispatch({ type: 'SUSPENDED_SESSION_CLEAR' }),
+
+    // Ball exchanges
+    ballExchangeCount: uiState.ballExchangeCount,
+    onBallExchangeIncrement: () => dispatch({ type: 'BALL_EXCHANGE_INCREMENT' }),
+    onBallExchangeReset: () => dispatch({ type: 'BALL_EXCHANGE_RESET' }),
   };
 }

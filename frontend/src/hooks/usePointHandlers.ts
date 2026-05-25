@@ -7,6 +7,7 @@ import type { SetEditData } from '../components/scoreboard/EditScoreModal';
 import { httpClient } from '../config/httpClient';
 import { resolvePlayerName } from '../data/players';
 import type { ScoreboardHandlerDeps } from './ScoreboardHandlerDeps';
+import { calculateDefaultBallExchanges } from '../core/scoring/ballExchangeRules';
 
 type PointHandlerDeps = ScoreboardHandlerDeps & {
   handleEndMatch: () => Promise<void>;
@@ -29,6 +30,7 @@ export function usePointHandlers(deps: PointHandlerDeps) {
     forceRerender,
     setServeStepSafe,
     handleEndMatch,
+    ballExchangeCount,
   } = deps;
 
   const getSystem = () => scoringSystemRef.current;
@@ -135,7 +137,7 @@ export function usePointHandlers(deps: PointHandlerDeps) {
   );
 
   const handlePointDetailsConfirm = useCallback(
-    (details: RallyDetails | undefined) => {
+    (details: RallyDetails | undefined, passedBallExchangeCount?: number) => {
       dispatch({ type: 'POINT_DETAILS_RESET' });
       const isSecond = serveStep === 'second';
       const firstFaultPayload =
@@ -152,28 +154,36 @@ export function usePointHandlers(deps: PointHandlerDeps) {
               },
             }
           : {};
+
+      // Usar ballExchangeCount passado ou app state como fallback
+      const finalBallExchangeCount = Math.max(1, passedBallExchangeCount ?? ballExchangeCount);
+
       if (pendingPointPlayer) {
         if (details) {
           addPoint(pendingPointPlayer, {
             rallyDetails: details,
             result: { winner: pendingPointPlayer, type: 'WINNER' },
             serve: { isFirstServe: !isSecond, ...firstFaultPayload },
-            rally: { ballExchanges: 1 },
+            rally: { ballExchanges: finalBallExchangeCount },
           } as Partial<PointDetails>);
         } else {
           addPoint(pendingPointPlayer, {
             serve: { isFirstServe: !isSecond, ...firstFaultPayload },
             result: { winner: pendingPointPlayer, type: 'WINNER' },
-            rally: { ballExchanges: 1 },
+            rally: { ballExchanges: finalBallExchangeCount },
           } as Partial<PointDetails>);
         }
       }
+
+      // Reset ball exchange counter após confirmar
+      dispatch({ type: 'BALL_EXCHANGE_RESET' });
     },
-    [dispatch, serveStep, firstServeError, pendingPointPlayer, addPoint],
+    [dispatch, serveStep, firstServeError, pendingPointPlayer, addPoint, ballExchangeCount],
   );
 
   const handlePointDetailsCancel = useCallback(() => {
     dispatch({ type: 'POINT_DETAILS_RESET' });
+    dispatch({ type: 'BALL_EXCHANGE_RESET' });
   }, [dispatch]);
 
   const handleFault = useCallback(async () => {
