@@ -351,9 +351,17 @@ const Dashboard: React.FC<DashboardProps> = ({
               <p className="completed-section__loading">Carregando...</p>
             ) : (
               <div className="completed-section__list">
-                {completedMatches.map((m) => (
-                  <CompletedMatchCard key={m.id} match={m} onViewStats={openStatsForMatch} />
-                ))}
+                {completedMatches
+                  .filter((m) => !deletedMatchIds.has(String(m.id)))
+                  .map((m) => (
+                    <CompletedMatchCard
+                      key={m.id}
+                      match={m}
+                      onViewStats={openStatsForMatch}
+                      onDeleteMatch={(matchId) => setDeletingMatchId(matchId)}
+                      currentUserId={currentUser?.id}
+                    />
+                  ))}
               </div>
             )}
           </section>

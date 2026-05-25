@@ -12,9 +12,7 @@ test.describe('Creator End Match - Fluxo Completo Aprovado', () => {
     baseUrl = process.env.VITE_TEST_URL || 'http://localhost:5173';
   });
 
-  test('Fluxo 1: Indicar Vencedor (PLAYER_2) → Sucesso + Volta Dashboard', async ({
-    page,
-  }) => {
+  test('Fluxo 1: Indicar Vencedor (PLAYER_2) → Sucesso + Volta Dashboard', async ({ page }) => {
     // Setup
     await page.goto(`${baseUrl}/match/test-match-id`);
     await page.waitForLoadState('networkidle');
@@ -47,9 +45,7 @@ test.describe('Creator End Match - Fluxo Completo Aprovado', () => {
     await expect(page).toHaveURL(/\/dashboard|\//, { timeout: 5000 });
   });
 
-  test('Fluxo 2: Encerrar Sem Vencedor → Sucesso + Volta Dashboard', async ({
-    page,
-  }) => {
+  test('Fluxo 2: Encerrar Sem Vencedor → Sucesso + Volta Dashboard', async ({ page }) => {
     // Setup
     await page.goto(`${baseUrl}/match/test-match-id-2`);
     await page.waitForLoadState('networkidle');
@@ -72,9 +68,7 @@ test.describe('Creator End Match - Fluxo Completo Aprovado', () => {
     await expect(page).toHaveURL(/\/dashboard|\//, { timeout: 5000 });
   });
 
-  test('Fluxo 3: Cancelar no Step 1 → Modal fecha sem alterar', async ({
-    page,
-  }) => {
+  test('Fluxo 3: Cancelar no Step 1 → Modal fecha sem alterar', async ({ page }) => {
     // Setup
     await page.goto(`${baseUrl}/match/test-match-id-3`);
     await page.waitForLoadState('networkidle');
@@ -96,9 +90,7 @@ test.describe('Creator End Match - Fluxo Completo Aprovado', () => {
     await expect(page).toHaveURL(/\/match\//, { timeout: 5000 });
   });
 
-  test('API: POST /api/matches/:id com action=endMatch retorna 200 OK', async ({
-    page,
-  }) => {
+  test('API: POST /api/matches/:id com action=endMatch retorna 200 OK', async ({ page }) => {
     // Capturar requisição PATCH
     const patchPromise = page.waitForResponse(
       (response) =>
@@ -125,9 +117,7 @@ test.describe('Creator End Match - Fluxo Completo Aprovado', () => {
     expect(body).toHaveProperty('status', 'FINISHED');
   });
 
-  test('URL correta: /matches (não /api/api/matches)', async ({
-    page,
-  }) => {
+  test('URL correta: /matches (não /api/api/matches)', async ({ page }) => {
     const networkLogs: string[] = [];
 
     page.on('console', (msg) => {

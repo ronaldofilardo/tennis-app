@@ -1,0 +1,44 @@
+/* DetailsSection.css — Section styling */
+
+.details-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-gap-xs, 0.25rem);
+}
+
+.details-section__title {
+  margin: 0 0 var(--flex-gap-sm, 0.5rem) 0;
+  font-size: 0.8125rem;
+  font-weight: var(--font-weight-semibold, 600);
+  letter-spacing: var(--letter-spacing-uppercase, 0.06em);
+  text-transform: uppercase;
+  color: var(--clr-text-muted, #6b7280);
+  line-height: var(--line-height-tight, 1.2);
+}
+
+.details-section__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-gap-xs, 0.25rem);
+}
+
+/* ── Variants ──────────────────────────────────────────────── */
+
+.details-section--input .details-section__content {
+  gap: 0.5rem;
+}
+
+.details-section--display {
+  background: rgba(255, 255, 255, 0.02);
+  padding: var(--space-sm, 0.5rem);
+  border-radius: var(--radius-md, 6px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .details-section__title {
+    font-size: var(--font-scale-section-title, 0.75rem);
+  }
+}

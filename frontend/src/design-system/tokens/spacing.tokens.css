@@ -1,0 +1,68 @@
+/* Spacing Design Tokens — Racket Design System
+ * 8px baseline grid system
+ * Usage: Use in components via CSS custom properties
+ */
+
+:root {
+  /* ── Base Scale (8px) ───────────────────────────────────────── */
+  --space-0: 0;
+  --space-xs: 0.25rem; /* 4px */
+  --space-sm: 0.5rem; /* 8px */
+  --space-md: 1rem; /* 16px */
+  --space-lg: 1.5rem; /* 24px */
+  --space-xl: 2rem; /* 32px */
+  --space-2xl: 2.5rem; /* 40px */
+
+  /* ── Modal & Container Presets ──────────────────────────────── */
+  /* Horizontal padding (modals, cards) */
+  --modal-padding-h: var(--space-lg); /* 24px */
+  /* Vertical padding (modal header/body) */
+  --modal-padding-v: var(--space-md); /* 16px */
+  /* Header bottom padding */
+  --modal-header-pb: var(--space-sm); /* 8px */
+
+  /* ── Layout Gaps ────────────────────────────────────────────── */
+  /* Section spacing inside panels */
+  --section-gap: var(--space-md); /* 16px */
+  /* Button group internal gap */
+  --button-group-gap: var(--space-sm); /* 8px */
+  /* Form field vertical gap */
+  --form-field-gap: var(--space-md); /* 16px */
+  /* Flex item gap (general) */
+  --flex-gap-xs: var(--space-xs); /* 4px */
+  --flex-gap-sm: var(--space-sm); /* 8px */
+  --flex-gap-md: var(--space-md); /* 16px */
+  --flex-gap-lg: var(--space-lg); /* 24px */
+
+  /* ── Button Presets ─────────────────────────────────────────── */
+  /* Button padding: compact form */
+  --button-padding-compact: 0.5rem 0.75rem; /* 8px 12px */
+  /* Button padding: normal form */
+  --button-padding-normal: 0.75rem 1rem; /* 12px 16px */
+  /* Button padding: large/primary */
+  --button-padding-large: 1rem 1.5rem; /* 16px 24px */
+
+  /* ── Icon Presets ───────────────────────────────────────────── */
+  /* Icon container spacing */
+  --icon-container-size: 2.25rem; /* 36px */
+  --icon-small-size: 1.5rem; /* 24px */
+  --icon-xs-size: 1rem; /* 16px */
+
+  /* ── Border Radius ──────────────────────────────────────────── */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-card: 20px;
+  --radius-full: 9999px;
+
+  /* ── Responsive Adjustments ────────────────────────────────── */
+  /* Mobile (default): all tokens as-is */
+  /* Tablet (768px+): slightly increased padding for touch targets */
+  /* Desktop (1024px+): standard spacing */
+
+  @media (min-width: 768px) {
+    --modal-padding-h: clamp(1.5rem, 3vw, 2rem);
+  }
+}

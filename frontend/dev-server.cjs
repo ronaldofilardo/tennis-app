@@ -329,6 +329,34 @@ app.post('/api/auth/register-athlete-independent', async (req, res) => {
   }
 });
 
+// GET /api/athletes/my — lista atletas criados pelo usuário autenticado
+app.get('/api/athletes/my', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+
+    const athletes = await prisma.athleteProfile.findMany({
+      where: { createdByUserId: ctx.userId },
+      orderBy: { name: 'asc' },
+      select: {
+        id: true,
+        name: true,
+        nickname: true,
+        gender: true,
+        age: true,
+        ranking: true,
+        clubName: true,
+        dominance: true,
+        backhand: true,
+      },
+    });
+    res.json({ athletes });
+  } catch (err) {
+    console.error('[GET /api/athletes/my]', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.get('/api/athletes', async (req, res) => {
   try {
     const ctx = await extractCtx(req); // pode ser null para anônimos
@@ -395,7 +423,8 @@ app.post('/api/athletes', async (req, res) => {
   try {
     const ctx = await extractCtx(req);
     if (!ctx) return res.status(401).json({ error: 'Authentication required' });
-    const { name, nickname, category, gender } = req.body || {};
+    const { name, nickname, category, gender, age, clubName, dominance, backhand, ranking } =
+      req.body || {};
     if (!name) return res.status(400).json({ error: 'name is required' });
     const profile = await prisma.athleteProfile.create({
       data: {
@@ -403,7 +432,13 @@ app.post('/api/athletes', async (req, res) => {
         nickname,
         category,
         gender,
+        age: age ? parseInt(age) : null,
+        clubName: clubName || null,
+        dominance: dominance || null,
+        backhand: backhand || null,
+        ranking: ranking ? parseInt(ranking) : null,
         isPublic: true,
+        createdByUserId: ctx.userId,
       },
     });
     res.status(201).json(profile);
@@ -514,6 +549,7 @@ app.get('/api/matches/my-completed', async (req, res) => {
         playerP2: true,
         status: true,
         createdAt: true,
+        createdByUserId: true,
         player1: { select: { id: true, name: true } },
         player2: { select: { id: true, name: true } },
       },
@@ -530,6 +566,8 @@ app.get('/api/matches/my-completed', async (req, res) => {
       playerP2: m.playerP2,
       status: m.status,
       createdAt: m.createdAt ? m.createdAt.toISOString() : null,
+      createdByUserId: m.createdByUserId,
+      annotationCount: 0,
       player1: m.player1,
       player2: m.player2,
     }));
@@ -930,6 +968,7 @@ app.get('/api/matches/my-completed', async (req, res) => {
         playerP2: true,
         status: true,
         createdAt: true,
+        createdByUserId: true,
         player1: { select: { id: true, name: true } },
         player2: { select: { id: true, name: true } },
       },
@@ -946,6 +985,8 @@ app.get('/api/matches/my-completed', async (req, res) => {
       playerP2: m.playerP2,
       status: m.status,
       createdAt: m.createdAt ? m.createdAt.toISOString() : null,
+      createdByUserId: m.createdByUserId,
+      annotationCount: 0,
       player1: m.player1,
       player2: m.player2,
     }));
@@ -1478,6 +1519,49 @@ app.post('/api/matches/:id/claim', async (req, res) => {
   }
 });
 
+// GET /api/matches/tournament-suggestions — sugestões de torneios (ANTES de :id!)
+app.get('/api/matches/tournament-suggestions', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+
+    const sp = new URL(`http://localhost${req.url}`).searchParams;
+    const tournamentFilter = sp.get('tournamentName');
+
+    const [tournaments, rounds] = await Promise.all([
+      prisma.match.findMany({
+        where: {
+          clubId: ctx.clubId ?? undefined,
+          tournamentName: { not: null },
+        },
+        distinct: ['tournamentName'],
+        select: { tournamentName: true },
+        orderBy: { createdAt: 'desc' },
+        take: 20,
+      }),
+      prisma.match.findMany({
+        where: {
+          clubId: ctx.clubId ?? undefined,
+          roundName: { not: null },
+          ...(tournamentFilter ? { tournamentName: tournamentFilter } : {}),
+        },
+        distinct: ['roundName'],
+        select: { roundName: true },
+        orderBy: { createdAt: 'desc' },
+        take: 20,
+      }),
+    ]);
+
+    res.json({
+      tournaments: tournaments.map((t) => t.tournamentName).filter(Boolean),
+      rounds: rounds.map((r) => r.roundName).filter(Boolean),
+    });
+  } catch (error) {
+    console.error('[GET /api/matches/tournament-suggestions] Erro:', error);
+    res.status(500).json({ error: 'Erro ao buscar sugestões de torneios' });
+  }
+});
+
 // Buscar partida específica (rota genérica — deve ficar DEPOIS de rotas estáticas)
 app.get('/api/matches/:id', async (req, res) => {
   try {
@@ -1657,6 +1741,72 @@ app.delete('/api/matches/:id/local-only', async (req, res) => {
   } catch (error) {
     console.error('[DELETE /api/matches/:id/local-only] Erro:', error);
     res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
+  }
+});
+
+// DELETE /api/matches/:id — exclui partida (apenas criador ou ADMIN)
+app.delete('/api/matches/:id', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+
+    const match = await prisma.match.findUnique({
+      where: { id: req.params.id },
+      select: { id: true, createdByUserId: true, status: true },
+    });
+    if (!match) return res.status(404).json({ error: 'Match not found' });
+    if (match.createdByUserId !== ctx.userId && ctx.role !== 'ADMIN') {
+      return res
+        .status(403)
+        .json({ error: 'Apenas o criador ou administrador pode excluir a partida' });
+    }
+    // Criador e admin podem deletar partidas em qualquer estado
+    await prisma.match.delete({ where: { id: req.params.id } });
+    return res.json({ success: true });
+  } catch (error) {
+    console.error('[DELETE /api/matches/:id] Erro:', error);
+    res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
+  }
+});
+
+// GET /api/matches/discover — partidas públicas disponíveis para anotação
+app.get('/api/matches/discover', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+
+    const sp = new URL(`http://localhost${req.url}`).searchParams;
+    const matches = await prisma.match.findMany({
+      where: {
+        visibility: 'PUBLIC',
+        openForAnnotation: true,
+        status: { not: 'FINISHED' },
+        ...(sp.get('sportType') ? { sportType: sp.get('sportType') } : {}),
+        ...(sp.get('clubId') ? { clubId: sp.get('clubId') } : {}),
+      },
+      select: {
+        id: true,
+        sportType: true,
+        format: true,
+        courtType: true,
+        scheduledAt: true,
+        status: true,
+        visibility: true,
+        openForAnnotation: true,
+        playerP1: true,
+        playerP2: true,
+        player1: { select: { id: true, name: true } },
+        player2: { select: { id: true, name: true } },
+        club: { select: { id: true, name: true } },
+        createdBy: { select: { id: true, name: true } },
+      },
+      orderBy: [{ scheduledAt: 'asc' }, { createdAt: 'desc' }],
+      take: 50,
+    });
+    res.json(matches);
+  } catch (error) {
+    console.error('[GET /api/matches/discover] Erro:', error);
+    res.status(500).json({ error: 'Erro ao carregar partidas disponíveis' });
   }
 });
 

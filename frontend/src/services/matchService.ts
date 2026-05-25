@@ -150,6 +150,7 @@ export async function getMatchById(id: string): Promise<object> {
       createdAt: true,
       matchState: true,
       visibility: true,
+      createdByUserId: true,
     },
   });
 
@@ -186,6 +187,7 @@ export async function getMatchById(id: string): Promise<object> {
     completedSets,
     createdAt: match.createdAt ? match.createdAt.toISOString() : undefined,
     matchState,
+    createdByUserId: match.createdByUserId ?? null,
   };
 }
 

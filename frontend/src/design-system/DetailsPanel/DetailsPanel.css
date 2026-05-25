@@ -1,0 +1,129 @@
+/* DetailsPanel.css — Container base para DetailsPanel pattern
+ * Define estrutura, espaçamento, e temas de cor
+ */
+
+.details-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--clr-surface, #181d27);
+  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  border-radius: var(--radius-card, 20px);
+  overflow: hidden;
+  font-family: var(--font-main, 'Inter', sans-serif);
+  color: var(--clr-text, #e8eaf0);
+}
+
+/* ── Header ───────────────────────────────────────────────────── */
+
+.details-panel__header {
+  padding: var(--modal-padding-v) var(--modal-padding-h);
+  border-bottom: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  background: var(--clr-surface-2, #1e2535);
+}
+
+.details-panel__header:empty {
+  display: none;
+}
+
+/* ── Body ──────────────────────────────────────────────────────── */
+
+.details-panel__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: var(--modal-padding-v) var(--modal-padding-h);
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* ── Footer ────────────────────────────────────────────────────── */
+
+.details-panel__footer {
+  padding: var(--modal-padding-v) var(--modal-padding-h);
+  border-top: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  background: var(--clr-surface-2, #1e2535);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm, 0.5rem);
+}
+
+.details-panel__footer:empty {
+  display: none;
+}
+
+/* ── Accent Color Variants ───────────────────────────────────── */
+
+.details-panel--accent-green {
+  border-top: 3px solid var(--clr-accent, #22c55e);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 32px rgba(34, 197, 94, 0.12);
+}
+
+.details-panel--accent-green .details-panel__header {
+  background: rgba(34, 197, 94, 0.06);
+}
+
+.details-panel--accent-blue {
+  border-top: 3px solid var(--clr-blue, #3b82f6);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 32px rgba(59, 130, 246, 0.12);
+}
+
+.details-panel--accent-blue .details-panel__header {
+  background: rgba(59, 130, 246, 0.06);
+}
+
+.details-panel--accent-yellow {
+  border-top: 3px solid var(--clr-yellow, #eab308);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 32px rgba(234, 179, 8, 0.12);
+}
+
+.details-panel--accent-yellow .details-panel__header {
+  background: rgba(234, 179, 8, 0.06);
+}
+
+.details-panel--accent-default {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Responsive ───────────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .details-panel__body {
+    max-height: 60vh;
+    padding: var(--space-md) var(--modal-padding-h);
+  }
+}
+
+/* ── Scrollbar Styling ───────────────────────────────────────── */
+
+.details-panel__body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.details-panel__body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.details-panel__body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.details-panel__body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ── Motion ────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .details-panel {
+    animation: none;
+  }
+}

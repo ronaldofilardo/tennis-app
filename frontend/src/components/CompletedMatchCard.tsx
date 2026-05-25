@@ -13,11 +13,15 @@ export interface CompletedMatch {
   scheduledAt?: string | null;
   createdAt: string;
   annotationCount: number;
+  createdByUserId?: string | null;
+  status?: string;
 }
 
 interface CompletedMatchCardProps {
   match: CompletedMatch;
   onViewStats: (matchId: string) => void;
+  onDeleteMatch?: (matchId: string) => void;
+  currentUserId?: string;
 }
 
 function formatDate(iso: string | null | undefined): string {
@@ -38,10 +42,26 @@ function sportLabel(sportType: string): string {
   return labels[sportType] ?? sportType;
 }
 
-const CompletedMatchCard: React.FC<CompletedMatchCardProps> = ({ match, onViewStats }) => {
+const CompletedMatchCard: React.FC<CompletedMatchCardProps> = ({
+  match,
+  onViewStats,
+  onDeleteMatch,
+  currentUserId,
+}) => {
   const p1Name = match.player1?.name ?? match.playerP1;
   const p2Name = match.player2?.name ?? match.playerP2;
   const dateLabel = match.scheduledAt ? formatDate(match.scheduledAt) : formatDate(match.createdAt);
+
+  // Debug
+  React.useEffect(() => {
+    console.log(`[CompletedMatchCard] ${match.id}:`, {
+      currentUserId,
+      createdByUserId: match.createdByUserId,
+      status: match.status,
+      shouldShowDelete:
+        currentUserId && match.createdByUserId === currentUserId && match.status === 'NOT_STARTED',
+    });
+  }, [match.id, currentUserId, match.createdByUserId, match.status]);
 
   return (
     <article
@@ -83,6 +103,35 @@ const CompletedMatchCard: React.FC<CompletedMatchCardProps> = ({ match, onViewSt
       </div>
 
       <footer className="completed-match-card__actions">
+        {currentUserId &&
+          match.createdByUserId === currentUserId &&
+          match.status !== 'IN_PROGRESS' &&
+          onDeleteMatch && (
+            <button
+              className="completed-match-card__btn completed-match-card__btn--delete"
+              onClick={() => onDeleteMatch(match.id)}
+              title="Excluir partida"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                <path d="M10 11v6" />
+                <path d="M14 11v6" />
+                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+              </svg>
+              Excluir
+            </button>
+          )}
         <button
           className="completed-match-card__btn completed-match-card__btn--stats"
           onClick={() => onViewStats(match.id)}

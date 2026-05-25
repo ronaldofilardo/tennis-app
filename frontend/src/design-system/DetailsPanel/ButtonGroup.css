@@ -1,0 +1,107 @@
+/* ButtonGroup.css — Button group styling and variants */
+
+.button-group {
+  display: flex;
+  gap: var(--button-group-gap, 0.5rem);
+  flex-wrap: wrap;
+}
+
+/* ── Direction Variants ────────────────────────────────────── */
+
+.button-group--row {
+  flex-direction: row;
+}
+
+.button-group--column {
+  flex-direction: column;
+}
+
+/* ── Size Variants ────────────────────────────────────────── */
+
+.button-group--sm .button-group__btn {
+  padding: var(--button-padding-compact, 0.5rem 0.75rem);
+  font-size: var(--font-scale-sm, clamp(0.75rem, 1.5vw, 0.875rem));
+}
+
+.button-group--md .button-group__btn {
+  padding: var(--button-padding-normal, 0.75rem 1rem);
+  font-size: var(--font-scale-body, clamp(0.875rem, 2vw, 1rem));
+}
+
+.button-group--lg .button-group__btn {
+  padding: var(--button-padding-large, 1rem 1.5rem);
+  font-size: var(--font-scale-body, clamp(0.875rem, 2vw, 1rem));
+  width: 100%;
+  text-align: center;
+}
+
+/* ── Button Element ────────────────────────────────────────── */
+
+.button-group__btn {
+  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  background: transparent;
+  color: var(--clr-text, #e8eaf0);
+  border-radius: var(--radius-md, 6px);
+  font-family: var(--font-main, 'Inter', sans-serif);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  transition: all 150ms var(--ease-in-out, cubic-bezier(0.4, 0, 0.2, 1));
+  white-space: nowrap;
+}
+
+.button-group__btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.button-group__btn:focus-visible {
+  outline: 2px solid var(--clr-accent, #22c55e);
+  outline-offset: 2px;
+}
+
+/* ── Active State ──────────────────────────────────────────── */
+
+.button-group__btn--active {
+  background: var(--clr-accent, #22c55e);
+  color: var(--clr-bg, #0f1117);
+  border-color: var(--clr-accent, #22c55e);
+  font-weight: var(--font-weight-semibold, 600);
+}
+
+.button-group__btn--active:hover:not(:disabled) {
+  background: #1aa84a;
+  border-color: #1aa84a;
+}
+
+/* ── Disabled State ────────────────────────────────────────── */
+
+.button-group__btn:disabled,
+.button-group__btn--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button-group--disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ── Responsive ────────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .button-group {
+    gap: var(--button-group-gap, 0.5rem);
+  }
+
+  .button-group--lg .button-group__btn {
+    padding: var(--button-padding-normal, 0.75rem 1rem);
+  }
+}
+
+/* ── Motion Preferences ────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .button-group__btn {
+    transition: none;
+  }
+}

@@ -1,0 +1,78 @@
+/* DetailsHeader.css — Badge/header styling */
+
+.details-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.details-header__content {
+  display: flex;
+  align-items: center;
+  gap: var(--flex-gap-sm, 0.5rem);
+  justify-content: center;
+  width: 100%;
+}
+
+.details-header__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-small-size, 1.5rem);
+  height: var(--icon-small-size, 1.5rem);
+  flex-shrink: 0;
+}
+
+.details-header__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.details-header__label {
+  margin: 0;
+  font-size: var(--font-scale-label, clamp(0.7rem, 1.2vw, 0.8rem));
+  font-weight: var(--font-weight-bold, 700);
+  letter-spacing: var(--letter-spacing-uppercase, 0.06em);
+  text-transform: uppercase;
+  color: var(--clr-text, #e8eaf0);
+  line-height: var(--line-height-tight, 1.2);
+}
+
+.details-header__subtitle {
+  margin: 0;
+  font-size: var(--font-scale-sm, clamp(0.75rem, 1.5vw, 0.875rem));
+  font-weight: var(--font-weight-normal, 400);
+  color: var(--clr-text-muted, #6b7280);
+  line-height: var(--line-height-normal, 1.5);
+}
+
+/* ── Variant Styles (optional inline override via style prop) ── */
+
+.details-header--winner {
+  background: rgba(34, 197, 94, 0.18);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.details-header--server {
+  background: rgba(59, 130, 246, 0.18);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+.details-header--returner {
+  background: rgba(249, 115, 22, 0.18);
+  border: 1px solid rgba(249, 115, 22, 0.4);
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .details-header__label {
+    font-size: var(--font-scale-label, 0.75rem);
+  }
+
+  .details-header__subtitle {
+    font-size: var(--font-scale-sm, 0.8rem);
+  }
+}

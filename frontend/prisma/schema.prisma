@@ -75,6 +75,7 @@ model User {
   createdMatches         Match[]               @relation("MatchCreator")
   annotationSessions     MatchAnnotationSession[] @relation("AnnotationSessions")
   endorsements           AnnotationEndorsement[]  @relation("Endorsements")
+  createdAthletes        AthleteProfile[]    @relation("AthleteCreator")
 
   @@map("users")
 }
@@ -105,15 +106,24 @@ model AthleteProfile {
   docRgUrl      String?
   docMedicalCertUrl String?
 
+  // Novos campos para atletas criados pelo usuário
+  createdByUserId String?
+  dominance       String?     // RIGHT, LEFT, AMBIDEXTROUS
+  backhand        String?     // ONE_HAND, TWO_HAND
+  age             Int?
+  clubName        String?
+
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
   user        User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdBy   User?   @relation("AthleteCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
   matchesAsP1 Match[] @relation("MatchPlayer1")
   matchesAsP2 Match[] @relation("MatchPlayer2")
 
   @@index([name])
   @@index([cpf])
+  @@index([createdByUserId])
   @@map("athlete_profiles")
 }
 

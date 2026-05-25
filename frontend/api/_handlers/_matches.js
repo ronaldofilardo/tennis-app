@@ -1381,12 +1381,7 @@ export default async function handler(req, res) {
             error: 'Apenas o criador ou administrador pode excluir a partida',
           });
         }
-        if (match.status !== 'NOT_STARTED') {
-          return sendJson(res, 400, {
-            error: 'Apenas partidas não iniciadas podem ser excluídas',
-            code: 'MATCH_ALREADY_STARTED',
-          });
-        }
+        // Criador e admin podem deletar partidas em qualquer estado
         await prisma.match.delete({ where: { id } });
         return sendJson(res, 200, { success: true });
       }

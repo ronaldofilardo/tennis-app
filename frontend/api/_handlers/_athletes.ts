@@ -19,7 +19,46 @@ export default async function handler(req: ApiRequest, res: ServerResponse): Pro
   if (handleCors(req, res)) return;
 
   const url = new URL(req.url ?? '/', `http://${req.headers.host ?? 'localhost'}`);
-  const athleteId = getAthleteId(url);
+  const pathParts = url.pathname.split('/').filter(Boolean);
+  const athleteId = pathParts[2] || null;
+  const subRoute = pathParts[2]; // 'my' or athlete ID
+
+  // ─── GET /api/athletes/my (meus atletas criados) ───────────────────────────
+  if (subRoute === 'my' && req.method === 'GET') {
+    try {
+      console.log('[athletes/my GET] Request received');
+      console.log('[athletes/my GET] Authorization header:', req.headers?.authorization);
+      const ctx = requireAuth(req, res);
+      if (!ctx) {
+        console.log('[athletes/my GET] Auth failed - no context');
+        return;
+      }
+
+      console.log('[athletes/my GET] User context:', ctx);
+      console.log('[athletes/my GET] Searching athletes with createdByUserId:', ctx.userId);
+
+      const athletes = await prisma.athleteProfile.findMany({
+        where: { createdByUserId: ctx.userId },
+        orderBy: { name: 'asc' },
+        select: {
+          id: true,
+          name: true,
+          nickname: true,
+          gender: true,
+          age: true,
+          ranking: true,
+          clubName: true,
+          dominance: true,
+          backhand: true,
+        },
+      });
+      console.log('[athletes/my GET] Found athletes:', athletes.length);
+      return sendJson(res, 200, { athletes });
+    } catch (err) {
+      console.error('[athletes/my GET]', err);
+      return sendJson(res, 500, { error: 'Internal server error' });
+    }
+  }
 
   // ─── GET /api/athletes (busca pública) ───────────────────────────────────
   if (!athleteId && req.method === 'GET') {
@@ -163,6 +202,10 @@ export default async function handler(req: ApiRequest, res: ServerResponse): Pro
         category,
         gender,
         ranking,
+        dominance,
+        backhand,
+        age,
+        clubName,
         isPublic = true,
       } = (req.body ?? {}) as {
         name?: string;
@@ -172,12 +215,16 @@ export default async function handler(req: ApiRequest, res: ServerResponse): Pro
         category?: string;
         gender?: string;
         ranking?: number | string;
+        dominance?: string;
+        backhand?: string;
+        age?: number | string;
+        clubName?: string;
         isPublic?: boolean;
       };
       if (!name) return sendJson(res, 400, { error: 'name is required' });
       const athlete = await prisma.athleteProfile.create({
         data: {
-          userId: ctx.userId,
+          createdByUserId: ctx.userId,
           name: name.trim(),
           nickname: nickname?.trim() || null,
           birthDate: birthDate ? new Date(birthDate) : null,
@@ -185,6 +232,10 @@ export default async function handler(req: ApiRequest, res: ServerResponse): Pro
           category: category?.trim() || null,
           gender: gender || null,
           ranking: ranking ? parseInt(String(ranking)) : null,
+          dominance: dominance || null,
+          backhand: backhand || null,
+          age: age ? parseInt(String(age)) : null,
+          clubName: clubName?.trim() || null,
           isPublic,
         },
       });

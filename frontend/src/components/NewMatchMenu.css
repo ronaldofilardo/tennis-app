@@ -1,21 +1,24 @@
-/* frontend/src/components/NewMatchMenu.css */
+/* frontend/src/components/NewMatchMenu.css
+ * Refatorado com DetailsPanel pattern
+ * Menu absoluto com DetailsPanel como container base
+ */
 
 .new-match-menu {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
   min-width: 240px;
-  background: #1e1e2e;
-  border: 1px solid var(--clr-border-light);
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  overflow: hidden;
   z-index: 300;
   animation: menu-enter 0.15s var(--ease-out);
 }
 
+.new-match-menu__panel {
+  border: 1px solid var(--clr-border-light);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+}
+
 /* Mobile: full-width centralizado */
-@media (max-width: clamp(260px, 80vw, 480px)) {
+@media (max-width: 480px) {
   .new-match-menu {
     position: fixed;
     top: auto;
@@ -44,6 +47,8 @@
   }
 }
 
+/* ── Menu Items ─────────────────────────────────────────────── */
+
 .new-match-menu__item {
   display: flex;
   align-items: center;
@@ -56,6 +61,7 @@
   cursor: pointer;
   text-align: left;
   transition: background 0.15s ease;
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .new-match-menu__item:hover,

@@ -1,0 +1,64 @@
+/* Typography Design Tokens — Racket Design System
+ * Mobile-first, fluid scaling with clamp()
+ * Usage: Use in components via CSS custom properties
+ */
+
+:root {
+  /* ── Font Stack ─────────────────────────────────────────────── */
+  --font-main: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+  /* ── Font Weights ───────────────────────────────────────────── */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ── Font Sizes — Scales (clamp: min, prefer, max) ────────── */
+  /* H1: Large headings (page titles, modal titles) */
+  --font-scale-h1: clamp(1.75rem, 5vw, 2.5rem);
+  /* line-height: 1.2 (tight for large text) */
+
+  /* H2: Section headings */
+  --font-scale-h2: clamp(1.5rem, 4vw, 2rem);
+  /* line-height: 1.3 */
+
+  /* H3: Subsections, card titles */
+  --font-scale-h3: clamp(1.25rem, 3vw, 1.5rem);
+  /* line-height: 1.4 */
+
+  /* Body: Standard paragraph/card text */
+  --font-scale-body: clamp(0.875rem, 2vw, 1rem);
+  /* line-height: 1.5 (readable) */
+
+  /* Small: Secondary text, metadata */
+  --font-scale-sm: clamp(0.75rem, 1.5vw, 0.875rem);
+  /* line-height: 1.4 */
+
+  /* Label: Form labels, section headers (uppercase) */
+  --font-scale-label: clamp(0.7rem, 1.2vw, 0.8rem);
+  /* letter-spacing: 0.05em */
+
+  /* Badge: Small badges, tags */
+  --font-scale-badge: 0.65rem;
+  /* font-weight: 700, letter-spacing: 0.06em */
+
+  /* Section Title: Uppercase labels in Details panels */
+  --font-scale-section-title: clamp(0.75rem, 1.5vw, 0.875rem);
+  /* font-weight: 600, uppercase */
+
+  /* ── Line Heights ───────────────────────────────────────────── */
+  --line-height-tight: 1.2;
+  --line-height-snug: 1.3;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+
+  /* ── Letter Spacing ─────────────────────────────────────────── */
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.02em;
+  --letter-spacing-wider: 0.05em;
+  --letter-spacing-uppercase: 0.06em;
+
+  /* ── Responsive Adjustments (Breakpoints) ─────────────────── */
+  /* Tablet (768px+): slight increase in base scale */
+  /* Desktop (1024px+): full scale applied via clamp() */
+}

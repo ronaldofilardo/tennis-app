@@ -1,6 +1,6 @@
 import React from 'react';
-import AthleteSearchInput from '../components/AthleteSearchInput';
-import type { AthleteResult } from '../components/AthleteSearchInput';
+import MyAthleteDropdown from '../components/MyAthleteDropdown';
+import type { MyAthlete } from '../components/MyAthleteDropdown';
 
 interface MatchSetupFormFieldsProps {
   sport: string;
@@ -15,10 +15,10 @@ interface MatchSetupFormFieldsProps {
   setPlayer1: (value: string) => void;
   player2: string;
   setPlayer2: (value: string) => void;
-  selectedAthlete1: AthleteResult | null;
-  setSelectedAthlete1: (value: AthleteResult | null) => void;
-  selectedAthlete2: AthleteResult | null;
-  setSelectedAthlete2: (value: AthleteResult | null) => void;
+  selectedAthlete1: MyAthlete | null;
+  setSelectedAthlete1: (value: MyAthlete | null) => void;
+  selectedAthlete2: MyAthlete | null;
+  setSelectedAthlete2: (value: MyAthlete | null) => void;
   visibility: 'PUBLIC' | 'CLUB' | 'PLAYERS_ONLY';
   setVisibility: (value: 'PUBLIC' | 'CLUB' | 'PLAYERS_ONLY') => void;
   isResuming: boolean;
@@ -47,7 +47,8 @@ interface MatchSetupFormFieldsProps {
   setShowRoundSuggestions: (value: boolean) => void;
   showRoundSuggestions: boolean;
   roundInputRef: React.RefObject<HTMLInputElement>;
-  currentUserId?: string;
+  onCreateNewAthlete1: () => void;
+  onCreateNewAthlete2: () => void;
   onSetError: (error: string | null) => void;
   onLocateClick: () => void;
   onSubmit: (e: React.FormEvent) => void;
@@ -99,7 +100,8 @@ export const MatchSetupFormFields: React.FC<MatchSetupFormFieldsProps> = ({
   setShowRoundSuggestions,
   showRoundSuggestions,
   roundInputRef,
-  currentUserId,
+  onCreateNewAthlete1,
+  onCreateNewAthlete2,
   onSetError,
   onLocateClick,
   onSubmit,
@@ -151,41 +153,29 @@ export const MatchSetupFormFields: React.FC<MatchSetupFormFieldsProps> = ({
     <div className="form-group">
       <label>Jogadores</label>
       <div className="player-inputs">
-        <AthleteSearchInput
-          id="player1-search"
+        <MyAthleteDropdown
           label="Jogador 1"
-          placeholder="Buscar atleta..."
+          placeholder="Selecione um atleta..."
           value={selectedAthlete1}
           onSelect={(a) => {
             setSelectedAthlete1(a);
             if (a) setPlayer1(a.name);
+            else setPlayer1('');
           }}
-          onQueryChange={(q) => {
-            setPlayer1(q);
-            if (selectedAthlete1 && q !== selectedAthlete1.name) {
-              setSelectedAthlete1(null);
-            }
-          }}
-          excludeUserId={currentUserId}
+          onCreateNew={onCreateNewAthlete1}
           excludeAthleteId={selectedAthlete2?.id}
         />
         <span>vs</span>
-        <AthleteSearchInput
-          id="player2-search"
+        <MyAthleteDropdown
           label="Jogador 2"
-          placeholder="Buscar atleta..."
+          placeholder="Selecione um atleta..."
           value={selectedAthlete2}
           onSelect={(a) => {
             setSelectedAthlete2(a);
             if (a) setPlayer2(a.name);
+            else setPlayer2('');
           }}
-          onQueryChange={(q) => {
-            setPlayer2(q);
-            if (selectedAthlete2 && q !== selectedAthlete2.name) {
-              setSelectedAthlete2(null);
-            }
-          }}
-          excludeUserId={currentUserId}
+          onCreateNew={onCreateNewAthlete2}
           excludeAthleteId={selectedAthlete1?.id}
         />
       </div>

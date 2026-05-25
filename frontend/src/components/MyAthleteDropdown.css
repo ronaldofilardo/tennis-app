@@ -1,0 +1,254 @@
+/* MyAthleteDropdown.css */
+
+.my-athlete-dropdown {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.my-athlete-dropdown.disabled .my-athlete-dropdown-trigger {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.my-athlete-dropdown-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--clr-text);
+}
+
+.my-athlete-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  height: 2.5rem;
+  padding: 0.5rem 1rem;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition:
+    background 150ms var(--ease-in-out),
+    border-color 150ms var(--ease-in-out),
+    box-shadow 150ms var(--ease-in-out);
+  font-size: 1rem;
+  color: var(--clr-text);
+}
+
+.my-athlete-dropdown-trigger:hover:not(.disabled) {
+  border-color: rgba(255, 255, 255, 0.38);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.my-athlete-dropdown-trigger:focus-within {
+  outline: 2px solid var(--clr-accent, #22c55e);
+  outline-offset: 2px;
+  border-color: var(--clr-accent, #22c55e);
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+}
+
+.my-athlete-dropdown.has-value .my-athlete-dropdown-trigger {
+  border-color: var(--clr-accent, #22c55e);
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.my-athlete-dropdown-value {
+  flex: 1;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.my-athlete-dropdown-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: color 150ms var(--ease-in-out);
+}
+
+.my-athlete-dropdown-clear:hover {
+  color: var(--clr-text);
+}
+
+.my-athlete-dropdown-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  font-size: 0.75rem;
+  color: var(--clr-text-muted);
+  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.my-athlete-dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Menu */
+
+.my-athlete-dropdown-menu {
+  position: absolute;
+  background: var(--clr-surface, #181d27);
+  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.my-athlete-dropdown-loading {
+  padding: 1rem;
+  text-align: center;
+  color: var(--clr-text-muted);
+  font-size: 0.875rem;
+}
+
+.my-athlete-dropdown-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.my-athlete-dropdown-divider {
+  height: 1px;
+  background: var(--clr-border);
+}
+
+/* Items */
+
+.my-athlete-dropdown-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  color: rgba(232, 234, 240, 0.7);
+  font-size: 1rem;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.my-athlete-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--clr-text);
+}
+
+.my-athlete-dropdown-item.selected {
+  background: rgba(34, 197, 94, 0.1);
+  border-left: 3px solid var(--clr-accent);
+  padding-left: calc(1rem - 3px);
+}
+
+.my-athlete-dropdown-item.new-athlete {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(34, 197, 94, 0.05);
+  font-weight: 500;
+  color: var(--clr-accent);
+}
+
+.my-athlete-dropdown-item.new-athlete:hover {
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.new-athlete-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: var(--clr-accent);
+  color: var(--clr-bg);
+  border-radius: 50%;
+  font-size: 0.875rem;
+  font-weight: bold;
+}
+
+.new-athlete-label {
+  flex: 1;
+}
+
+/* Item Content */
+
+.my-athlete-dropdown-item-name {
+  font-weight: 500;
+  color: rgba(232, 234, 240, 0.85);
+  transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.my-athlete-dropdown-item:hover .my-athlete-dropdown-item-name {
+  color: var(--clr-text);
+}
+
+.my-athlete-dropdown-item-meta {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.75rem;
+  color: rgba(107, 114, 128, 0.8);
+  transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.my-athlete-dropdown-item:hover .my-athlete-dropdown-item-meta {
+  color: var(--clr-text-muted);
+}
+
+.my-athlete-dropdown-item-club {
+  background: var(--clr-surface-2);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.my-athlete-dropdown-item-ranking {
+  font-weight: 500;
+}
+
+/* Empty State */
+
+.my-athlete-dropdown-empty {
+  padding: 1rem;
+  text-align: center;
+  color: var(--clr-text-muted);
+  font-size: 0.875rem;
+}
+
+/* Scrollbar Styling */
+
+.my-athlete-dropdown-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.my-athlete-dropdown-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.my-athlete-dropdown-menu::-webkit-scrollbar-thumb {
+  background: var(--clr-border);
+  border-radius: 3px;
+}
+
+.my-athlete-dropdown-menu::-webkit-scrollbar-thumb:hover {
+  background: var(--clr-text-muted);
+}
