@@ -619,7 +619,7 @@ export default async function handler(req, res) {
 
     // ─── GET /api/matches/by-code/:code ──────────────────────────────────────
     // Localiza uma partida pelo publicMatchCode para anotação
-    if (seg === 'by-code' && sub) {
+    if (id === 'by-code' && sub) {
       if (req.method !== 'GET') return methodNotAllowed(res, ['GET']);
       const ctx = requireAuth(req, res);
       if (!ctx) return;
