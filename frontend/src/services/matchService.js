@@ -1,6 +1,14 @@
-// frontend/src/services/matchService.js - Re-export bridge para Node.js ESM
-export * from './matchService.ts';
-}
+// frontend/src/services/matchService.js - JavaScript implementation for Node.js serverless
+import prisma from '../../api/_lib/prisma.js';
+import { calculateMatchStats } from './statsUtils.js';
+import {
+  MatchCreateSchema,
+  MatchUpdateSchema,
+  MatchStateUpdateSchema,
+  VisibleMatchesQuerySchema,
+  MatchIdSchema,
+  validateAndFormatZodError,
+} from './validationSchemas.js';
 
 /**
  * Cria uma nova partida no banco de dados após validar os dados com Zod.
@@ -598,4 +606,42 @@ export async function getMatchesOpenForAnnotation(testPrisma) {
     clubName: match.club?.name || null,
     createdBy: match.createdBy ? { id: match.createdBy.id, name: match.createdBy.name } : null,
   }));
+}
+
+export async function getAllMatches(clubId, role, userId) {
+  const where = {};
+  if (role !== 'ADMIN') {
+    if (clubId) where.clubId = clubId;
+    else if (userId) where.createdByUserId = userId;
+  }
+  const matches = await prisma.match.findMany({
+    where,
+    select: {
+      id: true, sportType: true, format: true, courtType: true, nickname: true,
+      playerP1: true, playerP2: true, status: true, score: true, winner: true,
+      completedSets: true, createdAt: true, updatedAt: true, matchState: true,
+      apontadorEmail: true, playersEmails: true, visibility: true,
+      clubId: true, createdByUserId: true,
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 200,
+  });
+  return matches.map((m) => {
+    let parsedState = null;
+    try { parsedState = m.matchState ? JSON.parse(m.matchState) : null; } catch {}
+    let completedSets = [];
+    try { completedSets = JSON.parse(m.completedSets || '[]'); } catch {}
+    return {
+      id: m.id, sportType: m.sportType || '', format: m.format || '',
+      courtType: m.courtType || null, nickname: m.nickname || null,
+      players: { p1: m.playerP1 || '', p2: m.playerP2 || '' },
+      status: m.status || 'NOT_STARTED', score: m.score || '', winner: m.winner || null,
+      completedSets,
+      createdAt: m.createdAt ? m.createdAt.toISOString() : undefined,
+      updatedAt: m.updatedAt ? m.updatedAt.toISOString() : undefined,
+      matchState: parsedState, apontadorEmail: m.apontadorEmail,
+      playersEmails: m.playersEmails, visibility: m.visibility || 'PLAYERS_ONLY',
+      clubId: m.clubId || null, createdByUserId: m.createdByUserId || null,
+    };
+  });
 }

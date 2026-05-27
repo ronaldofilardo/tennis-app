@@ -19,7 +19,7 @@ import {
   getMatchStats,
   getVisibleMatches,
   getMatchesOpenForAnnotation,
-} from '../../src/services/matchService.ts';
+} from '../../src/services/matchService.js';
 import { handleCors, requireAuth, sendJson, methodNotAllowed } from '../_lib/authMiddleware.js';
 import { validateMatchApiResponse } from '../../src/schemas/contracts.js';
 import { requireActiveSubscription } from '../_lib/subscriptionMiddleware.js';
