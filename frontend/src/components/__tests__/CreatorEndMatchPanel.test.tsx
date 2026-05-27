@@ -87,12 +87,15 @@ describe('CreatorEndMatchPanel', () => {
       fireEvent.click(screen.getByText(/Encerrar Sem Vencedor/i));
     });
 
-    await waitFor(() => {
-      expect(mockPatch).toHaveBeenCalledWith(`/matches/${mockMatchId}`, {
-        action: 'endMatch',
-      });
-      expect(mockOnMatchEnded).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    await waitFor(
+      () => {
+        expect(mockPatch).toHaveBeenCalledWith(`/matches/${mockMatchId}`, {
+          action: 'endMatch',
+        });
+        expect(mockOnMatchEnded).toHaveBeenCalled();
+      },
+      { timeout: 5000 },
+    );
   });
 
   it('should call API to end match with winner', async () => {
@@ -125,13 +128,16 @@ describe('CreatorEndMatchPanel', () => {
       fireEvent.click(screen.getByText(/Confirmar/i));
     });
 
-    await waitFor(() => {
-      expect(mockPatch).toHaveBeenCalledWith(`/matches/${mockMatchId}`, {
-        action: 'endMatch',
-        winner: 'PLAYER_1',
-      });
-      expect(mockOnMatchEnded).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    await waitFor(
+      () => {
+        expect(mockPatch).toHaveBeenCalledWith(`/matches/${mockMatchId}`, {
+          action: 'endMatch',
+          winner: 'PLAYER_1',
+        });
+        expect(mockOnMatchEnded).toHaveBeenCalled();
+      },
+      { timeout: 5000 },
+    );
   });
 
   it('should display error if API fails', async () => {

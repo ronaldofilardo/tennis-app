@@ -5,16 +5,12 @@
 import authHandler from './_handlers/_auth.js';
 import matchesHandler from './_handlers/_matches.js';
 import athletesHandler from './_handlers/_athletes.js';
-import webhooksHandler from './_handlers/_webhooks.js';
-import cronHandler from './_handlers/_cron.js';
 import healthHandler from './_handlers/_health.js';
 
 const ROUTES = {
   auth: authHandler,
   matches: matchesHandler,
   athletes: athletesHandler,
-  webhooks: webhooksHandler,
-  cron: cronHandler,
   health: healthHandler,
 };
 

@@ -183,7 +183,8 @@ describe('MatchSetup - Match Creation Flow', () => {
       renderMatchSetup();
 
       // Preenche os campos usando o MyAthleteDropdown mockado
-      const [player1Input2, player2Input2] = screen.getAllByPlaceholderText('Selecione um atleta...');
+      const [player1Input2, player2Input2] =
+        screen.getAllByPlaceholderText('Selecione um atleta...');
 
       await act(async () => {
         fireEvent.change(player1Input2, { target: { value: 'Jogador 1' } });

@@ -137,7 +137,10 @@ describe('MatchTimelineView', () => {
     render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
 
     // Assert — header com aria-expanded=false (detalhe presente no DOM mas recolhido via CSS)
-    expect(screen.getByRole('button', { name: /ponto 1:/i })).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByRole('button', { name: /ponto 1:/i })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
   });
 
   it('deve expandir o card ao clicar no header', () => {
@@ -245,7 +248,10 @@ describe('MatchTimelineView', () => {
     });
 
     // Assert — card recolhido após afterprint (aria-expanded=false)
-    expect(screen.getByRole('button', { name: /ponto 1:/i })).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByRole('button', { name: /ponto 1:/i })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
   });
 
   it('deve remover os event listeners ao desmontar o componente', () => {
