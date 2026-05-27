@@ -5,7 +5,7 @@
 .match-timeline {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .match-timeline__header {
@@ -17,17 +17,17 @@
 }
 
 .match-timeline__title {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   color: #7c3aed;
   margin: 0;
 }
 
 .match-timeline__count {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: 11px;
+  color: #4b5563;
   font-variant-numeric: tabular-nums;
 }
 
@@ -36,8 +36,8 @@
 .match-timeline__filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  padding: 10px 0 4px;
+  gap: 5px;
+  padding: 8px 0 2px;
 }
 
 .match-timeline__filter-chip {
@@ -46,21 +46,26 @@
   gap: 5px;
   padding: 4px 10px;
   border-radius: 999px;
-  border: 1px solid #374151;
+  border: 1px solid rgba(255, 255, 255, 0.07);
   background: transparent;
-  color: #9ca3af;
-  font-size: 12px;
-  font-weight: 500;
+  color: #6b7280;
+  font-size: 11px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color var(--transition-fast) var(--ease-in-out), border-color var(--transition-fast) var(--ease-in-out), color var(--transition-fast) var(--ease-in-out), transform var(--transition-fast) var(--ease-in-out);
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    transform 120ms ease;
   white-space: nowrap;
   user-select: none;
 }
 
 .match-timeline__filter-chip:hover {
-  background: rgba(124, 58, 237, 0.08);
-  border-color: #7c3aed;
+  background: rgba(124, 58, 237, 0.1);
+  border-color: rgba(124, 58, 237, 0.4);
   color: #c4b5fd;
+  transform: translateY(-1px);
 }
 
 .match-timeline__filter-chip:focus-visible {
@@ -70,19 +75,19 @@
 
 .match-timeline__filter-chip--active {
   background: rgba(124, 58, 237, 0.15);
-  border-color: #7c3aed;
+  border-color: rgba(124, 58, 237, 0.5);
   color: #c4b5fd;
 }
 
 .match-timeline__filter-chip--p1.match-timeline__filter-chip--active {
-  background: rgba(96, 165, 250, 0.15);
-  border-color: #60a5fa;
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.45);
   color: #93c5fd;
 }
 
 .match-timeline__filter-chip--p2.match-timeline__filter-chip--active {
-  background: rgba(244, 114, 182, 0.15);
-  border-color: #f472b6;
+  background: rgba(236, 72, 153, 0.15);
+  border-color: rgba(236, 72, 153, 0.45);
   color: #f9a8d4;
 }
 
@@ -90,12 +95,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 18px;
-  height: 18px;
+  min-width: 16px;
+  height: 16px;
   padding: 0 4px;
   border-radius: 999px;
-  background: var(--clr-border-light);
-  font-size: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 9px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
@@ -105,16 +110,17 @@
 .match-timeline__empty {
   padding: 24px;
   text-align: center;
-  color: #6b7280;
-  font-size: 14px;
-  background: #1e1e2e;
-  border-radius: 8px;
+  color: #4b5563;
+  font-size: 13px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .match-timeline__list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -123,27 +129,32 @@
 /* ─── Card de Ponto ─────────────────────────────────────────────────────────── */
 
 .match-timeline__card {
-  border-radius: 8px;
-  background: #1a1a2e;
-  border: 1px solid transparent;
+  border-radius: 5px;
+  background: #0f1520;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-left: 3px solid transparent;
   overflow: hidden;
-  transition: border-color 150ms ease;
+  transition:
+    background 150ms ease,
+    transform 150ms ease,
+    box-shadow 150ms ease;
 }
 
-.match-timeline__card:focus-within {
-  border-color: #374151;
+.match-timeline__card:hover {
+  background: #141c2e;
+  transform: translateX(2px);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 
 .match-timeline__card--p1 {
-  border-left: 3px solid #60a5fa;
+  border-left-color: #3b82f6;
 }
 
 .match-timeline__card--p2 {
-  border-left: 3px solid #f472b6;
+  border-left-color: #ec4899;
 }
 
 .match-timeline__card--breakpoint {
-  border-color: #f59e0b;
   border-left-color: #f59e0b;
 }
 
@@ -152,8 +163,8 @@
 .match-timeline__card-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+  gap: 7px;
+  padding: 7px 10px 7px 11px;
   cursor: pointer;
   user-select: none;
   width: 100%;
@@ -161,11 +172,12 @@
   border: none;
   text-align: left;
   color: inherit;
+  min-height: 36px;
   transition: background 100ms ease;
 }
 
 .match-timeline__card-header:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .match-timeline__card-header:focus-visible {
@@ -174,19 +186,48 @@
 }
 
 .match-timeline__card-num {
-  min-width: 28px;
-  font-size: 11px;
+  min-width: 22px;
+  font-size: 10px;
   font-variant-numeric: tabular-nums;
-  color: #4b5563;
+  color: #374151;
   flex-shrink: 0;
 }
 
-.match-timeline__card-winner {
-  font-size: 13px;
-  font-weight: 700;
-  color: #e2e8f0;
-  min-width: 80px;
+/* ─── Indicador de Sacador ──────────────────────────────────────────────────── */
+
+.match-timeline__server-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: 800;
   flex-shrink: 0;
+  letter-spacing: 0;
+}
+
+.match-timeline__server-indicator--p1 {
+  background: rgba(59, 130, 246, 0.18);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.35);
+}
+
+.match-timeline__server-indicator--p2 {
+  background: rgba(236, 72, 153, 0.18);
+  color: #f9a8d4;
+  border: 1px solid rgba(236, 72, 153, 0.35);
+}
+
+/* ─── Nome do Vencedor ──────────────────────────────────────────────────────── */
+
+.match-timeline__card-winner {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  flex-shrink: 0;
+  min-width: 88px;
 }
 
 .match-timeline__card-winner--p1 {
@@ -197,163 +238,222 @@
   color: #f9a8d4;
 }
 
-.match-timeline__card-context {
-  font-size: 11px;
-  color: #6b7280;
-  flex-shrink: 0;
-  font-variant-numeric: tabular-nums;
-}
+/* ─── Resumo e Score ────────────────────────────────────────────────────────── */
 
 .match-timeline__card-summary {
-  font-size: 12px;
-  color: #9ca3af;
+  font-size: 11px;
+  color: #475569;
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.match-timeline__card-score {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: #64748b;
+  flex-shrink: 0;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  padding: 0 2px;
+}
+
+.match-timeline__card-ts {
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: #374151;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ─── Tags ──────────────────────────────────────────────────────────────────── */
+
 .match-timeline__card-tags {
   display: flex;
-  gap: 4px;
+  gap: 3px;
   flex-shrink: 0;
   align-items: center;
 }
 
 .match-timeline__tag {
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   white-space: nowrap;
+  transition: filter 150ms ease;
+}
+
+.match-timeline__tag:hover {
+  filter: brightness(1.25);
 }
 
 .match-timeline__tag--ace {
-  background: #14532d;
+  background: rgba(22, 163, 74, 0.18);
   color: #4ade80;
+  border: 1px solid rgba(22, 163, 74, 0.3);
 }
 
 .match-timeline__tag--fault {
-  background: #450a0a;
+  background: rgba(220, 38, 38, 0.18);
   color: #f87171;
+  border: 1px solid rgba(220, 38, 38, 0.3);
 }
 
 .match-timeline__tag--winner {
-  background: #1e3a5f;
-  color: #60a5fa;
+  background: rgba(37, 99, 235, 0.18);
+  color: #93c5fd;
+  border: 1px solid rgba(37, 99, 235, 0.3);
 }
 
 .match-timeline__tag--error {
-  background: #451a03;
+  background: rgba(234, 88, 12, 0.18);
   color: #fb923c;
+  border: 1px solid rgba(234, 88, 12, 0.3);
 }
 
 .match-timeline__tag--forced {
-  background: #3b1e4e;
+  background: rgba(124, 58, 237, 0.18);
   color: #c4b5fd;
+  border: 1px solid rgba(124, 58, 237, 0.3);
 }
 
 .match-timeline__tag--breakpoint {
-  background: #451a03;
-  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fcd34d;
+  border: 1px solid rgba(245, 158, 11, 0.35);
 }
 
-.match-timeline__tag--ts {
-  color: #4b5563;
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-  font-weight: 400;
-  padding: 0;
-  background: none;
+.match-timeline__tag--gameball {
+  background: rgba(217, 119, 6, 0.18);
+  color: #fbbf24;
+  border: 1px solid rgba(217, 119, 6, 0.3);
 }
+
+.match-timeline__tag--setball {
+  background: rgba(109, 40, 217, 0.22);
+  color: #a78bfa;
+  border: 1px solid rgba(109, 40, 217, 0.4);
+}
+
+/* ─── Chevron ───────────────────────────────────────────────────────────────── */
 
 .match-timeline__card-chevron {
-  color: #4b5563;
-  transition: transform 200ms ease;
+  color: #2d3748;
+  transition:
+    transform 220ms cubic-bezier(0.4, 0, 0.2, 1),
+    color 150ms ease;
   flex-shrink: 0;
   display: flex;
   align-items: center;
+  padding-left: 2px;
 }
 
 .match-timeline__card-chevron--open {
   transform: rotate(180deg);
+  color: #6b7280;
 }
 
-/* ─── Detalhe Expandido ─────────────────────────────────────────────────────── */
+/* ─── Detalhe Expandido (animacao grid) ──────────────────────────────────────── */
 
 .match-timeline__card-detail {
-  padding: 0 12px 12px 40px;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition:
+    grid-template-rows 220ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 180ms ease;
+  opacity: 0;
+}
+
+.match-timeline__card-detail--open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.match-timeline__card-detail-inner {
+  overflow: hidden;
   display: flex;
   flex-direction: column;
+  padding: 0 10px 0 44px;
+  border-top: 0px solid transparent;
+  transition:
+    padding-bottom 220ms ease,
+    padding-top 220ms ease,
+    border-color 220ms ease;
+}
+
+.match-timeline__card-detail--open .match-timeline__card-detail-inner {
+  padding-top: 8px;
+  padding-bottom: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* ─── Linhas de Detalhe ─────────────────────────────────────────────────────── */
+
+.match-timeline__detail-row {
+  display: flex;
+  align-items: baseline;
   gap: 10px;
-  border-top: 1px solid #1e1e2e;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.025);
 }
 
-.match-timeline__detail-section {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.match-timeline__detail-row:last-child {
+  border-bottom: none;
 }
 
-.match-timeline__detail-section-title {
-  font-size: 10px;
+.match-timeline__detail-key {
+  font-size: 9px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #4b5563;
-  margin: 0;
-  padding-top: 8px;
+  letter-spacing: 0.09em;
+  color: #374151;
+  min-width: 54px;
+  flex-shrink: 0;
 }
 
-.match-timeline__detail-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 12px;
-}
-
-.match-timeline__detail-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
+.match-timeline__detail-val {
   font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.4;
 }
 
-.match-timeline__detail-label {
-  color: #6b7280;
-  font-size: 11px;
+.match-timeline__detail-dim {
+  color: #475569;
 }
 
-.match-timeline__detail-value {
-  color: #d1d5db;
-  font-weight: 500;
-}
-
-.match-timeline__detail-value--highlight {
-  color: #c4b5fd;
-  font-weight: 600;
-}
-
-.match-timeline__detail-value--green {
-  color: #4ade80;
-}
-
-.match-timeline__detail-value--red {
+.match-timeline__detail-error {
   color: #f87171;
 }
 
-.match-timeline__detail-value--orange {
-  color: #fb923c;
+.match-timeline__detail-badge {
+  display: inline-block;
+  padding: 0 4px;
+  border-radius: 2px;
+  font-size: 8px;
+  font-weight: 800;
+  background: rgba(109, 40, 217, 0.2);
+  color: #a78bfa;
+  border: 1px solid rgba(109, 40, 217, 0.35);
+  margin-left: 5px;
+  vertical-align: middle;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  position: relative;
+  top: -1px;
 }
 
-.match-timeline__detail-value--yellow {
-  color: #fbbf24;
+.match-timeline__detail-winner--p1 {
+  color: #93c5fd;
+  font-weight: 600;
 }
 
-.match-timeline__detail-divider {
-  color: #374151;
-  font-size: 10px;
+.match-timeline__detail-winner--p2 {
+  color: #f9a8d4;
+  font-weight: 600;
 }
 
 /* ─── Print ─────────────────────────────────────────────────────────────────── */
@@ -386,6 +486,7 @@
     background: #f9f9f9 !important;
     border-color: #ddd !important;
     color: #111 !important;
+    transform: none !important;
   }
 
   .match-timeline__card-header {
@@ -404,12 +505,12 @@
     color: #be185d !important;
   }
 
-  .match-timeline__card-context {
-    color: #555 !important;
-  }
-
   .match-timeline__card-summary {
     color: #444 !important;
+  }
+
+  .match-timeline__card-score {
+    color: #333 !important;
   }
 
   .match-timeline__card-chevron {
@@ -418,32 +519,24 @@
 
   .match-timeline__card-detail {
     display: block !important;
-    border-top: 1px solid #ddd !important;
+    opacity: 1 !important;
   }
 
-  /* hidden attr: CSS print sobrescreve o display:none do atributo hidden */
-  .match-timeline__card-detail[hidden] {
-    display: block !important;
+  .match-timeline__card-detail-inner {
+    padding-top: 8px !important;
+    padding-bottom: 10px !important;
   }
 
-  .match-timeline__detail-section-title {
-    color: #444 !important;
+  .match-timeline__detail-key {
+    color: #555 !important;
   }
 
-  .match-timeline__detail-label {
-    color: #666 !important;
-  }
-
-  .match-timeline__detail-value {
+  .match-timeline__detail-val {
     color: #111 !important;
   }
 
-  .match-timeline__detail-value--green {
-    color: #15803d !important;
-  }
-
-  .match-timeline__detail-value--red {
-    color: #b91c1c !important;
+  .match-timeline__detail-dim {
+    color: #666 !important;
   }
 
   .match-timeline__tag {
@@ -451,51 +544,25 @@
     background: #f0f0f0 !important;
     color: #333 !important;
   }
-
-  .match-timeline__tag--ace {
-    background: #dbeafe !important;
-    color: #1d4ed8 !important;
-  }
-
-  .match-timeline__tag--fault {
-    background: #fee2e2 !important;
-    color: #b91c1c !important;
-  }
-
-  .match-timeline__tag--winner {
-    background: #dcfce7 !important;
-    color: #15803d !important;
-  }
-
-  .match-timeline__tag--error {
-    background: #fef3c7 !important;
-    color: #92400e !important;
-  }
-
-  .match-timeline__tag--forced {
-    background: #ede9fe !important;
-    color: #5b21b6 !important;
-  }
-
-  .match-timeline__tag--breakpoint {
-    background: #fce7f3 !important;
-    color: #9d174d !important;
-  }
 }
 
 /* ─── Responsive ────────────────────────────────────────────────────────────── */
 
 @media (max-width: 600px) {
-  .match-timeline__card-context {
-    display: none;
-  }
-
   .match-timeline__card-summary {
     display: none;
   }
 
   .match-timeline__card-winner {
-    min-width: 60px;
+    min-width: 70px;
+  }
+
+  .match-timeline__card-score {
+    display: none;
+  }
+
+  .match-timeline__card-detail-inner {
+    padding-left: 30px;
   }
 }
 
@@ -503,7 +570,8 @@
   .match-timeline__card,
   .match-timeline__filter-chip,
   .match-timeline__card-chevron,
-  .match-timeline__card-header {
+  .match-timeline__card-header,
+  .match-timeline__card-detail {
     transition: none;
   }
 }

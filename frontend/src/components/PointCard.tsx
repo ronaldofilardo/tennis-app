@@ -12,11 +12,9 @@ import {
   SHOT_TYPE_LABELS,
   SERVE_EFFECT_LABELS,
   SERVE_DIRECTION_LABELS,
-  RALLY_SITUACAO_LABELS,
   RALLY_GOLPE_LABELS,
   RALLY_EFEITO_LABELS,
   RALLY_DIRECAO_LABELS,
-  RALLY_GOLPE_ESP_LABELS,
 } from '../services/timelineUtils';
 
 const ChevronDown: React.FC<{ className?: string }> = ({ className }) => (
@@ -61,6 +59,9 @@ const PointCard: React.FC<PointCardProps> = React.memo(
     const winnerName = isP1 ? playerNames.p1 : playerNames.p2;
     const winnerClass = isP1 ? 'p1' : 'p2';
     const isBreakPoint = point.context?.isBreakPoint ?? false;
+    const isGameBall = point.context?.isGameBall ?? false;
+    const isSetBall = point.context?.isSetBall ?? false;
+    const isServerP1 = point.context?.server === 'PLAYER_1';
     const isAce = point.serve?.type === 'ACE';
     const isDoubleFault = point.serve?.type === 'DOUBLE_FAULT';
     const isWinner =
@@ -68,13 +69,6 @@ const PointCard: React.FC<PointCardProps> = React.memo(
     const isServiceWinner = point.serve?.type === 'SERVICE_WINNER';
     const isUnforced = point.result.type === 'UNFORCED_ERROR';
     const isForced = point.result.type === 'FORCED_ERROR';
-
-    const contextLabel = point.context
-      ? `Set ${point.context.setNumber} · ${point.context.gamesP1}-${point.context.gamesP2} · ${formatGameScoreLabel(
-          point.context.gameScoreP1,
-          point.context.gameScoreP2,
-        )}`
-      : null;
 
     return (
       <li
@@ -97,24 +91,41 @@ const PointCard: React.FC<PointCardProps> = React.memo(
           type="button"
         >
           <span className="match-timeline__card-num">#{originalIndex + 1}</span>
+          {point.context && (
+            <span
+              className={`match-timeline__server-indicator match-timeline__server-indicator--${isServerP1 ? 'p1' : 'p2'}`}
+              title={`Sacador: ${isServerP1 ? playerNames.p1 : playerNames.p2}`}
+            >
+              {isServerP1 ? 'S' : 'D'}
+            </span>
+          )}
           <span
             className={`match-timeline__card-winner match-timeline__card-winner--${winnerClass}`}
           >
             {winnerName}
           </span>
-          {contextLabel && <span className="match-timeline__card-context">{contextLabel}</span>}
           <span className="match-timeline__card-summary">{summarizePoint(point)}</span>
-
+          {point.context && (
+            <span className="match-timeline__card-score">
+              {formatGameScoreLabel(point.context.gameScoreP1, point.context.gameScoreP2)}
+            </span>
+          )}
           <span className="match-timeline__card-tags">
+            {isSetBall && (
+              <span className="match-timeline__tag match-timeline__tag--setball">SB</span>
+            )}
+            {isGameBall && (
+              <span className="match-timeline__tag match-timeline__tag--gameball">GB</span>
+            )}
             {isBreakPoint && (
               <span className="match-timeline__tag match-timeline__tag--breakpoint">BP</span>
             )}
-            {isAce && <span className="match-timeline__tag match-timeline__tag--ace">Ace</span>}
+            {isAce && <span className="match-timeline__tag match-timeline__tag--ace">ACE</span>}
             {isDoubleFault && (
               <span className="match-timeline__tag match-timeline__tag--fault">DF</span>
             )}
             {isServiceWinner && (
-              <span className="match-timeline__tag match-timeline__tag--winner">SvW</span>
+              <span className="match-timeline__tag match-timeline__tag--winner">SW</span>
             )}
             {isWinner && <span className="match-timeline__tag match-timeline__tag--winner">W</span>}
             {isUnforced && (
@@ -123,15 +134,14 @@ const PointCard: React.FC<PointCardProps> = React.memo(
             {isForced && (
               <span className="match-timeline__tag match-timeline__tag--forced">EF</span>
             )}
-            {point.timestamp > 0 && (
-              <span className="match-timeline__tag match-timeline__tag--ts">
-                {formatPointTime(point.timestamp)}
-              </span>
-            )}
           </span>
-
+          {point.timestamp > 0 && (
+            <span className="match-timeline__card-ts" aria-hidden="true">
+              {formatPointTime(point.timestamp)}
+            </span>
+          )}
           <span
-            className={`match-timeline__card-chevron${expanded ? 'match-timeline__card-chevron--open' : ''}`}
+            className={`match-timeline__card-chevron${expanded ? ' match-timeline__card-chevron--open' : ''}`}
             aria-hidden="true"
           >
             <ChevronDown />
@@ -140,256 +150,92 @@ const PointCard: React.FC<PointCardProps> = React.memo(
 
         <div
           id={`timeline-detail-${originalIndex}`}
-          className="match-timeline__card-detail"
+          className={`match-timeline__card-detail${expanded ? ' match-timeline__card-detail--open' : ''}`}
           role="region"
           aria-label={`Detalhes do ponto ${originalIndex + 1}`}
-          hidden={!expanded}
         >
-          {point.serve && (
-            <div className="match-timeline__detail-section">
-              <p className="match-timeline__detail-section-title">Saque</p>
-              <div className="match-timeline__detail-grid">
-                <span className="match-timeline__detail-item">
-                  <span className="match-timeline__detail-label">Tipo:</span>
-                  <span
-                    className={[
-                      'match-timeline__detail-value',
-                      isAce ? 'match-timeline__detail-value--green' : '',
-                      isDoubleFault ? 'match-timeline__detail-value--red' : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                  >
-                    {SERVE_TYPE_LABELS[point.serve.type] ?? point.serve.type}
+          <div className="match-timeline__card-detail-inner">
+            {point.context && (
+              <div className="match-timeline__detail-row">
+                <span className="match-timeline__detail-key">Set</span>
+                <span className="match-timeline__detail-val">
+                  {point.context.setNumber}
+                  <span className="match-timeline__detail-dim">
+                    {' '}&middot; {point.context.gamesP1}&ndash;{point.context.gamesP2} games
+                    {' '}&middot; {point.context.setsWonP1}&ndash;{point.context.setsWonP2} sets
                   </span>
+                  {point.context.isTiebreak && (
+                    <span className="match-timeline__detail-badge">TB</span>
+                  )}
                 </span>
-
-                <span className="match-timeline__detail-item">
-                  <span className="match-timeline__detail-label">Saque:</span>
-                  <span className="match-timeline__detail-value">
-                    {point.serve.isFirstServe ? '1º' : '2º'}
-                  </span>
-                </span>
-
-                {point.serve.serveEffect && (
-                  <span className="match-timeline__detail-item">
-                    <span className="match-timeline__detail-label">Efeito:</span>
-                    <span className="match-timeline__detail-value">
-                      {SERVE_EFFECT_LABELS[point.serve.serveEffect] ?? point.serve.serveEffect}
-                    </span>
-                  </span>
-                )}
-
-                {point.serve.direction && (
-                  <span className="match-timeline__detail-item">
-                    <span className="match-timeline__detail-label">Direção:</span>
-                    <span className="match-timeline__detail-value">
-                      {SERVE_DIRECTION_LABELS[point.serve.direction] ?? point.serve.direction}
-                    </span>
-                  </span>
-                )}
-
-                {point.serve.errorType && (
-                  <span className="match-timeline__detail-item">
-                    <span className="match-timeline__detail-label">Erro:</span>
-                    <span className="match-timeline__detail-value match-timeline__detail-value--red">
-                      {point.serve.errorType === 'out' ? 'Fora' : 'Na Rede'}
-                    </span>
-                  </span>
-                )}
-
-                {isDoubleFault && point.serve.firstFault && (
-                  <>
-                    <span className="match-timeline__detail-divider">|</span>
-                    <span className="match-timeline__detail-item">
-                      <span className="match-timeline__detail-label">1ª falta:</span>
-                      <span className="match-timeline__detail-value">
-                        {[
-                          point.serve.firstFault.serveEffect
-                            ? SERVE_EFFECT_LABELS[point.serve.firstFault.serveEffect]
-                            : null,
-                          point.serve.firstFault.direction
-                            ? SERVE_DIRECTION_LABELS[point.serve.firstFault.direction]
-                            : null,
-                          point.serve.firstFault.errorType
-                            ? point.serve.firstFault.errorType === 'out'
-                              ? 'Fora'
-                              : 'Na Rede'
-                            : null,
-                        ]
-                          .filter(Boolean)
-                          .join(' · ') || '—'}
-                      </span>
-                    </span>
-                  </>
-                )}
               </div>
-            </div>
-          )}
-
-          <div className="match-timeline__detail-section">
-            <p className="match-timeline__detail-section-title">Rally</p>
-            <div className="match-timeline__detail-grid">
-              <span className="match-timeline__detail-item">
-                <span className="match-timeline__detail-label">Trocas:</span>
-                <span className="match-timeline__detail-value match-timeline__detail-value--highlight">
-                  {point.rally.ballExchanges}
+            )}
+            {point.serve && (
+              <div className="match-timeline__detail-row">
+                <span className="match-timeline__detail-key">Saque</span>
+                <span className="match-timeline__detail-val">
+                  {SERVE_TYPE_LABELS[point.serve.type] ?? point.serve.type}
+                  <span className="match-timeline__detail-dim">
+                    {' '}&middot; {point.serve.isFirstServe ? '1\u00ba' : '2\u00ba'}
+                  </span>
+                  {point.serve.serveEffect && (
+                    <span className="match-timeline__detail-dim">
+                      {' '}&middot; {SERVE_EFFECT_LABELS[point.serve.serveEffect] ?? point.serve.serveEffect}
+                    </span>
+                  )}
+                  {point.serve.direction && (
+                    <span className="match-timeline__detail-dim">
+                      {' '}&middot; {SERVE_DIRECTION_LABELS[point.serve.direction] ?? point.serve.direction}
+                    </span>
+                  )}
+                  {point.serve.errorType && (
+                    <span className="match-timeline__detail-error">
+                      {' '}({point.serve.errorType === 'out' ? 'Out' : 'Net'})
+                    </span>
+                  )}
                 </span>
+              </div>
+            )}
+            {(point.rally.ballExchanges > 1 || point.rallyDetails) && (
+              <div className="match-timeline__detail-row">
+                <span className="match-timeline__detail-key">Rally</span>
+                <span className="match-timeline__detail-val">
+                  {point.rally.ballExchanges} trocas
+                  {point.rallyDetails && (
+                    <>
+                      <span className="match-timeline__detail-dim">
+                        {' '}&middot; {point.rallyDetails.vencedor === 'sacador' ? '[S]' : '[D]'}
+                      </span>
+                      {' '}{RALLY_GOLPE_LABELS[point.rallyDetails.golpe] ?? point.rallyDetails.golpe}
+                      {point.rallyDetails.efeito && (
+                        <span className="match-timeline__detail-dim">
+                          {' '}({RALLY_EFEITO_LABELS[point.rallyDetails.efeito] ?? point.rallyDetails.efeito})
+                        </span>
+                      )}
+                      {point.rallyDetails.direcao && (
+                        <span className="match-timeline__detail-dim">
+                          {' '}&middot; {RALLY_DIRECAO_LABELS[point.rallyDetails.direcao] ?? point.rallyDetails.direcao}
+                        </span>
+                      )}
+                    </>
+                  )}
+                </span>
+              </div>
+            )}
+            <div className="match-timeline__detail-row">
+              <span className="match-timeline__detail-key">Resultado</span>
+              <span className="match-timeline__detail-val">
+                {RESULT_TYPE_LABELS[point.result.type] ?? point.result.type}
+                {point.result.finalShot && (
+                  <span className="match-timeline__detail-dim">
+                    {' '}&middot; {SHOT_TYPE_LABELS[point.result.finalShot] ?? point.result.finalShot}
+                  </span>
+                )}
+                {' '}&middot;{' '}
+                <span className={`match-timeline__detail-winner--${winnerClass}`}>{winnerName}</span>
               </span>
-
-              {point.rallyDetails && (
-                <>
-                  <span className="match-timeline__detail-item">
-                    <span className="match-timeline__detail-label">Situação:</span>
-                    <span className="match-timeline__detail-value">
-                      {RALLY_SITUACAO_LABELS[point.rallyDetails.situacao] ??
-                        point.rallyDetails.situacao}
-                    </span>
-                  </span>
-
-                  <span className="match-timeline__detail-item">
-                    <span className="match-timeline__detail-label">Vencedor:</span>
-                    <span className="match-timeline__detail-value">
-                      {point.rallyDetails.vencedor === 'sacador' ? 'Sacador' : 'Devolvedor'}
-                    </span>
-                  </span>
-
-                  <span className="match-timeline__detail-item">
-                    <span className="match-timeline__detail-label">Golpe:</span>
-                    <span className="match-timeline__detail-value">
-                      {RALLY_GOLPE_LABELS[point.rallyDetails.golpe] ?? point.rallyDetails.golpe}
-                      {point.rallyDetails.efeito
-                        ? ` (${RALLY_EFEITO_LABELS[point.rallyDetails.efeito] ?? point.rallyDetails.efeito})`
-                        : ''}
-                    </span>
-                  </span>
-
-                  {point.rallyDetails.direcao && (
-                    <span className="match-timeline__detail-item">
-                      <span className="match-timeline__detail-label">Direção:</span>
-                      <span className="match-timeline__detail-value">
-                        {RALLY_DIRECAO_LABELS[point.rallyDetails.direcao] ??
-                          point.rallyDetails.direcao}
-                      </span>
-                    </span>
-                  )}
-
-                  {point.rallyDetails.golpe_esp && (
-                    <span className="match-timeline__detail-item">
-                      <span className="match-timeline__detail-label">Esp.:</span>
-                      <span className="match-timeline__detail-value">
-                        {RALLY_GOLPE_ESP_LABELS[point.rallyDetails.golpe_esp] ??
-                          point.rallyDetails.golpe_esp}
-                      </span>
-                    </span>
-                  )}
-
-                  {(point.rallyDetails.subtipo1 ?? point.rallyDetails.subtipo2) && (
-                    <span className="match-timeline__detail-item">
-                      <span className="match-timeline__detail-label">Subtipo:</span>
-                      <span className="match-timeline__detail-value">
-                        {[point.rallyDetails.subtipo1, point.rallyDetails.subtipo2]
-                          .filter(Boolean)
-                          .join(' / ')}
-                      </span>
-                    </span>
-                  )}
-                </>
-              )}
             </div>
           </div>
-
-          <div className="match-timeline__detail-section">
-            <p className="match-timeline__detail-section-title">Resultado</p>
-            <div className="match-timeline__detail-grid">
-              <span className="match-timeline__detail-item">
-                <span className="match-timeline__detail-label">Tipo:</span>
-                <span
-                  className={[
-                    'match-timeline__detail-value',
-                    point.result.type === 'WINNER'
-                      ? 'match-timeline__detail-value--green'
-                      : point.result.type === 'UNFORCED_ERROR'
-                        ? 'match-timeline__detail-value--red'
-                        : 'match-timeline__detail-value--orange',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
-                >
-                  {RESULT_TYPE_LABELS[point.result.type] ?? point.result.type}
-                </span>
-              </span>
-
-              {point.result.finalShot && (
-                <span className="match-timeline__detail-item">
-                  <span className="match-timeline__detail-label">Golpe:</span>
-                  <span className="match-timeline__detail-value">
-                    {SHOT_TYPE_LABELS[point.result.finalShot] ?? point.result.finalShot}
-                  </span>
-                </span>
-              )}
-
-              <span className="match-timeline__detail-item">
-                <span className="match-timeline__detail-label">Vencedor:</span>
-                <span
-                  className={`match-timeline__detail-value match-timeline__detail-value--highlight match-timeline__card-winner--${winnerClass}`}
-                >
-                  {winnerName}
-                </span>
-              </span>
-
-              {isBreakPoint && (
-                <span className="match-timeline__detail-item">
-                  <span className="match-timeline__detail-value match-timeline__detail-value--yellow">
-                    Breakpoint
-                  </span>
-                </span>
-              )}
-            </div>
-          </div>
-
-          {point.context && (
-            <div className="match-timeline__detail-section">
-              <p className="match-timeline__detail-section-title">Contexto</p>
-              <div className="match-timeline__detail-grid">
-                <span className="match-timeline__detail-item">
-                  <span className="match-timeline__detail-label">Set:</span>
-                  <span className="match-timeline__detail-value">{point.context.setNumber}</span>
-                </span>
-                <span className="match-timeline__detail-item">
-                  <span className="match-timeline__detail-label">Games:</span>
-                  <span className="match-timeline__detail-value">
-                    {point.context.gamesP1}–{point.context.gamesP2}
-                  </span>
-                </span>
-                <span className="match-timeline__detail-item">
-                  <span className="match-timeline__detail-label">Ponto:</span>
-                  <span className="match-timeline__detail-value">
-                    {formatGameScoreLabel(point.context.gameScoreP1, point.context.gameScoreP2)}
-                  </span>
-                </span>
-                <span className="match-timeline__detail-item">
-                  <span className="match-timeline__detail-label">Sets:</span>
-                  <span className="match-timeline__detail-value">
-                    {point.context.setsWonP1}–{point.context.setsWonP2}
-                  </span>
-                </span>
-                <span className="match-timeline__detail-item">
-                  <span className="match-timeline__detail-label">Saque:</span>
-                  <span className="match-timeline__detail-value">
-                    {point.context.server === 'PLAYER_1' ? playerNames.p1 : playerNames.p2}
-                  </span>
-                </span>
-                {point.context.isTiebreak && (
-                  <span className="match-timeline__detail-item">
-                    <span className="match-timeline__detail-value match-timeline__detail-value--highlight">
-                      Tiebreak
-                    </span>
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
         </div>
       </li>
     );
