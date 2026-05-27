@@ -3,24 +3,19 @@
 //   POST /api/auth/login                        → login com email+senha, retorna JWT
 //   POST /api/auth/register                     → registro de novo usuário
 
-import {
-  loginUser,
-  registerUser,
-  verifyToken,
-} from "../../src/services/authService.js";
-import { handleCors, sendJson } from "../_lib/authMiddleware.js";
-import { hashPassword, derivarSenha } from "../_lib/passwordUtils.js";
-import prisma from "../_lib/prisma.js";
+import { loginUser, registerUser, verifyToken } from '../../src/services/authService.js';
+import { handleCors, sendJson } from '../_lib/authMiddleware.js';
+import { hashPassword, derivarSenha } from '../_lib/passwordUtils.js';
+import prisma from '../_lib/prisma.js';
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers":
-    "Content-Type, Authorization, X-Payload-Version",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Payload-Version',
 };
 
 function getAction(url) {
-  const parts = url.pathname.split("/").filter(Boolean);
+  const parts = url.pathname.split('/').filter(Boolean);
   // parts: [api, auth, action]
   return parts[2] || null;
 }
@@ -28,111 +23,105 @@ function getAction(url) {
 export default async function handler(req, res) {
   if (handleCors(req, res)) return;
 
-  if (req.method === "OPTIONS") {
+  if (req.method === 'OPTIONS') {
     res.writeHead(204, corsHeaders);
     return res.end();
   }
 
-  if (req.method !== "POST") {
-    res.writeHead(405, { ...corsHeaders, "Content-Type": "application/json" });
-    return res.end(JSON.stringify({ error: "Method not allowed" }));
+  if (req.method !== 'POST') {
+    res.writeHead(405, { ...corsHeaders, 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ error: 'Method not allowed' }));
   }
 
-  const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+  const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const action = getAction(url);
 
   // ─── POST /api/auth/login ──────────────────────────────────────────────────
-  if (action === "login") {
+  if (action === 'login') {
     try {
       const { email, password } = req.body || {};
       if (!email || !password) {
         res.writeHead(400, {
           ...corsHeaders,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         });
-        return res.end(
-          JSON.stringify({ error: "email and password are required" }),
-        );
+        return res.end(JSON.stringify({ error: 'email and password are required' }));
       }
       const result = await loginUser({ email, password });
       res.writeHead(200, {
         ...corsHeaders,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       });
       return res.end(JSON.stringify(result));
     } catch (err) {
-      if (err.message === "INVALID_CREDENTIALS") {
+      if (err.message === 'INVALID_CREDENTIALS') {
         res.writeHead(401, {
           ...corsHeaders,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         });
-        return res.end(JSON.stringify({ error: "Invalid email or password" }));
+        return res.end(JSON.stringify({ error: 'Invalid email or password' }));
       }
-      if (err.message === "USER_INACTIVE") {
+      if (err.message === 'USER_INACTIVE') {
         res.writeHead(403, {
           ...corsHeaders,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         });
-        return res.end(JSON.stringify({ error: "User account is inactive" }));
+        return res.end(JSON.stringify({ error: 'User account is inactive' }));
       }
-      console.error("[auth/login]", err);
+      console.error('[auth/login]', err);
       res.writeHead(500, {
         ...corsHeaders,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       });
-      return res.end(JSON.stringify({ error: "Internal server error" }));
+      return res.end(JSON.stringify({ error: 'Internal server error' }));
     }
   }
 
   // ─── POST /api/auth/register ───────────────────────────────────────────────
-  if (action === "register") {
+  if (action === 'register') {
     try {
       const { email, name, password } = req.body || {};
       if (!email || !name || !password) {
         res.writeHead(400, {
           ...corsHeaders,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         });
-        return res.end(
-          JSON.stringify({ error: "email, name and password are required" }),
-        );
+        return res.end(JSON.stringify({ error: 'email, name and password are required' }));
       }
       if (password.length < 6) {
         res.writeHead(400, {
           ...corsHeaders,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         });
-        return res.end(
-          JSON.stringify({ error: "Password must be at least 6 characters" }),
-        );
+        return res.end(JSON.stringify({ error: 'Password must be at least 6 characters' }));
       }
       await registerUser({ email, name, password });
       const loginResult = await loginUser({ email, password });
       res.writeHead(201, {
         ...corsHeaders,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       });
       return res.end(JSON.stringify(loginResult));
     } catch (err) {
-      if (err.message === "EMAIL_EXISTS") {
+      if (err.message === 'EMAIL_EXISTS') {
         res.writeHead(409, {
           ...corsHeaders,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         });
-        return res.end(JSON.stringify({ error: "Email already registered" }));
+        return res.end(JSON.stringify({ error: 'Email already registered' }));
       }
-      console.error("[auth/register]", err);
+      console.error('[auth/register]', err);
       res.writeHead(500, {
         ...corsHeaders,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       });
-      return res.end(JSON.stringify({ error: "Internal server error" }));
+      return res.end(JSON.stringify({ error: 'Internal server error' }));
     }
   }
 
   // ─── POST /api/auth/register-athlete-independent ─────────────────────────
   // Senha = DDMMAAAA (data de nascimento obrigatória).
-  if (action === "register-athlete-independent") {
+  if (action === 'register-athlete-independent') {
     try {
       const {
         name,
@@ -151,27 +140,25 @@ export default async function handler(req, res) {
         motherCpf,
       } = req.body || {};
 
-      if (!name || !name.trim())
-        return sendJson(res, 400, { error: "Nome é obrigatório." });
+      if (!name || !name.trim()) return sendJson(res, 400, { error: 'Nome é obrigatório.' });
       if (!birthDate)
         return sendJson(res, 400, {
-          error: "Data de nascimento é obrigatória.",
+          error: 'Data de nascimento é obrigatória.',
         });
 
-      const cleanCpf = cpf ? cpf.replace(/\D/g, "").trim() : null;
+      const cleanCpf = cpf ? cpf.replace(/\D/g, '').trim() : null;
       if (cleanCpf && cleanCpf.length !== 11)
         return sendJson(res, 400, {
-          error: "CPF inválido (deve ter 11 dígitos).",
+          error: 'CPF inválido (deve ter 11 dígitos).',
         });
 
-      const cleanFatherCpf = fatherCpf ? fatherCpf.replace(/\D/g, "") : null;
-      const cleanMotherCpf = motherCpf ? motherCpf.replace(/\D/g, "") : null;
+      const cleanFatherCpf = fatherCpf ? fatherCpf.replace(/\D/g, '') : null;
+      const cleanMotherCpf = motherCpf ? motherCpf.replace(/\D/g, '') : null;
 
-      const loginIdentifier =
-        cleanCpf || (email ? email.trim().toLowerCase() : null);
+      const loginIdentifier = cleanCpf || (email ? email.trim().toLowerCase() : null);
       if (!loginIdentifier)
         return sendJson(res, 400, {
-          error: "CPF ou e-mail é obrigatório para criar a conta.",
+          error: 'CPF ou e-mail é obrigatório para criar a conta.',
         });
 
       const existing = await prisma.user.findUnique({
@@ -179,7 +166,7 @@ export default async function handler(req, res) {
       });
       if (existing)
         return sendJson(res, 409, {
-          error: "Este CPF/e-mail já está cadastrado.",
+          error: 'Este CPF/e-mail já está cadastrado.',
         });
 
       const senha = derivarSenha(birthDate, cleanCpf);
@@ -196,7 +183,7 @@ export default async function handler(req, res) {
 
       await prisma.athleteProfile.create({
         data: {
-          userId: user.id,
+          user: { connect: { id: user.id } },
           name: name.trim(),
           nickname: nickname?.trim() || null,
           cpf: cleanCpf || null,
@@ -210,7 +197,6 @@ export default async function handler(req, res) {
           fatherCpf: cleanFatherCpf || null,
           motherName: motherName?.trim() || null,
           motherCpf: cleanMotherCpf || null,
-          clubId: null,
           isPublic: true,
         },
       });
@@ -221,23 +207,21 @@ export default async function handler(req, res) {
       });
       res.writeHead(201, {
         ...corsHeaders,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       });
       return res.end(JSON.stringify(loginResult));
     } catch (err) {
-      if (err.code === "P2002")
-        return sendJson(res, 409, { error: "CPF ou e-mail já cadastrado." });
-      console.error("[auth/register-athlete-independent]", err);
+      if (err.code === 'P2002')
+        return sendJson(res, 409, { error: 'CPF ou e-mail já cadastrado.' });
+      console.error('[auth/register-athlete-independent]', err);
       res.writeHead(500, {
         ...corsHeaders,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       });
-      return res.end(
-        JSON.stringify({ error: "Erro interno ao cadastrar atleta." }),
-      );
+      return res.end(JSON.stringify({ error: 'Erro interno ao cadastrar atleta.' }));
     }
   }
 
-  res.writeHead(404, { ...corsHeaders, "Content-Type": "application/json" });
-  return res.end(JSON.stringify({ error: "Unknown auth action" }));
+  res.writeHead(404, { ...corsHeaders, 'Content-Type': 'application/json' });
+  return res.end(JSON.stringify({ error: 'Unknown auth action' }));
 }

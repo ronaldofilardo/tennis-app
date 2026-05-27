@@ -181,8 +181,7 @@ export default async function handler(req, res) {
       if (!name) return sendJson(res, 400, { error: 'name is required' });
       const athlete = await prisma.athleteProfile.create({
         data: {
-          userId: ctx.userId,
-          clubId: ctx.clubId || null,
+          user: ctx.userId ? { connect: { id: ctx.userId } } : undefined,
           name: name.trim(),
           nickname: nickname?.trim() || null,
           birthDate: birthDate ? new Date(birthDate) : null,
