@@ -138,6 +138,36 @@ export function getBallExchangeConfirmationMessage(
 }
 
 /**
+ * Retorna true se o ponto é um rally (não Ace, Dupla Falta ou Service Winner).
+ * Usado para condicionar o cálculo em pares.
+ */
+export function isRallyPoint(pointDetails: Partial<PointDetails>): boolean {
+  const serveType = pointDetails.serve?.type;
+  return serveType !== 'ACE' && serveType !== 'DOUBLE_FAULT' && serveType !== 'SERVICE_WINNER';
+}
+
+/**
+ * Calcula o total de bolas baseado na contagem:
+ * - Anotador clica +ball, incrementa ballExchangeCount de 2 em 2 (em unidade de bolas para sacador)
+ * - Se o devolvedor ganhou o ponto, adiciona +1 (o último toque foi do devolvedor → ímpar)
+ * - Se ballsForServer === 0, retorna 1 (mínimo: pelo menos 1 bola)
+ *
+ * Exemplos:
+ *   ballsForServer=2, sacador  → 2
+ *   ballsForServer=2, devolvedor → 3
+ *   ballsForServer=4, sacador  → 4
+ *   ballsForServer=4, devolvedor → 5
+ *   ballsForServer=6, devolvedor → 7
+ */
+export function calculateFinalBallExchanges(
+  ballsForServer: number,
+  isReturnerWinner: boolean,
+): number {
+  if (ballsForServer <= 0) return 1;
+  return isReturnerWinner ? ballsForServer + 1 : ballsForServer;
+}
+
+/**
  * Mapeia tipo de ponto para descrição legível para diagnóstico.
  */
 export function getPointTypeDescription(pointDetails: Partial<PointDetails>): string {

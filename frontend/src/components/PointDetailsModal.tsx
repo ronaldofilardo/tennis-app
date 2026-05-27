@@ -37,6 +37,7 @@ import {
   DIRECAO_LABELS,
   GOLPE_ESP_LABELS,
 } from '../core/scoring/pointFlowRules';
+import { calculateFinalBallExchanges } from '../core/scoring/ballExchangeRules';
 import useConfirmClose from '../hooks/useConfirmClose';
 import ConfirmCloseDialog from './ConfirmCloseDialog';
 import './PointDetailsModal.css';
@@ -119,7 +120,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       reset();
-      const initialCount = (ballExchangeCount ?? 0) > 0 ? ballExchangeCount! : 1;
+      const initialCount = ballExchangeCount ?? 0;
       setBallExchanges(initialCount);
     }
   }, [isOpen, ballExchangeCount]);
@@ -129,6 +130,9 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
   // Vencedor derivado automaticamente do botao clicado
   const vencedor: RallyVencedor = playerWinner === currentServer ? 'sacador' : 'devolvedor';
   const winnerName = playerNames[playerWinner];
+
+  // Cálculo final: bolas contadas (incrementadas de 2 em 2) + 1 se devolvedor venceu
+  const previewBalls = calculateFinalBallExchanges(ballExchanges, vencedor === 'devolvedor');
 
   // Nova ordem para ERROS: situação → resultado → golpe → (sub1?) → (sub2/onde errou?) → ...
   // Para WINNER: winner nunca tem sub1/sub2, logo golpe fica na posição 3 também (inalterado)
@@ -311,27 +315,38 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
             </div>
           )}
 
-          {/* Trocas de Bolas */}
+          {/* Trocas de Bolas — contagem em pares */}
           <div className="pd-advanced-section">
             <div className="pd-advanced-field">
               <label htmlFor="ball-exchanges-input" className="pd-advanced-label">
-                Trocas de Bolas
+                Cliques de Bola
               </label>
               <div className="pd-advanced-input-group">
                 <input
                   id="ball-exchanges-input"
                   type="number"
-                  min="1"
+                  min="0"
                   step="1"
                   value={ballExchanges}
                   onChange={(e) => {
                     const parsed = parseInt(e.target.value, 10);
-                    if (!isNaN(parsed) && parsed >= 1) {
+                    if (!isNaN(parsed) && parsed >= 0) {
                       setBallExchanges(parsed);
                     }
                   }}
                   className="pd-advanced-input"
+                  aria-label={`Cliques: ${ballExchanges}, total de bolas: ${previewBalls}`}
                 />
+              </div>
+              <div className="pd-ball-preview" aria-live="polite">
+                <span className="pd-ball-preview-clicks">{ballExchanges}×</span>
+                <span className="pd-ball-preview-sep">→</span>
+                <span className="pd-ball-preview-total">
+                  {previewBalls} bola{previewBalls !== 1 ? 's' : ''}
+                </span>
+                {vencedor === 'devolvedor' && (
+                  <span className="pd-ball-preview-hint">(+1 devolvedor)</span>
+                )}
               </div>
             </div>
           </div>
@@ -356,7 +371,7 @@ const PointDetailsModal: React.FC<PointDetailsModalProps> = ({
                   ...(sel.sub1 ? { subtipo1: sel.sub1 } : {}),
                   ...(sel.sub2 ? { subtipo2: sel.sub2 } : {}),
                 } as import('../core/scoring/types').RallyDetails;
-                onConfirm(details, ballExchanges);
+                onConfirm(details, previewBalls);
               }}
               type="button"
             >

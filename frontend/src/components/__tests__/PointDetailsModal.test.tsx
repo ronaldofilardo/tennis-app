@@ -57,27 +57,27 @@ describe('PointDetailsModal', () => {
     expect(confirmBtn).toBeDisabled();
   });
 
-  it('campo Trocas de Bolas inicializa com 1 quando ballExchangeCount não é fornecido', () => {
+  it('campo Cliques de Bola inicializa com 0 quando ballExchangeCount não é fornecido', () => {
     render(<PointDetailsModalExport {...defaultProps} />);
-    const input = screen.getByLabelText(/trocas de bolas/i) as HTMLInputElement;
-    expect(input.value).toBe('1');
+    const input = screen.getByLabelText(/cliques de bola/i) as HTMLInputElement;
+    expect(input.value).toBe('0');
   });
 
-  it('campo Trocas de Bolas inicializa com 1 quando ballExchangeCount é 0', () => {
+  it('campo Cliques de Bola inicializa com 0 quando ballExchangeCount é 0', () => {
     render(<PointDetailsModalExport {...defaultProps} ballExchangeCount={0} />);
-    const input = screen.getByLabelText(/trocas de bolas/i) as HTMLInputElement;
-    expect(input.value).toBe('1');
+    const input = screen.getByLabelText(/cliques de bola/i) as HTMLInputElement;
+    expect(input.value).toBe('0');
   });
 
-  it('campo Trocas de Bolas inicializa com ballExchangeCount quando > 0', () => {
+  it('campo Cliques de Bola inicializa com ballExchangeCount quando > 0', () => {
     render(<PointDetailsModalExport {...defaultProps} ballExchangeCount={4} />);
-    const input = screen.getByLabelText(/trocas de bolas/i) as HTMLInputElement;
+    const input = screen.getByLabelText(/cliques de bola/i) as HTMLInputElement;
     expect(input.value).toBe('4');
   });
 
-  it('campo Trocas de Bolas aceita edição manual', () => {
+  it('campo Cliques de Bola aceita edição manual', () => {
     render(<PointDetailsModalExport {...defaultProps} ballExchangeCount={2} />);
-    const input = screen.getByLabelText(/trocas de bolas/i) as HTMLInputElement;
+    const input = screen.getByLabelText(/cliques de bola/i) as HTMLInputElement;
     fireEvent.change(input, { target: { value: '6' } });
     expect(input.value).toBe('6');
   });
@@ -105,7 +105,7 @@ describe('PointDetailsModal', () => {
       <PointDetailsModalExport {...defaultProps} isOpen={false} ballExchangeCount={3} />,
     );
     rerender(<PointDetailsModalExport {...defaultProps} isOpen={true} ballExchangeCount={3} />);
-    const input = screen.getByLabelText(/trocas de bolas/i) as HTMLInputElement;
+    const input = screen.getByLabelText(/cliques de bola/i) as HTMLInputElement;
     expect(input.value).toBe('3');
   });
 });

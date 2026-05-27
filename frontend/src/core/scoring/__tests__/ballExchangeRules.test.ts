@@ -10,6 +10,8 @@ import {
   shouldConfirmBallExchanges,
   getBallExchangeConfirmationMessage,
   getPointTypeDescription,
+  calculateFinalBallExchanges,
+  isRallyPoint,
 } from '../ballExchangeRules';
 
 describe('ballExchangeRules — Validação de trocas de bolas', () => {
@@ -237,6 +239,63 @@ describe('ballExchangeRules — Validação de trocas de bolas', () => {
       const desc = getPointTypeDescription(pointDetails);
 
       expect(desc).toBe('Erro Forçado');
+    });
+  });
+
+  describe('calculateFinalBallExchanges — Cálculo final com devolvedor', () => {
+    it('2 bolas, sacador venceu → 2 bolas', () => {
+      expect(calculateFinalBallExchanges(2, false)).toBe(2);
+    });
+
+    it('2 bolas, devolvedor venceu → 3 bolas', () => {
+      expect(calculateFinalBallExchanges(2, true)).toBe(3);
+    });
+
+    it('4 bolas, sacador venceu → 4 bolas', () => {
+      expect(calculateFinalBallExchanges(4, false)).toBe(4);
+    });
+
+    it('4 bolas, devolvedor venceu → 5 bolas', () => {
+      expect(calculateFinalBallExchanges(4, true)).toBe(5);
+    });
+
+    it('6 bolas, sacador venceu → 6 bolas', () => {
+      expect(calculateFinalBallExchanges(6, false)).toBe(6);
+    });
+
+    it('6 bolas, devolvedor venceu → 7 bolas', () => {
+      expect(calculateFinalBallExchanges(6, true)).toBe(7);
+    });
+
+    it('0 bolas → retorna 1 (mínimo)', () => {
+      expect(calculateFinalBallExchanges(0, false)).toBe(1);
+      expect(calculateFinalBallExchanges(0, true)).toBe(1);
+    });
+
+    it('negativo → retorna 1 (mínimo)', () => {
+      expect(calculateFinalBallExchanges(-1, false)).toBe(1);
+    });
+  });
+
+  describe('isRallyPoint — Identificação de rally', () => {
+    it('Ace NÃO é rally', () => {
+      expect(isRallyPoint({ serve: { type: 'ACE', isFirstServe: true } })).toBe(false);
+    });
+
+    it('Dupla Falta NÃO é rally', () => {
+      expect(isRallyPoint({ serve: { type: 'DOUBLE_FAULT', isFirstServe: false } })).toBe(false);
+    });
+
+    it('Service Winner NÃO é rally', () => {
+      expect(isRallyPoint({ serve: { type: 'SERVICE_WINNER', isFirstServe: true } })).toBe(false);
+    });
+
+    it('Fault (primeiro saque errado) + rally É rally', () => {
+      expect(isRallyPoint({ serve: { type: 'FAULT_FIRST', isFirstServe: true } })).toBe(true);
+    });
+
+    it('Ponto sem serve É rally', () => {
+      expect(isRallyPoint({ result: { winner: 'PLAYER_1', type: 'WINNER' } })).toBe(true);
     });
   });
 });

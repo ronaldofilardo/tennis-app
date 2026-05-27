@@ -120,7 +120,7 @@ export function scoreboardUIReducer(
     case 'SUSPENDED_SESSION_CLEAR':
       return { ...state, suspendedSession: null, previousAnnotationPoints: 0 };
     case 'BALL_EXCHANGE_INCREMENT':
-      return { ...state, ballExchangeCount: state.ballExchangeCount + 1 };
+      return { ...state, ballExchangeCount: state.ballExchangeCount + 2 };
     case 'BALL_EXCHANGE_SET':
       return { ...state, ballExchangeCount: Math.max(0, action.count) };
     case 'BALL_EXCHANGE_RESET':

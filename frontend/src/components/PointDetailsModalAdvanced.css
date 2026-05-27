@@ -55,6 +55,37 @@
   -moz-appearance: textfield;
 }
 
+/* Preview do cálculo em pares */
+.pd-ball-preview {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+.pd-ball-preview-clicks {
+  font-weight: 700;
+  color: var(--clr-text-dim, #9ca3af);
+  min-width: 24px;
+}
+
+.pd-ball-preview-sep {
+  color: var(--clr-text-muted, #6b7280);
+}
+
+.pd-ball-preview-total {
+  font-weight: 700;
+  color: var(--clr-accent, #22c55e);
+  font-size: 15px;
+}
+
+.pd-ball-preview-hint {
+  font-size: 11px;
+  color: var(--clr-yellow, #eab308);
+  opacity: 0.85;
+}
+
 /* Mobile responsivo */
 @media (max-width: 768px) {
   .pd-advanced-section {
