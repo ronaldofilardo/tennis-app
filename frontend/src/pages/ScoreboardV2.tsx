@@ -278,12 +278,22 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
   const p1HasAdv = p1Score === 'AD';
   const p2HasAdv = p2Score === 'AD';
 
+  // Threshold dinâmico para game point em tiebreak (tiebreakPoints - 1)
+  // Ex: tiebreakPoints=7 → threshold=6 (normal), tiebreakPoints=10 → threshold=9 (match tiebreak)
+  const tiebreakThreshold = (config as any)?.tiebreakPoints
+    ? (config as any).tiebreakPoints - 1
+    : 6;
+
   // game-level "would-win-point" por jogador
   const p1AtGamePt = isTiebreak
-    ? typeof p1Score === 'number' && p1Score >= 6 && (p1Score as number) - (p2Score as number) >= 1
+    ? typeof p1Score === 'number' &&
+      p1Score >= tiebreakThreshold &&
+      (p1Score as number) - (p2Score as number) >= 1
     : (p1Score === '40' && p2Score !== '40') || p1HasAdv;
   const p2AtGamePt = isTiebreak
-    ? typeof p2Score === 'number' && p2Score >= 6 && (p2Score as number) - (p1Score as number) >= 1
+    ? typeof p2Score === 'number' &&
+      p2Score >= tiebreakThreshold &&
+      (p2Score as number) - (p1Score as number) >= 1
     : (p2Score === '40' && p1Score !== '40') || p2HasAdv;
 
   // set-level: ganhar o game daria o set?
