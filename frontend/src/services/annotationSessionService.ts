@@ -43,15 +43,20 @@ export async function startSession(matchId: string): Promise<AnnotationSession> 
 
 /**
  * Encerra a sessão e salva o snapshot final para comparativo.
+ * Status padrão: ABANDONED (permite que anotações suspensas retomadas e fechadas apareçam no dashboard)
  */
 export async function endSession(
   matchId: string,
   sessionId: string,
   finalState?: unknown,
+  status: 'COMPLETED' | 'ABANDONED' = 'ABANDONED',
 ): Promise<AnnotationSession> {
   const response = await httpClient.patch(
     `/matches/${matchId}/sessions/${sessionId}`,
-    finalState ? { finalState } : {},
+    {
+      status,
+      ...(finalState ? { finalState } : {}),
+    },
   );
   if (!response.ok) throw new Error('Failed to end session');
   return response.data as AnnotationSession;
