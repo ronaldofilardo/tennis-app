@@ -352,36 +352,34 @@ export function EditScoreModal(props: EditScoreModalProps): ReactElement | null 
               )}
 
               {/* Pontos do game em andamento — visível apenas quando set é parcial */}
-              {partial && (
-                <div className="edit-score-points-section">
-                  <p className="edit-score-points-label">🎾 Pontos do Game em Andamento</p>
-                  <div className="edit-score-dual-input-row">
-                    <span className="edit-score-player-label">{playerNames.p1}</span>
-                    <select
-                      className="edit-score-games-input edit-score-points-select"
-                      value={p1Points}
-                      onChange={(e) => handlePointsSelectChange(e.target.value, setP1Points)}
-                    >
-                      <option value="0">0</option>
-                      <option value="15">15</option>
-                      <option value="30">30</option>
-                      <option value="40">40</option>
-                    </select>
-                    <span className="edit-score-vs">×</span>
-                    <select
-                      className="edit-score-games-input edit-score-points-select"
-                      value={p2Points}
-                      onChange={(e) => handlePointsSelectChange(e.target.value, setP2Points)}
-                    >
-                      <option value="0">0</option>
-                      <option value="15">15</option>
-                      <option value="30">30</option>
-                      <option value="40">40</option>
-                    </select>
-                    <span className="edit-score-player-label">{playerNames.p2}</span>
-                  </div>
+              <div className="edit-score-points-section">
+                <p className="edit-score-points-label">🎾 Pontos do Game em Andamento</p>
+                <div className="edit-score-dual-input-row">
+                  <span className="edit-score-player-label">{playerNames.p1}</span>
+                  <select
+                    className="edit-score-games-input edit-score-points-select"
+                    value={p1Points}
+                    onChange={(e) => handlePointsSelectChange(e.target.value, setP1Points)}
+                  >
+                    <option value="0">0</option>
+                    <option value="15">15</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                  </select>
+                  <span className="edit-score-vs">×</span>
+                  <select
+                    className="edit-score-games-input edit-score-points-select"
+                    value={p2Points}
+                    onChange={(e) => handlePointsSelectChange(e.target.value, setP2Points)}
+                  >
+                    <option value="0">0</option>
+                    <option value="15">15</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                  </select>
+                  <span className="edit-score-player-label">{playerNames.p2}</span>
                 </div>
-              )}
+              </div>
 
               {canAddNextSet && (
                 <button className="edit-score-btn-next-set active" onClick={handleAddSet}>
