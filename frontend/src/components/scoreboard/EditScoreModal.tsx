@@ -96,9 +96,9 @@ export function EditScoreModal(props: EditScoreModalProps): ReactElement | null 
   // Efeito separado para pré-carregar inputs apenas UMA VEZ quando modal abre em modo continue
   useEffect(() => {
     if (isOpen && !initializedRef.current) {
-      const isContinuing = completedSets.length > 0;
-      // Pré-carregar se há sets completos OU se há games em andamento (parcial)
-      if (isContinuing && (currentSets.PLAYER_1 > 0 || currentSets.PLAYER_2 > 0)) {
+      // Pré-carregar games do set em andamento, independente de haver sets completos.
+      // Bug anterior: condição `isContinuing &&` impedia pre-load no primeiro set parcial.
+      if (currentSets.PLAYER_1 > 0 || currentSets.PLAYER_2 > 0) {
         setP1Input(currentSets.PLAYER_1.toString());
         setP2Input(currentSets.PLAYER_2.toString());
       } else {
@@ -138,7 +138,9 @@ export function EditScoreModal(props: EditScoreModalProps): ReactElement | null 
 
   const isContinuing = completedSets.length > 0;
   const partial = bothFilled && !completed;
-  const canConfirm = newSets.length > 0 || bothFilled;
+  // canConfirm: permite confirmar quando há novos sets, inputs preenchidos,
+  // OU quando há sets existentes já completos (ex: retomada de SINGLE_SET já com set ganho)
+  const canConfirm = newSets.length > 0 || bothFilled || completedSets.length > 0;
 
   const handleAddSet = (): void => {
     if (!completed) return;

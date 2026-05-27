@@ -179,9 +179,22 @@ export default async function handler(req, res) {
         isPublic = true,
       } = req.body || {};
       if (!name) return sendJson(res, 400, { error: 'name is required' });
+
+      // Verificar se o usuário existe antes de conectar
+      let userConnect = undefined;
+      if (ctx.userId) {
+        const userExists = await prisma.user.findUnique({
+          where: { id: ctx.userId },
+          select: { id: true },
+        });
+        if (userExists) {
+          userConnect = { connect: { id: ctx.userId } };
+        }
+      }
+
       const athlete = await prisma.athleteProfile.create({
         data: {
-          user: ctx.userId ? { connect: { id: ctx.userId } } : undefined,
+          ...(userConnect ? { user: userConnect } : {}),
           name: name.trim(),
           nickname: nickname?.trim() || null,
           birthDate: birthDate ? new Date(birthDate) : null,

@@ -175,5 +175,40 @@ export function useMatchLifecycleHandlers(deps: ScoreboardHandlerDeps) {
     };
   }, []);
 
+  // ── beforeunload listener: marks session as ABANDONED if tab/window closed ───
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      const sessionId = annotationSessionIdRef.current;
+      const matchIdValue = matchIdRef.current;
+      const sys = scoringSystemRef.current;
+      const currentState = sys?.getState();
+
+      if (sessionId && matchIdValue && currentState && !currentState.isFinished) {
+        try {
+          const stateSnapshot = JSON.stringify(currentState);
+          // fetch com keepalive=true garante entrega mesmo durante unload.
+          // navigator.sendBeacon NÃO suporta headers customizados (Authorization),
+          // causando 401 no endpoint /abandon e sessão nunca marcada como ABANDONED.
+          const token = httpClient.getAuthConfig().token;
+          fetch(`/api/matches/${matchIdValue}/sessions/${sessionId}/abandon`, {
+            method: 'POST',
+            keepalive: true,
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+            body: JSON.stringify({ matchStateSnapshot: stateSnapshot }),
+          });
+        } catch (err: unknown) {
+          // Silent fail — não pode fazer muito em beforeunload
+          console.warn('[beforeunload] Falha ao enviar requisição de abandono:', err);
+        }
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [annotationSessionIdRef, matchIdRef, scoringSystemRef, scoreLog]);
+
   return { handleEndMatch, handleSetupConfirm, fetchStats };
 }

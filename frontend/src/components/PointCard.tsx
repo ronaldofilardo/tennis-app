@@ -15,6 +15,8 @@ import {
   RALLY_GOLPE_LABELS,
   RALLY_EFEITO_LABELS,
   RALLY_DIRECAO_LABELS,
+  RALLY_SITUACAO_LABELS,
+  RALLY_GOLPE_ESP_LABELS,
 } from '../services/timelineUtils';
 
 const ChevronDown: React.FC<{ className?: string }> = ({ className }) => (
@@ -141,7 +143,7 @@ const PointCard: React.FC<PointCardProps> = React.memo(
             </span>
           )}
           <span
-            className={`match-timeline__card-chevron${expanded ? ' match-timeline__card-chevron--open' : ''}`}
+            className={`match-timeline__card-chevron${expanded ? 'match-timeline__card-chevron--open' : ''}`}
             aria-hidden="true"
           >
             <ChevronDown />
@@ -150,7 +152,7 @@ const PointCard: React.FC<PointCardProps> = React.memo(
 
         <div
           id={`timeline-detail-${originalIndex}`}
-          className={`match-timeline__card-detail${expanded ? ' match-timeline__card-detail--open' : ''}`}
+          className={`match-timeline__card-detail${expanded ? 'match-timeline__card-detail--open' : ''}`}
           role="region"
           aria-label={`Detalhes do ponto ${originalIndex + 1}`}
         >
@@ -161,8 +163,9 @@ const PointCard: React.FC<PointCardProps> = React.memo(
                 <span className="match-timeline__detail-val">
                   {point.context.setNumber}
                   <span className="match-timeline__detail-dim">
-                    {' '}&middot; {point.context.gamesP1}&ndash;{point.context.gamesP2} games
-                    {' '}&middot; {point.context.setsWonP1}&ndash;{point.context.setsWonP2} sets
+                    {' '}
+                    &middot; {point.context.gamesP1}&ndash;{point.context.gamesP2} games &middot;{' '}
+                    {point.context.setsWonP1}&ndash;{point.context.setsWonP2} sets
                   </span>
                   {point.context.isTiebreak && (
                     <span className="match-timeline__detail-badge">TB</span>
@@ -176,21 +179,27 @@ const PointCard: React.FC<PointCardProps> = React.memo(
                 <span className="match-timeline__detail-val">
                   {SERVE_TYPE_LABELS[point.serve.type] ?? point.serve.type}
                   <span className="match-timeline__detail-dim">
-                    {' '}&middot; {point.serve.isFirstServe ? '1\u00ba' : '2\u00ba'}
+                    {' '}
+                    &middot; {point.serve.isFirstServe ? '1\u00ba' : '2\u00ba'}
                   </span>
                   {point.serve.serveEffect && (
                     <span className="match-timeline__detail-dim">
-                      {' '}&middot; {SERVE_EFFECT_LABELS[point.serve.serveEffect] ?? point.serve.serveEffect}
+                      {' '}
+                      &middot;{' '}
+                      {SERVE_EFFECT_LABELS[point.serve.serveEffect] ?? point.serve.serveEffect}
                     </span>
                   )}
                   {point.serve.direction && (
                     <span className="match-timeline__detail-dim">
-                      {' '}&middot; {SERVE_DIRECTION_LABELS[point.serve.direction] ?? point.serve.direction}
+                      {' '}
+                      &middot;{' '}
+                      {SERVE_DIRECTION_LABELS[point.serve.direction] ?? point.serve.direction}
                     </span>
                   )}
                   {point.serve.errorType && (
                     <span className="match-timeline__detail-error">
-                      {' '}({point.serve.errorType === 'out' ? 'Out' : 'Net'})
+                      {' '}
+                      ({point.serve.errorType === 'out' ? 'Out' : 'Net'})
                     </span>
                   )}
                 </span>
@@ -204,17 +213,56 @@ const PointCard: React.FC<PointCardProps> = React.memo(
                   {point.rallyDetails && (
                     <>
                       <span className="match-timeline__detail-dim">
-                        {' '}&middot; {point.rallyDetails.vencedor === 'sacador' ? '[S]' : '[D]'}
+                        {' '}
+                        &middot; {point.rallyDetails.vencedor === 'sacador' ? '[S]' : '[D]'}
                       </span>
-                      {' '}{RALLY_GOLPE_LABELS[point.rallyDetails.golpe] ?? point.rallyDetails.golpe}
+                      {point.rallyDetails.situacao && (
+                        <span className="match-timeline__detail-dim">
+                          {' '}
+                          &middot;{' '}
+                          {RALLY_SITUACAO_LABELS[point.rallyDetails.situacao] ??
+                            point.rallyDetails.situacao}
+                        </span>
+                      )}
+                      {point.rallyDetails.subtipo1 && (
+                        <span className="match-timeline__detail-dim">
+                          {' '}
+                          &middot;{' '}
+                          {point.rallyDetails.subtipo1 === 'PassingShot'
+                            ? 'Passing Shot'
+                            : 'Dev. Saque'}
+                        </span>
+                      )}{' '}
+                      {RALLY_GOLPE_LABELS[point.rallyDetails.golpe] ?? point.rallyDetails.golpe}
                       {point.rallyDetails.efeito && (
                         <span className="match-timeline__detail-dim">
-                          {' '}({RALLY_EFEITO_LABELS[point.rallyDetails.efeito] ?? point.rallyDetails.efeito})
+                          {' '}
+                          (
+                          {RALLY_EFEITO_LABELS[point.rallyDetails.efeito] ??
+                            point.rallyDetails.efeito}
+                          )
                         </span>
                       )}
                       {point.rallyDetails.direcao && (
                         <span className="match-timeline__detail-dim">
-                          {' '}&middot; {RALLY_DIRECAO_LABELS[point.rallyDetails.direcao] ?? point.rallyDetails.direcao}
+                          {' '}
+                          &middot;{' '}
+                          {RALLY_DIRECAO_LABELS[point.rallyDetails.direcao] ??
+                            point.rallyDetails.direcao}
+                        </span>
+                      )}
+                      {point.rallyDetails.subtipo2 && (
+                        <span className="match-timeline__detail-error">
+                          {' '}
+                          ({point.rallyDetails.subtipo2 === 'Out' ? 'Out' : 'Rede'})
+                        </span>
+                      )}
+                      {point.rallyDetails.golpe_esp && (
+                        <span className="match-timeline__detail-badge">
+                          {' '}
+                          &middot;{' '}
+                          {RALLY_GOLPE_ESP_LABELS[point.rallyDetails.golpe_esp] ??
+                            point.rallyDetails.golpe_esp}
                         </span>
                       )}
                     </>
@@ -228,11 +276,14 @@ const PointCard: React.FC<PointCardProps> = React.memo(
                 {RESULT_TYPE_LABELS[point.result.type] ?? point.result.type}
                 {point.result.finalShot && (
                   <span className="match-timeline__detail-dim">
-                    {' '}&middot; {SHOT_TYPE_LABELS[point.result.finalShot] ?? point.result.finalShot}
+                    {' '}
+                    &middot; {SHOT_TYPE_LABELS[point.result.finalShot] ?? point.result.finalShot}
                   </span>
-                )}
-                {' '}&middot;{' '}
-                <span className={`match-timeline__detail-winner--${winnerClass}`}>{winnerName}</span>
+                )}{' '}
+                &middot;{' '}
+                <span className={`match-timeline__detail-winner--${winnerClass}`}>
+                  {winnerName}
+                </span>
               </span>
             </div>
           </div>

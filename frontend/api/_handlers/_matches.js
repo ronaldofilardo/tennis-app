@@ -375,17 +375,51 @@ export default async function handler(req, res) {
         }
       }
 
-      const result = Array.from(deduplicatedByMatch.values()).map((session) => ({
-        ...session.match,
-        suspendedSessionId: session.id,
-        suspendedAt: session.createdAt,
-        suspendedStatus: session.status,
-        matchStateSnapshot: session.matchStateSnapshot
-          ? typeof session.matchStateSnapshot === 'string'
-            ? session.matchStateSnapshot
-            : JSON.stringify(session.matchStateSnapshot)
-          : null,
-      }));
+      const result = Array.from(deduplicatedByMatch.values()).map((session) => {
+        const m = session.match;
+        // Parse matchState (stored as String? in DB) so DashboardMatchCard receives an object
+        let matchState = null;
+        try {
+          matchState = m.matchState ? JSON.parse(m.matchState) : null;
+        } catch {
+          matchState = null;
+        }
+        // Parse completedSets (stored as String? in DB) so card receives an array
+        let completedSets = [];
+        try {
+          completedSets = m.completedSets ? JSON.parse(m.completedSets) : [];
+        } catch {
+          completedSets = [];
+        }
+        return {
+          id: m.id,
+          sportType: m.sportType || '',
+          format: m.format || '',
+          courtType: m.courtType || null,
+          nickname: m.nickname || null,
+          score: m.score || null,
+          players: {
+            p1: m.player1?.name || m.playerP1 || '',
+            p2: m.player2?.name || m.playerP2 || '',
+          },
+          status: m.status || 'NOT_STARTED',
+          apontadorEmail: m.apontadorEmail || null,
+          playersEmails: m.playersEmails || [],
+          matchState,
+          completedSets,
+          createdAt: m.createdAt ? (m.createdAt.toISOString?.() ?? m.createdAt) : null,
+          scheduledAt: m.scheduledAt ? (m.scheduledAt.toISOString?.() ?? m.scheduledAt) : null,
+          visibility: m.visibility || 'PLAYERS_ONLY',
+          suspendedSessionId: session.id,
+          suspendedAt: session.createdAt,
+          suspendedStatus: session.status,
+          matchStateSnapshot: session.matchStateSnapshot
+            ? typeof session.matchStateSnapshot === 'string'
+              ? session.matchStateSnapshot
+              : JSON.stringify(session.matchStateSnapshot)
+            : null,
+        };
+      });
 
       console.log(
         `[GET /suspended-sessions] Before dedup: ${suspendedSessions.length} sessions, After: ${result.length} matches`,
@@ -726,6 +760,66 @@ export default async function handler(req, res) {
         return sendJson(res, 201, endorsement);
       }
 
+      // Abandono rápido: POST /api/matches/:id/sessions/:sessionId/abandon
+      // Usado por beforeunload (navigator.sendBeacon) para marcar como ABANDONED rapidamente
+      if (subId && action === 'abandon' && req.method === 'POST') {
+        try {
+          const session = await prisma.matchAnnotationSession.findUnique({
+            where: { id: subId },
+            select: {
+              id: true,
+              matchId: true,
+              annotatorUserId: true,
+              isActive: true,
+              status: true,
+            },
+          });
+          if (!session || session.matchId !== id)
+            return sendJson(res, 404, { error: 'Session not found' });
+
+          // Só o anotador ou ADMIN pode marcar como ABANDONED
+          if (session.annotatorUserId !== ctx.userId && ctx.role !== 'ADMIN')
+            return sendJson(res, 403, {
+              error: 'Only the annotator or admin can abandon a session',
+            });
+
+          // Se já foi finalizada, não faz nada (idempotent)
+          if (session.status === 'COMPLETED' || session.status === 'ABANDONED') {
+            return sendJson(res, 200, {
+              message: 'Session already ended',
+              id: session.id,
+              status: session.status,
+            });
+          }
+
+          const matchStateSnapshot = req.body?.matchStateSnapshot
+            ? typeof req.body.matchStateSnapshot === 'string'
+              ? req.body.matchStateSnapshot
+              : JSON.stringify(req.body.matchStateSnapshot)
+            : null;
+
+          const updated = await prisma.matchAnnotationSession.update({
+            where: { id: subId },
+            data: {
+              status: 'ABANDONED',
+              isActive: false,
+              endedAt: new Date(),
+              ...(matchStateSnapshot ? { matchStateSnapshot } : {}),
+            },
+            include: {
+              annotator: { select: { id: true, name: true, email: true } },
+            },
+          });
+
+          return sendJson(res, 200, updated);
+        } catch (error) {
+          console.error(`[POST /api/matches/${id}/sessions/${subId}/abandon] Erro:`, error);
+          return sendJson(res, 500, {
+            error: 'Erro ao marcar sessão como ABANDONED',
+          });
+        }
+      }
+
       // PATCH /api/matches/:id/sessions/:sessionId → encerrar ou marcar como ABANDONED
       if (subId && req.method === 'PATCH') {
         const session = await prisma.matchAnnotationSession.findUnique({
@@ -745,9 +839,10 @@ export default async function handler(req, res) {
           return sendJson(res, 403, {
             error: 'Only the annotator or admin can end a session',
           });
-        // Rejeitar apenas se sessão está FINALIZADA (COMPLETED/ABANDONED), não se apenas suspensa
+        // Idempotente: se já finalizada, retornar 200 sem erro.
+        // Isso evita race condition entre React cleanup PATCH e beforeunload fetch keepalive.
         if (session.status === 'COMPLETED' || session.status === 'ABANDONED')
-          return sendJson(res, 400, { error: 'Session already ended' });
+          return sendJson(res, 200, { id: session.id, status: session.status, alreadyEnded: true });
 
         // Validar status se fornecido
         const newStatus = req.body?.status || 'COMPLETED';

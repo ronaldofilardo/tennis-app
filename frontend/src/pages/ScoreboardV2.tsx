@@ -100,27 +100,17 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         status: 'IN_PROGRESS',
       });
       if (res.ok) {
-        // Se houver matchStateSnapshot, restaurar no TennisScoring
-        if (suspendedSession.matchStateSnapshot) {
-          try {
-            const system = getSystem?.();
-            if (system) {
-              const restoredState = JSON.parse(suspendedSession.matchStateSnapshot);
-              system.loadState(restoredState);
-              // ✅ loadState() chama automaticamente setSnapshotFloor()
-              // Mas podemos confirmar aqui se necessário
-              console.log(
-                '[ScoreboardV2] ✅ Snapshot floor definido automaticamente via loadState',
-                {
-                  matchId,
-                  pointsCount: restoredState.pointsHistory?.length ?? 0,
-                },
-              );
-            }
-          } catch (parseErr) {
-            console.warn('[ScoreboardV2] Falha ao restaurar estado anterior:', parseErr);
-          }
-        }
+        // NÃO restaurar o matchStateSnapshot da sessão suspensa aqui.
+        // O TennisScoring já foi inicializado com Match.matchState (carregado em fetchMatchData),
+        // que é SEMPRE mais recente que o snapshot da sessão suspensa.
+        // Sobrescrever com o snapshot reverteria correções feitas após a suspensão.
+        console.log(
+          '[ScoreboardV2] ✅ Sessão reativada. Estado já carregado de Match.matchState (mais recente).',
+          {
+            matchId,
+            sessionId: suspendedSession.id,
+          },
+        );
 
         setShowResumeModal(false);
         // Abrir EditScoreModal para permitir edição do placar
@@ -130,7 +120,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
     } catch (err) {
       console.error('Erro ao retomar anotação:', err);
     }
-  }, [suspendedSession, matchId, clearSuspendedSession, getSystem]);
+  }, [suspendedSession, matchId, clearSuspendedSession]);
 
   // Handler para começar nova anotação
   const handleStartNewAnnotation = useCallback(() => {
@@ -373,8 +363,6 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         onEditScoreClose={() => setEditScoreModalOpen(false)}
         onEditScoreConfirm={(setResults, server) => {
           setEditScoreModalOpen(false);
-          // Guard: não fazer nada se array vazio
-          if (setResults.length === 0) return;
 
           // Preservar sets já finalizados do engine como SetEditData
           const existingSets = (state.completedSets ?? []).map((set) => ({
@@ -385,6 +373,8 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
 
           // Concatenar: existing + novo + potencial parcial
           const allSets = [...existingSets, ...(setResults as SetEditData[])];
+          // Guard: só ignorar se não há absolutamente nada a processar
+          if (allSets.length === 0) return;
           handleEditScore(allSets, server);
         }}
         currentSets={state.currentSetState?.games ?? { PLAYER_1: 0, PLAYER_2: 0 }}

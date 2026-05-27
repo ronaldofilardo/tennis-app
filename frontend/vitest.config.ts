@@ -22,6 +22,8 @@ export default defineConfig({
       '**/playwright.config.{js,ts}',
       '**/playwright-report/**',
       '**/playwright/**',
+      // Testes de integração que requerem banco de dados real (excluídos do suite unitário)
+      '__tests__/match-end-by-creator.test.ts',
       // Ignorar testes de dependências externas (Zod, jest-dom)
       '**/node_modules/zod/**/tests/**',
       '**/node_modules/zod/**/test.{js,ts}',

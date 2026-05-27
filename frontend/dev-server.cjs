@@ -426,6 +426,23 @@ app.post('/api/athletes', async (req, res) => {
     const { name, nickname, category, gender, age, clubName, dominance, backhand, ranking } =
       req.body || {};
     if (!name) return res.status(400).json({ error: 'name is required' });
+
+    // Verificar se o usuário existe, se não deixar createdByUserId como NULL
+    let createdByUserId = null;
+    if (ctx.userId) {
+      const userExists = await prisma.user.findUnique({
+        where: { id: ctx.userId },
+        select: { id: true },
+      });
+      if (userExists) {
+        createdByUserId = ctx.userId;
+      } else {
+        console.warn(
+          `[POST /api/athletes] Usuário ${ctx.userId} não existe, criando atleta sem createdByUserId`,
+        );
+      }
+    }
+
     const profile = await prisma.athleteProfile.create({
       data: {
         name,
@@ -438,7 +455,7 @@ app.post('/api/athletes', async (req, res) => {
         backhand: backhand || null,
         ranking: ranking ? parseInt(ranking) : null,
         isPublic: true,
-        createdByUserId: ctx.userId,
+        createdByUserId,
       },
     });
     res.status(201).json(profile);
@@ -1398,6 +1415,84 @@ app.post('/api/matches/:id/sessions', async (req, res) => {
   }
 });
 
+// POST /api/matches/:id/sessions/:sessionId/abandon — marca sessão como ABANDONED (beforeunload)
+app.post('/api/matches/:id/sessions/:sessionId/abandon', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) {
+      console.warn(`[POST /abandon] ❌ Autenticação falhou`);
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    const session = await prisma.matchAnnotationSession.findUnique({
+      where: { id: req.params.sessionId },
+      select: {
+        id: true,
+        matchId: true,
+        annotatorUserId: true,
+        isActive: true,
+        status: true,
+      },
+    });
+
+    if (!session || session.matchId !== req.params.id) {
+      console.warn(`[POST /abandon] ❌ Sessão ${req.params.sessionId} não encontrada`);
+      return res.status(404).json({ error: 'Session not found' });
+    }
+
+    // Só o anotador ou ADMIN pode marcar como ABANDONED
+    if (session.annotatorUserId !== ctx.userId && ctx.role !== 'ADMIN') {
+      console.warn(
+        `[POST /abandon] ❌ Autorização negada para ${ctx.userId} em sessão de ${session.annotatorUserId}`,
+      );
+      return res.status(403).json({
+        error: 'Only the annotator or admin can abandon a session',
+      });
+    }
+
+    // Se já foi finalizada, não faz nada (idempotent)
+    if (session.status === 'COMPLETED' || session.status === 'ABANDONED') {
+      console.log(`[POST /abandon] ℹ️ Sessão ${session.id} já está ${session.status} (idempotent)`);
+      return res.json({
+        message: 'Session already ended',
+        id: session.id,
+        status: session.status,
+      });
+    }
+
+    const matchStateSnapshot = req.body?.matchStateSnapshot
+      ? typeof req.body.matchStateSnapshot === 'string'
+        ? req.body.matchStateSnapshot
+        : JSON.stringify(req.body.matchStateSnapshot)
+      : null;
+
+    const updated = await prisma.matchAnnotationSession.update({
+      where: { id: req.params.sessionId },
+      data: {
+        status: 'ABANDONED',
+        isActive: false,
+        endedAt: new Date(),
+        ...(matchStateSnapshot ? { matchStateSnapshot } : {}),
+      },
+      include: {
+        annotator: { select: { id: true, name: true, email: true } },
+      },
+    });
+
+    console.log(`[POST /abandon] ✅ Sessão ${session.id} marcada como ABANDONED via beforeunload`);
+    res.json(updated);
+  } catch (error) {
+    console.error(
+      `[POST /api/matches/${req.params.id}/sessions/${req.params.sessionId}/abandon] ❌ Erro:`,
+      error.message,
+    );
+    res.status(500).json({
+      error: 'Erro ao marcar sessão como ABANDONED',
+      details: error.message,
+    });
+  }
+});
+
 // PATCH /api/matches/:id/sessions/:sessionId — encerra ou marca sessão como ABANDONED
 app.patch('/api/matches/:id/sessions/:sessionId', async (req, res) => {
   try {
@@ -1415,7 +1510,9 @@ app.patch('/api/matches/:id/sessions/:sessionId', async (req, res) => {
       return res.status(403).json({ error: 'Apenas o anotador pode encerrar a sessão' });
     }
     if (!session.isActive) {
-      return res.status(400).json({ error: 'Sessão já encerrada' });
+      // Idempotente: retornar 200 ao invés de 400.
+      // Evita race condition entre React cleanup PATCH e beforeunload fetch keepalive.
+      return res.json({ id: session.id, status: session.status, alreadyEnded: true });
     }
 
     const newStatus = req.body?.status || 'COMPLETED';
@@ -1516,6 +1613,47 @@ app.post('/api/matches/:id/claim', async (req, res) => {
   } catch (error) {
     console.error(`[POST /api/matches/${req.params.id}/claim] Erro:`, error);
     res.status(500).json({ error: 'Erro ao salvar partida no histórico' });
+  }
+});
+
+// GET /api/matches/discover — partidas públicas disponíveis para anotação (ANTES de :id!)
+app.get('/api/matches/discover', async (req, res) => {
+  try {
+    const ctx = await extractCtx(req);
+    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
+
+    const sp = new URL(`http://localhost${req.url}`).searchParams;
+    const matches = await prisma.match.findMany({
+      where: {
+        visibility: 'PUBLIC',
+        openForAnnotation: true,
+        status: { not: 'FINISHED' },
+        ...(sp.get('sportType') ? { sportType: sp.get('sportType') } : {}),
+        ...(sp.get('clubId') ? { clubId: sp.get('clubId') } : {}),
+      },
+      select: {
+        id: true,
+        sportType: true,
+        format: true,
+        courtType: true,
+        scheduledAt: true,
+        status: true,
+        visibility: true,
+        openForAnnotation: true,
+        playerP1: true,
+        playerP2: true,
+        player1: { select: { id: true, name: true } },
+        player2: { select: { id: true, name: true } },
+        club: { select: { id: true, name: true } },
+        createdBy: { select: { id: true, name: true } },
+      },
+      orderBy: [{ scheduledAt: 'asc' }, { createdAt: 'desc' }],
+      take: 50,
+    });
+    res.json(matches);
+  } catch (error) {
+    console.error('[GET /api/matches/discover] Erro:', error);
+    res.status(500).json({ error: 'Erro ao carregar partidas disponíveis' });
   }
 });
 
@@ -1766,47 +1904,6 @@ app.delete('/api/matches/:id', async (req, res) => {
   } catch (error) {
     console.error('[DELETE /api/matches/:id] Erro:', error);
     res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
-  }
-});
-
-// GET /api/matches/discover — partidas públicas disponíveis para anotação
-app.get('/api/matches/discover', async (req, res) => {
-  try {
-    const ctx = await extractCtx(req);
-    if (!ctx) return res.status(401).json({ error: 'Authentication required' });
-
-    const sp = new URL(`http://localhost${req.url}`).searchParams;
-    const matches = await prisma.match.findMany({
-      where: {
-        visibility: 'PUBLIC',
-        openForAnnotation: true,
-        status: { not: 'FINISHED' },
-        ...(sp.get('sportType') ? { sportType: sp.get('sportType') } : {}),
-        ...(sp.get('clubId') ? { clubId: sp.get('clubId') } : {}),
-      },
-      select: {
-        id: true,
-        sportType: true,
-        format: true,
-        courtType: true,
-        scheduledAt: true,
-        status: true,
-        visibility: true,
-        openForAnnotation: true,
-        playerP1: true,
-        playerP2: true,
-        player1: { select: { id: true, name: true } },
-        player2: { select: { id: true, name: true } },
-        club: { select: { id: true, name: true } },
-        createdBy: { select: { id: true, name: true } },
-      },
-      orderBy: [{ scheduledAt: 'asc' }, { createdAt: 'desc' }],
-      take: 50,
-    });
-    res.json(matches);
-  } catch (error) {
-    console.error('[GET /api/matches/discover] Erro:', error);
-    res.status(500).json({ error: 'Erro ao carregar partidas disponíveis' });
   }
 });
 

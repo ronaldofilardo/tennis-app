@@ -52,22 +52,34 @@ setupGlobalMocks(); // Função utilitária para resetar mocks globais
 
 // Mock global de PrismaClient ANTES de qualquer importação
 vi.mock('@prisma/client', () => {
-  // Factory function que cria nova instância mock com vi.fn() frescos
-  const createMockPrismaClient = () => ({
-    match: {
+  class PrismaClient {
+    match = {
       findUnique: vi.fn(),
       update: vi.fn(),
       findMany: vi.fn(),
       create: vi.fn(),
       delete: vi.fn(),
-    },
-    $connect: vi.fn(),
-    $disconnect: vi.fn(),
-  });
-
-  return {
-    PrismaClient: vi.fn(createMockPrismaClient),
-  };
+    };
+    matchAnnotationSession = {
+      findUnique: vi.fn(),
+      findMany: vi.fn(),
+      create: vi.fn(),
+      createMany: vi.fn(),
+      update: vi.fn(),
+      updateMany: vi.fn(),
+      deleteMany: vi.fn(),
+      count: vi.fn(),
+    };
+    user = {
+      create: vi.fn(),
+      findUnique: vi.fn(),
+      findMany: vi.fn(),
+      deleteMany: vi.fn(),
+    };
+    $connect = vi.fn();
+    $disconnect = vi.fn();
+  }
+  return { PrismaClient };
 });
 
 (globalThis as any).resetGlobalMocks = () => {
