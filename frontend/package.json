@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "prisma generate && tsc && tsc -p tsconfig.server.json && tsc -p tsconfig.server.emit.json && node ./node_modules/vite/bin/vite.js build",
+    "build": "prisma generate && prisma migrate deploy && tsc && tsc -p tsconfig.server.json && tsc -p tsconfig.server.emit.json && node ./node_modules/vite/bin/vite.js build",
     "build:server": "tsc -p tsconfig.server.emit.json",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",

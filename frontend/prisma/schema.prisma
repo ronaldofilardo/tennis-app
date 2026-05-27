@@ -108,6 +108,7 @@ model AthleteProfile {
 
   // Novos campos para atletas criados pelo usuário
   createdByUserId String?
+  clubId          String?
   dominance       String?     // RIGHT, LEFT, AMBIDEXTROUS
   backhand        String?     // ONE_HAND, TWO_HAND
   age             Int?
@@ -167,6 +168,11 @@ model Match {
   completedSets String?
   matchState    String?
 
+  scheduledAt DateTime?
+  clubId      String?
+  homeClubId  String?
+  awayClubId  String?
+
   createdBy User?           @relation("MatchCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
   player1   AthleteProfile? @relation("MatchPlayer1", fields: [player1Id], references: [id], onDelete: SetNull)
   player2   AthleteProfile? @relation("MatchPlayer2", fields: [player2Id], references: [id], onDelete: SetNull)
@@ -177,6 +183,8 @@ model Match {
 
   @@index([status])
   @@index([createdByUserId])
+  @@index([scheduledAt])
+  @@index([clubId])
   @@map("matches")
 }
 

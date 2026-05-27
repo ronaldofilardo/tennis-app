@@ -104,8 +104,10 @@ export async function createMatch(matchData, testPrisma) {
         status: 'NOT_STARTED',
         openForAnnotation: openForAnnotation ?? false,
         // FKs opcionais: somente incluir se tiverem valores válidos
-        // Nota: createdByUserId pode não existir na sessão local, então omitir por enquanto
         scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
+        clubId: clubId || null,
+        homeClubId: homeClubId || null,
+        awayClubId: awayClubId || null,
         publicMatchCode: publicMatchCode || null,
         completedSets: JSON.stringify([]),
         matchState: JSON.stringify({
@@ -617,31 +619,57 @@ export async function getAllMatches(clubId, role, userId) {
   const matches = await prisma.match.findMany({
     where,
     select: {
-      id: true, sportType: true, format: true, courtType: true, nickname: true,
-      playerP1: true, playerP2: true, status: true, score: true, winner: true,
-      completedSets: true, createdAt: true, updatedAt: true, matchState: true,
-      apontadorEmail: true, playersEmails: true, visibility: true,
-      clubId: true, createdByUserId: true,
+      id: true,
+      sportType: true,
+      format: true,
+      courtType: true,
+      nickname: true,
+      playerP1: true,
+      playerP2: true,
+      status: true,
+      score: true,
+      winner: true,
+      completedSets: true,
+      createdAt: true,
+      updatedAt: true,
+      matchState: true,
+      apontadorEmail: true,
+      playersEmails: true,
+      visibility: true,
+      clubId: true,
+      createdByUserId: true,
     },
     orderBy: { createdAt: 'desc' },
     take: 200,
   });
   return matches.map((m) => {
     let parsedState = null;
-    try { parsedState = m.matchState ? JSON.parse(m.matchState) : null; } catch {}
+    try {
+      parsedState = m.matchState ? JSON.parse(m.matchState) : null;
+    } catch {}
     let completedSets = [];
-    try { completedSets = JSON.parse(m.completedSets || '[]'); } catch {}
+    try {
+      completedSets = JSON.parse(m.completedSets || '[]');
+    } catch {}
     return {
-      id: m.id, sportType: m.sportType || '', format: m.format || '',
-      courtType: m.courtType || null, nickname: m.nickname || null,
+      id: m.id,
+      sportType: m.sportType || '',
+      format: m.format || '',
+      courtType: m.courtType || null,
+      nickname: m.nickname || null,
       players: { p1: m.playerP1 || '', p2: m.playerP2 || '' },
-      status: m.status || 'NOT_STARTED', score: m.score || '', winner: m.winner || null,
+      status: m.status || 'NOT_STARTED',
+      score: m.score || '',
+      winner: m.winner || null,
       completedSets,
       createdAt: m.createdAt ? m.createdAt.toISOString() : undefined,
       updatedAt: m.updatedAt ? m.updatedAt.toISOString() : undefined,
-      matchState: parsedState, apontadorEmail: m.apontadorEmail,
-      playersEmails: m.playersEmails, visibility: m.visibility || 'PLAYERS_ONLY',
-      clubId: m.clubId || null, createdByUserId: m.createdByUserId || null,
+      matchState: parsedState,
+      apontadorEmail: m.apontadorEmail,
+      playersEmails: m.playersEmails,
+      visibility: m.visibility || 'PLAYERS_ONLY',
+      clubId: m.clubId || null,
+      createdByUserId: m.createdByUserId || null,
     };
   });
 }
