@@ -165,10 +165,10 @@ describe('MatchTimelineView', () => {
       const buttons = screen.getAllByRole('button', { name: /ponto/i });
       // Primeiro ponto é ace
       fireEvent.click(buttons[0]);
-      // 'Ace' aparece tanto na tag quanto no detalhe expandido (mínimo 2 ocorrências)
-      expect(screen.getAllByText('Ace').length).toBeGreaterThanOrEqual(2);
-      // 'Flat' só aparece no detalhe expandido (o resumo do card é texto único e não é 'Flat' isolado)
-      expect(screen.getByText('Flat')).toBeInTheDocument();
+      // Detalhe expandido contém 'Ace' e 'Flat' no conteúdo da região
+      const detail = screen.getByRole('region', { name: /detalhes do ponto 1/i });
+      expect(detail).toHaveTextContent('Ace');
+      expect(detail).toHaveTextContent('Flat');
     });
 
     it('deve mostrar detalhes do rally ao expandir ponto com rallyDetails', () => {
@@ -176,8 +176,9 @@ describe('MatchTimelineView', () => {
       const buttons = screen.getAllByRole('button', { name: /ponto/i });
       // Terceiro ponto tem rallyDetails
       fireEvent.click(buttons[2]);
-      expect(screen.getByText('Fundo')).toBeInTheDocument();
-      expect(screen.getByText('Paralela')).toBeInTheDocument();
+      const detail = screen.getByRole('region', { name: /detalhes do ponto 3/i });
+      expect(detail).toHaveTextContent('Forehand');
+      expect(detail).toHaveTextContent('Paralela');
     });
 
     it('deve mostrar contexto do placar ao expandir ponto com context', () => {
@@ -185,7 +186,8 @@ describe('MatchTimelineView', () => {
       const buttons = screen.getAllByRole('button', { name: /ponto/i });
       // Terceiro ponto tem context
       fireEvent.click(buttons[2]);
-      expect(screen.getAllByText('Contexto')[0]).toBeInTheDocument();
+      const detail = screen.getByRole('region', { name: /detalhes do ponto 3/i });
+      expect(detail).toHaveTextContent('Set');
     });
   });
 

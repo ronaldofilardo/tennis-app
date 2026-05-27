@@ -136,8 +136,8 @@ describe('MatchTimelineView', () => {
     // Act
     render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
 
-    // Assert — sem região de detalhe no DOM
-    expect(screen.queryByRole('region', { name: /detalhes do ponto 1/i })).not.toBeInTheDocument();
+    // Assert — header com aria-expanded=false (detalhe presente no DOM mas recolhido via CSS)
+    expect(screen.getByRole('button', { name: /ponto 1:/i })).toHaveAttribute('aria-expanded', 'false');
   });
 
   it('deve expandir o card ao clicar no header', () => {
@@ -163,8 +163,8 @@ describe('MatchTimelineView', () => {
     fireEvent.click(header);
     fireEvent.click(header);
 
-    // Assert
-    expect(screen.queryByRole('region', { name: /detalhes do ponto 1/i })).not.toBeInTheDocument();
+    // Assert — card recolhido: aria-expanded=false
+    expect(header).toHaveAttribute('aria-expanded', 'false');
   });
 
   it('deve definir aria-expanded=true no header quando expandido', () => {
@@ -213,18 +213,19 @@ describe('MatchTimelineView', () => {
     const points = [makePoint(), makePoint()];
     render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
 
-    // Assert — sem detalhe inicialmente
-    expect(screen.queryByRole('region', { name: /detalhes do ponto 1/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole('region', { name: /detalhes do ponto 2/i })).not.toBeInTheDocument();
+    // Assert — sem detalhe expandido inicialmente (aria-expanded=false)
+    const [header1, header2] = screen.getAllByRole('button', { name: /ponto \d+:/i });
+    expect(header1).toHaveAttribute('aria-expanded', 'false');
+    expect(header2).toHaveAttribute('aria-expanded', 'false');
 
     // Act — disparar beforeprint
     await act(async () => {
       window.dispatchEvent(new Event('beforeprint'));
     });
 
-    // Assert — detalhes visíveis para todos os cards
-    expect(screen.getByRole('region', { name: /detalhes do ponto 1/i })).toBeInTheDocument();
-    expect(screen.getByRole('region', { name: /detalhes do ponto 2/i })).toBeInTheDocument();
+    // Assert — todos os cards expandidos após beforeprint
+    expect(header1).toHaveAttribute('aria-expanded', 'true');
+    expect(header2).toHaveAttribute('aria-expanded', 'true');
   });
 
   it('deve recolher todos os cards após evento afterprint', async () => {
@@ -243,8 +244,8 @@ describe('MatchTimelineView', () => {
       window.dispatchEvent(new Event('afterprint'));
     });
 
-    // Assert — detalhe recolhido (card não estava expandido manualmente)
-    expect(screen.queryByRole('region', { name: /detalhes do ponto 1/i })).not.toBeInTheDocument();
+    // Assert — card recolhido após afterprint (aria-expanded=false)
+    expect(screen.getByRole('button', { name: /ponto 1:/i })).toHaveAttribute('aria-expanded', 'false');
   });
 
   it('deve remover os event listeners ao desmontar o componente', () => {
@@ -272,8 +273,8 @@ describe('MatchTimelineView', () => {
     // Act
     render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
 
-    // Assert — "Ace" aparece no card-summary E na tag; buscamos a tag específica
-    const tags = screen.getAllByText('Ace');
+    // Assert — tag renderiza 'ACE' (uppercase); summary usa 'Ace'
+    const tags = screen.getAllByText('ACE');
     expect(tags.some((el) => el.classList.contains('match-timeline__tag--ace'))).toBe(true);
   });
 

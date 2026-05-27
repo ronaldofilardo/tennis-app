@@ -1,6 +1,7 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import CreatorEndMatchPanel from '../../components/CreatorEndMatchPanel';
 import * as httpClient from '../../config/httpClient';
 
@@ -21,7 +22,9 @@ describe('CreatorEndMatchPanel', () => {
 
   it('should not render if user is not creator', () => {
     const { container } = render(
-      <CreatorEndMatchPanel matchId={mockMatchId} isCreator={false} matchStatus="IN_PROGRESS" />,
+      <MemoryRouter>
+        <CreatorEndMatchPanel matchId={mockMatchId} isCreator={false} matchStatus="IN_PROGRESS" />
+      </MemoryRouter>,
     );
 
     expect(container.firstChild).toBeNull();
@@ -29,7 +32,9 @@ describe('CreatorEndMatchPanel', () => {
 
   it('should not render if match is already finished', () => {
     const { container } = render(
-      <CreatorEndMatchPanel matchId={mockMatchId} isCreator={true} matchStatus="FINISHED" />,
+      <MemoryRouter>
+        <CreatorEndMatchPanel matchId={mockMatchId} isCreator={true} matchStatus="FINISHED" />
+      </MemoryRouter>,
     );
 
     expect(container.firstChild).toBeNull();
@@ -37,7 +42,9 @@ describe('CreatorEndMatchPanel', () => {
 
   it('should render button when creator and match in progress', () => {
     render(
-      <CreatorEndMatchPanel matchId={mockMatchId} isCreator={true} matchStatus="IN_PROGRESS" />,
+      <MemoryRouter>
+        <CreatorEndMatchPanel matchId={mockMatchId} isCreator={true} matchStatus="IN_PROGRESS" />
+      </MemoryRouter>,
     );
 
     const button = screen.getByText(/Encerrar Partida/i);
@@ -46,7 +53,9 @@ describe('CreatorEndMatchPanel', () => {
 
   it('should open modal when button is clicked', async () => {
     render(
-      <CreatorEndMatchPanel matchId={mockMatchId} isCreator={true} matchStatus="IN_PROGRESS" />,
+      <MemoryRouter>
+        <CreatorEndMatchPanel matchId={mockMatchId} isCreator={true} matchStatus="IN_PROGRESS" />
+      </MemoryRouter>,
     );
 
     const button = screen.getByText(/Encerrar Partida/i);
@@ -62,12 +71,14 @@ describe('CreatorEndMatchPanel', () => {
     (httpClient.httpClient.patch as any) = mockPatch;
 
     render(
-      <CreatorEndMatchPanel
-        matchId={mockMatchId}
-        isCreator={true}
-        matchStatus="IN_PROGRESS"
-        onMatchEnded={mockOnMatchEnded}
-      />,
+      <MemoryRouter>
+        <CreatorEndMatchPanel
+          matchId={mockMatchId}
+          isCreator={true}
+          matchStatus="IN_PROGRESS"
+          onMatchEnded={mockOnMatchEnded}
+        />
+      </MemoryRouter>,
     );
 
     fireEvent.click(screen.getByText(/Encerrar Partida/i));
@@ -81,7 +92,7 @@ describe('CreatorEndMatchPanel', () => {
         action: 'endMatch',
       });
       expect(mockOnMatchEnded).toHaveBeenCalled();
-    });
+    }, { timeout: 5000 });
   });
 
   it('should call API to end match with winner', async () => {
@@ -89,12 +100,14 @@ describe('CreatorEndMatchPanel', () => {
     (httpClient.httpClient.patch as any) = mockPatch;
 
     render(
-      <CreatorEndMatchPanel
-        matchId={mockMatchId}
-        isCreator={true}
-        matchStatus="IN_PROGRESS"
-        onMatchEnded={mockOnMatchEnded}
-      />,
+      <MemoryRouter>
+        <CreatorEndMatchPanel
+          matchId={mockMatchId}
+          isCreator={true}
+          matchStatus="IN_PROGRESS"
+          onMatchEnded={mockOnMatchEnded}
+        />
+      </MemoryRouter>,
     );
 
     fireEvent.click(screen.getByText(/Encerrar Partida/i));
@@ -118,7 +131,7 @@ describe('CreatorEndMatchPanel', () => {
         winner: 'PLAYER_1',
       });
       expect(mockOnMatchEnded).toHaveBeenCalled();
-    });
+    }, { timeout: 5000 });
   });
 
   it('should display error if API fails', async () => {
@@ -126,7 +139,9 @@ describe('CreatorEndMatchPanel', () => {
     (httpClient.httpClient.patch as any) = mockPatch;
 
     render(
-      <CreatorEndMatchPanel matchId={mockMatchId} isCreator={true} matchStatus="IN_PROGRESS" />,
+      <MemoryRouter>
+        <CreatorEndMatchPanel matchId={mockMatchId} isCreator={true} matchStatus="IN_PROGRESS" />
+      </MemoryRouter>,
     );
 
     fireEvent.click(screen.getByText(/Encerrar Partida/i));

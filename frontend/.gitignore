@@ -47,3 +47,7 @@ yarn-error.log*
 .vercel
 
 .vercel
+
+# Database dump files
+prisma/dev_dump.sql
+prisma/prod_backup_*.sql

@@ -117,6 +117,10 @@ export interface PointContext {
   isBreakPoint: boolean;
   /** Verdadeiro se o ponto ocorre num tiebreak */
   isTiebreak: boolean;
+  /** Verdadeiro se este é o último ponto possível antes de fechar um game (game ball) */
+  isGameBall?: boolean;
+  /** Verdadeiro se este é o último ponto possível antes de fechar um set (set ball) */
+  isSetBall?: boolean;
 }
 
 export interface PointDetails {

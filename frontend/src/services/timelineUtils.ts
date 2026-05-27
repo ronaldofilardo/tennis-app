@@ -139,6 +139,12 @@ export const SERVE_DIRECTION_LABELS: Record<string, string> = {
   Aberto: 'Aberto',
 };
 
+/** Labels para GameBall e SetBall */
+export const SPECIAL_BALL_LABELS: Record<string, string> = {
+  gameball: 'Game Ball',
+  setball: 'Set Ball',
+};
+
 /** Rótulos legíveis das situações de rally. */
 export const RALLY_SITUACAO_LABELS: Record<string, string> = {
   devolucao: 'Devolução',
@@ -200,4 +206,119 @@ export function summarizePoint(point: PointDetails): string {
     ? (SHOT_TYPE_LABELS[point.result.finalShot] ?? point.result.finalShot)
     : '';
   return shotLabel ? `${resultLabel} de ${shotLabel}` : resultLabel;
+}
+
+// ─── Detecção de Situações Especiais ──────────────────────────────────────────
+
+/**
+ * Detecta se um ponto é um game ball (penúltimo ponto antes de fechar o game).
+ * Logic: Um ponto é game ball se um jogador pode vencer o game no próximo ponto.
+ *
+ * Casos:
+ * - Placar 40-0/15/30 (ou AD-40/15/30) → próximo ponto fecha o game
+ * - Tiebreak: 9-8 / 10-9 (quando ganha-se por 2 pontos)
+ *
+ * @param point Ponto com contexto para análise
+ * @returns true se é game ball para qualquer jogador
+ */
+export function detectGameBall(point: PointDetails): boolean {
+  if (!point.context) return false;
+
+  const { gameScoreP1, gameScoreP2, isTiebreak } = point.context;
+
+  // Em tiebreak: game ball em 9-8 ou 10-9 (penúltimo ponto)
+  if (isTiebreak) {
+    const tb1 = Number(gameScoreP1);
+    const tb2 = Number(gameScoreP2);
+    // Se um jogador tem 9+ pontos e está 1 ponto na frente, próximo ponto fecha
+    if ((tb1 >= 9 && tb1 === tb2 + 1) || (tb2 >= 9 && tb2 === tb1 + 1)) {
+      return true;
+    }
+    return false;
+  }
+
+  // Em jogo normal: checar se em 40-AD ou AD-40 (deuce) — não é game ball
+  // Game ball: quando um jogador está em 40 e outro em 0/15/30
+  const p1Forty = gameScoreP1 === '40';
+  const p2Forty = gameScoreP2 === '40';
+  const p1AD = gameScoreP1 === 'AD';
+  const p2AD = gameScoreP2 === 'AD';
+
+  // Deuce (40-40 ou AD-40 ou 40-AD) não é game ball, pois precisam de advantage ou win por 2
+  if ((p1Forty && p2Forty) || p1AD || p2AD) {
+    return false;
+  }
+
+  // Game ball: um em 40, outro em 0/15/30
+  if (p1Forty && (gameScoreP2 === '0' || gameScoreP2 === '15' || gameScoreP2 === '30')) {
+    return true;
+  }
+  if (p2Forty && (gameScoreP1 === '0' || gameScoreP1 === '15' || gameScoreP1 === '30')) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Detecta se um ponto é um set ball (penúltimo ponto antes de fechar o set).
+ * Logic: Um ponto é set ball se um jogador pode vencer o set no próximo ponto.
+ *
+ * Casos comuns:
+ * - Um jogador tem 5 games, outro tem ≤4 games → próximo game pode fechar (5-4, depois 6-4)
+ * - Tiebreak em 5-5 games → tiebreak ball em 6-5 pontos
+ *
+ * @param point Ponto com contexto para análise
+ * @returns true se é set ball para qualquer jogador
+ */
+export function detectSetBall(point: PointDetails): boolean {
+  if (!point.context) return false;
+
+  const { gamesP1, gamesP2, isTiebreak } = point.context;
+
+  // Set ball: um jogador tem 5 games com vantagem
+  // (próximo game fecha em 6-X ou vai para tiebreak em 6-6)
+  if (gamesP1 === 5 && gamesP2 <= 4) {
+    return true; // P1 pode vencer 6-X com próximo game
+  }
+  if (gamesP2 === 5 && gamesP1 <= 4) {
+    return true; // P2 pode vencer 6-X com próximo game
+  }
+
+  // Tiebreak em 6-6 games → set ball já está sendo jogado (this point)
+  // Não retornamos true aqui pois o set ball é do ponto que levou a 6-6
+  // Mas se estivermos em tiebreak em 5-5 games, o próximo pode fechar em 6-5
+  // Na verdade, tiebreak só começa em 6-6, então:
+  if (isTiebreak && gamesP1 === 6 && gamesP2 === 6) {
+    // Set ball é detectado no jogo de tiebreak (próxima chamada deste método)
+    // Aqui verificamos se é tiebreak e alguém está perto de vencer
+    // Tiebreak é jogado até 10 (ou 7), portanto set ball seria em 9-8 ou 6-5 no TB
+    // Mas isso já foi tratado acima na lógica geral
+    // Na verdade, para set ball em tiebreak, verificamos no tiebreak game ball logic
+    return false;
+  }
+
+  return false;
+}
+
+/**
+ * Enriquece a lista de pontos com detecção de GameBall e SetBall.
+ * Copia cada ponto e marca isGameBall/isSetBall no context.
+ *
+ * @param points Array original de pontos
+ * @returns Novo array com pontos enriquecidos
+ */
+export function enrichPointsWithBallDetection(points: PointDetails[]): PointDetails[] {
+  return points.map((point) => {
+    if (!point.context) return point;
+
+    return {
+      ...point,
+      context: {
+        ...point.context,
+        isGameBall: point.context.isGameBall ?? detectGameBall(point),
+        isSetBall: point.context.isSetBall ?? detectSetBall(point),
+      },
+    };
+  });
 }

@@ -4,7 +4,11 @@
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import type { PointDetails } from '../core/scoring/types';
-import { filterPointsHistory, countByFilter } from '../services/timelineUtils';
+import {
+  filterPointsHistory,
+  countByFilter,
+  enrichPointsWithBallDetection,
+} from '../services/timelineUtils';
 import type { TimelineFilterCriteria } from '../services/timelineUtils';
 import PointCard from './PointCard';
 import './MatchTimelineView.css';
@@ -41,10 +45,16 @@ const MatchTimelineView: React.FC<MatchTimelineViewProps> = ({ pointsHistory, pl
     };
   }, []);
 
-  // Aplica filtros à lista de pontos
+  // Enriquece pontos com detecção de game ball e set ball
+  const enrichedPoints = useMemo(
+    () => enrichPointsWithBallDetection(pointsHistory),
+    [pointsHistory],
+  );
+
+  // Aplica filtros à lista de pontos enriquecida
   const filtered = useMemo(
-    () => filterPointsHistory(pointsHistory, criteria),
-    [pointsHistory, criteria],
+    () => filterPointsHistory(enrichedPoints, criteria),
+    [enrichedPoints, criteria],
   );
 
   // Mapa de índice original para exibição após filtros
@@ -52,8 +62,8 @@ const MatchTimelineView: React.FC<MatchTimelineViewProps> = ({ pointsHistory, pl
     if (Object.values(criteria).every((v) => v === undefined || v === null || v === false)) {
       return filtered.map((_, i) => i);
     }
-    return filtered.map((pt) => pointsHistory.indexOf(pt));
-  }, [filtered, pointsHistory, criteria]);
+    return filtered.map((pt) => enrichedPoints.indexOf(pt));
+  }, [filtered, enrichedPoints, criteria]);
 
   const toggleFilter = useCallback(
     <K extends keyof TimelineFilterCriteria>(key: K, value: TimelineFilterCriteria[K]) => {
@@ -76,24 +86,24 @@ const MatchTimelineView: React.FC<MatchTimelineViewProps> = ({ pointsHistory, pl
 
   // Contagens para badges
   const countP1 = useMemo(
-    () => countByFilter(pointsHistory, { playerWinner: 'PLAYER_1' }),
-    [pointsHistory],
+    () => countByFilter(enrichedPoints, { playerWinner: 'PLAYER_1' }),
+    [enrichedPoints],
   );
   const countP2 = useMemo(
-    () => countByFilter(pointsHistory, { playerWinner: 'PLAYER_2' }),
-    [pointsHistory],
+    () => countByFilter(enrichedPoints, { playerWinner: 'PLAYER_2' }),
+    [enrichedPoints],
   );
   const countBP = useMemo(
-    () => countByFilter(pointsHistory, { breakPointsOnly: true }),
-    [pointsHistory],
+    () => countByFilter(enrichedPoints, { breakPointsOnly: true }),
+    [enrichedPoints],
   );
   const countWinners = useMemo(
-    () => countByFilter(pointsHistory, { winnersOnly: true }),
-    [pointsHistory],
+    () => countByFilter(enrichedPoints, { winnersOnly: true }),
+    [enrichedPoints],
   );
   const countErrors = useMemo(
-    () => countByFilter(pointsHistory, { errorsOnly: true }),
-    [pointsHistory],
+    () => countByFilter(enrichedPoints, { errorsOnly: true }),
+    [enrichedPoints],
   );
 
   if (pointsHistory.length === 0) {

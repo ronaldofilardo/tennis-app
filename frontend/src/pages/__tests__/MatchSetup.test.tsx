@@ -64,28 +64,24 @@ vi.mock('../../components/Toast', () => ({
   ToastProvider: ({ children }: any) => children,
 }));
 
-// Mock do AthleteSearchInput — simula seleção via onChange para facilitar testes
-vi.mock('../../components/AthleteSearchInput', () => ({
-  default: ({ id, label, placeholder, onSelect }: any) => (
-    <div>
-      <label htmlFor={id}>{label}</label>
-      <input
-        id={id}
-        placeholder={placeholder}
-        aria-label={label}
-        onChange={(e) =>
-          onSelect(
-            e.target.value
-              ? {
-                  id: `athlete_${Date.now()}`,
-                  name: e.target.value,
-                  email: '',
-                }
-              : null,
-          )
-        }
-      />
-    </div>
+// Mock do MyAthleteDropdown — simula seleção via onChange para facilitar testes
+vi.mock('../../components/MyAthleteDropdown', () => ({
+  default: ({ placeholder, onSelect, value }: any) => (
+    <input
+      placeholder={placeholder}
+      value={value?.name ?? ''}
+      onChange={(e) =>
+        onSelect?.(
+          e.target.value
+            ? {
+                id: `athlete_${Date.now()}`,
+                name: e.target.value,
+                email: '',
+              }
+            : null,
+        )
+      }
+    />
   ),
 }));
 
@@ -139,18 +135,18 @@ describe('MatchSetup - Match Creation Flow', () => {
       const mockOnMatchCreated = vi.fn();
       renderMatchSetup({ onMatchCreated: mockOnMatchCreated });
 
-      // Preenche os campos usando o AthleteSearchInput mockado
-      const [player1Input, player2Input] = screen.getAllByPlaceholderText('Buscar atleta...');
+      // Preenche os campos usando o MyAthleteDropdown mockado
+      const [player1Input, player2Input] = screen.getAllByPlaceholderText('Selecione um atleta...');
 
       await act(async () => {
         fireEvent.change(player1Input, { target: { value: 'Jogador 1' } });
         fireEvent.change(player2Input, { target: { value: 'Jogador 2' } });
 
         // Preenche data e horário (obrigatórios)
-        fireEvent.change(screen.getByLabelText('Data da partida'), {
+        fireEvent.change(document.getElementById('scheduled-date')!, {
           target: { value: '2025-12-01' },
         });
-        fireEvent.change(screen.getByLabelText('Horário da partida'), {
+        fireEvent.change(document.getElementById('scheduled-time')!, {
           target: { value: '10:00' },
         });
 
@@ -186,18 +182,18 @@ describe('MatchSetup - Match Creation Flow', () => {
       mockHttpClient.post.mockRejectedValue(new Error('API Error'));
       renderMatchSetup();
 
-      // Preenche os campos usando o AthleteSearchInput mockado
-      const [player1Input2, player2Input2] = screen.getAllByPlaceholderText('Buscar atleta...');
+      // Preenche os campos usando o MyAthleteDropdown mockado
+      const [player1Input2, player2Input2] = screen.getAllByPlaceholderText('Selecione um atleta...');
 
       await act(async () => {
         fireEvent.change(player1Input2, { target: { value: 'Jogador 1' } });
         fireEvent.change(player2Input2, { target: { value: 'Jogador 2' } });
 
         // Preenche data e horário (obrigatórios)
-        fireEvent.change(screen.getByLabelText('Data da partida'), {
+        fireEvent.change(document.getElementById('scheduled-date')!, {
           target: { value: '2025-12-01' },
         });
-        fireEvent.change(screen.getByLabelText('Horário da partida'), {
+        fireEvent.change(document.getElementById('scheduled-time')!, {
           target: { value: '10:00' },
         });
 
@@ -211,7 +207,7 @@ describe('MatchSetup - Match Creation Flow', () => {
       // Wait for error handling
       await waitFor(() => {
         expect(mockToastError).toHaveBeenCalledWith(
-          'Falha ao criar a partida. Verifique o console do navegador e do backend.',
+          'Falha ao criar a partida. Verifique o console do navegador.',
           expect.anything(),
         );
       });
@@ -220,16 +216,11 @@ describe('MatchSetup - Match Creation Flow', () => {
     it('validates required player fields', async () => {
       renderMatchSetup();
 
-      // Try to submit without players
+      // Sem jogadores selecionados, o botão Iniciar está desabilitado
       const submitButton = screen.getByRole('button', {
         name: /Iniciar/i,
       });
-      fireEvent.click(submitButton);
-
-      // Should show error and not call API
-      await waitFor(() => {
-        expect(screen.getByText('Os nomes dos jogadores são obrigatórios.')).toBeInTheDocument();
-      });
+      expect(submitButton).toBeDisabled();
       expect(mockHttpClient.post).not.toHaveBeenCalled();
     });
   });
@@ -238,29 +229,26 @@ describe('MatchSetup - Match Creation Flow', () => {
     it('requires both players to be selected', async () => {
       renderMatchSetup();
 
+      // Sem jogadores selecionados, o botão Iniciar está desabilitado
       const submitButton = screen.getByRole('button', {
         name: /Iniciar/i,
       });
-      fireEvent.click(submitButton);
-
-      await waitFor(() => {
-        expect(screen.getByText('Os nomes dos jogadores são obrigatórios.')).toBeInTheDocument();
-      });
+      expect(submitButton).toBeDisabled();
     });
 
     it('allows form submission when both players are selected', async () => {
       renderMatchSetup();
 
-      const [p1, p2] = screen.getAllByPlaceholderText('Buscar atleta...');
+      const [p1, p2] = screen.getAllByPlaceholderText('Selecione um atleta...');
 
       fireEvent.change(p1, { target: { value: 'Jogador 1' } });
       fireEvent.change(p2, { target: { value: 'Jogador 2' } });
 
       // Preenche data e horário (obrigatórios)
-      fireEvent.change(screen.getByLabelText('Data da partida'), {
+      fireEvent.change(document.getElementById('scheduled-date')!, {
         target: { value: '2025-12-01' },
       });
-      fireEvent.change(screen.getByLabelText('Horário da partida'), {
+      fireEvent.change(document.getElementById('scheduled-time')!, {
         target: { value: '10:00' },
       });
 
