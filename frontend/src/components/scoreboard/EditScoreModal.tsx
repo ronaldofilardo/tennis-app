@@ -112,25 +112,12 @@ export function EditScoreModal(props: EditScoreModalProps): ReactElement | null 
     }
   }, [isOpen, completedSets.length, currentSets.PLAYER_1, currentSets.PLAYER_2, currentGamePoints]);
 
-  // Auto-avançar para o próximo set quando score estiver completo (exceto no último set do formato)
+  // Limpar timers ao desmontar
   useEffect(() => {
-    if (autoAdvanceTimerRef.current) {
-      clearTimeout(autoAdvanceTimerRef.current);
-      autoAdvanceTimerRef.current = null;
-    }
-    if (!isOpen || !completed || !canAddNextSet) return;
-    autoAdvanceTimerRef.current = setTimeout(() => {
-      const data: SetEditData = { p1Games: p1Val, p2Games: p2Val, isPartial: false };
-      setNewSets((prev) => [...prev, data]);
-      setP1Input('');
-      setP2Input('');
-      const winner: Player = p1Val > p2Val ? 'PLAYER_1' : 'PLAYER_2';
-      setNextServer(getServerForNextSet(winner, currentServer, totalEditedSets, matchFormat));
-    }, 600);
     return () => {
       if (autoAdvanceTimerRef.current) clearTimeout(autoAdvanceTimerRef.current);
     };
-  }, [p1Val, p2Val, completed, canAddNextSet, isOpen, currentServer, totalEditedSets, matchFormat]);
+  }, []);
 
   if (!isOpen) {
     return null;
