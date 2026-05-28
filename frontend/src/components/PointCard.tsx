@@ -6,7 +6,6 @@ import type { PointDetails } from '../core/scoring/types';
 import {
   formatGameScoreLabel,
   formatPointTime,
-  summarizePoint,
   SERVE_TYPE_LABELS,
   RESULT_TYPE_LABELS,
   SHOT_TYPE_LABELS,
@@ -72,6 +71,19 @@ const PointCard: React.FC<PointCardProps> = React.memo(
     const isUnforced = point.result.type === 'UNFORCED_ERROR';
     const isForced = point.result.type === 'FORCED_ERROR';
 
+    // Deriva a natureza visual do ponto para guiar o card-body
+    const pointNature = isAce
+      ? 'ace'
+      : isDoubleFault
+        ? 'double-fault'
+        : isServiceWinner
+          ? 'service-winner'
+          : point.rally.ballExchanges > 0 && point.rallyDetails
+            ? 'rally-detail'
+            : point.rally.ballExchanges > 0
+              ? 'rally-basic'
+              : 'other';
+
     return (
       <li
         className={[
@@ -106,7 +118,6 @@ const PointCard: React.FC<PointCardProps> = React.memo(
           >
             {winnerName}
           </span>
-          <span className="match-timeline__card-summary">{summarizePoint(point)}</span>
           {point.context && (
             <span className="match-timeline__card-score">
               {formatGameScoreLabel(point.context.gameScoreP1, point.context.gameScoreP2)}
@@ -157,6 +168,99 @@ const PointCard: React.FC<PointCardProps> = React.memo(
             <ChevronDown />
           </span>
         </button>
+
+        {/* ─── Card Body: resumo visual sempre visível ─── */}
+        {pointNature !== 'other' && (
+          <div className="match-timeline__card-body">
+            {/* Caminho A: ACE / DF / SERVICE WINNER — resultado de saque direto */}
+            {(pointNature === 'ace' ||
+              pointNature === 'double-fault' ||
+              pointNature === 'service-winner') && (
+              <>
+                <span
+                  className={`match-timeline__hero-badge match-timeline__hero-badge--${
+                    pointNature === 'ace' ? 'ace' : pointNature === 'double-fault' ? 'df' : 'sw'
+                  }`}
+                >
+                  {pointNature === 'ace'
+                    ? 'ACE'
+                    : pointNature === 'double-fault'
+                      ? 'DOUBLE FAULT'
+                      : 'SERVICE WINNER'}
+                </span>
+                {point.serve && (
+                  <>
+                    <span className="match-timeline__tech-chip">
+                      {point.serve.isFirstServe ? '1º Saque' : '2º Saque'}
+                    </span>
+                    {point.serve.serveEffect && (
+                      <span className="match-timeline__tech-chip">
+                        {SERVE_EFFECT_LABELS[point.serve.serveEffect] ?? point.serve.serveEffect}
+                      </span>
+                    )}
+                    {point.serve.direction && (
+                      <span className="match-timeline__tech-chip">
+                        {SERVE_DIRECTION_LABELS[point.serve.direction] ?? point.serve.direction}
+                      </span>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+
+            {/* Caminho B: Rally — foco no golpe de fechamento (rallyDetails) */}
+            {(pointNature === 'rally-detail' || pointNature === 'rally-basic') && (
+              <>
+                <span
+                  className={`match-timeline__rally-pill${
+                    point.rally.ballExchanges > 5 ? ' match-timeline__rally-pill--long' : ''
+                  }`}
+                >
+                  {point.rally.ballExchanges} troca{point.rally.ballExchanges !== 1 ? 's' : ''}
+                </span>
+                {pointNature === 'rally-detail' && point.rallyDetails && (
+                  <>
+                    <span
+                      className={`match-timeline__closing-chip match-timeline__closing-chip--${
+                        point.rallyDetails.tipo === 'winner'
+                          ? 'winner'
+                          : point.rallyDetails.tipo === 'erro-forcado'
+                            ? 'error-forced'
+                            : 'error-unforced'
+                      }`}
+                    >
+                      {RALLY_GOLPE_LABELS[point.rallyDetails.golpe] ?? point.rallyDetails.golpe}
+                    </span>
+                    {point.rallyDetails.efeito && (
+                      <span className="match-timeline__tech-chip">
+                        {RALLY_EFEITO_LABELS[point.rallyDetails.efeito] ??
+                          point.rallyDetails.efeito}
+                      </span>
+                    )}
+                    {point.rallyDetails.direcao && (
+                      <span className="match-timeline__tech-chip">
+                        {RALLY_DIRECAO_LABELS[point.rallyDetails.direcao] ??
+                          point.rallyDetails.direcao}
+                      </span>
+                    )}
+                    {point.rallyDetails.situacao && (
+                      <span className="match-timeline__tech-chip">
+                        {RALLY_SITUACAO_LABELS[point.rallyDetails.situacao] ??
+                          point.rallyDetails.situacao}
+                      </span>
+                    )}
+                    {point.rallyDetails.golpe_esp && (
+                      <span className="match-timeline__tech-chip">
+                        {RALLY_GOLPE_ESP_LABELS[point.rallyDetails.golpe_esp] ??
+                          point.rallyDetails.golpe_esp}
+                      </span>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+          </div>
+        )}
 
         <div
           id={`timeline-detail-${originalIndex}`}
