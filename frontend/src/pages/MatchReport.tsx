@@ -282,8 +282,6 @@ const MatchReport: React.FC = () => {
               )}
             </div>
 
-            {match.club?.name && <div className="match-report__club">{match.club.name}</div>}
-
             {match.scheduledAt && (
               <div className="match-report__match-date">{formatDateTime(match.scheduledAt)}</div>
             )}

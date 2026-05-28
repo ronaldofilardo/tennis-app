@@ -82,7 +82,6 @@ const AnnotatedMatchCard: React.FC<AnnotatedMatchCardProps> = ({
 }) => {
   const p1Name = match.player1?.name ?? match.playerP1;
   const p2Name = match.player2?.name ?? match.playerP2;
-  const clubName = match.club?.name;
   const dateLabel = match.scheduledAt
     ? formatDate(match.scheduledAt)
     : match.createdAt
@@ -151,7 +150,6 @@ const AnnotatedMatchCard: React.FC<AnnotatedMatchCardProps> = ({
         <span className="annotated-match-card__player">{p1Name}</span>
         <span className="annotated-match-card__vs">vs</span>
         <span className="annotated-match-card__player">{p2Name}</span>
-        {clubName && <span className="annotated-match-card__club">· {clubName}</span>}
       </div>
 
       <div className="annotated-match-card__annotation-info">

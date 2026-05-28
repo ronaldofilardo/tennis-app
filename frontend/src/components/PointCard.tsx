@@ -213,7 +213,7 @@ const PointCard: React.FC<PointCardProps> = React.memo(
               <>
                 <span
                   className={`match-timeline__rally-pill${
-                    point.rally.ballExchanges > 5 ? ' match-timeline__rally-pill--long' : ''
+                    point.rally.ballExchanges > 5 ? 'match-timeline__rally-pill--long' : ''
                   }`}
                 >
                   {point.rally.ballExchanges} troca{point.rally.ballExchanges !== 1 ? 's' : ''}

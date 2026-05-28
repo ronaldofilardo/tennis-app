@@ -587,7 +587,6 @@ export async function getMatchesOpenForAnnotation(testPrisma) {
       openForAnnotation: true,
       visibility: true,
       clubId: true,
-      club: { select: { id: true, name: true } },
       createdBy: { select: { id: true, name: true, email: true } },
     },
     orderBy: { createdAt: 'desc' },
@@ -605,7 +604,6 @@ export async function getMatchesOpenForAnnotation(testPrisma) {
     openForAnnotation: match.openForAnnotation,
     visibility: match.visibility,
     clubId: match.clubId || null,
-    clubName: match.club?.name || null,
     createdBy: match.createdBy ? { id: match.createdBy.id, name: match.createdBy.name } : null,
   }));
 }

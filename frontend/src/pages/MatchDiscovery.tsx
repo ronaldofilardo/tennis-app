@@ -105,10 +105,6 @@ const MatchDiscovery: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
   };
 
   const renderClubNames = (match: DiscoverMatch): string => {
-    const home = match.homeClub?.name || match.club?.name;
-    const away = match.awayClub?.name;
-    if (home && away && home !== away) return `${home} vs ${away}`;
-    if (home) return home;
     return '';
   };
 

@@ -61,9 +61,6 @@ const OpenMatchCard: React.FC<OpenMatchCardProps> = ({ match, onAnnotate }) => {
           {match.sportType.replace("_", " ")}
           <span className="open-match-card__format">{formatLabel}</span>
         </span>
-        {match.clubName && (
-          <span className="open-match-card__club">🏢 {match.clubName}</span>
-        )}
       </div>
 
       <div className="open-match-card__players">

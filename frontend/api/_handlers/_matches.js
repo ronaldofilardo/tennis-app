@@ -256,7 +256,7 @@ export default async function handler(req, res) {
               scheduledAt: true,
               player1: { select: { id: true, name: true } },
               player2: { select: { id: true, name: true } },
-              club: { select: { id: true, name: true } },
+              clubId: true,
             },
           },
         },
@@ -459,7 +459,7 @@ export default async function handler(req, res) {
           updatedAt: true,
           player1: { select: { id: true, name: true } },
           player2: { select: { id: true, name: true } },
-          club: { select: { id: true, name: true } },
+          clubId: true,
           annotationSessions: {
             where: { status: 'COMPLETED' },
             select: {
@@ -531,7 +531,7 @@ export default async function handler(req, res) {
               createdAt: true,
               player1: { select: { id: true, name: true } },
               player2: { select: { id: true, name: true } },
-              club: { select: { id: true, name: true } },
+              clubId: true,
               annotationSessions: {
                 where: { status: 'COMPLETED' },
                 select: {
@@ -639,9 +639,9 @@ export default async function handler(req, res) {
           playerP2: true,
           player1: { select: { id: true, name: true, globalId: true, clubId: true } },
           player2: { select: { id: true, name: true, globalId: true, clubId: true } },
-          club: { select: { id: true, name: true, slug: true } },
-          homeClub: { select: { id: true, name: true, slug: true } },
-          awayClub: { select: { id: true, name: true, slug: true } },
+          clubId: true,
+          homeClubId: true,
+          awayClubId: true,
           createdBy: { select: { id: true, name: true } },
           _count: { select: { annotationSessions: true } },
         },
@@ -675,7 +675,7 @@ export default async function handler(req, res) {
           playerP2: true,
           player1: { select: { id: true, name: true, globalId: true } },
           player2: { select: { id: true, name: true, globalId: true } },
-          club: { select: { id: true, name: true } },
+          clubId: true,
           createdBy: { select: { id: true, name: true } },
         },
       });
@@ -717,7 +717,7 @@ export default async function handler(req, res) {
                 scheduledAt: true,
                 player1: { select: { name: true } },
                 player2: { select: { name: true } },
-                club: { select: { name: true } },
+                clubId: true,
               },
             },
             annotator: { select: { id: true, name: true } },
