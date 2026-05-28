@@ -425,6 +425,17 @@ export function useScoreboardEngine(onEndMatch: () => void) {
     suspendedSession: uiState.suspendedSession,
     previousAnnotationPoints: uiState.previousAnnotationPoints,
     clearSuspendedSession: () => dispatch({ type: 'SUSPENDED_SESSION_CLEAR' }),
+    loadAnnotationSnapshot: (snapshotJson: string) => {
+      const sys = scoringSystemRef.current;
+      if (!sys) return;
+      try {
+        const parsed = JSON.parse(snapshotJson);
+        sys.loadState(parsed as MatchState);
+        forceRerender();
+      } catch (e) {
+        console.warn('[useScoreboardEngine] loadAnnotationSnapshot parse error', e);
+      }
+    },
 
     // Ball exchanges
     ballExchangeCount: uiState.ballExchangeCount,

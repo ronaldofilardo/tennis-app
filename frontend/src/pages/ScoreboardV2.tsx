@@ -68,6 +68,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
     suspendedSession,
     previousAnnotationPoints,
     clearSuspendedSession,
+    loadAnnotationSnapshot,
     ballExchangeCount,
     onBallExchangeIncrement,
     onBallExchangeReset,
@@ -117,13 +118,14 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
       // POST /sessions faz a consolidação correta: marca antigas como ABANDONED e reativa a mais recente.
       const res = await httpClient.post(`/matches/${matchId}/sessions`, {});
       if (res.ok) {
-        // NÃO restaurar o matchStateSnapshot da sessão suspensa aqui.
-        // O TennisScoring já foi inicializado com Match.matchState (carregado em fetchMatchData),
-        // que é SEMPRE mais recente que o snapshot da sessão suspensa.
-        // Sobrescrever com o snapshot reverteria correções feitas após a suspensão.
+        // Restaurar estado da sessão suspensa do anotador.
+        // Match.matchState reflete o placar do criador/live, não o snapshot desta sessão de anotação.
+        if (suspendedSession?.matchStateSnapshot) {
+          loadAnnotationSnapshot(suspendedSession.matchStateSnapshot);
+        }
         console.log(
-          '[ScoreboardV2] ✅ Sessão reativada via POST /sessions. Estado de Match.matchState (mais recente).',
-          { matchId },
+          '[ScoreboardV2] ✅ Sessão reativada. Estado restaurado do matchStateSnapshot.',
+          { matchId, hasSnapshot: Boolean(suspendedSession?.matchStateSnapshot) },
         );
 
         setShowResumeModal(false);
