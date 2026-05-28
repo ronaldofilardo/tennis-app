@@ -4,7 +4,7 @@
 
 import authHandler from './_handlers/_auth.js';
 import matchesHandler from './_handlers/_matches.js';
-import athletesHandler from './_handlers/_athletes.js';
+import athletesHandler from './_handlers/_athletes.ts';
 import healthHandler from './_handlers/_health.js';
 
 const ROUTES = {
