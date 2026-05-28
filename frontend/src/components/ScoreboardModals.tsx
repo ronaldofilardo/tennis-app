@@ -6,11 +6,12 @@ import EditMatchModal from './EditMatchModal';
 import type { EditableMatch } from './EditMatchModal';
 import { UndoConfirmModal } from './scoreboard/UndoConfirmModal';
 import { EditScoreModal } from './scoreboard/EditScoreModal';
+import type { SetEditData } from './scoreboard/EditScoreModal';
 import { ConfirmDeleteMatchModal } from './ConfirmDeleteMatchModal';
 import ResumeAnnotationModal from './ResumeAnnotationModal';
 import type { MatchData } from '../types/match';
 import type { FirstServeError } from '../state/scoreboardUIState';
-import type { RallyDetails } from '../core/scoring/types';
+import type { RallyDetails, Player } from '../core/scoring/types';
 
 interface ScoreboardModalsProps {
   // Stats
@@ -30,14 +31,13 @@ interface ScoreboardModalsProps {
   // Serve Error
   isServeErrorModalOpen: boolean;
   pendingServeError: FirstServeError | null;
-  serverState: string;
+  serverState: string | null;
   onServeErrorConfirm: () => void;
   onServeErrorCancel: () => void;
 
   // Point Details
   isPointDetailsOpen: boolean;
   pendingPointPlayer: string | null;
-  serverState: string;
   playersWithCode: { PLAYER_1: string; PLAYER_2: string };
   onPointDetailsConfirm: (details: RallyDetails | undefined, ballExchangeCount?: number) => void;
   onPointDetailsCancel: () => void;
@@ -59,9 +59,10 @@ interface ScoreboardModalsProps {
   // Edit Score
   editScoreModalOpen: boolean;
   onEditScoreClose: () => void;
-  onEditScoreConfirm: (setWinners: string[], server: string) => void;
+  onEditScoreConfirm: (setResults: SetEditData[], server: Player) => void;
   currentSets: { PLAYER_1: number; PLAYER_2: number };
-  completedSets: object[];
+  currentGamePoints?: Record<string, number | string>;
+  completedSets: Array<{ games: Record<Player, number>; winner: Player }>;
 
   // Delete Match
   deleteModalOpen: boolean;
@@ -73,6 +74,7 @@ interface ScoreboardModalsProps {
   suspendedSession: object | null;
   currentUser: { name: string } | null;
   previousAnnotationPoints: number;
+  resumeError?: string | null;
   onResumeAnnotation: () => void;
   onStartNewAnnotation: () => void;
   onDiscardAnnotation: () => void;
@@ -113,6 +115,7 @@ const ScoreboardModals: React.FC<ScoreboardModalsProps> = ({
   onEditScoreClose,
   onEditScoreConfirm,
   currentSets,
+  currentGamePoints,
   completedSets,
   deleteModalOpen,
   onDeleteModalClose,
@@ -121,6 +124,7 @@ const ScoreboardModals: React.FC<ScoreboardModalsProps> = ({
   suspendedSession,
   currentUser,
   previousAnnotationPoints,
+  resumeError,
   onResumeAnnotation,
   onStartNewAnnotation,
   onDiscardAnnotation,
@@ -192,6 +196,7 @@ const ScoreboardModals: React.FC<ScoreboardModalsProps> = ({
         currentSets={currentSets}
         currentServer={serverState ?? 'PLAYER_1'}
         completedSets={completedSets}
+        currentGamePoints={currentGamePoints}
         onConfirm={onEditScoreConfirm}
         onCancel={onEditScoreClose}
       />
@@ -212,6 +217,7 @@ const ScoreboardModals: React.FC<ScoreboardModalsProps> = ({
           onDiscard={onDiscardAnnotation}
           annotatorName={currentUser?.name || 'Anotador'}
           previousPointsCount={previousAnnotationPoints || 0}
+          error={resumeError}
           matchScore={{
             p1: matchData.sets?.PLAYER_1 ?? 0,
             p2: matchData.sets?.PLAYER_2 ?? 0,

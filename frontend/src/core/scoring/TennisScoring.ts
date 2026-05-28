@@ -154,7 +154,16 @@ export class TennisScoring {
     this.historyPointsLengths = [];
 
     // ✅ AUTO-SET FLOOR: Ao carregar estado (retomada), definir como piso soberano
-    this.setSnapshotFloor(savedState as MatchState);
+    // Apenas quando há progresso real — evita travar partições novas no estado 0-0
+    const hasRealProgress =
+      ((savedState as MatchState).sets?.PLAYER_1 ?? 0) > 0 ||
+      ((savedState as MatchState).sets?.PLAYER_2 ?? 0) > 0 ||
+      ((savedState as MatchState).currentSet ?? 1) > 1 ||
+      ((savedState as MatchState).currentSetState?.games?.PLAYER_1 ?? 0) > 0 ||
+      ((savedState as MatchState).currentSetState?.games?.PLAYER_2 ?? 0) > 0;
+    if (hasRealProgress) {
+      this.setSnapshotFloor(savedState as MatchState);
+    }
   }
 
   /**
@@ -237,7 +246,7 @@ export class TennisScoring {
     this.history.push(stateCopy);
     this.historyPointsLengths.push(this.pointsHistory.length);
     // Manter apenas os últimos 50 estados para evitar uso excessivo de memória
-    if (this.history.length > 50) {
+    if (this.history.length > 100) {
       this.history.shift();
       this.historyPointsLengths.shift();
     }

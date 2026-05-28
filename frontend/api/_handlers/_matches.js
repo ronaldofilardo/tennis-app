@@ -858,6 +858,7 @@ export default async function handler(req, res) {
 
         const updateData = {
           status: newStatus,
+          ...(newStatus === 'IN_PROGRESS' && { isActive: true }),
           ...(newStatus === 'ABANDONED' && {
             isActive: false,
             // Garantir que matchStateSnapshot é sempre uma STRING (JSON)

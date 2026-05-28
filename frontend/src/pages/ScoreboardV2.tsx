@@ -82,6 +82,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
   const [showResumeModal, setShowResumeModal] = useState(false);
   const [openEditScoreAfterResume, setOpenEditScoreAfterResume] = useState(false);
   const [isResumingMatch, setIsResumingMatch] = useState(false);
+  const [resumeError, setResumeError] = useState<string | null>(null);
 
   // Detectar sessão suspensa e abrir modal
   // IMPORTANTE: NÃO mostrar para partidas recém-criadas (NOT_STARTED) — elas devem configurar quem começa sacando primeiro
@@ -109,23 +110,20 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
   // Handler para retomar anotação suspensa
   const handleResumeAnnotation = useCallback(async () => {
     if (!suspendedSession) return;
+    setResumeError(null);
     try {
-      // Reativar sessão existente
-      const res = await httpClient.patch(`/matches/${matchId}/sessions/${suspendedSession.id}`, {
-        isActive: true,
-        status: 'IN_PROGRESS',
-      });
+      // Usar POST /sessions para reativar a sessão mais recente.
+      // PATCH /sessions/:id tem idempotency check que bloqueia ABANDONED → retorna 200 sem alterar.
+      // POST /sessions faz a consolidação correta: marca antigas como ABANDONED e reativa a mais recente.
+      const res = await httpClient.post(`/matches/${matchId}/sessions`, {});
       if (res.ok) {
         // NÃO restaurar o matchStateSnapshot da sessão suspensa aqui.
         // O TennisScoring já foi inicializado com Match.matchState (carregado em fetchMatchData),
         // que é SEMPRE mais recente que o snapshot da sessão suspensa.
         // Sobrescrever com o snapshot reverteria correções feitas após a suspensão.
         console.log(
-          '[ScoreboardV2] ✅ Sessão reativada. Estado já carregado de Match.matchState (mais recente).',
-          {
-            matchId,
-            sessionId: suspendedSession.id,
-          },
+          '[ScoreboardV2] ✅ Sessão reativada via POST /sessions. Estado de Match.matchState (mais recente).',
+          { matchId },
         );
 
         setShowResumeModal(false);
@@ -133,9 +131,14 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         setOpenEditScoreAfterResume(true);
         clearSuspendedSession();
         setIsResumingMatch(false);
+      } else {
+        const body = await res.json().catch(() => ({}));
+        const msg = (body as { error?: string }).error ?? `Erro ${res.status} ao retomar sessão`;
+        setResumeError(msg);
       }
     } catch (err) {
       console.error('Erro ao retomar anotação:', err);
+      setResumeError('Falha de rede. Verifique sua conexão e tente novamente.');
     }
   }, [suspendedSession, matchId, clearSuspendedSession]);
 
@@ -411,6 +414,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         suspendedSession={suspendedSession}
         currentUser={currentUser}
         previousAnnotationPoints={previousAnnotationPoints}
+        resumeError={resumeError}
         onResumeAnnotation={handleResumeAnnotation}
         onStartNewAnnotation={handleStartNewAnnotation}
         onDiscardAnnotation={handleDiscardAnnotation}

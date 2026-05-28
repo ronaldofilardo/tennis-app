@@ -9,6 +9,7 @@ interface ResumeAnnotationModalProps {
   annotatorName: string;
   previousPointsCount?: number;
   matchScore?: { p1: number; p2: number; format?: string };
+  error?: string | null;
 }
 
 /**
@@ -25,6 +26,7 @@ export const ResumeAnnotationModal: React.FC<ResumeAnnotationModalProps> = ({
   annotatorName,
   previousPointsCount = 0,
   matchScore,
+  error,
 }) => {
   if (!isOpen) return null;
 
@@ -70,6 +72,12 @@ export const ResumeAnnotationModal: React.FC<ResumeAnnotationModalProps> = ({
           <p className="resume-modal-hint">
             Você pode editar o placar clicando em "✏️ Editar Placar" ou começar do zero.
           </p>
+
+          {error && (
+            <p className="resume-modal-error" role="alert">
+              ⚠️ {error}
+            </p>
+          )}
         </div>
 
         <div className="resume-modal-actions">

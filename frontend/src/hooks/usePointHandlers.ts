@@ -247,13 +247,6 @@ export function usePointHandlers(deps: PointHandlerDeps) {
       if (!scoringSystem) return;
       try {
         const currentState = scoringSystem.getState();
-        const previousPointsCount =
-          (currentState.currentGame?.pointsHistory?.length ?? 0) +
-          (currentState.completedSets?.reduce((sum, set) => {
-            // Contar aproximadamente quantos pontos cada set completado tem (máx 13 por game × games)
-            const totalGames = set.games.PLAYER_1 + set.games.PLAYER_2;
-            return sum + totalGames * 4; // aproximação conservadora
-          }, 0) ?? 0);
 
         // Separar sets completos dos parciais
         const completedSets = setsData.filter((set) => !set.isPartial);
@@ -318,14 +311,16 @@ export function usePointHandlers(deps: PointHandlerDeps) {
           sys?.syncState()?.catch((err) => {
             scoreLog.warn('Falha no syncState após edição de placar', { matchId });
             // Marcar pontos como interrompidos se falhar ao sincronizar
-            markPointsAsInterrupted(5);
+            const histLen = sys?.getPointsHistory?.()?.length ?? 0;
+            markPointsAsInterrupted(Math.min(5, histLen));
             forceRerender();
           });
         }, 250);
       } catch (err) {
         scoreLog.warn('Erro ao editar placar', { matchId, error: err });
         // Marcar últimos 5 pontos como interrompidos se falhar
-        markPointsAsInterrupted(5);
+        const histLen = getSystem()?.getPointsHistory?.()?.length ?? 0;
+        markPointsAsInterrupted(Math.min(5, histLen));
         forceRerender();
       }
     },
