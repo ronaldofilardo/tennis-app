@@ -139,6 +139,12 @@ export class TennisScoring {
     // Restaurar histórico de pontos se disponível
     if ('pointsHistory' in savedState && savedState.pointsHistory) {
       this.pointsHistory = [...savedState.pointsHistory];
+      // Atribuir pointNumber sequencial aos pontos que não têm (dados legados)
+      this.pointsHistory.forEach((point, idx) => {
+        if (!point.pointNumber) {
+          point.pointNumber = idx + 1;
+        }
+      });
     } else {
       this.pointsHistory = []; // Inicializar vazio se não houver histórico
     }
@@ -393,6 +399,8 @@ export class TennisScoring {
         finalShot: details.result.finalShot,
       },
       timestamp: Date.now(),
+      // Atribuir número sequencial — essencial para detectar lacunas em EditScoreModal
+      pointNumber: this.pointsHistory.length + 1,
     };
 
     this.pointsHistory.push(pointDetail);

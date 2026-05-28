@@ -309,11 +309,19 @@ export function detectSetBall(point: PointDetails): boolean {
  * @returns Novo array com pontos enriquecidos
  */
 export function enrichPointsWithBallDetection(points: PointDetails[]): PointDetails[] {
-  return points.map((point) => {
-    if (!point.context) return point;
+  return points.map((point, index) => {
+    const enrichedPoint: PointDetails = {
+      ...point,
+      // IMPORTANTE: Preservar pointNumber existente ou deixar undefined
+      // NÃO usar index como fallback — isso mascara gaps reais
+      // pointNumber é atribuído em TennisScoring.recordPointDetails quando o ponto é criado
+      pointNumber: point.pointNumber,
+    };
+
+    if (!point.context) return enrichedPoint;
 
     return {
-      ...point,
+      ...enrichedPoint,
       context: {
         ...point.context,
         isGameBall: point.context.isGameBall ?? detectGameBall(point),

@@ -227,12 +227,33 @@ export function usePointHandlers(deps: PointHandlerDeps) {
     return getSystem()?.getLastPointDetails() ?? null;
   }, []);
 
+  const markPointsAsInterrupted = useCallback((count: number = 1): void => {
+    const sys = getSystem();
+    if (!sys) return;
+    const history = sys.getPointsHistory();
+    if (!history) return;
+
+    // Marcar últimos N pontos como interrompidos
+    for (let i = Math.max(0, history.length - count); i < history.length; i++) {
+      if (history[i]) {
+        history[i].editStatus = 'interrupted';
+      }
+    }
+  }, []);
+
   const handleEditScore = useCallback(
     async (setsData: SetEditData[], newServer: Player): Promise<void> => {
       const scoringSystem = getSystem();
       if (!scoringSystem) return;
       try {
         const currentState = scoringSystem.getState();
+        const previousPointsCount =
+          (currentState.currentGame?.pointsHistory?.length ?? 0) +
+          (currentState.completedSets?.reduce((sum, set) => {
+            // Contar aproximadamente quantos pontos cada set completado tem (máx 13 por game × games)
+            const totalGames = set.games.PLAYER_1 + set.games.PLAYER_2;
+            return sum + totalGames * 4; // aproximação conservadora
+          }, 0) ?? 0);
 
         // Separar sets completos dos parciais
         const completedSets = setsData.filter((set) => !set.isPartial);
@@ -294,15 +315,21 @@ export function usePointHandlers(deps: PointHandlerDeps) {
         if (syncTimeoutRef.current) window.clearTimeout(syncTimeoutRef.current);
         syncTimeoutRef.current = window.setTimeout(() => {
           const sys = getSystem();
-          sys?.syncState()?.catch(() => {
+          sys?.syncState()?.catch((err) => {
             scoreLog.warn('Falha no syncState após edição de placar', { matchId });
+            // Marcar pontos como interrompidos se falhar ao sincronizar
+            markPointsAsInterrupted(5);
+            forceRerender();
           });
         }, 250);
-      } catch {
-        scoreLog.warn('Erro ao editar placar', { matchId });
+      } catch (err) {
+        scoreLog.warn('Erro ao editar placar', { matchId, error: err });
+        // Marcar últimos 5 pontos como interrompidos se falhar
+        markPointsAsInterrupted(5);
+        forceRerender();
       }
     },
-    [setServeStepSafe, forceRerender, syncTimeoutRef, scoreLog, matchId],
+    [setServeStepSafe, forceRerender, syncTimeoutRef, scoreLog, matchId, markPointsAsInterrupted],
   );
 
   return {

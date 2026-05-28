@@ -51,13 +51,10 @@ export async function endSession(
   finalState?: unknown,
   status: 'COMPLETED' | 'ABANDONED' = 'ABANDONED',
 ): Promise<AnnotationSession> {
-  const response = await httpClient.patch(
-    `/matches/${matchId}/sessions/${sessionId}`,
-    {
-      status,
-      ...(finalState ? { finalState } : {}),
-    },
-  );
+  const response = await httpClient.patch(`/matches/${matchId}/sessions/${sessionId}`, {
+    status,
+    ...(finalState ? { finalState } : {}),
+  });
   if (!response.ok) throw new Error('Failed to end session');
   return response.data as AnnotationSession;
 }

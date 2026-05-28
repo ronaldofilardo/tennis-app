@@ -294,5 +294,42 @@ describe('MatchTimelineView', () => {
       const list = screen.getByRole('list', { name: /Pontos da partida/i });
       expect(list).toBeInTheDocument();
     });
+
+    it('deve renderizar separador "Marcação interrompida" quando há lacuna entre pontos', () => {
+      // Cria histórico com lacuna: pontos #1, #2, #5 (gap entre #2 e #5)
+      const pointsWithGap: PointDetails[] = [
+        makePoint({ pointNumber: 1 }),
+        makePoint({ pointNumber: 2 }),
+        makePoint({ pointNumber: 5 }), // lacuna: 2 → 5
+      ];
+
+      render(<MatchTimelineView pointsHistory={pointsWithGap} playerNames={playerNames} />);
+
+      // Deve exibir o separador com mensagem de interrupção
+      expect(screen.getByText(/Marcação interrompida/i)).toBeInTheDocument();
+      expect(screen.getByText(/Gap: #2 → #5/i)).toBeInTheDocument();
+
+      // Deve ter 3 pontos + 1 separador = 4 listitems
+      const items = screen.getAllByRole('listitem');
+      expect(items.length).toBeGreaterThanOrEqual(3); // pelo menos os 3 pontos
+    });
+
+    it('não deve renderizar separador quando não há lacuna entre pontos', () => {
+      // Histórico sem lacunas
+      const pointsNoGap: PointDetails[] = [
+        makePoint({ pointNumber: 1 }),
+        makePoint({ pointNumber: 2 }),
+        makePoint({ pointNumber: 3 }),
+      ];
+
+      render(<MatchTimelineView pointsHistory={pointsNoGap} playerNames={playerNames} />);
+
+      // Não deve exibir mensagem de interrupção
+      expect(screen.queryByText(/Marcação interrompida/i)).not.toBeInTheDocument();
+
+      // Deve ter apenas 3 pontos, sem separadores
+      const items = screen.getAllByRole('listitem');
+      expect(items).toHaveLength(3);
+    });
   });
 });

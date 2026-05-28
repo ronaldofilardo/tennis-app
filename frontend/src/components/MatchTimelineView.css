@@ -339,6 +339,14 @@
   border: 1px solid rgba(109, 40, 217, 0.4);
 }
 
+.match-timeline__tag--interrupted {
+  background: rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
 /* ─── Chevron ───────────────────────────────────────────────────────────────── */
 
 .match-timeline__card-chevron {
@@ -457,6 +465,61 @@
 }
 
 /* ─── Print ─────────────────────────────────────────────────────────────────── */
+
+/* ─── Separador de Marcação Interrompida ──────────────────────────────────── */
+
+.match-timeline__interrupted-separator {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  width: 100%;
+}
+
+.match-timeline__interrupted-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.22) 0%, rgba(220, 38, 38, 0.18) 100%);
+  border-top: 2px solid rgba(239, 68, 68, 0.5);
+  border-bottom: 2px solid rgba(239, 68, 68, 0.5);
+  width: 100%;
+  position: relative;
+}
+
+.match-timeline__interrupted-banner::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, rgba(239, 68, 68, 0.8) 0%, rgba(239, 68, 68, 0.4) 100%);
+}
+
+.match-timeline__interrupted-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.match-timeline__interrupted-text {
+  font-size: 13px;
+  font-weight: 900;
+  color: #fca5a5;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-align: center;
+  flex: 1;
+}
+
+.match-timeline__interrupted-gap {
+  display: none;
+}
 
 @media print {
   .match-timeline {

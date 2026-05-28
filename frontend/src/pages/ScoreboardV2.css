@@ -275,7 +275,11 @@
   font-size: var(--font-scale-body);
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  transition: background-color var(--transition-slow) var(--ease-in-out), border-color var(--transition-slow) var(--ease-in-out), color var(--transition-slow) var(--ease-in-out), transform var(--transition-slow) var(--ease-in-out);
+  transition:
+    background-color var(--transition-slow) var(--ease-in-out),
+    border-color var(--transition-slow) var(--ease-in-out),
+    color var(--transition-slow) var(--ease-in-out),
+    transform var(--transition-slow) var(--ease-in-out);
 }
 
 .side-indicator.left {
@@ -890,6 +894,55 @@
   cursor: not-allowed;
 }
 
+/* Bloqueio visual durante resume de partida suspensa */
+.scoreboard-resume-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  pointer-events: auto;
+  backdrop-filter: blur(2px);
+  animation: fadeInResume 150ms ease-out;
+}
+
+.scoreboard-resume-message {
+  background: rgba(255, 255, 255, 0.95);
+  color: #1a1a1a;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: pulse-resume 1s ease-in-out infinite;
+}
+
+@keyframes fadeInResume {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-resume {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.95;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
 /* Explainer família */
 .family-explainer-text {
   font-size: 0.9rem;
@@ -963,7 +1016,6 @@
   font-size: 12px;
   color: #a5b4fc;
 }
-
 
 .sb-delete-match-btn {
   display: block;

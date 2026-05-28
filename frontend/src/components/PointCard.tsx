@@ -113,6 +113,14 @@ const PointCard: React.FC<PointCardProps> = React.memo(
             </span>
           )}
           <span className="match-timeline__card-tags">
+            {point.editStatus === 'interrupted' && (
+              <span
+                className="match-timeline__tag match-timeline__tag--interrupted"
+                title="Marcação interrompida - buraco na contagem"
+              >
+                ⚠️ INTERR
+              </span>
+            )}
             {isSetBall && (
               <span className="match-timeline__tag match-timeline__tag--setball">SB</span>
             )}

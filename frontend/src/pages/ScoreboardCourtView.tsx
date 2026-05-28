@@ -72,6 +72,8 @@ interface ScoreboardCourtViewProps {
   onBallExchangeReset: () => void;
   // Session handlers
   onMatchEnded: () => void;
+  // Resume blocking
+  isResumingMatch?: boolean;
 }
 
 export const ScoreboardCourtView: React.FC<ScoreboardCourtViewProps> = ({
@@ -123,216 +125,225 @@ export const ScoreboardCourtView: React.FC<ScoreboardCourtViewProps> = ({
   onBallExchangeIncrement,
   onBallExchangeReset,
   onMatchEnded,
+  isResumingMatch = false,
 }) => {
   return (
-    <div
-      className="scoreboard-v2-court"
-      data-render={renderKey}
-      data-court={courtAttr}
-      style={
-        {
-          '--sb-scale': String(fontScale),
-          '--score-size-user': `calc(var(--score-size) * ${fontScale})`,
-        } as React.CSSProperties
-      }
-    >
-      {/* Header */}
-      <MatchHeader
-        sportType={matchData.sportType}
-        completedSets={state.completedSets ?? []}
-        elapsed={elapsed}
-        onBack={onBack}
-        onMenu={onMenu}
-        onEdit={onEditMatch}
-      />
-
-      {/* Botão excluir partida — só para criador em NOT_STARTED */}
-      {currentUser?.id &&
-        matchData.createdByUserId === currentUser.id &&
-        matchData.status === 'NOT_STARTED' && (
-          <button
-            className="sb-delete-match-btn"
-            onClick={onDeleteMatch}
-            title="Excluir esta partida"
-          >
-            🗑 Excluir Partida
-          </button>
-        )}
-
-      {/* Annotators badge */}
-      {annotatorCount > 0 && (
-        <div
-          className="annotator-badge"
-          aria-label={`${annotatorCount} anotador${annotatorCount !== 1 ? 'es' : ''} cobrindo esta partida`}
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            aria-hidden="true"
-          >
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-          </svg>
-          {annotatorCount} anotador{annotatorCount !== 1 ? 'es' : ''}
-        </div>
-      )}
-
-      {/* Quadra */}
-      <div className="court-container" ref={courtRef}>
-        <CourtBackground />
-
-        <ContextBadges
-          isTiebreak={isTiebreak}
-          isMatchTiebreak={state.currentGame?.isMatchTiebreak ?? false}
-          isMatchPoint={p1MatchPt || p2MatchPt}
-          isSetPoint={(p1AtSetPt || p2AtSetPt) && !(p1MatchPt || p2MatchPt)}
-          isBreakPoint={isBreakPoint && !(p1AtSetPt || p2AtSetPt)}
-          pointsHistory={pointsHistory}
+    <>
+      <div
+        className="scoreboard-v2-court"
+        data-render={renderKey}
+        data-court={courtAttr}
+        style={
+          {
+            '--sb-scale': String(fontScale),
+            '--score-size-user': `calc(var(--score-size) * ${fontScale})`,
+          } as React.CSSProperties
+        }
+      >
+        {/* Header */}
+        <MatchHeader
+          sportType={matchData.sportType}
+          completedSets={state.completedSets ?? []}
           elapsed={elapsed}
-          playerNames={{ PLAYER_1: players.p1, PLAYER_2: players.p2 }}
-          serverName={state.server === 'PLAYER_1' ? players.p1 : players.p2}
+          onBack={onBack}
+          onMenu={onMenu}
+          onEdit={onEditMatch}
         />
 
-        <div className="players-row">
-          <PlayerCard
-            player="PLAYER_1"
-            name={players.p1}
-            code={
-              matchData.player1GlobalId
-                ? `[${matchData.player1GlobalId.slice(0, 8).toUpperCase()}]`
-                : undefined
-            }
-            score={p1Score}
-            games={p1Games}
-            sets={p1Sets}
-            isServing={state.server === 'PLAYER_1'}
-            serveStep={serveStep}
-            isTiebreak={isTiebreak}
-            isMatchPoint={p1MatchPt}
-            isSetPoint={p1AtSetPt && !p1MatchPt}
-            isBreakPoint={isBreakPoint && returner === 'PLAYER_1'}
-            isAdvantage={p1HasAdv}
-            isDeuce={isDeuce}
-            disabled={state.isFinished}
-            onPress={() => onPointDetailsOpen('PLAYER_1')}
-            onSwipeDown={() => {
-              if (canUndo) onUndoOpen();
-            }}
-          />
+        {/* Botão excluir partida — só para criador em NOT_STARTED */}
+        {currentUser?.id &&
+          matchData.createdByUserId === currentUser.id &&
+          matchData.status === 'NOT_STARTED' && (
+            <button
+              className="sb-delete-match-btn"
+              onClick={onDeleteMatch}
+              title="Excluir esta partida"
+            >
+              🗑 Excluir Partida
+            </button>
+          )}
 
-          <VSIndicator
+        {/* Annotators badge */}
+        {annotatorCount > 0 && (
+          <div
+            className="annotator-badge"
+            aria-label={`${annotatorCount} anotador${annotatorCount !== 1 ? 'es' : ''} cobrindo esta partida`}
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              aria-hidden="true"
+            >
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            {annotatorCount} anotador{annotatorCount !== 1 ? 'es' : ''}
+          </div>
+        )}
+
+        {/* Quadra */}
+        <div className="court-container" ref={courtRef}>
+          <CourtBackground />
+
+          <ContextBadges
             isTiebreak={isTiebreak}
             isMatchTiebreak={state.currentGame?.isMatchTiebreak ?? false}
-            isDeuce={isDeuce}
-            tiebreakChangeAt={6}
-            tiebreakTotalPoints={
-              isTiebreak
-                ? (typeof p1Score === 'number' ? p1Score : 0) +
-                  (typeof p2Score === 'number' ? p2Score : 0)
-                : 0
-            }
+            isMatchPoint={p1MatchPt || p2MatchPt}
+            isSetPoint={(p1AtSetPt || p2AtSetPt) && !(p1MatchPt || p2MatchPt)}
+            isBreakPoint={isBreakPoint && !(p1AtSetPt || p2AtSetPt)}
+            pointsHistory={pointsHistory}
+            elapsed={elapsed}
+            playerNames={{ PLAYER_1: players.p1, PLAYER_2: players.p2 }}
+            serverName={state.server === 'PLAYER_1' ? players.p1 : players.p2}
           />
 
-          <PlayerCard
-            player="PLAYER_2"
-            name={players.p2}
-            code={
-              matchData.player2GlobalId
-                ? `[${matchData.player2GlobalId.slice(0, 8).toUpperCase()}]`
-                : undefined
-            }
-            score={p2Score}
-            games={p2Games}
-            sets={p2Sets}
-            isServing={state.server === 'PLAYER_2'}
-            serveStep={serveStep}
-            isTiebreak={isTiebreak}
-            isMatchPoint={p2MatchPt}
-            isSetPoint={p2AtSetPt && !p2MatchPt}
-            isBreakPoint={isBreakPoint && returner === 'PLAYER_2'}
-            isAdvantage={p2HasAdv}
-            isDeuce={isDeuce}
-            disabled={state.isFinished}
-            onPress={() => onPointDetailsOpen('PLAYER_2')}
-            onSwipeDown={() => {
-              if (canUndo) onUndoOpen();
-            }}
-          />
+          <div className="players-row">
+            <PlayerCard
+              player="PLAYER_1"
+              name={players.p1}
+              code={
+                matchData.player1GlobalId
+                  ? `[${matchData.player1GlobalId.slice(0, 8).toUpperCase()}]`
+                  : undefined
+              }
+              score={p1Score}
+              games={p1Games}
+              sets={p1Sets}
+              isServing={state.server === 'PLAYER_1'}
+              serveStep={serveStep}
+              isTiebreak={isTiebreak}
+              isMatchPoint={p1MatchPt}
+              isSetPoint={p1AtSetPt && !p1MatchPt}
+              isBreakPoint={isBreakPoint && returner === 'PLAYER_1'}
+              isAdvantage={p1HasAdv}
+              isDeuce={isDeuce}
+              disabled={state.isFinished}
+              onPress={() => onPointDetailsOpen('PLAYER_1')}
+              onSwipeDown={() => {
+                if (canUndo) onUndoOpen();
+              }}
+            />
+
+            <VSIndicator
+              isTiebreak={isTiebreak}
+              isMatchTiebreak={state.currentGame?.isMatchTiebreak ?? false}
+              isDeuce={isDeuce}
+              tiebreakChangeAt={6}
+              tiebreakTotalPoints={
+                isTiebreak
+                  ? (typeof p1Score === 'number' ? p1Score : 0) +
+                    (typeof p2Score === 'number' ? p2Score : 0)
+                  : 0
+              }
+            />
+
+            <PlayerCard
+              player="PLAYER_2"
+              name={players.p2}
+              code={
+                matchData.player2GlobalId
+                  ? `[${matchData.player2GlobalId.slice(0, 8).toUpperCase()}]`
+                  : undefined
+              }
+              score={p2Score}
+              games={p2Games}
+              sets={p2Sets}
+              isServing={state.server === 'PLAYER_2'}
+              serveStep={serveStep}
+              isTiebreak={isTiebreak}
+              isMatchPoint={p2MatchPt}
+              isSetPoint={p2AtSetPt && !p2MatchPt}
+              isBreakPoint={isBreakPoint && returner === 'PLAYER_2'}
+              isAdvantage={p2HasAdv}
+              isDeuce={isDeuce}
+              disabled={state.isFinished}
+              onPress={() => onPointDetailsOpen('PLAYER_2')}
+              onSwipeDown={() => {
+                if (canUndo) onUndoOpen();
+              }}
+            />
+          </div>
+
+          {/* Banner de partida finalizada */}
+          {state.isFinished && state.winner && (
+            <div className="match-finished-banner">
+              <h2>🏆 PARTIDA FINALIZADA!</h2>
+              <p className="winner-label-banner">VENCEDOR:</p>
+              <p className="winner-name">{state.winner === 'PLAYER_1' ? players.p1 : players.p2}</p>
+              <p className="final-score">
+                Placar Final: {state.sets.PLAYER_1} sets x {state.sets.PLAYER_2} sets
+              </p>
+              <div className="finished-actions">
+                <button className="finished-action-btn" onClick={onBack}>
+                  <span aria-hidden="true">📊</span> Ver Estatísticas
+                </button>
+                <button
+                  className="finished-action-btn"
+                  onClick={() => window.location.assign('/matches/new')}
+                >
+                  <span aria-hidden="true">🎾</span> Nova Partida
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Banner de partida finalizada */}
-        {state.isFinished && state.winner && (
-          <div className="match-finished-banner">
-            <h2>🏆 PARTIDA FINALIZADA!</h2>
-            <p className="winner-label-banner">VENCEDOR:</p>
-            <p className="winner-name">{state.winner === 'PLAYER_1' ? players.p1 : players.p2}</p>
-            <p className="final-score">
-              Placar Final: {state.sets.PLAYER_1} sets x {state.sets.PLAYER_2} sets
-            </p>
-            <div className="finished-actions">
-              <button className="finished-action-btn" onClick={onBack}>
-                <span aria-hidden="true">📊</span> Ver Estatísticas
-              </button>
-              <button
-                className="finished-action-btn"
-                onClick={() => window.location.assign('/matches/new')}
-              >
-                <span aria-hidden="true">🎾</span> Nova Partida
-              </button>
-            </div>
-          </div>
+        {/* ActionBar (saque + undo + quem venceu o ponto) */}
+        <ActionBar
+          canUndo={canUndo}
+          isFinished={state.isFinished ?? false}
+          serveStep={serveStep}
+          server={state.server ?? 'PLAYER_1'}
+          playerNames={{ PLAYER_1: players.p1, PLAYER_2: players.p2 }}
+          onUndo={onUndoOpen}
+          onAce={onAce}
+          onOut={() => onServeErrorOpen('out', 'first')}
+          onNet={() => onServeErrorOpen('net', 'first')}
+          onFault={onFault}
+          onFaultOut={() => onServeErrorOpen('out', 'second')}
+          onFaultNet={() => onServeErrorOpen('net', 'second')}
+          fontScale={fontScale}
+          onFontScaleInc={onFontScaleInc}
+          onFontScaleDec={onFontScaleDec}
+          onEditScore={onEditScore}
+          isModalOpen={isServeErrorModalOpen}
+          isMatchFinalized={isMatchFinalized}
+          ballExchangeCount={ballExchangeCount}
+          onBallExchangeIncrement={onBallExchangeIncrement}
+        />
+
+        {/* Painel de sessões de anotação */}
+        {matchId && currentUser && (
+          <AnnotationSessionPanel
+            matchId={matchId}
+            matchStatus={matchData?.status ?? 'NOT_STARTED'}
+            currentUserId={currentUser.id}
+            userRole={currentUser.activeRole}
+          />
+        )}
+
+        {/* Painel para criador encerrar partida manualmente */}
+        {matchId && currentUser && matchData && (
+          <CreatorEndMatchPanel
+            matchId={matchId}
+            isCreator={matchData.createdByUserId === currentUser.id}
+            matchStatus={matchData.status}
+            onMatchEnded={onMatchEnded}
+          />
         )}
       </div>
 
-      {/* ActionBar (saque + undo + quem venceu o ponto) */}
-      <ActionBar
-        canUndo={canUndo}
-        isFinished={state.isFinished ?? false}
-        serveStep={serveStep}
-        server={state.server ?? 'PLAYER_1'}
-        playerNames={{ PLAYER_1: players.p1, PLAYER_2: players.p2 }}
-        onUndo={onUndoOpen}
-        onAce={onAce}
-        onOut={() => onServeErrorOpen('out', 'first')}
-        onNet={() => onServeErrorOpen('net', 'first')}
-        onFault={onFault}
-        onFaultOut={() => onServeErrorOpen('out', 'second')}
-        onFaultNet={() => onServeErrorOpen('net', 'second')}
-        fontScale={fontScale}
-        onFontScaleInc={onFontScaleInc}
-        onFontScaleDec={onFontScaleDec}
-        onEditScore={onEditScore}
-        isModalOpen={isServeErrorModalOpen}
-        isMatchFinalized={isMatchFinalized}
-        ballExchangeCount={ballExchangeCount}
-        onBallExchangeIncrement={onBallExchangeIncrement}
-      />
-
-      {/* Painel de sessões de anotação */}
-      {matchId && currentUser && (
-        <AnnotationSessionPanel
-          matchId={matchId}
-          matchStatus={matchData?.status ?? 'NOT_STARTED'}
-          currentUserId={currentUser.id}
-          userRole={currentUser.activeRole}
-        />
+      {isResumingMatch && (
+        <div className="scoreboard-resume-overlay">
+          <div className="scoreboard-resume-message">⏳ Abrindo retomar anotação...</div>
+        </div>
       )}
-
-      {/* Painel para criador encerrar partida manualmente */}
-      {matchId && currentUser && matchData && (
-        <CreatorEndMatchPanel
-          matchId={matchId}
-          isCreator={matchData.createdByUserId === currentUser.id}
-          matchStatus={matchData.status}
-          onMatchEnded={onMatchEnded}
-        />
-      )}
-    </div>
+    </>
   );
 };

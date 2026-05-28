@@ -124,6 +124,9 @@ export interface PointContext {
 }
 
 export interface PointDetails {
+  // Número sequencial do ponto no histórico (1, 2, 3, ...) — para detectar lacunas
+  pointNumber?: number;
+
   // Informações do Saque
   serve?: {
     type: ServeType;
@@ -163,6 +166,9 @@ export interface PointDetails {
 
   // Timestamp para análise
   timestamp: number;
+
+  // Status de edição — marcado quando há buraco na contagem devido a edição
+  editStatus?: 'failed' | 'interrupted';
 }
 
 export interface EnhancedMatchState extends MatchState {

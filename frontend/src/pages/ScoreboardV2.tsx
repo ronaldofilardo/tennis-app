@@ -81,6 +81,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [showResumeModal, setShowResumeModal] = useState(false);
   const [openEditScoreAfterResume, setOpenEditScoreAfterResume] = useState(false);
+  const [isResumingMatch, setIsResumingMatch] = useState(false);
 
   // Detectar sessão suspensa e abrir modal
   // IMPORTANTE: NÃO mostrar para partidas recém-criadas (NOT_STARTED) — elas devem configurar quem começa sacando primeiro
@@ -89,6 +90,21 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
       setShowResumeModal(true);
     }
   }, [suspendedSession, matchData?.status]);
+
+  // Bloquear scoreboard enquanto aguarda ResumeAnnotationModal abrir
+  // IMPORTANTE: Mesma condição — não bloquear para partidas NOT_STARTED
+  useEffect(() => {
+    if (suspendedSession && matchData?.status !== 'NOT_STARTED') {
+      setIsResumingMatch(true);
+    }
+  }, [suspendedSession, matchData?.status]);
+
+  // Desbloquear overlay assim que modal fica visível
+  useEffect(() => {
+    if (showResumeModal) {
+      setIsResumingMatch(false);
+    }
+  }, [showResumeModal]);
 
   // Handler para retomar anotação suspensa
   const handleResumeAnnotation = useCallback(async () => {
@@ -116,6 +132,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         // Abrir EditScoreModal para permitir edição do placar
         setOpenEditScoreAfterResume(true);
         clearSuspendedSession();
+        setIsResumingMatch(false);
       }
     } catch (err) {
       console.error('Erro ao retomar anotação:', err);
@@ -127,6 +144,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
     setShowResumeModal(false);
     setOpenEditScoreAfterResume(false);
     clearSuspendedSession();
+    setIsResumingMatch(false);
     // A sessão será criada automaticamente pelo próximo POST /sessions
   }, [clearSuspendedSession]);
 
@@ -135,6 +153,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
     setShowResumeModal(false);
     setOpenEditScoreAfterResume(false);
     clearSuspendedSession();
+    setIsResumingMatch(false);
     navigate('/dashboard');
   }, [clearSuspendedSession, navigate]);
 
@@ -408,6 +427,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         players={players}
         elapsed={elapsed}
         annotatorCount={annotatorCount}
+        isResumingMatch={isResumingMatch}
         state={state}
         serveStep={serveStep}
         canUndo={scoringSystem.canUndo()}

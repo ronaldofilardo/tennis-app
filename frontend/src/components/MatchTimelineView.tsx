@@ -227,16 +227,48 @@ const MatchTimelineView: React.FC<MatchTimelineViewProps> = ({ pointsHistory, pl
         <p className="match-timeline__empty">Nenhum ponto corresponde aos filtros selecionados.</p>
       ) : (
         <ol className="match-timeline__list" aria-label="Pontos da partida">
-          {filtered.map((point, i) => (
-            <PointCard
-              key={originalIndices[i]}
-              point={point}
-              index={i}
-              originalIndex={originalIndices[i]}
-              playerNames={playerNames}
-              forceExpand={printMode}
-            />
-          ))}
+          {filtered.map((point, i) => {
+            // Detectar lacuna com ponto anterior
+            // IMPORTANTE: Só renderizar separador se não há filtros aplicados
+            // Com filtros, "gaps" podem ser apenas do filtro, não de interrupção real
+            const noFiltersActive = Object.keys(criteria).length === 0;
+            const prevPoint = i > 0 ? filtered[i - 1] : null;
+            const hasGap =
+              noFiltersActive &&
+              prevPoint &&
+              point.pointNumber &&
+              prevPoint.pointNumber &&
+              point.pointNumber - prevPoint.pointNumber > 1;
+
+            return (
+              <React.Fragment key={`point-group-${originalIndices[i]}`}>
+                {/* Separador "Marcação interrompida" se houver lacuna */}
+                {hasGap && (
+                  <li className="match-timeline__interrupted-separator">
+                    <div className="match-timeline__interrupted-banner">
+                      <span className="match-timeline__interrupted-icon">⏸️</span>
+                      <span className="match-timeline__interrupted-text">
+                        Marcação interrompida
+                      </span>
+                      <span className="match-timeline__interrupted-gap">
+                        Gap: #{prevPoint.pointNumber} → #{point.pointNumber}
+                      </span>
+                    </div>
+                  </li>
+                )}
+
+                {/* Ponto atual */}
+                <PointCard
+                  key={originalIndices[i]}
+                  point={point}
+                  index={i}
+                  originalIndex={originalIndices[i]}
+                  playerNames={playerNames}
+                  forceExpand={printMode}
+                />
+              </React.Fragment>
+            );
+          })}
         </ol>
       )}
     </div>
