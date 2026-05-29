@@ -1,3 +1,4 @@
+import './DashboardMatchCard.css';
 import React from 'react';
 import { resolvePlayerName } from '../../data/players';
 

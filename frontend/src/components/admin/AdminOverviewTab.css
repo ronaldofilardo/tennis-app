@@ -1,0 +1,351 @@
+/* ── AdminOverviewTab styles — extraído de AdminDashboard.css ── */
+
+/* ── KPI Grid ─────────────────────────────────────────────── */
+
+.admin-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.admin-kpi-grid .kpi-card {
+  background: var(--clr-surface, #181d27);
+  border: 1px solid var(--clr-border, var(--clr-border));
+  border-radius: 12px;
+  padding: 20px 16px;
+  text-align: center;
+  transition:
+    border-color 0.2s,
+    transform 0.15s;
+}
+
+.admin-kpi-grid .kpi-card:hover {
+  border-color: rgba(239, 68, 68, 0.3);
+  transform: translateY(-2px);
+}
+
+.admin-kpi-grid .kpi-icon {
+  font-size: var(--font-scale-h2);
+  margin-bottom: 8px;
+}
+
+.admin-kpi-grid .kpi-value {
+  font-size: var(--font-scale-h1);
+  font-weight: 800;
+  color: var(--clr-text, #e8eaf0);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.admin-kpi-grid .kpi-label {
+  font-size: var(--font-scale-sm);
+  color: var(--clr-text-muted, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.kpi-highlight {
+  border-color: rgba(239, 68, 68, 0.25) !important;
+  background: linear-gradient(
+    135deg,
+    var(--clr-surface, #181d27),
+    rgba(239, 68, 68, 0.06)
+  ) !important;
+}
+
+.kpi-highlight .kpi-value {
+  color: var(--alert-red, var(--clr-error));
+}
+
+.kpi-growth {
+  border-color: rgba(34, 197, 94, 0.2) !important;
+  background: linear-gradient(
+    135deg,
+    var(--clr-surface, #181d27),
+    rgba(34, 197, 94, 0.05)
+  ) !important;
+}
+
+.kpi-growth .kpi-value {
+  color: #22c55e;
+}
+
+.kpi-growth .kpi-icon {
+  filter: hue-rotate(0deg);
+}
+
+/* ── Plan Breakdown ───────────────────────────────────────── */
+
+.plan-breakdown {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.plan-card {
+  flex: 1;
+  min-width: 120px;
+  background: var(--clr-surface, #181d27);
+  border: 1px solid var(--clr-border, var(--clr-border));
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+
+.plan-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.plan-count {
+  font-size: var(--font-scale-h1);
+  font-weight: 800;
+  color: var(--clr-text, #e8eaf0);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.plan-label {
+  font-size: var(--font-scale-sm);
+  color: var(--clr-text-muted, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+
+.plan-card.plan-free {
+  border-color: rgba(107, 114, 128, 0.3);
+}
+
+.plan-card.plan-free .plan-count {
+  color: #9ca3af;
+}
+
+.plan-card.plan-premium {
+  border-color: rgba(234, 179, 8, 0.3);
+}
+
+.plan-card.plan-premium .plan-count {
+  color: var(--clr-yellow);
+}
+
+.plan-card.plan-enterprise {
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.plan-card.plan-enterprise .plan-count {
+  color: #a78bfa;
+}
+
+/* ── Plan Badge (inline) ──────────────────────────────────── */
+
+.plan-badge {
+  font-size: var(--font-scale-sm);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.plan-badge.plan-free {
+  background: rgba(107, 114, 128, 0.2);
+  color: #9ca3af;
+}
+
+.plan-badge.plan-premium {
+  background: rgba(234, 179, 8, 0.15);
+  color: var(--clr-yellow);
+}
+
+.plan-badge.plan-enterprise {
+  background: rgba(139, 92, 246, 0.15);
+  color: #a78bfa;
+}
+
+/* ── Role Breakdown ───────────────────────────────────────── */
+
+.admin-dashboard .role-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-dashboard .role-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--clr-surface, #181d27);
+  border-radius: 8px;
+  border: 1px solid var(--clr-border, var(--clr-border));
+}
+
+.admin-dashboard .role-icon {
+  font-size: var(--font-scale-body);
+  width: 24px;
+  text-align: center;
+}
+
+.admin-dashboard .role-name {
+  font-size: var(--font-scale-body);
+  color: var(--clr-text, #e8eaf0);
+  font-weight: 500;
+  min-width: 100px;
+}
+
+.admin-dashboard .role-count {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--alert-red, var(--clr-error));
+  min-width: 40px;
+  text-align: right;
+}
+
+.admin-dashboard .role-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--clr-surface-2, #1e2535);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.admin-dashboard .role-bar-fill {
+  height: 100%;
+  background: var(--alert-red, var(--clr-error));
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+/* ── Status Summary Pills ─────────────────────────────────── */
+
+.admin-dashboard .status-summary {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-dashboard .status-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--clr-surface, #181d27);
+  border: 1px solid var(--clr-border, var(--clr-border));
+  border-radius: 20px;
+}
+
+.admin-dashboard .status-pill-label {
+  font-size: var(--font-scale-sm);
+  color: var(--clr-text-muted, #6b7280);
+}
+
+.admin-dashboard .status-pill-count {
+  font-size: var(--font-scale-body);
+  font-weight: 700;
+  color: var(--alert-red, var(--clr-error));
+}
+
+/* ── Top Clubs ────────────────────────────────────────────── */
+
+.admin-top-clubs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.top-club-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--clr-surface, #181d27);
+  border: 1px solid var(--clr-border, var(--clr-border));
+  border-radius: 8px;
+  transition: border-color 0.2s;
+}
+
+.top-club-row:hover {
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.top-club-rank {
+  font-size: var(--font-scale-body);
+  font-weight: 800;
+  color: var(--alert-red, var(--clr-error));
+  min-width: 28px;
+}
+
+.top-club-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.top-club-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--clr-text, #e8eaf0);
+}
+
+.top-club-slug {
+  font-size: var(--font-scale-sm);
+  color: var(--clr-text-muted, #6b7280);
+}
+
+.top-club-stats {
+  display: flex;
+  gap: 12px;
+  font-size: var(--font-scale-sm);
+  color: var(--clr-text-muted, #6b7280);
+}
+
+.top-club-stats span {
+  white-space: nowrap;
+}
+
+/* ── Recent Clubs ─────────────────────────────────────────── */
+
+.admin-recent-clubs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.recent-club-card {
+  background: var(--clr-surface, #181d27);
+  border: 1px solid var(--clr-border, var(--clr-border));
+  border-radius: 12px;
+  padding: 16px;
+  transition:
+    border-color 0.2s,
+    transform 0.15s;
+}
+
+.recent-club-card:hover {
+  border-color: rgba(239, 68, 68, 0.3);
+  transform: translateY(-2px);
+}
+
+.recent-club-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.recent-club-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--clr-text, #e8eaf0);
+}
+
+.recent-club-meta {
+  display: flex;
+  gap: 12px;
+  font-size: var(--font-scale-sm);
+  color: var(--clr-text-muted, #6b7280);
+}

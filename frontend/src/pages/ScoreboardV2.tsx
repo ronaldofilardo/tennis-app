@@ -16,6 +16,8 @@ import { useScoreboardEngine } from '../hooks/useScoreboardEngine';
 import { useCreatorManagerMode } from '../hooks/useCreatorManagerMode';
 import { useShakeDetection } from '../hooks/useGestures';
 import '../styles/scoreboard-tokens.css';
+import './ScoreboardQuickActions.css';
+import './ScoreboardLegacy.css';
 import './ScoreboardV2.css';
 
 const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {

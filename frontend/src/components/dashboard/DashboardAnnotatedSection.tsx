@@ -1,3 +1,4 @@
+import './DashboardAnnotatedSection.css';
 import React, { useState } from 'react';
 import AnnotatedMatchCard from '../AnnotatedMatchCard';
 import type { AnnotatedMatch } from '../AnnotatedMatchCard';

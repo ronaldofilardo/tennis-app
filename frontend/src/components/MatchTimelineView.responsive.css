@@ -1,0 +1,136 @@
+/* MatchTimelineView — print + responsive + reduced-motion */
+
+@media print {
+  .match-timeline {
+    background: #fff !important;
+    color: #111 !important;
+    padding: 0;
+  }
+
+  .match-timeline__filters {
+    display: none;
+  }
+
+  .match-timeline__title {
+    color: #111 !important;
+  }
+
+  .match-timeline__count {
+    color: #555 !important;
+  }
+
+  .match-timeline__list {
+    gap: 6px;
+  }
+
+  .match-timeline__card {
+    break-inside: avoid;
+    background: #f9f9f9 !important;
+    border-color: #ddd !important;
+    color: #111 !important;
+    transform: none !important;
+  }
+
+  .match-timeline__card-header {
+    background: transparent !important;
+  }
+
+  .match-timeline__card-num {
+    color: #555 !important;
+  }
+
+  .match-timeline__card-winner--p1 {
+    color: #1d4ed8 !important;
+  }
+
+  .match-timeline__card-winner--p2 {
+    color: #be185d !important;
+  }
+
+  .match-timeline__card-summary {
+    color: #444 !important;
+  }
+
+  .match-timeline__card-score {
+    color: #333 !important;
+  }
+
+  .match-timeline__card-chevron {
+    display: none;
+  }
+
+  .match-timeline__card-detail {
+    display: block !important;
+    opacity: 1 !important;
+  }
+
+  .match-timeline__card-detail-inner {
+    padding-top: 8px !important;
+    padding-bottom: 10px !important;
+  }
+
+  .match-timeline__card-body {
+    padding-bottom: 6px !important;
+  }
+
+  .match-timeline__hero-badge,
+  .match-timeline__tech-chip,
+  .match-timeline__rally-pill,
+  .match-timeline__closing-chip {
+    background: #f0f0f0 !important;
+    border-color: #ccc !important;
+    color: #333 !important;
+  }
+
+  .match-timeline__detail-key {
+    color: #555 !important;
+  }
+
+  .match-timeline__detail-val {
+    color: #111 !important;
+  }
+
+  .match-timeline__detail-dim {
+    color: #666 !important;
+  }
+
+  .match-timeline__tag {
+    border: 1px solid #ccc !important;
+    background: #f0f0f0 !important;
+    color: #333 !important;
+  }
+}
+
+/* ─── Responsive ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  .match-timeline__card-summary {
+    display: none;
+  }
+
+  .match-timeline__card-winner {
+    min-width: 70px;
+  }
+
+  .match-timeline__card-score {
+    display: none;
+  }
+
+  .match-timeline__card-detail-inner {
+    padding-left: 30px;
+  }
+
+  .match-timeline__card-body {
+    padding-left: 30px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .match-timeline__card,
+  .match-timeline__filter-chip,
+  .match-timeline__card-chevron,
+  .match-timeline__card-header,
+  .match-timeline__card-detail {
+    transition: none;
+  }
+}

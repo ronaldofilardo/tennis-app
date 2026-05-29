@@ -1,3 +1,4 @@
+import './AdminMatchesTab.css';
 import React from 'react';
 import type { AdminMatch } from '../../types/admin';
 import { PAGE_SIZE, MATCH_STATUS_LABELS, MATCH_STATUS_COLORS } from '../../types/admin';

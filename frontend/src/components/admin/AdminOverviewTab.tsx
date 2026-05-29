@@ -1,3 +1,4 @@
+import './AdminOverviewTab.css';
 import React from 'react';
 import type { AdminStats } from '../../types/admin';
 import { ROLE_LABELS, ROLE_ICONS } from '../../types/admin';

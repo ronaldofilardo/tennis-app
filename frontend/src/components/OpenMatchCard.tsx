@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 export interface OpenMatch {
   id: string;
@@ -19,23 +19,23 @@ interface OpenMatchCardProps {
 }
 
 const FORMAT_SHORT: Record<string, string> = {
-  BEST_OF_3: "MD3",
-  BEST_OF_3_MATCH_TB: "MD3 MTB",
-  BEST_OF_5: "MD5",
-  SINGLE_SET: "1 Set",
-  PRO_SET: "Pro Set",
-  MATCH_TIEBREAK: "MTB 10pts",
-  SHORT_SET: "Set curto",
-  NO_AD: "No-Ad",
-  FAST4: "Fast4",
-  SHORT_SET_NO_AD: "Curto No-Ad",
-  NO_LET_TENNIS: "No-Let",
+  BEST_OF_3: 'MD3',
+  BEST_OF_3_MATCH_TB: 'MD3 MTB',
+  BEST_OF_5: 'MD5',
+  SINGLE_SET: '1 Set',
+  PRO_SET: 'Pro Set',
+  MATCH_TIEBREAK: 'MTB 10pts',
+  SHORT_SET: 'Set curto',
+  NO_AD: 'No-Ad',
+  FAST4: 'Fast4',
+  SHORT_SET_NO_AD: 'Curto No-Ad',
+  NO_LET_TENNIS: 'No-Let',
 };
 
 const COURT_ICON: Record<string, string> = {
-  CLAY: "🟤",
-  HARD: "🔵",
-  GRASS: "🟢",
+  CLAY: '🟤',
+  HARD: '🔵',
+  GRASS: '🟢',
 };
 
 const OpenMatchCard: React.FC<OpenMatchCardProps> = ({ match, onAnnotate }) => {
@@ -58,7 +58,7 @@ const OpenMatchCard: React.FC<OpenMatchCardProps> = ({ match, onAnnotate }) => {
       <div className="open-match-card__header">
         <span className="open-match-card__sport">
           {courtIcon && <span className="open-match-card__court">{courtIcon}</span>}
-          {match.sportType.replace("_", " ")}
+          {match.sportType.replace('_', ' ')}
           <span className="open-match-card__format">{formatLabel}</span>
         </span>
       </div>
@@ -71,16 +71,10 @@ const OpenMatchCard: React.FC<OpenMatchCardProps> = ({ match, onAnnotate }) => {
         </span>
       </div>
 
-      {match.nickname && (
-        <div className="open-match-card__nickname">🏷 {match.nickname}</div>
-      )}
+      {match.nickname && <div className="open-match-card__nickname">🏷 {match.nickname}</div>}
 
-      <button
-        className="open-match-card__btn"
-        onClick={handleAnnotate}
-        disabled={loading}
-      >
-        {loading ? "⏳ Iniciando..." : "📋 Anotar agora"}
+      <button className="open-match-card__btn" onClick={handleAnnotate} disabled={loading}>
+        {loading ? '⏳ Iniciando...' : '📋 Anotar agora'}
       </button>
     </div>
   );

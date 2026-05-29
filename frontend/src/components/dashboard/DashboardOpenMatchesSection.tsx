@@ -1,3 +1,4 @@
+import './DashboardOpenMatchesSection.css';
 import React, { useState } from 'react';
 import OpenMatchCard from '../OpenMatchCard';
 import type { OpenMatch } from '../OpenMatchCard';

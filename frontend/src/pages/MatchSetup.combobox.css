@@ -1,0 +1,174 @@
+/* MatchSetup.css — combobox + match conditions (extraído) */
+
+.form-error {
+  background-color: rgba(244, 63, 94, 0.08);
+  border: 1px solid var(--clr-live, #f43f5e);
+  border-radius: 6px;
+  color: var(--clr-live, #f43f5e);
+  padding: 12px 16px;
+  margin: 16px 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   COMBOBOX: Torneio e Rodada (Autocomplete)
+   ═════════════════════════════════════════════════════════════════════════════ */
+
+.form-group--combobox {
+  position: relative;
+}
+
+.combobox-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.combobox-wrapper input {
+  width: 100%;
+  padding: 10px;
+  background-color: #2c2c2c;
+  border: 1px solid #555;
+  color: #fff;
+  border-radius: 4px;
+  font-size: var(--font-scale-body);
+  z-index: 1;
+}
+
+.combobox-wrapper input:focus {
+  border-color: #7c3aed;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.25);
+}
+
+.combobox-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #2c2c2c;
+  border: 1px solid #555;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.combobox-suggestion-item {
+  padding: 8px 10px;
+  color: #ccc;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.combobox-suggestion-item:hover {
+  background-color: #3a3a3a;
+  color: #fff;
+}
+
+.combobox-suggestion-item:first-child {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.combobox-suggestion-item:last-child {
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   MATCH CONDITIONS: Temperatura e URA (lado a lado)
+   ═════════════════════════════════════════════════════════════════════════════ */
+
+.match-conditions-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.match-condition-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.match-condition-field label {
+  display: block;
+  font-weight: bold;
+  color: #ccc;
+  font-size: 0.95rem;
+}
+
+.match-condition-field input {
+  width: 100%;
+  padding: 10px;
+  background-color: #2c2c2c;
+  border: 1px solid #555;
+  color: #fff;
+  border-radius: 4px;
+  font-size: var(--font-scale-body);
+  min-height: 44px;
+}
+
+.match-condition-field input:focus {
+  border-color: #7c3aed;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.25);
+}
+
+.form-optional {
+  color: #888;
+  font-size: 0.85em;
+  font-weight: normal;
+}
+
+.match-setup-input {
+  width: 100%;
+  padding: 10px;
+  background-color: #2c2c2c;
+  border: 1px solid #555;
+  color: #fff;
+  border-radius: 4px;
+  font-size: var(--font-scale-body);
+  min-height: 44px;
+}
+
+.match-setup-input:focus {
+  border-color: #7c3aed;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.25);
+}
+
+.match-setup-input::placeholder {
+  color: #666;
+}
+
+/* Responsividade: Match Conditions em mobile */
+
+@media (max-width: 359px) {
+  .match-conditions-row {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .match-condition-field label {
+    font-size: 0.9rem;
+  }
+
+  .match-condition-field input {
+    padding: 9px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .match-conditions-row {
+    gap: 1.25rem;
+  }
+}

@@ -1,0 +1,179 @@
+/* ── Annotated Matches Section — extraído de Dashboard.css ── */
+
+.annotated-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 0 4px;
+}
+
+.annotated-section__header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.annotated-section__title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.annotated-section__badge {
+  background: #7c3aed;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 20px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.annotated-section__tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.annotated-section__tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #9ca3af;
+  background: transparent;
+  border: 1px solid #2a2a3e;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast) var(--ease-in-out),
+    border-color var(--transition-fast) var(--ease-in-out),
+    color var(--transition-fast) var(--ease-in-out),
+    transform var(--transition-fast) var(--ease-in-out);
+}
+
+.annotated-section__tab:hover {
+  background: var(--clr-border-lighter);
+  color: #e2e8f0;
+}
+
+.annotated-section__tab:focus-visible {
+  outline: 2px solid #7c3aed;
+  outline-offset: 2px;
+}
+
+.annotated-section__tab--active {
+  background: #7c3aed;
+  color: #fff;
+  border-color: #7c3aed;
+}
+
+.annotated-section__tab--active:hover {
+  background: #6d28d9;
+  color: #fff;
+}
+
+.annotated-section__tab-count {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.annotated-section__tab--active .annotated-section__tab-count {
+  background: var(--clr-border);
+}
+
+.annotated-section__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.annotated-section__loading {
+  color: #6b7280;
+  font-size: 13px;
+  padding: 12px 0;
+}
+
+.annotated-section__empty {
+  color: #4b5563;
+  font-size: 13px;
+  padding: 20px 16px;
+  text-align: center;
+  background: #1a1a2e;
+  border-radius: 10px;
+  border: 1px dashed #2a2a3e;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .annotated-section__tab {
+    transition: none;
+  }
+}
+
+/* ── Completed matches (Meu Histórico) ──────────────────── */
+.completed-section {
+  margin: 8px 0 0;
+  padding: 16px;
+  background: #0f0f1a;
+  border-radius: 12px;
+  border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+.completed-section__title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin: 0 0 12px;
+  letter-spacing: 0.02em;
+}
+
+.completed-section__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.completed-section__loading {
+  color: #6b7280;
+  font-size: 13px;
+  padding: 12px 0;
+}
+
+/* ── Suspended Sessions (Resumable Annotations) ────────── */
+.suspended-section {
+  margin: 12px 0 16px;
+  padding: 16px;
+  background: rgba(239, 68, 68, 0.08);
+  border-radius: 12px;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.suspended-header {
+  margin-bottom: 12px;
+}
+
+.suspended-header h3 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.suspended-subtitle {
+  margin: 0;
+  font-size: 12px;
+  color: #9ca3af;
+  letter-spacing: 0.02em;
+}

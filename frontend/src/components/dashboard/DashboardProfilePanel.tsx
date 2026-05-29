@@ -1,3 +1,4 @@
+import './DashboardProfilePanel.css';
 import React from 'react';
 import type { AthleteStats } from '../AthleteHeader';
 import { ROLE_LABELS } from '../../types/roles';
