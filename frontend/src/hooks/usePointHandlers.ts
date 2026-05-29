@@ -21,6 +21,7 @@ export function usePointHandlers(deps: PointHandlerDeps) {
     currentUser,
     autoFinishRef,
     syncTimeoutRef,
+    annotationSessionIdRef,
     scoreLog,
     toast,
     dispatch,
@@ -305,6 +306,16 @@ export function usePointHandlers(deps: PointHandlerDeps) {
         setServeStepSafe('none');
         forceRerender();
 
+        // Reativar sessão ao editar placar: remove partida de "anotações suspensas" (isActive=false → true)
+        const sessionId = annotationSessionIdRef.current;
+        if (matchId && sessionId) {
+          httpClient
+            .patch(`/matches/${matchId}/sessions/${sessionId}`, { status: 'IN_PROGRESS' })
+            .catch(() => {
+              // Non-critical: sessão pode já estar ativa ou ter sido encerrada
+            });
+        }
+
         if (syncTimeoutRef.current) window.clearTimeout(syncTimeoutRef.current);
         syncTimeoutRef.current = window.setTimeout(() => {
           const sys = getSystem();
@@ -324,7 +335,7 @@ export function usePointHandlers(deps: PointHandlerDeps) {
         forceRerender();
       }
     },
-    [setServeStepSafe, forceRerender, syncTimeoutRef, scoreLog, matchId, markPointsAsInterrupted],
+    [setServeStepSafe, forceRerender, syncTimeoutRef, scoreLog, matchId, markPointsAsInterrupted, annotationSessionIdRef],
   );
 
   return {

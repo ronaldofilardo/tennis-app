@@ -305,6 +305,19 @@ export async function handleSessionRoutes(req, res, url, parsedPath) {
             });
           }
 
+          // autoStarted=true: carregamento automático do scoreboard (não reativa sessão suspensa)
+          // Mantém isActive=false para que a partida continue em "anotações suspensas" no dashboard
+          const autoStarted = req.body?.autoStarted === true;
+          if (autoStarted && mostRecentSession.isActive === false) {
+            return sendJson(res, 200, {
+              ...mostRecentSession,
+              suspended: true,
+              previousState: mostRecentSession.matchStateSnapshot
+                ? JSON.parse(mostRecentSession.matchStateSnapshot)
+                : null,
+            });
+          }
+
           // Reativar a mais recente se estava suspensa (preservar snapshot até confirmar sucesso)
           const reactivatedSession = await prisma.matchAnnotationSession.update({
             where: { id: mostRecentSession.id },

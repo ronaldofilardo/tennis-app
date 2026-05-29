@@ -188,7 +188,8 @@ export function useScoreboardEngine(onEndMatch: () => void) {
     let active = true;
     const tryAutoSession = async () => {
       try {
-        const session = await startSession(matchId);
+        // autoStarted=true: não reativa sessões suspensas — mantém partida em "anotações suspensas"
+        const session = await startSession(matchId, true);
         if (active && session) {
           annotationSessionIdRef.current = session.id;
           dispatch({ type: 'ANNOTATOR_COUNT_SET', count: Math.max(annotatorCount, 1) });

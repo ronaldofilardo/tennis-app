@@ -32,11 +32,16 @@ export async function listSessions(matchId: string): Promise<AnnotationSession[]
 }
 
 /**
- * Inicia (ou retorna) una sessão ativa para o usuário logado.
+ * Inicia (ou retorna) uma sessão ativa para o usuário logado.
  * O backend não desativa sessões de outros anotadores.
+ *
+ * @param autoStarted - true quando chamado automaticamente ao carregar o scoreboard.
+ *   Quando true, sessões suspensas (isActive=false) NÃO são reativadas, mantendo
+ *   a partida visível em "anotações suspensas" no dashboard.
+ *   Passe false (ou omita) para retomar explicitamente uma sessão suspensa.
  */
-export async function startSession(matchId: string): Promise<AnnotationSession> {
-  const response = await httpClient.post(`/matches/${matchId}/sessions`, {});
+export async function startSession(matchId: string, autoStarted = false): Promise<AnnotationSession> {
+  const response = await httpClient.post(`/matches/${matchId}/sessions`, { autoStarted });
   if (!response.ok) throw new Error('Failed to start session');
   return response.data as AnnotationSession;
 }
