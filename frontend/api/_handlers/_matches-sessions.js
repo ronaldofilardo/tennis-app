@@ -190,6 +190,7 @@ export async function handleSessionRoutes(req, res, url, parsedPath) {
           ...(newStatus === 'IN_PROGRESS' && { isActive: true }),
           ...(newStatus === 'ABANDONED' && {
             isActive: false,
+            endedAt: new Date(),
             // Garantir que matchStateSnapshot é sempre uma STRING (JSON)
             matchStateSnapshot: (() => {
               const snapshot = req.body?.matchStateSnapshot;
