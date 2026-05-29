@@ -1,0 +1,83 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/apps/Racket/Racket/frontend[39m
+
+[90mstdout[2m | src/components/scoreboard/__tests__/EditScoreModal.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | tests/ResumeScoreModal.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | src/pages/__tests__/ScoreboardV2.server-effect.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | src/components/__tests__/LiveMatchesCarousel.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | src/components/__tests__/ServerEffectModal.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | src/pages/__tests__/ScoreboardV2.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | tests/MatchTimelineView.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+ [32mÔ£ô[39m src/components/__tests__/LiveMatchesCarousel.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 735[2mms[22m[39m
+     [33m[2mÔ£ô[22m[39m chama onMatchClick ao clicar em uma partida [33m 547[2mms[22m[39m
+stderr | src/pages/__tests__/ScoreboardV2.server-effect.test.tsx > ScoreboardV2 - ServerEffect Integration > Bot├Áes informativos de saque > exibe "1┬║ Saque" e, ap├│s falta, "2┬║ Saque" como bot├Áes informativos sem funcionalidade
+ÔÜá´©Å React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+ÔÜá´©Å React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+stderr | src/pages/__tests__/ScoreboardV2.test.tsx > ScoreboardV2 - Ace Button Behavior > Ace button functionality > opens ServerEffectModal when Ace button is clicked on first serve
+ÔÜá´©Å React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+ÔÜá´©Å React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ [32mÔ£ô[39m src/components/scoreboard/__tests__/EditScoreModal.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 4246[2mms[22m[39m
+     [33m[2mÔ£ô[22m[39m should render modal with two number inputs for set result [33m 685[2mms[22m[39m
+     [33m[2mÔ£ô[22m[39m should accept valid score 6x4 with two separate inputs [33m 481[2mms[22m[39m
+     [33m[2mÔ£ô[22m[39m should enable "Pr├│ximo Set" button only when both inputs are filled with valid score [33m 329[2mms[22m[39m
+     [33m[2mÔ£ô[22m[39m should allow moving to next set [33m 476[2mms[22m[39m
+     [33m[2mÔ£ô[22m[39m should call onConfirm with set results and server [33m 741[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx [2m([22m[2m33 tests[22m[2m)[22m[33m 4732[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m exibe todas as op├º├Áes de efeito [33m 1138[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m permite confirma├º├úo com apenas efeito selecionado [33m 353[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m permite confirma├º├úo com apenas dire├º├úo selecionada [33m 319[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m permite confirma├º├úo com efeito e dire├º├úo selecionados [33m 403[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m reseta sele├º├Áes quando modal ├® reaberto [33m 590[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx [2m([22m[2m27 tests[22m[2m)[22m[33m 5026[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m deve renderizar um item por ponto [33m 678[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m deve mostrar detalhes do rally ao expandir ponto com rallyDetails [33m 393[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m deve mostrar contexto do placar ao expandir ponto com context [33m 369[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m deve limpar filtros ao clicar em "Limpar" [33m 516[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx [2m([22m[2m39 tests[22m[2m)[22m[33m 6878[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m renderiza o dialog quando isOpen ├® true [33m 525[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m ao clicar em PLAYER_2, o bot├úo correspondente fica active [33m 305[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m mostra bot├úo "Confirmar Set 1" com placar 6-1 [33m 336[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m ap├│s confirmar set, inputs s├úo limpos e pr├│ximo set aparece (Set 2) [33m 304[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m exibe erro quando placar finalizaria a partida (vencer setsToWin=2 sets com BO3) [33m 394[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m ao confirmar um set e remover, lista de sets fica vazia [33m 301[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m chama onConfirm com sets conclu├¡dos ap├│s confirmar um set (6-3) [33m 317[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m ap├│s 1 set cada, 3┬║ set mostra "Match Tie-break" [33m 319[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 6069[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m exibe "1┬║ Saque" e, ap├│s falta, "2┬║ Saque" como bot├Áes informativos sem funcionalidade [33m 1693[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m abre ServerEffectModal ao clicar em Ace no 2┬║ saque [33m 490[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m marca ponto automaticamente ao clicar em Out no 2┬║ saque (dupla falta) [33m 549[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m marca ponto automaticamente ao clicar em Net no 2┬║ saque (dupla falta) [33m 348[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m marca ponto de Ace no 2┬║ saque corretamente para o sacador [33m 558[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m marca ponto de dupla falta automaticamente sem modal [33m 485[2mms[22m[39m
+[90mstdout[2m | src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22m[2mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22m[2mFinaliza├º├úo Autom├ítica de Partida[2m > [22m[2mfinaliza partida automaticamente quando regras determinam vencedor
+[22m[39m[ScoreboardV2] Partida finalizada! Vencedor: PLAYER_1 | session:sess_1
+
+[90mstdout[2m | src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22m[2mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22m[2mFinaliza├º├úo Autom├ítica de Partida[2m > [22m[2mfinaliza partida automaticamente quando regras determinam vencedor
+[22m[39m[ScoreboardV2] Partida auto-finalizada no DB com sucesso | session:sess_1 { matchId: [32m'test-match-id'[39m }
+
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx [2m([22m[2m26 tests[22m[2m)[22m[33m 8842[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m opens ServerEffectModal when Ace button is clicked on first serve [33m 1038[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m opens ServerEffectModal when Ace button is clicked on second serve [33m 684[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m allows user to confirm point through ServerEffectModal [33m 399[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m closes ServerEffectModal after confirming point [33m 387[2mms[22m[39m
+     [33m[2mÔ£ô[22m[39m updates button alignment when server changes after point [33m 2281[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m desabilita bot├Áes de pontua├º├úo ap├│s finaliza├º├úo [33m 1184[2mms[22m[39m
+[90mstdout[2m | AppLogger._log (C:\apps\Racket\Racket\frontend\src\services\logger.ts:219:17)
+[22m[39m[ScoreboardV2] Estado final capturado com sucesso | session:sess_1 { matchId: [32m'test-match-id'[39m, hasPointsHistory: [33mfalse[39m, pointsCount: [33m0[39m }
+

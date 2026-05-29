@@ -1,0 +1,2992 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/apps/Racket/Racket/frontend[39m
+
+[90mstdout[2m | src/pages/__tests__/Dashboard.delete-flow.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+ [31m├ù[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould show delete button for match created by current user with NOT_STARTED status[33m 661[2mms[22m[39m
+[31m   ÔåÆ [2mexpect([22m[31mreceived[31m[2m).toBeInTheDocument()[22m
+
+[31mreceived[31m value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: [31mnull[31m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould not show delete button for matches created by other users[32m 165[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould not show delete button for matches not in NOT_STARTED status[32m 156[2mms[22m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould open confirmation modal when delete button is clicked[33m 1251[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard"[31m
+        [33mdata-testid[31m=[32m"dashboard"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"dashboard-header"[31m
+        [36m>[31m
+          [36m<h2>[31m
+            [0mMinhas [0m
+            [36m<span>[31m
+              [0mPartidas[0m
+            [36m</span>[31m
+          [36m</h2>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-actions"[31m
+            [33mstyle[31m=[32m"position: relative;"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-expanded[31m=[32m"false"[31m
+              [33maria-haspopup[31m=[32m"true"[31m
+              [33mclass[31m=[32m"new-match-button"[31m
+            [36m>[31m
+              [0m+ Nova Partida[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mdata-testid[31m=[32m"athlete-header"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33mdata-testid[31m=[32m"hamburger-btn"[31m
+          [36m>[31m
+            [0mMenu[0m
+          [36m</button>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero"[31m
+          [33mdata-testid[31m=[32m"dashboard-hero"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-hero__icon"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"48"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"1.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"48"[31m
+            [36m>[31m
+              [36m<circle[31m
+                [33mcx[31m=[32m"12"[31m
+                [33mcy[31m=[32m"12"[31m
+                [33mr[31m=[32m"10"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"9"[31m
+                [33mx2[31m=[32m"9.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"15"[31m
+                [33mx2[31m=[32m"15.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</div>[31m
+          [36m<h3[31m
+            [33mclass[31m=[32m"dashboard-hero__title"[31m
+          [36m>[31m
+            [0mBem-vindo ao RacketApp[0m
+          [36m</h3>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"dashboard-hero__text"[31m
+          [36m>[31m
+            [0mUse o menu[0m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Abrir menu"[31m
+              [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"16"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"16"[31m
+              [36m>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"6"[31m
+                  [33my2[31m=[32m"6"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"12"[31m
+                  [33my2[31m=[32m"12"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"18"[31m
+                  [33my2[31m=[32m"18"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+          [36m</p>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould call httpClient.delete with correct match ID when confirmed[33m 419[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard"[31m
+        [33mdata-testid[31m=[32m"dashboard"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"dashboard-header"[31m
+        [36m>[31m
+          [36m<h2>[31m
+            [0mMinhas [0m
+            [36m<span>[31m
+              [0mPartidas[0m
+            [36m</span>[31m
+          [36m</h2>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-actions"[31m
+            [33mstyle[31m=[32m"position: relative;"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-expanded[31m=[32m"false"[31m
+              [33maria-haspopup[31m=[32m"true"[31m
+              [33mclass[31m=[32m"new-match-button"[31m
+            [36m>[31m
+              [0m+ Nova Partida[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mdata-testid[31m=[32m"athlete-header"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33mdata-testid[31m=[32m"hamburger-btn"[31m
+          [36m>[31m
+            [0mMenu[0m
+          [36m</button>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero"[31m
+          [33mdata-testid[31m=[32m"dashboard-hero"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-hero__icon"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"48"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"1.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"48"[31m
+            [36m>[31m
+              [36m<circle[31m
+                [33mcx[31m=[32m"12"[31m
+                [33mcy[31m=[32m"12"[31m
+                [33mr[31m=[32m"10"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"9"[31m
+                [33mx2[31m=[32m"9.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"15"[31m
+                [33mx2[31m=[32m"15.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</div>[31m
+          [36m<h3[31m
+            [33mclass[31m=[32m"dashboard-hero__title"[31m
+          [36m>[31m
+            [0mBem-vindo ao RacketApp[0m
+          [36m</h3>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"dashboard-hero__text"[31m
+          [36m>[31m
+            [0mUse o menu[0m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Abrir menu"[31m
+              [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"16"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"16"[31m
+              [36m>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"6"[31m
+                  [33my2[31m=[32m"6"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"12"[31m
+                  [33my2[31m=[32m"12"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"18"[31m
+                  [33my2[31m=[32m"18"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+          [36m</p>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould remove deleted match from UI after successful deletion[32m 271[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard"[31m
+        [33mdata-testid[31m=[32m"dashboard"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"dashboard-header"[31m
+        [36m>[31m
+          [36m<h2>[31m
+            [0mMinhas [0m
+            [36m<span>[31m
+              [0mPartidas[0m
+            [36m</span>[31m
+          [36m</h2>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-actions"[31m
+            [33mstyle[31m=[32m"position: relative;"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-expanded[31m=[32m"false"[31m
+              [33maria-haspopup[31m=[32m"true"[31m
+              [33mclass[31m=[32m"new-match-button"[31m
+            [36m>[31m
+              [0m+ Nova Partida[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mdata-testid[31m=[32m"athlete-header"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33mdata-testid[31m=[32m"hamburger-btn"[31m
+          [36m>[31m
+            [0mMenu[0m
+          [36m</button>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero"[31m
+          [33mdata-testid[31m=[32m"dashboard-hero"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-hero__icon"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"48"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"1.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"48"[31m
+            [36m>[31m
+              [36m<circle[31m
+                [33mcx[31m=[32m"12"[31m
+                [33mcy[31m=[32m"12"[31m
+                [33mr[31m=[32m"10"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"9"[31m
+                [33mx2[31m=[32m"9.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"15"[31m
+                [33mx2[31m=[32m"15.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</div>[31m
+          [36m<h3[31m
+            [33mclass[31m=[32m"dashboard-hero__title"[31m
+          [36m>[31m
+            [0mBem-vindo ao RacketApp[0m
+          [36m</h3>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"dashboard-hero__text"[31m
+          [36m>[31m
+            [0mUse o menu[0m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Abrir menu"[31m
+              [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"16"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"16"[31m
+              [36m>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"6"[31m
+                  [33my2[31m=[32m"6"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"12"[31m
+                  [33my2[31m=[32m"12"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"18"[31m
+                  [33my2[31m=[32m"18"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+          [36m</p>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould update deletedMatchIds state after successful deletion[32m 14[2mms[22m[39m
+[31m   ÔåÆ Unable to find an element with the text: /Test Match/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard"[31m
+        [33mdata-testid[31m=[32m"dashboard"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"dashboard-header"[31m
+        [36m>[31m
+          [36m<h2>[31m
+            [0mMinhas [0m
+            [36m<span>[31m
+              [0mPartidas[0m
+            [36m</span>[31m
+          [36m</h2>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-actions"[31m
+            [33mstyle[31m=[32m"position: relative;"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-expanded[31m=[32m"false"[31m
+              [33maria-haspopup[31m=[32m"true"[31m
+              [33mclass[31m=[32m"new-match-button"[31m
+            [36m>[31m
+              [0m+ Nova Partida[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mdata-testid[31m=[32m"athlete-header"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33mdata-testid[31m=[32m"hamburger-btn"[31m
+          [36m>[31m
+            [0mMenu[0m
+          [36m</button>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero"[31m
+          [33mdata-testid[31m=[32m"dashboard-hero"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-hero__icon"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"48"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"1.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"48"[31m
+            [36m>[31m
+              [36m<circle[31m
+                [33mcx[31m=[32m"12"[31m
+                [33mcy[31m=[32m"12"[31m
+                [33mr[31m=[32m"10"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"9"[31m
+                [33mx2[31m=[32m"9.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"15"[31m
+                [33mx2[31m=[32m"15.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</div>[31m
+          [36m<h3[31m
+            [33mclass[31m=[32m"dashboard-hero__title"[31m
+          [36m>[31m
+            [0mBem-vindo ao RacketApp[0m
+          [36m</h3>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"dashboard-hero__text"[31m
+          [36m>[31m
+            [0mUse o menu[0m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Abrir menu"[31m
+              [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"16"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"16"[31m
+              [36m>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"6"[31m
+                  [33my2[31m=[32m"6"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"12"[31m
+                  [33my2[31m=[32m"12"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"18"[31m
+                  [33my2[31m=[32m"18"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+          [36m</p>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould show error message on delete failure[33m 362[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard"[31m
+        [33mdata-testid[31m=[32m"dashboard"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"dashboard-header"[31m
+        [36m>[31m
+          [36m<h2>[31m
+            [0mMinhas [0m
+            [36m<span>[31m
+              [0mPartidas[0m
+            [36m</span>[31m
+          [36m</h2>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-actions"[31m
+            [33mstyle[31m=[32m"position: relative;"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-expanded[31m=[32m"false"[31m
+              [33maria-haspopup[31m=[32m"true"[31m
+              [33mclass[31m=[32m"new-match-button"[31m
+            [36m>[31m
+              [0m+ Nova Partida[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mdata-testid[31m=[32m"athlete-header"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33mdata-testid[31m=[32m"hamburger-btn"[31m
+          [36m>[31m
+            [0mMenu[0m
+          [36m</button>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero"[31m
+          [33mdata-testid[31m=[32m"dashboard-hero"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-hero__icon"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"48"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"1.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"48"[31m
+            [36m>[31m
+              [36m<circle[31m
+                [33mcx[31m=[32m"12"[31m
+                [33mcy[31m=[32m"12"[31m
+                [33mr[31m=[32m"10"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"9"[31m
+                [33mx2[31m=[32m"9.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"15"[31m
+                [33mx2[31m=[32m"15.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</div>[31m
+          [36m<h3[31m
+            [33mclass[31m=[32m"dashboard-hero__title"[31m
+          [36m>[31m
+            [0mBem-vindo ao RacketApp[0m
+          [36m</h3>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"dashboard-hero__text"[31m
+          [36m>[31m
+            [0mUse o menu[0m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Abrir menu"[31m
+              [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"16"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"16"[31m
+              [36m>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"6"[31m
+                  [33my2[31m=[32m"6"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"12"[31m
+                  [33my2[31m=[32m"12"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"18"[31m
+                  [33my2[31m=[32m"18"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+          [36m</p>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould close modal when cancel is clicked[32m 264[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard"[31m
+        [33mdata-testid[31m=[32m"dashboard"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"dashboard-header"[31m
+        [36m>[31m
+          [36m<h2>[31m
+            [0mMinhas [0m
+            [36m<span>[31m
+              [0mPartidas[0m
+            [36m</span>[31m
+          [36m</h2>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-actions"[31m
+            [33mstyle[31m=[32m"position: relative;"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-expanded[31m=[32m"false"[31m
+              [33maria-haspopup[31m=[32m"true"[31m
+              [33mclass[31m=[32m"new-match-button"[31m
+            [36m>[31m
+              [0m+ Nova Partida[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mdata-testid[31m=[32m"athlete-header"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33mdata-testid[31m=[32m"hamburger-btn"[31m
+          [36m>[31m
+            [0mMenu[0m
+          [36m</button>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero"[31m
+          [33mdata-testid[31m=[32m"dashboard-hero"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-hero__icon"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"48"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"1.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"48"[31m
+            [36m>[31m
+              [36m<circle[31m
+                [33mcx[31m=[32m"12"[31m
+                [33mcy[31m=[32m"12"[31m
+                [33mr[31m=[32m"10"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"9"[31m
+                [33mx2[31m=[32m"9.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"15"[31m
+                [33mx2[31m=[32m"15.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</div>[31m
+          [36m<h3[31m
+            [33mclass[31m=[32m"dashboard-hero__title"[31m
+          [36m>[31m
+            [0mBem-vindo ao RacketApp[0m
+          [36m</h3>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"dashboard-hero__text"[31m
+          [36m>[31m
+            [0mUse o menu[0m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Abrir menu"[31m
+              [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"16"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"16"[31m
+              [36m>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"6"[31m
+                  [33my2[31m=[32m"6"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"12"[31m
+                  [33my2[31m=[32m"12"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"18"[31m
+                  [33my2[31m=[32m"18"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+          [36m</p>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould handle deletion of multiple matches in succession[33m 320[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard"[31m
+        [33mdata-testid[31m=[32m"dashboard"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"dashboard-header"[31m
+        [36m>[31m
+          [36m<h2>[31m
+            [0mMinhas [0m
+            [36m<span>[31m
+              [0mPartidas[0m
+            [36m</span>[31m
+          [36m</h2>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-actions"[31m
+            [33mstyle[31m=[32m"position: relative;"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-expanded[31m=[32m"false"[31m
+              [33maria-haspopup[31m=[32m"true"[31m
+              [33mclass[31m=[32m"new-match-button"[31m
+            [36m>[31m
+              [0m+ Nova Partida[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mdata-testid[31m=[32m"athlete-header"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33mdata-testid[31m=[32m"hamburger-btn"[31m
+          [36m>[31m
+            [0mMenu[0m
+          [36m</button>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero"[31m
+          [33mdata-testid[31m=[32m"dashboard-hero"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-hero__icon"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"48"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"1.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"48"[31m
+            [36m>[31m
+              [36m<circle[31m
+                [33mcx[31m=[32m"12"[31m
+                [33mcy[31m=[32m"12"[31m
+                [33mr[31m=[32m"10"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"9"[31m
+                [33mx2[31m=[32m"9.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"15"[31m
+                [33mx2[31m=[32m"15.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</div>[31m
+          [36m<h3[31m
+            [33mclass[31m=[32m"dashboard-hero__title"[31m
+          [36m>[31m
+            [0mBem-vindo ao RacketApp[0m
+          [36m</h3>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"dashboard-hero__text"[31m
+          [36m>[31m
+            [0mUse o menu[0m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Abrir menu"[31m
+              [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"16"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"16"[31m
+              [36m>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"6"[31m
+                  [33my2[31m=[32m"6"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"12"[31m
+                  [33my2[31m=[32m"12"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"18"[31m
+                  [33my2[31m=[32m"18"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+          [36m</p>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould preserve history view state after deletion[32m 245[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard"[31m
+        [33mdata-testid[31m=[32m"dashboard"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"dashboard-header"[31m
+        [36m>[31m
+          [36m<h2>[31m
+            [0mMinhas [0m
+            [36m<span>[31m
+              [0mPartidas[0m
+            [36m</span>[31m
+          [36m</h2>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-actions"[31m
+            [33mstyle[31m=[32m"position: relative;"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-expanded[31m=[32m"false"[31m
+              [33maria-haspopup[31m=[32m"true"[31m
+              [33mclass[31m=[32m"new-match-button"[31m
+            [36m>[31m
+              [0m+ Nova Partida[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mdata-testid[31m=[32m"athlete-header"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33mdata-testid[31m=[32m"hamburger-btn"[31m
+          [36m>[31m
+            [0mMenu[0m
+          [36m</button>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero"[31m
+          [33mdata-testid[31m=[32m"dashboard-hero"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-hero__icon"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"48"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"1.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"48"[31m
+            [36m>[31m
+              [36m<circle[31m
+                [33mcx[31m=[32m"12"[31m
+                [33mcy[31m=[32m"12"[31m
+                [33mr[31m=[32m"10"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"9"[31m
+                [33mx2[31m=[32m"9.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"15"[31m
+                [33mx2[31m=[32m"15.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</div>[31m
+          [36m<h3[31m
+            [33mclass[31m=[32m"dashboard-hero__title"[31m
+          [36m>[31m
+            [0mBem-vindo ao RacketApp[0m
+          [36m</h3>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"dashboard-hero__text"[31m
+          [36m>[31m
+            [0mUse o menu[0m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Abrir menu"[31m
+              [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"16"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"16"[31m
+              [36m>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"6"[31m
+                  [33my2[31m=[32m"6"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"12"[31m
+                  [33my2[31m=[32m"12"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"18"[31m
+                  [33my2[31m=[32m"18"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+          [36m</p>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ» Failed Tests 9 ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»
+
+ FAIL  src/pages/__tests__/Dashboard.delete-flow.test.tsx > Dashboard - Delete Match Flow > should show delete button for match created by current user with NOT_STARTED status
+Error: expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: null
+ ÔØ» src/pages/__tests__/Dashboard.delete-flow.test.tsx:168:26
+    166| 
+    167|     const deleteButton = screen.queryByRole('button', { name: /ExcluirÔÇª
+    168|     expect(deleteButton).toBeInTheDocument();
+       |                          ^
+    169|   });
+    170| 
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1/9]ÔÄ»
+
+ FAIL  src/pages/__tests__/Dashboard.delete-flow.test.tsx > Dashboard - Delete Match Flow > should open confirmation modal when delete button is clicked
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  <header
+    class="dashboard-header"
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  <h2 />
+
+  Name "Bem-vindo ao RacketApp":
+  <h3
+    class="dashboard-hero__title"
+  />
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  <button
+    aria-expanded="false"
+    aria-haspopup="true"
+    class="new-match-button"
+  />
+
+  Name "Menu":
+  <button
+    data-testid="hamburger-btn"
+  />
+
+  Name "Abrir menu":
+  <button
+    aria-label="Abrir menu"
+    class="dashboard-hero__menu-link"
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="dashboard-hero__text"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div>
+      <div
+        class="dashboard"
+        data-testid="dashboard"
+      >
+        <header
+          class="dashboard-header"
+        >
+          <h2>
+            Minhas 
+            <span>
+              Partidas
+            </span>
+          </h2>
+          <div
+            class="dashboard-actions"
+            style="position: relative;"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="new-match-button"
+            >
+              + Nova Partida
+            </button>
+          </div>
+        </header>
+        <div
+          data-testid="athlete-header"
+        >
+          <button
+            data-testid="hamburger-btn"
+          >
+            Menu
+          </button>
+        </div>
+        <div
+          class="dashboard-hero"
+          data-testid="dashboard-hero"
+        >
+          <div
+            class="dashboard-hero__icon"
+          >
+            <svg
+              aria-hidden="true"
+              fill="none"
+              height="48"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+              width="48"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+              />
+              <path
+                d="M8 14s1.5 2 4 2 4-2 4-2"
+              />
+              <line
+                x1="9"
+                x2="9.01"
+                y1="9"
+                y2="9"
+              />
+              <line
+                x1="15"
+                x2="15.01"
+                y1="9"
+                y2="9"
+              />
+            </svg>
+          </div>
+          <h3
+            class="dashboard-hero__title"
+          >
+            Bem-vindo ao RacketApp
+          </h3>
+          <p
+            class="dashboard-hero__text"
+          >
+            Use o menu
+            <button
+              aria-label="Abrir menu"
+              class="dashboard-hero__menu-link"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+                width="16"
+              >
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="6"
+                  y2="6"
+                />
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="12"
+                  y2="12"
+                />
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="18"
+                  y2="18"
+                />
+              </svg>
+            </button>
+            para criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+ ÔØ» Object.getElementError ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ÔØ» src/pages/__tests__/Dashboard.delete-flow.test.tsx:194:33
+    192|     navigateToHistory();
+    193| 
+    194|     const deleteButton = screen.getByRole('button', { name: /Excluir/iÔÇª
+       |                                 ^
+    195|     await user.click(deleteButton);
+    196| 
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[2/9]ÔÄ»
+
+ FAIL  src/pages/__tests__/Dashboard.delete-flow.test.tsx > Dashboard - Delete Match Flow > should call httpClient.delete with correct match ID when confirmed
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  <header
+    class="dashboard-header"
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  <h2 />
+
+  Name "Bem-vindo ao RacketApp":
+  <h3
+    class="dashboard-hero__title"
+  />
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  <button
+    aria-expanded="false"
+    aria-haspopup="true"
+    class="new-match-button"
+  />
+
+  Name "Menu":
+  <button
+    data-testid="hamburger-btn"
+  />
+
+  Name "Abrir menu":
+  <button
+    aria-label="Abrir menu"
+    class="dashboard-hero__menu-link"
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="dashboard-hero__text"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div>
+      <div
+        class="dashboard"
+        data-testid="dashboard"
+      >
+        <header
+          class="dashboard-header"
+        >
+          <h2>
+            Minhas 
+            <span>
+              Partidas
+            </span>
+          </h2>
+          <div
+            class="dashboard-actions"
+            style="position: relative;"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="new-match-button"
+            >
+              + Nova Partida
+            </button>
+          </div>
+        </header>
+        <div
+          data-testid="athlete-header"
+        >
+          <button
+            data-testid="hamburger-btn"
+          >
+            Menu
+          </button>
+        </div>
+        <div
+          class="dashboard-hero"
+          data-testid="dashboard-hero"
+        >
+          <div
+            class="dashboard-hero__icon"
+          >
+            <svg
+              aria-hidden="true"
+              fill="none"
+              height="48"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+              width="48"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+              />
+              <path
+                d="M8 14s1.5 2 4 2 4-2 4-2"
+              />
+              <line
+                x1="9"
+                x2="9.01"
+                y1="9"
+                y2="9"
+              />
+              <line
+                x1="15"
+                x2="15.01"
+                y1="9"
+                y2="9"
+              />
+            </svg>
+          </div>
+          <h3
+            class="dashboard-hero__title"
+          >
+            Bem-vindo ao RacketApp
+          </h3>
+          <p
+            class="dashboard-hero__text"
+          >
+            Use o menu
+            <button
+              aria-label="Abrir menu"
+              class="dashboard-hero__menu-link"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+                width="16"
+              >
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="6"
+                  y2="6"
+                />
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="12"
+                  y2="12"
+                />
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="18"
+                  y2="18"
+                />
+              </svg>
+            </button>
+            para criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+ ÔØ» Object.getElementError ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ÔØ» src/pages/__tests__/Dashboard.delete-flow.test.tsx:207:33
+    205|     navigateToHistory();
+    206| 
+    207|     const deleteButton = screen.getByRole('button', { name: /Excluir/iÔÇª
+       |                                 ^
+    208|     await user.click(deleteButton);
+    209| 
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[3/9]ÔÄ»
+
+ FAIL  src/pages/__tests__/Dashboard.delete-flow.test.tsx > Dashboard - Delete Match Flow > should remove deleted match from UI after successful deletion
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  <header
+    class="dashboard-header"
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  <h2 />
+
+  Name "Bem-vindo ao RacketApp":
+  <h3
+    class="dashboard-hero__title"
+  />
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  <button
+    aria-expanded="false"
+    aria-haspopup="true"
+    class="new-match-button"
+  />
+
+  Name "Menu":
+  <button
+    data-testid="hamburger-btn"
+  />
+
+  Name "Abrir menu":
+  <button
+    aria-label="Abrir menu"
+    class="dashboard-hero__menu-link"
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="dashboard-hero__text"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div>
+      <div
+        class="dashboard"
+        data-testid="dashboard"
+      >
+        <header
+          class="dashboard-header"
+        >
+          <h2>
+            Minhas 
+            <span>
+              Partidas
+            </span>
+          </h2>
+          <div
+            class="dashboard-actions"
+            style="position: relative;"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="new-match-button"
+            >
+              + Nova Partida
+            </button>
+          </div>
+        </header>
+        <div
+          data-testid="athlete-header"
+        >
+          <button
+            data-testid="hamburger-btn"
+          >
+            Menu
+          </button>
+        </div>
+        <div
+          class="dashboard-hero"
+          data-testid="dashboard-hero"
+        >
+          <div
+            class="dashboard-hero__icon"
+          >
+            <svg
+              aria-hidden="true"
+              fill="none"
+              height="48"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+              width="48"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+              />
+              <path
+                d="M8 14s1.5 2 4 2 4-2 4-2"
+              />
+              <line
+                x1="9"
+                x2="9.01"
+                y1="9"
+                y2="9"
+              />
+              <line
+                x1="15"
+                x2="15.01"
+                y1="9"
+                y2="9"
+              />
+            </svg>
+          </div>
+          <h3
+            class="dashboard-hero__title"
+          >
+            Bem-vindo ao RacketApp
+          </h3>
+          <p
+            class="dashboard-hero__text"
+          >
+            Use o menu
+            <button
+              aria-label="Abrir menu"
+              class="dashboard-hero__menu-link"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+                width="16"
+              >
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="6"
+                  y2="6"
+                />
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="12"
+                  y2="12"
+                />
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="18"
+                  y2="18"
+                />
+              </svg>
+            </button>
+            para criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+ ÔØ» Object.getElementError ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ÔØ» src/pages/__tests__/Dashboard.delete-flow.test.tsx:223:33
+    221|     navigateToHistory();
+    222| 
+    223|     const deleteButton = screen.getByRole('button', { name: /Excluir/iÔÇª
+       |                                 ^
+    224|     await user.click(deleteButton);
+    225| 
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[4/9]ÔÄ»
+
+ FAIL  src/pages/__tests__/Dashboard.delete-flow.test.tsx > Dashboard - Delete Match Flow > should update deletedMatchIds state after successful deletion
+TestingLibraryElementError: Unable to find an element with the text: /Test Match/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div>
+      <div
+        class="dashboard"
+        data-testid="dashboard"
+      >
+        <header
+          class="dashboard-header"
+        >
+          <h2>
+            Minhas 
+            <span>
+              Partidas
+            </span>
+          </h2>
+          <div
+            class="dashboard-actions"
+            style="position: relative;"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="new-match-button"
+            >
+              + Nova Partida
+            </button>
+          </div>
+        </header>
+        <div
+          data-testid="athlete-header"
+        >
+          <button
+            data-testid="hamburger-btn"
+          >
+            Menu
+          </button>
+        </div>
+        <div
+          class="dashboard-hero"
+          data-testid="dashboard-hero"
+        >
+          <div
+            class="dashboard-hero__icon"
+          >
+            <svg
+              aria-hidden="true"
+              fill="none"
+              height="48"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+              width="48"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+              />
+              <path
+                d="M8 14s1.5 2 4 2 4-2 4-2"
+              />
+              <line
+                x1="9"
+                x2="9.01"
+                y1="9"
+                y2="9"
+              />
+              <line
+                x1="15"
+                x2="15.01"
+                y1="9"
+                y2="9"
+              />
+            </svg>
+          </div>
+          <h3
+            class="dashboard-hero__title"
+          >
+            Bem-vindo ao RacketApp
+          </h3>
+          <p
+            class="dashboard-hero__text"
+          >
+            Use o menu
+            <button
+              aria-label="Abrir menu"
+              class="dashboard-hero__menu-link"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+                width="16"
+              >
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="6"
+                  y2="6"
+                />
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="12"
+                  y2="12"
+                />
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="18"
+                  y2="18"
+                />
+              </svg>
+            </button>
+            para criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+ ÔØ» Object.getElementError ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ÔØ» src/pages/__tests__/Dashboard.delete-flow.test.tsx:240:19
+    238|     navigateToHistory();
+    239| 
+    240|     expect(screen.getByText(/Test Match/)).toBeInTheDocument();
+       |                   ^
+    241| 
+    242|     const deleteButtons = screen.getAllByRole('button', { name: /ExcluÔÇª
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[5/9]ÔÄ»
+
+ FAIL  src/pages/__tests__/Dashboard.delete-flow.test.tsx > Dashboard - Delete Match Flow > should show error message on delete failure
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  <header
+    class="dashboard-header"
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  <h2 />
+
+  Name "Bem-vindo ao RacketApp":
+  <h3
+    class="dashboard-hero__title"
+  />
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  <button
+    aria-expanded="false"
+    aria-haspopup="true"
+    class="new-match-button"
+  />
+
+  Name "Menu":
+  <button
+    data-testid="hamburger-btn"
+  />
+
+  Name "Abrir menu":
+  <button
+    aria-label="Abrir menu"
+    class="dashboard-hero__menu-link"
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="dashboard-hero__text"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div>
+      <div
+        class="dashboard"
+        data-testid="dashboard"
+      >
+        <header
+          class="dashboard-header"
+        >
+          <h2>
+            Minhas 
+            <span>
+              Partidas
+            </span>
+          </h2>
+          <div
+            class="dashboard-actions"
+            style="position: relative;"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="new-match-button"
+            >
+              + Nova Partida
+            </button>
+          </div>
+        </header>
+        <div
+          data-testid="athlete-header"
+        >
+          <button
+            data-testid="hamburger-btn"
+          >
+            Menu
+          </button>
+        </div>
+        <div
+          class="dashboard-hero"
+          data-testid="dashboard-hero"
+        >
+          <div
+            class="dashboard-hero__icon"
+          >
+            <svg
+              aria-hidden="true"
+              fill="none"
+              height="48"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+              width="48"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+              />
+              <path
+                d="M8 14s1.5 2 4 2 4-2 4-2"
+              />
+              <line
+                x1="9"
+                x2="9.01"
+                y1="9"
+                y2="9"
+              />
+              <line
+                x1="15"
+                x2="15.01"
+                y1="9"
+                y2="9"
+              />
+            </svg>
+          </div>
+          <h3
+            class="dashboard-hero__title"
+          >
+            Bem-vindo ao RacketApp
+          </h3>
+          <p
+            class="dashboard-hero__text"
+          >
+            Use o menu
+            <button
+              aria-label="Abrir menu"
+              class="dashboard-hero__menu-link"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+                width="16"
+              >
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="6"
+                  y2="6"
+                />
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="12"
+                  y2="12"
+                />
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="18"
+                  y2="18"
+                />
+              </svg>
+            </button>
+            para criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+ ÔØ» Object.getElementError ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ÔØ» src/pages/__tests__/Dashboard.delete-flow.test.tsx:261:33
+    259|     navigateToHistory();
+    260| 
+    261|     const deleteButton = screen.getByRole('button', { name: /Excluir/iÔÇª
+       |                                 ^
+    262|     await user.click(deleteButton);
+    263| 
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[6/9]ÔÄ»
+
+ FAIL  src/pages/__tests__/Dashboard.delete-flow.test.tsx > Dashboard - Delete Match Flow > should close modal when cancel is clicked
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  <header
+    class="dashboard-header"
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  <h2 />
+
+  Name "Bem-vindo ao RacketApp":
+  <h3
+    class="dashboard-hero__title"
+  />
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  <button
+    aria-expanded="false"
+    aria-haspopup="true"
+    class="new-match-button"
+  />
+
+  Name "Menu":
+  <button
+    data-testid="hamburger-btn"
+  />
+
+  Name "Abrir menu":
+  <button
+    aria-label="Abrir menu"
+    class="dashboard-hero__menu-link"
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="dashboard-hero__text"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div>
+      <div
+        class="dashboard"
+        data-testid="dashboard"
+      >
+        <header
+          class="dashboard-header"
+        >
+          <h2>
+            Minhas 
+            <span>
+              Partidas
+            </span>
+          </h2>
+          <div
+            class="dashboard-actions"
+            style="position: relative;"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="new-match-button"
+            >
+              + Nova Partida
+            </button>
+          </div>
+        </header>
+        <div
+          data-testid="athlete-header"
+        >
+          <button
+            data-testid="hamburger-btn"
+          >
+            Menu
+          </button>
+        </div>
+        <div
+          class="dashboard-hero"
+          data-testid="dashboard-hero"
+        >
+          <div
+            class="dashboard-hero__icon"
+          >
+            <svg
+              aria-hidden="true"
+              fill="none"
+              height="48"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+              width="48"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+              />
+              <path
+                d="M8 14s1.5 2 4 2 4-2 4-2"
+              />
+              <line
+                x1="9"
+                x2="9.01"
+                y1="9"
+                y2="9"
+              />
+              <line
+                x1="15"
+                x2="15.01"
+                y1="9"
+                y2="9"
+              />
+            </svg>
+          </div>
+          <h3
+            class="dashboard-hero__title"
+          >
+            Bem-vindo ao RacketApp
+          </h3>
+          <p
+            class="dashboard-hero__text"
+          >
+            Use o menu
+            <button
+              aria-label="Abrir menu"
+              class="dashboard-hero__menu-link"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+                width="16"
+              >
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="6"
+                  y2="6"
+                />
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="12"
+                  y2="12"
+                />
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="18"
+                  y2="18"
+                />
+              </svg>
+            </button>
+            para criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+ ÔØ» Object.getElementError ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ÔØ» src/pages/__tests__/Dashboard.delete-flow.test.tsx:277:33
+    275|     navigateToHistory();
+    276| 
+    277|     const deleteButton = screen.getByRole('button', { name: /Excluir/iÔÇª
+       |                                 ^
+    278|     await user.click(deleteButton);
+    279| 
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[7/9]ÔÄ»
+
+ FAIL  src/pages/__tests__/Dashboard.delete-flow.test.tsx > Dashboard - Delete Match Flow > should handle deletion of multiple matches in succession
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  <header
+    class="dashboard-header"
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  <h2 />
+
+  Name "Bem-vindo ao RacketApp":
+  <h3
+    class="dashboard-hero__title"
+  />
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  <button
+    aria-expanded="false"
+    aria-haspopup="true"
+    class="new-match-button"
+  />
+
+  Name "Menu":
+  <button
+    data-testid="hamburger-btn"
+  />
+
+  Name "Abrir menu":
+  <button
+    aria-label="Abrir menu"
+    class="dashboard-hero__menu-link"
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="dashboard-hero__text"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div>
+      <div
+        class="dashboard"
+        data-testid="dashboard"
+      >
+        <header
+          class="dashboard-header"
+        >
+          <h2>
+            Minhas 
+            <span>
+              Partidas
+            </span>
+          </h2>
+          <div
+            class="dashboard-actions"
+            style="position: relative;"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="new-match-button"
+            >
+              + Nova Partida
+            </button>
+          </div>
+        </header>
+        <div
+          data-testid="athlete-header"
+        >
+          <button
+            data-testid="hamburger-btn"
+          >
+            Menu
+          </button>
+        </div>
+        <div
+          class="dashboard-hero"
+          data-testid="dashboard-hero"
+        >
+          <div
+            class="dashboard-hero__icon"
+          >
+            <svg
+              aria-hidden="true"
+              fill="none"
+              height="48"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+              width="48"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+              />
+              <path
+                d="M8 14s1.5 2 4 2 4-2 4-2"
+              />
+              <line
+                x1="9"
+                x2="9.01"
+                y1="9"
+                y2="9"
+              />
+              <line
+                x1="15"
+                x2="15.01"
+                y1="9"
+                y2="9"
+              />
+            </svg>
+          </div>
+          <h3
+            class="dashboard-hero__title"
+          >
+            Bem-vindo ao RacketApp
+          </h3>
+          <p
+            class="dashboard-hero__text"
+          >
+            Use o menu
+            <button
+              aria-label="Abrir menu"
+              class="dashboard-hero__menu-link"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+                width="16"
+              >
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="6"
+                  y2="6"
+                />
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="12"
+                  y2="12"
+                />
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="18"
+                  y2="18"
+                />
+              </svg>
+            </button>
+            para criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+ ÔØ» Object.getElementError ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:109:15
+ ÔØ» src/pages/__tests__/Dashboard.delete-flow.test.tsx:297:32
+    295|     navigateToHistory();
+    296| 
+    297|     let deleteButtons = screen.getAllByRole('button', { name: /ExcluirÔÇª
+       |                                ^
+    298|     await user.click(deleteButtons[0]);
+    299| 
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[8/9]ÔÄ»
+
+ FAIL  src/pages/__tests__/Dashboard.delete-flow.test.tsx > Dashboard - Delete Match Flow > should preserve history view state after deletion
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  <header
+    class="dashboard-header"
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  <h2 />
+
+  Name "Bem-vindo ao RacketApp":
+  <h3
+    class="dashboard-hero__title"
+  />
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  <button
+    aria-expanded="false"
+    aria-haspopup="true"
+    class="new-match-button"
+  />
+
+  Name "Menu":
+  <button
+    data-testid="hamburger-btn"
+  />
+
+  Name "Abrir menu":
+  <button
+    aria-label="Abrir menu"
+    class="dashboard-hero__menu-link"
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="dashboard-hero__text"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div>
+      <div
+        class="dashboard"
+        data-testid="dashboard"
+      >
+        <header
+          class="dashboard-header"
+        >
+          <h2>
+            Minhas 
+            <span>
+              Partidas
+            </span>
+          </h2>
+          <div
+            class="dashboard-actions"
+            style="position: relative;"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="new-match-button"
+            >
+              + Nova Partida
+            </button>
+          </div>
+        </header>
+        <div
+          data-testid="athlete-header"
+        >
+          <button
+            data-testid="hamburger-btn"
+          >
+            Menu
+          </button>
+        </div>
+        <div
+          class="dashboard-hero"
+          data-testid="dashboard-hero"
+        >
+          <div
+            class="dashboard-hero__icon"
+          >
+            <svg
+              aria-hidden="true"
+              fill="none"
+              height="48"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+              width="48"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+              />
+              <path
+                d="M8 14s1.5 2 4 2 4-2 4-2"
+              />
+              <line
+                x1="9"
+                x2="9.01"
+                y1="9"
+                y2="9"
+              />
+              <line
+                x1="15"
+                x2="15.01"
+                y1="9"
+                y2="9"
+              />
+            </svg>
+          </div>
+          <h3
+            class="dashboard-hero__title"
+          >
+            Bem-vindo ao RacketApp
+          </h3>
+          <p
+            class="dashboard-hero__text"
+          >
+            Use o menu
+            <button
+              aria-label="Abrir menu"
+              class="dashboard-hero__menu-link"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+                width="16"
+              >
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="6"
+                  y2="6"
+                />
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="12"
+                  y2="12"
+                />
+                <line
+                  x1="3"
+                  x2="21"
+                  y1="18"
+                  y2="18"
+                />
+              </svg>
+            </button>
+            para criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+ ÔØ» Object.getElementError ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ÔØ» ../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ÔØ» src/pages/__tests__/Dashboard.delete-flow.test.tsx:323:33
+    321|     navigateToHistory();
+    322| 
+    323|     const deleteButton = screen.getByRole('button', { name: /Excluir/iÔÇª
+       |                                 ^
+    324|     await user.click(deleteButton);
+    325| 
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[9/9]ÔÄ»
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m9 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (11)[39m
+[2m   Start at [22m 14:57:43
+[2m   Duration [22m 15.84s[2m (transform 2.48s, setup 719ms, collect 5.79s, tests 4.13s, environment 3.91s, prepare 70ms)[22m
+

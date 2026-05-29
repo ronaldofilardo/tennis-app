@@ -1,0 +1,53 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/apps/Racket/Racket/frontend[39m
+
+[90mstdout[2m | src/pages/__tests__/Dashboard.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | src/pages/__tests__/Dashboard.delete-flow.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould show delete button for match created by current user with NOT_STARTED status[33m 561[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mrenders dashboard with title and new match button[33m 540[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mshows loading message when loading is true[32m 11[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mshows error message when error is present[32m 11[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mchama onNewMatchClick diretamente quando Nova Partida ├® selecionada no menu hamburger[32m 63[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mfilters matches based on user permissions[32m 68[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mcalls onStartMatch when clicking on NOT_STARTED match[32m 39[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould not show delete button for matches created by other users[32m 102[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould not show delete button for matches not in NOT_STARTED status[32m 71[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mcalls onContinueMatch when clicking on IN_PROGRESS match via carousel[32m 105[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mopens stats modal when stats button is clicked[32m 143[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould open confirmation modal when delete button is clicked[33m 307[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mshows loading state on stats button when fetching[32m 225[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mhandles fetch errors gracefully[32m 118[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mexibe toast de erro quando stats retorna HTTP 401[32m 103[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould call httpClient.delete with correct match ID when confirmed[33m 366[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mexibe toast de erro quando stats retorna HTTP 403[32m 116[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mexibe toast de erro quando stats retorna HTTP 500[32m 121[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mrenders live matches in the carousel for IN_PROGRESS matches[32m 16[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mrenders match partials in the carousel for live matches[32m 10[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mrenders match format labels correctly[32m 9[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mhandles matches without players object[32m 10[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mhandles empty matches array[32m 25[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mhandles null currentUser[32m 7[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mcloses stats modal when close button is clicked[32m 89[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mexibe hero CTA quando view ├® none (padr├úo) e n├úo h├í partidas[32m 8[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22maplica classe card--live no carousel para partidas IN_PROGRESS[32m 8[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22maplica classe card--pending em partidas NOT_STARTED[32m 17[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22maplica classe card--finished em partidas FINISHED[32m 15[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mexibe parciais na card-finished-score para partidas FINISHED[32m 14[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mexibe badge de quadra quando courtType ├® definido[32m 14[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mn├úo exibe hero CTA quando h├í loading[32m 4[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould remove deleted match from UI after successful deletion[33m 391[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould update deletedMatchIds state after successful deletion[33m 352[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould show error message on delete failure[32m 247[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould close modal when cancel is clicked[32m 243[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould handle deletion of multiple matches in succession[33m 505[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould preserve history view state after deletion[32m 186[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m38 passed[39m[22m[90m (38)[39m
+[2m   Start at [22m 15:01:32
+[2m   Duration [22m 10.31s[2m (transform 1.61s, setup 845ms, collect 3.99s, tests 5.24s, environment 7.54s, prepare 110ms)[22m
+

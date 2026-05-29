@@ -26,7 +26,7 @@ const LiveMatchesCarousel: React.FC<LiveMatchesCarouselProps> = ({ matches, onMa
       </div>
 
       <div
-        className={`live-carousel${matches.length === 1 ? 'live-carousel--single' : ''}`}
+        className={`live-carousel${matches.length === 1 ? ' live-carousel--single' : ''}`}
         data-testid="live-carousel"
       >
         {matches.map((match) => {

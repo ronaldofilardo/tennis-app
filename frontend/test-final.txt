@@ -1,0 +1,367 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/apps/Racket/Racket/frontend[39m
+
+[90mstdout[2m | src/components/__tests__/LiveMatchesCarousel.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | tests/MatchTimelineView.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | src/pages/__tests__/ScoreboardV2.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | tests/ResumeScoreModal.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | src/components/__tests__/ServerEffectModal.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | src/pages/__tests__/ScoreboardV2.server-effect.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mRenderiza├º├úo b├ísica[2m > [22mn├úo renderiza quando isOpen ├® false[32m 65[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mEstado vazio[2m > [22mdeve exibir mensagem quando n├úo h├í pontos[32m 85[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mRenderiza├º├úo b├ísica[2m > [22mdeve exibir o t├¡tulo "Timeline de Pontos"[32m 143[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/LiveMatchesCarousel.test.tsx[2m > [22mLiveMatchesCarousel[2m > [22mretorna null quando n├úo h├í partidas[32m 32[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mVisibilidade[2m > [22mn├úo renderiza quando isOpen ├® false[32m 47[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mVisibilidade[2m > [22mrenderiza o dialog quando isOpen ├® true[33m 785[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mVisibilidade[2m > [22mexibe o t├¡tulo "Partida em Andamento"[32m 86[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/LiveMatchesCarousel.test.tsx[2m > [22mLiveMatchesCarousel[2m > [22maplica classe live-carousel--single com espa├ºo correto quando h├í 1 partida[32m 68[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/LiveMatchesCarousel.test.tsx[2m > [22mLiveMatchesCarousel[2m > [22mn├úo aplica live-carousel--single quando h├í mais de 1 partida[32m 15[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/LiveMatchesCarousel.test.tsx[2m > [22mLiveMatchesCarousel[2m > [22mrenderiza card para cada partida[32m 20[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mRenderiza├º├úo b├ísica[2m > [22mdeve exibir a contagem de pontos[32m 127[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/LiveMatchesCarousel.test.tsx[2m > [22mLiveMatchesCarousel[2m > [22mchama onMatchClick ao clicar em uma partida[33m 667[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/LiveMatchesCarousel.test.tsx[2m > [22mLiveMatchesCarousel[2m > [22mexibe se├º├úo "Ao Vivo" com contagem de partidas[32m 48[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mRenderiza├º├úo b├ísica[2m > [22mrenderiza o modal quando isOpen ├® true[32m 92[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mRenderiza├º├úo b├ísica[2m > [22mexibe o jogador em foco corretamente[32m 24[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mRenderiza├º├úo b├ísica[2m > [22mexibe o jogador em foco para PLAYER_2[32m 22[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mRenderiza├º├úo b├ísica[2m > [22mdeve renderizar um item por ponto[33m 869[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mVisibilidade[2m > [22mexibe o nome do formato[32m 53[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mVisibilidade[2m > [22mexibe os nomes dos jogadores[32m 46[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mRenderiza├º├úo b├ísica[2m > [22mdeve exibir nomes dos jogadores nos filtros[32m 299[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mTags vis├¡veis no card[2m > [22mdeve exibir a tag "Ace"[32m 81[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mOp├º├Áes de Efeito[2m > [22mexibe todas as op├º├Áes de efeito[33m 1252[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mTags vis├¡veis no card[2m > [22mdeve exibir a tag "DF" para dupla falta[32m 129[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mSele├º├úo de saque[2m > [22mo bot├úo PLAYER_1 tem aria-pressed=true por padr├úo[33m 434[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mSele├º├úo de saque[2m > [22mao clicar em PLAYER_2, o bot├úo correspondente fica active[33m 398[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mSele├º├úo de saque[2m > [22mao trocar o saque, o bot├úo PLAYER_1 perde o active[33m 383[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mOp├º├Áes de Efeito[2m > [22mpermite sele├º├úo de efeito[33m 366[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mTags vis├¡veis no card[2m > [22mdeve exibir a tag "BP" para breakpoint[32m 206[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mBot├úo Cancelar[2m > [22mchama onCancel quando clicado[32m 160[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mOp├º├Áes de Efeito[2m > [22mpermite mudan├ºa de efeito[33m 659[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mValida├º├úo de placar de set (BEST_OF_3)[2m > [22mn├úo mostra "Set completo" com placar incompleto (3-2)[33m 358[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mOp├º├Áes de Dire├º├úo[2m > [22mexibe todas as op├º├Áes de dire├º├úo[33m 433[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mExpans├úo de cards[2m > [22mdeve expandir o card ao clicar no header[33m 911[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mValida├º├úo de placar de set (BEST_OF_3)[2m > [22mmostra "Set completo" com placar 6-3[32m 132[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mValida├º├úo de placar de set (BEST_OF_3)[2m > [22mmostra nome do vencedor correto para 6-2 (p1)[32m 232[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve renderizar a se├º├úo quando h├í partidas abertas
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve renderizar a se├º├úo quando h├í partidas abertas
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve renderizar a se├º├úo quando h├í partidas abertas
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve renderizar a se├º├úo quando h├í partidas abertas
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mOp├º├Áes de Dire├º├úo[2m > [22mpermite sele├º├úo de dire├º├úo[32m 155[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mOp├º├Áes de Dire├º├úo[2m > [22mpermite mudan├ºa de dire├º├úo[33m 344[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mValida├º├úo de placar de set (BEST_OF_3)[2m > [22mmostra nome do vencedor correto para 3-6 (p2)[32m 170[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mBot├úo Confirmar Ponto[2m > [22mest├í sempre habilitado[32m 141[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mExpans├úo de cards[2m > [22mdeve colapsar o card ao clicar novamente[33m 315[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mValida├º├úo de placar de set (BEST_OF_3)[2m > [22mmostra "Set completo" com placar tiebreak 7-6[32m 235[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mValida├º├úo de placar de set (BEST_OF_3)[2m > [22mmostra campo de placar do tie-break quando set foi ganho no tie-break (7-6)[32m 293[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mBot├úo Confirmar Ponto[2m > [22mpermite confirma├º├úo sem sele├º├úo de efeito ou dire├º├úo[32m 165[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mExpans├úo de cards[2m > [22mdeve mostrar detalhes do saque ao expandir ponto com serve[33m 552[2mms[22m[39m
+stderr | src/pages/__tests__/ScoreboardV2.server-effect.test.tsx > ScoreboardV2 - ServerEffect Integration > Bot├Áes informativos de saque > exibe "1┬║ Saque" e, ap├│s falta, "2┬║ Saque" como bot├Áes informativos sem funcionalidade
+ÔÜá´©Å React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+ÔÜá´©Å React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+stderr | src/pages/__tests__/ScoreboardV2.test.tsx > ScoreboardV2 - Ace Button Behavior > Ace button functionality > opens ServerEffectModal when Ace button is clicked on first serve
+ÔÜá´©Å React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+ÔÜá´©Å React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mValida├º├úo de placar de set (BEST_OF_3)[2m > [22mmostra se├º├úo de tie-break em andamento quando placar ├® 6-6[32m 186[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mBot├úo Confirmar Ponto[2m > [22mpermite confirma├º├úo com apenas efeito selecionado[33m 376[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mExpans├úo de cards[2m > [22mdeve mostrar detalhes do rally ao expandir ponto com rallyDetails[33m 397[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mValida├º├úo de placar de set (BEST_OF_3)[2m > [22mn├úo mostra bot├úo "Confirmar Set" com placar incompleto[33m 350[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mExpans├úo de cards[2m > [22mdeve mostrar contexto do placar ao expandir ponto com context[33m 443[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mBot├úo Confirmar Ponto[2m > [22mpermite confirma├º├úo com apenas dire├º├úo selecionada[33m 357[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mValida├º├úo de placar de set (BEST_OF_3)[2m > [22mmostra bot├úo "Confirmar Set 1" com placar 6-1[32m 243[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mFiltros[2m > [22mdeve filtrar por jogador ao clicar no filter chip[33m 313[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir badge com contagem de partidas
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir badge com contagem de partidas
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir badge com contagem de partidas
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir badge com contagem de partidas
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve renderizar a se├º├úo quando h├í partidas abertas[33m 1995[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mFiltros[2m > [22mdeve atualizar contagem ao filtrar[33m 349[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mFiltros[2m > [22mdeve mostrar filtro "Winners / Aces"[32m 62[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mFiltros[2m > [22mdeve mostrar filtro "Erros"[32m 234[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mConfirmar set[2m > [22mao confirmar set 6-3, exibe na lista de sets conclu├¡dos[33m 486[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mBot├úo Confirmar Ponto[2m > [22mpermite confirma├º├úo com efeito e dire├º├úo selecionados[33m 469[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mReset ao reabrir[2m > [22mreseta sele├º├Áes quando modal ├® reaberto[33m 1064[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mConfirmar set[2m > [22map├│s confirmar set, inputs s├úo limpos e pr├│ximo set aparece (Set 2)[33m 625[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mCancelamento[2m > [22mchama onCancel quando bot├úo Cancelar ├® clicado[32m 118[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mIntera├º├Áes de overlay[2m > [22mchama onCancel quando overlay ├® clicado[32m 17[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mIntera├º├Áes de overlay[2m > [22mn├úo chama onCancel quando modal content ├® clicado[32m 13[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mContexto de Erro (context='error')[2m > [22mrenderiza com header diferente quando context='error'[32m 29[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mContexto de Erro (context='error')[2m > [22maplica classe CSS error quando context='error'[32m 18[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mContexto de Erro (context='error')[2m > [22mmostra tipo de erro Out quando errorType='out'[32m 8[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mContexto de Erro (context='error')[2m > [22mmostra tipo de erro Net quando errorType='net'[32m 9[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mFiltros[2m > [22mdeve mostrar "Breakpoints" quando h├í break points[32m 145[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve iniciar expandido (aria-expanded=true)
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve iniciar expandido (aria-expanded=true)
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve iniciar expandido (aria-expanded=true)
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve iniciar expandido (aria-expanded=true)
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve exibir badge com contagem de partidas[33m 970[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Ace Button Behavior[2m > [22mAce button functionality[2m > [22mopens ServerEffectModal when Ace button is clicked on first serve[33m 2098[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mFiltros[2m > [22mdeve limpar filtros ao clicar em "Limpar"[33m 556[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mContexto de Erro (context='error')[2m > [22mmostra 'Registrar e Continuar' para 1┬║ saque[32m 9[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mContexto de Erro (context='error')[2m > [22mmostra 'Registrar Dupla Falta' para 2┬║ saque[32m 12[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mContexto de Erro (context='error')[2m > [22mpermite sele├º├úo de efeito e dire├º├úo em contexto de erro[33m 379[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mContexto de Erro (context='error')[2m > [22mregistra dupla falta sem sele├º├úo em 2┬║ saque[32m 8[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mRedesign ÔÇö estrutura dark theme[2m > [22mbot├úo Confirmar aparece antes do bot├úo Cancelar no DOM[32m 13[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mRedesign ÔÇö estrutura dark theme[2m > [22musa classe confirm-btn no bot├úo de confirma├º├úo[32m 75[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mConfirmar set[2m > [22mexibe erro quando placar n├úo representa set completo[33m 403[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mFiltros[2m > [22mdeve mostrar mensagem quando filtro n├úo retorna resultados[33m 332[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mRedesign ÔÇö estrutura dark theme[2m > [22musa classe cancel-btn no bot├úo de cancelamento[32m 37[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mRedesign ÔÇö estrutura dark theme[2m > [22mbot├Áes de op├º├úo usam classe button-group button[32m 6[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mRedesign ÔÇö estrutura dark theme[2m > [22mbot├úo selecionado recebe classe active[32m 199[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mRedesign ÔÇö estrutura dark theme[2m > [22musa data-testid=server-effect-modal no container[32m 15[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve colapsar ao clicar no cabe├ºalho
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve colapsar ao clicar no cabe├ºalho
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve colapsar ao clicar no cabe├ºalho
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve colapsar ao clicar no cabe├ºalho
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve iniciar expandido (aria-expanded=true)[33m 785[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mFiltros[2m > [22mdeve desativar filtro de jogador ao clicar novamente (toggle)[33m 325[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mConfirmar set[2m > [22mexibe erro quando placar finalizaria a partida (vencer setsToWin=2 sets com BO3)[33m 571[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mRemover ├║ltimo set[2m > [22mbot├úo "Remover ├║ltimo" n├úo aparece quando n├úo h├í sets conclu├¡dos[32m 65[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mBot├Áes informativos de saque[2m > [22mexibe "1┬║ Saque" e, ap├│s falta, "2┬║ Saque" como bot├Áes informativos sem funcionalidade[33m 2755[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mAcessibilidade[2m > [22mdeve ter aria-pressed nos filter chips[32m 240[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mAcessibilidade[2m > [22mdeve ter aria-expanded nos cards[32m 265[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mRemover ├║ltimo set[2m > [22mao confirmar um set e remover, lista de sets fica vazia[33m 484[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo Ace ÔåÆ ServerEffect[2m > [22mabre ServerEffectModal ao clicar em Ace no 1┬║ saque[33m 411[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mAcessibilidade[2m > [22mdeve ter role="group" no container de filtros[32m 124[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mAcessibilidade[2m > [22mdeve ter aria-label na lista de pontos[32m 94[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mGuard: confirmar set que finalizaria o jogo[2m > [22mexibe erro ao tentar confirmar set que finalizaria a partida (SINGLE_SET 6-2)[32m 267[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mAcessibilidade[2m > [22mdeve renderizar separador "Marca├º├úo interrompida" quando h├í lacuna entre pontos[32m 170[2mms[22m[39m
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx[2m > [22mMatchTimelineView[2m > [22mAcessibilidade[2m > [22mn├úo deve renderizar separador quando n├úo h├í lacuna entre pontos[32m 100[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mGuard: confirmar set que finalizaria o jogo[2m > [22mn├úo adiciona o set ├á lista quando ele finalizaria a partida[32m 287[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mFormato MATCH_TIEBREAK[2m > [22mexibe "Match Tie-break" como t├¡tulo do set[32m 29[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve expandir novamente ao clicar duas vezes
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve expandir novamente ao clicar duas vezes
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve expandir novamente ao clicar duas vezes
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve expandir novamente ao clicar duas vezes
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve colapsar ao clicar no cabe├ºalho[33m 1019[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mFormato MATCH_TIEBREAK[2m > [22mn├úo exibe campo de games (sem spinbuttons de games)[32m 80[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Ace Button Behavior[2m > [22mAce button functionality[2m > [22mopens ServerEffectModal when Ace button is clicked on second serve[33m 1220[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo Ace ÔåÆ ServerEffect[2m > [22mabre ServerEffectModal ao clicar em Ace no 2┬║ saque[33m 846[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Ace Button Behavior[2m > [22mAce button functionality[2m > [22mallows user to confirm point through ServerEffectModal[33m 796[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mFormato MATCH_TIEBREAK[2m > [22mexibe inputs de match tie-break com aria-label correto[32m 194[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mFormato MATCH_TIEBREAK[2m > [22mchama onConfirm com currentGameIsMatchTiebreak=true ao clicar Iniciar Partida[33m 428[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mFormato FAST4 (gamesPerSet=4, tiebreakAt=3)[2m > [22mmostra Set completo com 4-2[32m 214[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve ter aria-controls apontando para o id da lista
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve ter aria-controls apontando para o id da lista
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve ter aria-controls apontando para o id da lista
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve ter aria-controls apontando para o id da lista
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve expandir novamente ao clicar duas vezes[33m 1032[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mFormato FAST4 (gamesPerSet=4, tiebreakAt=3)[2m > [22mmostra Set completo com tie-break 4-3[32m 181[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mFormato FAST4 (gamesPerSet=4, tiebreakAt=3)[2m > [22mmostra tie-break em andamento com 3-3[32m 154[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo Dupla Falta ÔåÆ Ponto Autom├ítico[2m > [22mmarca ponto automaticamente ao clicar em Out no 2┬║ saque (dupla falta)[33m 1261[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Ace Button Behavior[2m > [22mAce button functionality[2m > [22mcloses ServerEffectModal after confirming point[33m 886[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mCallback onConfirm[2m > [22mchama onConfirm com os dados corretos para set em andamento (3-2)[33m 324[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir cards de partida dentro do body quando expandido
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir cards de partida dentro do body quando expandido
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir cards de partida dentro do body quando expandido
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir cards de partida dentro do body quando expandido
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Ace Button Behavior[2m > [22mAce button functionality[2m > [22mallows canceling the ServerEffectModal without adding point[33m 508[2mms[22m[39m
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve ter aria-controls apontando para o id da lista[33m 703[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mn├úo deve renderizar se├º├úo quando n├úo h├í partidas abertas
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mn├úo deve renderizar se├º├úo quando n├úo h├í partidas abertas
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mn├úo deve renderizar se├º├úo quando n├úo h├í partidas abertas
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mn├úo deve renderizar se├º├úo quando n├úo h├í partidas abertas
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve exibir cards de partida dentro do body quando expandido[32m 238[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mCallback onConfirm[2m > [22mchama onConfirm com servidor correto quando PLAYER_2 ├® selecionado[32m 216[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Ace Button Behavior[2m > [22mAce button availability[2m > [22mshows Ace button when serveStep is none and server exists[32m 296[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve esconder os cards quando colapsado (display:none via classe)
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve esconder os cards quando colapsado (display:none via classe)
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve esconder os cards quando colapsado (display:none via classe)
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve esconder os cards quando colapsado (display:none via classe)
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mn├úo deve renderizar se├º├úo quando n├úo h├í partidas abertas[33m 330[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mCallback onConfirm[2m > [22mchama onConfirm com sets conclu├¡dos ap├│s confirmar um set (6-3)[33m 424[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Ace Button Behavior[2m > [22mAce button availability[2m > [22mhides Ace button when match is finished[32m 134[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo Dupla Falta ÔåÆ Ponto Autom├ítico[2m > [22mmarca ponto automaticamente ao clicar em Net no 2┬║ saque (dupla falta)[33m 834[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mCallback onConfirm[2m > [22minclui pontos do tie-break em andamento no currentGamePoints[32m 278[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Ace Button Behavior[2m > [22mAce button availability[2m > [22mshows Ace button when serveStep is second[33m 420[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mConfirma├º├úo de pontos[2m > [22mmarca ponto de Ace com detalhes do ServerEffect[33m 380[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mo chevron deve ter classe --collapsed quando recolhido
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mo chevron deve ter classe --collapsed quando recolhido
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mo chevron deve ter classe --collapsed quando recolhido
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mo chevron deve ter classe --collapsed quando recolhido
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve esconder os cards quando colapsado (display:none via classe)[33m 513[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Ace Button Behavior[2m > [22mIntegration with existing tests[2m > [22mdisplays serve info buttons without click handlers[32m 219[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mCallback onConfirm[2m > [22minclui pontua├º├úo do game atual via selects quando set est├í em andamento[33m 322[2mms[22m[39m
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx[2m > [22mResumeScoreModal[2m > [22mFormato BEST_OF_3_MATCH_TB ÔÇö 3┬║ set match tiebreak[2m > [22map├│s 1 set cada, 3┬║ set mostra "Match Tie-break"[33m 430[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Ace Button Behavior[2m > [22mIntegration with existing tests[2m > [22mmaintains existing point buttons functionality[33m 354[2mms[22m[39m
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mo chevron deve ter classe --collapsed quando recolhido[33m 539[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Button Alignment Based on Server[2m > [22maligns quick action buttons to the left when PLAYER_1 is serving[32m 187[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mConfirma├º├úo de pontos[2m > [22mmarca ponto de Ace no 2┬║ saque corretamente para o sacador[33m 665[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mConfirma├º├úo de pontos[2m > [22mmarca ponto de dupla falta automaticamente sem modal[33m 531[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Button Alignment Based on Server[2m > [22maligns quick action buttons to the right when PLAYER_2 is serving[32m 108[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo de Erro de Saque (Out/Net)[2m > [22mabre modal de erro ao clicar em Out no 1┬║ saque[32m 114[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo de Erro de Saque (Out/Net)[2m > [22mabre modal de erro ao clicar em Net no 1┬║ saque[32m 132[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo de Erro de Saque (Out/Net)[2m > [22msalva erro do 1┬║ saque e permite continuar para 2┬║ saque[32m 184[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo de Erro de Saque (Out/Net)[2m > [22mabre modal de erro ao clicar em Out no 2┬║ saque[33m 323[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo de Erro de Saque (Out/Net)[2m > [22mregistra dupla falta ao confirmar erro no 2┬║ saque[33m 368[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo de Erro de Saque (Out/Net)[2m > [22mpermite cancelamento do modal de erro volta para mesmo saque[32m 222[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo de Erro de Saque (Out/Net)[2m > [22mpermite cancelamento do modal de erro no 2┬║ saque[33m 373[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Button Alignment Based on Server[2m > [22mupdates button alignment when server changes after point[33m 2845[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Button Alignment Based on Server[2m > [22mScoreboardV2 - Server Alternation and isFirstServe Registration[2m > [22mregisters isFirstServe correctly for points on first serve[32m 165[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Button Alignment Based on Server[2m > [22mScoreboardV2 - Server Alternation and isFirstServe Registration[2m > [22mregisters isFirstServe correctly for points on second serve[32m 206[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Button Alignment Based on Server[2m > [22mScoreboardV2 - Server Alternation and isFirstServe Registration[2m > [22malternates server correctly when returner wins point on first serve[32m 178[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Button Alignment Based on Server[2m > [22mScoreboardV2 - Server Alternation and isFirstServe Registration[2m > [22mmaintains isFirstServe consistency in point button clicks[32m 145[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Button Alignment Based on Server[2m > [22mScoreboardV2 - Server Alternation and isFirstServe Registration[2m > [22mmaintains isFirstServe consistency for second serve point buttons[32m 286[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22mprioriza estado passado via navigation state[32m 13[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22mrestaura estado profundo do backend quando n├úo h├í navigation state[32m 9[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22mredireciona para dashboard se partida finalizada[32m 7[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22mabre setup se partida n├úo iniciada[32m 154[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22mFinaliza├º├úo Autom├ítica de Partida[2m > [22mexibe banner de vit├│ria quando partida ├® finalizada por regras do jogo[32m 59[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22mFinaliza├º├úo Autom├ítica de Partida[2m > [22mexibe bot├Áes de a├º├úo ap├│s finaliza├º├úo[32m 291[2mms[22m[39m
+[90mstdout[2m | src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22m[2mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22m[2mFinaliza├º├úo Autom├ítica de Partida[2m > [22m[2mfinaliza partida automaticamente quando regras determinam vencedor
+[22m[39m[ScoreboardV2] Partida finalizada! Vencedor: PLAYER_1 | session:sess_1
+
+[90mstdout[2m | src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22m[2mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22m[2mFinaliza├º├úo Autom├ítica de Partida[2m > [22m[2mfinaliza partida automaticamente quando regras determinam vencedor
+[22m[39m[ScoreboardV2] Partida auto-finalizada no DB com sucesso | session:sess_1 { matchId: [32m'test-match-id'[39m }
+
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22mFinaliza├º├úo Autom├ítica de Partida[2m > [22mdesabilita bot├Áes de pontua├º├úo ap├│s finaliza├º├úo[33m 1258[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22mFinaliza├º├úo Autom├ítica de Partida[2m > [22mfinaliza partida automaticamente quando regras determinam vencedor[32m 132[2mms[22m[39m
+[90mstdout[2m | AppLogger._log (C:\apps\Racket\Racket\frontend\src\services\logger.ts:219:17)
+[22m[39m[ScoreboardV2] Estado final capturado com sucesso | session:sess_1 { matchId: [32m'test-match-id'[39m, hasPointsHistory: [33mfalse[39m, pointsCount: [33m0[39m }
+

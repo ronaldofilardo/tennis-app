@@ -251,6 +251,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   }, []);
 
   const handleSelectView = useCallback((view: DashboardView) => {
+    dispatchUI({ type: 'SELECT_VIEW', view });
     switch (view) {
       case 'history':   navigate('/historico'); break;
       case 'annotated': navigate('/partidasanotadas'); break;

@@ -1,0 +1,192 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/apps/Racket/Racket/frontend[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve renderizar a se├º├úo quando h├í partidas abertas
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve renderizar a se├º├úo quando h├í partidas abertas
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve renderizar a se├º├úo quando h├í partidas abertas
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve renderizar a se├º├úo quando h├í partidas abertas
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir badge com contagem de partidas
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir badge com contagem de partidas
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir badge com contagem de partidas
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir badge com contagem de partidas
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve renderizar a se├º├úo quando h├í partidas abertas[33m 524[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve iniciar expandido (aria-expanded=true)
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve iniciar expandido (aria-expanded=true)
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve iniciar expandido (aria-expanded=true)
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve iniciar expandido (aria-expanded=true)
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve exibir badge com contagem de partidas[32m 116[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve colapsar ao clicar no cabe├ºalho
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve colapsar ao clicar no cabe├ºalho
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve colapsar ao clicar no cabe├ºalho
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve colapsar ao clicar no cabe├ºalho
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve iniciar expandido (aria-expanded=true)[32m 231[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve expandir novamente ao clicar duas vezes
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve expandir novamente ao clicar duas vezes
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve expandir novamente ao clicar duas vezes
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve expandir novamente ao clicar duas vezes
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve colapsar ao clicar no cabe├ºalho[32m 299[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve ter aria-controls apontando para o id da lista
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve ter aria-controls apontando para o id da lista
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve ter aria-controls apontando para o id da lista
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve ter aria-controls apontando para o id da lista
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve expandir novamente ao clicar duas vezes[33m 319[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir cards de partida dentro do body quando expandido
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir cards de partida dentro do body quando expandido
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir cards de partida dentro do body quando expandido
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir cards de partida dentro do body quando expandido
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve ter aria-controls apontando para o id da lista[32m 209[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mn├úo deve renderizar se├º├úo quando n├úo h├í partidas abertas
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mn├úo deve renderizar se├º├úo quando n├úo h├í partidas abertas
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mn├úo deve renderizar se├º├úo quando n├úo h├í partidas abertas
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mn├úo deve renderizar se├º├úo quando n├úo h├í partidas abertas
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve exibir cards de partida dentro do body quando expandido[32m 139[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve esconder os cards quando colapsado (display:none via classe)
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve esconder os cards quando colapsado (display:none via classe)
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve esconder os cards quando colapsado (display:none via classe)
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve esconder os cards quando colapsado (display:none via classe)
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mn├úo deve renderizar se├º├úo quando n├úo h├í partidas abertas[32m 167[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mo chevron deve ter classe --collapsed quando recolhido
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mo chevron deve ter classe --collapsed quando recolhido
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mo chevron deve ter classe --collapsed quando recolhido
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mo chevron deve ter classe --collapsed quando recolhido
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve esconder os cards quando colapsado (display:none via classe)[32m 282[2mms[22m[39m
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mo chevron deve ter classe --collapsed quando recolhido[32m 239[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m10 passed[39m[22m[90m (10)[39m
+[2m   Start at [22m 15:38:58
+[2m   Duration [22m 9.12s[2m (transform 877ms, setup 844ms, collect 1.96s, tests 2.53s, environment 3.09s, prepare 60ms)[22m
+

@@ -1,0 +1,4330 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/apps/Racket/Racket/frontend[39m
+
+[90mstdout[2m | src/pages/__tests__/ScoreboardV2.server-effect.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | src/components/__tests__/LiveMatchesCarousel.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | src/pages/__tests__/Dashboard.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | src/components/__tests__/ServerEffectModal.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | src/pages/__tests__/Dashboard.delete-flow.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | src/pages/__tests__/ScoreboardV2.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mRenderiza├º├úo b├ísica[2m > [22mn├úo renderiza quando isOpen ├® false[32m 58[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/LiveMatchesCarousel.test.tsx[2m > [22mLiveMatchesCarousel[2m > [22mretorna null quando n├úo h├í partidas[32m 35[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/LiveMatchesCarousel.test.tsx[2m > [22mLiveMatchesCarousel[2m > [22maplica classe live-carousel--single com espa├ºo correto quando h├í 1 partida[32m 46[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/LiveMatchesCarousel.test.tsx[2m > [22mLiveMatchesCarousel[2m > [22mn├úo aplica live-carousel--single quando h├í mais de 1 partida[32m 27[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/LiveMatchesCarousel.test.tsx[2m > [22mLiveMatchesCarousel[2m > [22mrenderiza card para cada partida[32m 47[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mRenderiza├º├úo b├ísica[2m > [22mrenderiza o modal quando isOpen ├® true[32m 75[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mRenderiza├º├úo b├ísica[2m > [22mexibe o jogador em foco corretamente[32m 38[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mRenderiza├º├úo b├ísica[2m > [22mexibe o jogador em foco para PLAYER_2[32m 34[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/LiveMatchesCarousel.test.tsx[2m > [22mLiveMatchesCarousel[2m > [22mchama onMatchClick ao clicar em uma partida[33m 1179[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/LiveMatchesCarousel.test.tsx[2m > [22mLiveMatchesCarousel[2m > [22mexibe se├º├úo "Ao Vivo" com contagem de partidas[32m 19[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mOp├º├Áes de Efeito[2m > [22mexibe todas as op├º├Áes de efeito[33m 1508[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mOp├º├Áes de Efeito[2m > [22mpermite sele├º├úo de efeito[32m 125[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve renderizar a se├º├úo quando h├í partidas abertas
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve renderizar a se├º├úo quando h├í partidas abertas
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve renderizar a se├º├úo quando h├í partidas abertas
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve renderizar a se├º├úo quando h├í partidas abertas
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mOp├º├Áes de Efeito[2m > [22mpermite mudan├ºa de efeito[32m 256[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mOp├º├Áes de Dire├º├úo[2m > [22mexibe todas as op├º├Áes de dire├º├úo[32m 288[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mOp├º├Áes de Dire├º├úo[2m > [22mpermite sele├º├úo de dire├º├úo[32m 276[2mms[22m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould show delete button for match created by current user with NOT_STARTED status[33m 821[2mms[22m[39m
+[31m   ÔåÆ [2mexpect([22m[31mreceived[31m[2m).toBeInTheDocument()[22m
+
+[31mreceived[31m value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: [31mnull[31m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mOp├º├Áes de Dire├º├úo[2m > [22mpermite mudan├ºa de dire├º├úo[33m 320[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mBot├úo Confirmar Ponto[2m > [22mest├í sempre habilitado[32m 140[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mrenders dashboard with title and new match button[33m 1210[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mshows loading message when loading is true[32m 60[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mshows error message when error is present[32m 19[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould not show delete button for matches created by other users[32m 227[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mBot├úo Confirmar Ponto[2m > [22mpermite confirma├º├úo sem sele├º├úo de efeito ou dire├º├úo[32m 125[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mchama onNewMatchClick diretamente quando Nova Partida ├® selecionada no menu hamburger[32m 134[2mms[22m[39m
+stderr | src/pages/__tests__/ScoreboardV2.server-effect.test.tsx > ScoreboardV2 - ServerEffect Integration > Bot├Áes informativos de saque > exibe "1┬║ Saque" e, ap├│s falta, "2┬║ Saque" como bot├Áes informativos sem funcionalidade
+ÔÜá´©Å React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+ÔÜá´©Å React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+stderr | src/pages/__tests__/ScoreboardV2.test.tsx > ScoreboardV2 - Ace Button Behavior > Ace button functionality > opens ServerEffectModal when Ace button is clicked on first serve
+ÔÜá´©Å React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+ÔÜá´©Å React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ [31m├ù[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mfilters matches based on user permissions[32m 223[2mms[22m[39m
+[31m   ÔåÆ Unable to find an element with the text: Player 1. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"dashboard"[31m
+      [33mdata-testid[31m=[32m"dashboard"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"dashboard-header"[31m
+      [36m>[31m
+        [36m<h2>[31m
+          [0mMinhas [0m
+          [36m<span>[31m
+            [0mPartidas[0m
+          [36m</span>[31m
+        [36m</h2>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-actions"[31m
+          [33mstyle[31m=[32m"position: relative;"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-expanded[31m=[32m"false"[31m
+            [33maria-haspopup[31m=[32m"true"[31m
+            [33mclass[31m=[32m"new-match-button"[31m
+          [36m>[31m
+            [0m+ Nova Partida[0m
+          [36m</button>[31m
+        [36m</div>[31m
+      [36m</header>[31m
+      [36m<div[31m
+        [33mdata-testid[31m=[32m"athlete-header"[31m
+      [36m>[31m
+        [0mTest User[0m
+        [0m V:[0m
+        [0m0[0m
+        [0m D:[0m
+        [0m0[0m
+        [36m<button[31m
+          [33maria-expanded[31m=[32m"false"[31m
+          [33maria-haspopup[31m=[32m"true"[31m
+          [33mdata-testid[31m=[32m"hamburger-btn"[31m
+        [36m>[31m
+          [0mMenu[0m
+        [36m</button>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard-hero"[31m
+        [33mdata-testid[31m=[32m"dashboard-hero"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero__icon"[31m
+        [36m>[31m
+          [36m<svg[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mfill[31m=[32m"none"[31m
+            [33mheight[31m=[32m"48"[31m
+            [33mstroke[31m=[32m"currentColor"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+            [33mstroke-width[31m=[32m"1.5"[31m
+            [33mviewBox[31m=[32m"0 0 24 24"[31m
+            [33mwidth[31m=[32m"48"[31m
+          [36m>[31m
+            [36m<circle[31m
+              [33mcx[31m=[32m"12"[31m
+              [33mcy[31m=[32m"12"[31m
+              [33mr[31m=[32m"10"[31m
+            [36m/>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"9"[31m
+              [33mx2[31m=[32m"9.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"15"[31m
+              [33mx2[31m=[32m"15.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+          [36m</svg>[31m
+        [36m</div>[31m
+        [36m<h3[31m
+          [33mclass[31m=[32m"dashboard-hero__title"[31m
+        [36m>[31m
+          [0mBem-vindo ao RacketApp[0m
+        [36m</h3>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"dashboard-hero__text"[31m
+        [36m>[31m
+          [0mUse o menu[0m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Abrir menu"[31m
+            [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+            [36m>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"6"[31m
+                [33my2[31m=[32m"6"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"12"[31m
+                [33my2[31m=[32m"12"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"18"[31m
+                [33my2[31m=[32m"18"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+        [36m</p>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mcalls onStartMatch when clicking on NOT_STARTED match[33m 323[2mms[22m[39m
+[31m   ÔåÆ Unable to find an element with the text: Player 1. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"dashboard"[31m
+      [33mdata-testid[31m=[32m"dashboard"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"dashboard-header"[31m
+      [36m>[31m
+        [36m<h2>[31m
+          [0mMinhas [0m
+          [36m<span>[31m
+            [0mPartidas[0m
+          [36m</span>[31m
+        [36m</h2>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-actions"[31m
+          [33mstyle[31m=[32m"position: relative;"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-expanded[31m=[32m"false"[31m
+            [33maria-haspopup[31m=[32m"true"[31m
+            [33mclass[31m=[32m"new-match-button"[31m
+          [36m>[31m
+            [0m+ Nova Partida[0m
+          [36m</button>[31m
+        [36m</div>[31m
+      [36m</header>[31m
+      [36m<div[31m
+        [33mdata-testid[31m=[32m"athlete-header"[31m
+      [36m>[31m
+        [0mTest User[0m
+        [0m V:[0m
+        [0m0[0m
+        [0m D:[0m
+        [0m0[0m
+        [36m<button[31m
+          [33maria-expanded[31m=[32m"false"[31m
+          [33maria-haspopup[31m=[32m"true"[31m
+          [33mdata-testid[31m=[32m"hamburger-btn"[31m
+        [36m>[31m
+          [0mMenu[0m
+        [36m</button>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard-hero"[31m
+        [33mdata-testid[31m=[32m"dashboard-hero"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero__icon"[31m
+        [36m>[31m
+          [36m<svg[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mfill[31m=[32m"none"[31m
+            [33mheight[31m=[32m"48"[31m
+            [33mstroke[31m=[32m"currentColor"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+            [33mstroke-width[31m=[32m"1.5"[31m
+            [33mviewBox[31m=[32m"0 0 24 24"[31m
+            [33mwidth[31m=[32m"48"[31m
+          [36m>[31m
+            [36m<circle[31m
+              [33mcx[31m=[32m"12"[31m
+              [33mcy[31m=[32m"12"[31m
+              [33mr[31m=[32m"10"[31m
+            [36m/>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"9"[31m
+              [33mx2[31m=[32m"9.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"15"[31m
+              [33mx2[31m=[32m"15.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+          [36m</svg>[31m
+        [36m</div>[31m
+        [36m<h3[31m
+          [33mclass[31m=[32m"dashboard-hero__title"[31m
+        [36m>[31m
+          [0mBem-vindo ao RacketApp[0m
+        [36m</h3>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"dashboard-hero__text"[31m
+        [36m>[31m
+          [0mUse o menu[0m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Abrir menu"[31m
+            [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+            [36m>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"6"[31m
+                [33my2[31m=[32m"6"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"12"[31m
+                [33my2[31m=[32m"12"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"18"[31m
+                [33my2[31m=[32m"18"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+        [36m</p>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mBot├úo Confirmar Ponto[2m > [22mpermite confirma├º├úo com apenas efeito selecionado[33m 384[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir badge com contagem de partidas
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir badge com contagem de partidas
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir badge com contagem de partidas
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir badge com contagem de partidas
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve renderizar a se├º├úo quando h├í partidas abertas[33m 2472[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mBot├úo Confirmar Ponto[2m > [22mpermite confirma├º├úo com apenas dire├º├úo selecionada[33m 491[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve iniciar expandido (aria-expanded=true)
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould not show delete button for matches not in NOT_STARTED status[33m 382[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve iniciar expandido (aria-expanded=true)
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve iniciar expandido (aria-expanded=true)
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve iniciar expandido (aria-expanded=true)
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve exibir badge com contagem de partidas[33m 582[2mms[22m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mcalls onContinueMatch when clicking on IN_PROGRESS match via carousel[33m 386[2mms[22m[39m
+[31m   ÔåÆ Unable to find an element by: [data-testid="live-card-2"]
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"dashboard"[31m
+      [33mdata-testid[31m=[32m"dashboard"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"dashboard-header"[31m
+      [36m>[31m
+        [36m<h2>[31m
+          [0mMinhas [0m
+          [36m<span>[31m
+            [0mPartidas[0m
+          [36m</span>[31m
+        [36m</h2>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-actions"[31m
+          [33mstyle[31m=[32m"position: relative;"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-expanded[31m=[32m"false"[31m
+            [33maria-haspopup[31m=[32m"true"[31m
+            [33mclass[31m=[32m"new-match-button"[31m
+          [36m>[31m
+            [0m+ Nova Partida[0m
+          [36m</button>[31m
+        [36m</div>[31m
+      [36m</header>[31m
+      [36m<div[31m
+        [33mdata-testid[31m=[32m"athlete-header"[31m
+      [36m>[31m
+        [0mTest User[0m
+        [0m V:[0m
+        [0m0[0m
+        [0m D:[0m
+        [0m0[0m
+        [36m<button[31m
+          [33maria-expanded[31m=[32m"false"[31m
+          [33maria-haspopup[31m=[32m"true"[31m
+          [33mdata-testid[31m=[32m"hamburger-btn"[31m
+        [36m>[31m
+          [0mMenu[0m
+        [36m</button>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard-hero"[31m
+        [33mdata-testid[31m=[32m"dashboard-hero"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero__icon"[31m
+        [36m>[31m
+          [36m<svg[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mfill[31m=[32m"none"[31m
+            [33mheight[31m=[32m"48"[31m
+            [33mstroke[31m=[32m"currentColor"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+            [33mstroke-width[31m=[32m"1.5"[31m
+            [33mviewBox[31m=[32m"0 0 24 24"[31m
+            [33mwidth[31m=[32m"48"[31m
+          [36m>[31m
+            [36m<circle[31m
+              [33mcx[31m=[32m"12"[31m
+              [33mcy[31m=[32m"12"[31m
+              [33mr[31m=[32m"10"[31m
+            [36m/>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"9"[31m
+              [33mx2[31m=[32m"9.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"15"[31m
+              [33mx2[31m=[32m"15.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+          [36m</svg>[31m
+        [36m</div>[31m
+        [36m<h3[31m
+          [33mclass[31m=[32m"dashboard-hero__title"[31m
+        [36m>[31m
+          [0mBem-vindo ao RacketApp[0m
+        [36m</h3>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"dashboard-hero__text"[31m
+        [36m>[31m
+          [0mUse o menu[0m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Abrir menu"[31m
+            [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+            [36m>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"6"[31m
+                [33my2[31m=[32m"6"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"12"[31m
+                [33my2[31m=[32m"12"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"18"[31m
+                [33my2[31m=[32m"18"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+        [36m</p>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mBot├úo Confirmar Ponto[2m > [22mpermite confirma├º├úo com efeito e dire├º├úo selecionados[33m 833[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mReset ao reabrir[2m > [22mreseta sele├º├Áes quando modal ├® reaberto[33m 1421[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mCancelamento[2m > [22mchama onCancel quando bot├úo Cancelar ├® clicado[33m 371[2mms[22m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould open confirmation modal when delete button is clicked[33m 1715[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard"[31m
+        [33mdata-testid[31m=[32m"dashboard"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"dashboard-header"[31m
+        [36m>[31m
+          [36m<h2>[31m
+            [0mMinhas [0m
+            [36m<span>[31m
+              [0mPartidas[0m
+            [36m</span>[31m
+          [36m</h2>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-actions"[31m
+            [33mstyle[31m=[32m"position: relative;"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-expanded[31m=[32m"false"[31m
+              [33maria-haspopup[31m=[32m"true"[31m
+              [33mclass[31m=[32m"new-match-button"[31m
+            [36m>[31m
+              [0m+ Nova Partida[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mdata-testid[31m=[32m"athlete-header"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33mdata-testid[31m=[32m"hamburger-btn"[31m
+          [36m>[31m
+            [0mMenu[0m
+          [36m</button>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero"[31m
+          [33mdata-testid[31m=[32m"dashboard-hero"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-hero__icon"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"48"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"1.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"48"[31m
+            [36m>[31m
+              [36m<circle[31m
+                [33mcx[31m=[32m"12"[31m
+                [33mcy[31m=[32m"12"[31m
+                [33mr[31m=[32m"10"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"9"[31m
+                [33mx2[31m=[32m"9.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"15"[31m
+                [33mx2[31m=[32m"15.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</div>[31m
+          [36m<h3[31m
+            [33mclass[31m=[32m"dashboard-hero__title"[31m
+          [36m>[31m
+            [0mBem-vindo ao RacketApp[0m
+          [36m</h3>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"dashboard-hero__text"[31m
+          [36m>[31m
+            [0mUse o menu[0m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Abrir menu"[31m
+              [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"16"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"16"[31m
+              [36m>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"6"[31m
+                  [33my2[31m=[32m"6"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"12"[31m
+                  [33my2[31m=[32m"12"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"18"[31m
+                  [33my2[31m=[32m"18"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+          [36m</p>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve colapsar ao clicar no cabe├ºalho
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve colapsar ao clicar no cabe├ºalho
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve colapsar ao clicar no cabe├ºalho
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve colapsar ao clicar no cabe├ºalho
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve iniciar expandido (aria-expanded=true)[33m 1976[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mIntera├º├Áes de overlay[2m > [22mchama onCancel quando overlay ├® clicado[32m 192[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mIntera├º├Áes de overlay[2m > [22mn├úo chama onCancel quando modal content ├® clicado[32m 111[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mContexto de Erro (context='error')[2m > [22mrenderiza com header diferente quando context='error'[32m 57[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mContexto de Erro (context='error')[2m > [22maplica classe CSS error quando context='error'[32m 28[2mms[22m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mopens stats modal when stats button is clicked[33m 1334[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Relat├│rio/`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"dashboard"[31m
+      [33mdata-testid[31m=[32m"dashboard"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"dashboard-header"[31m
+      [36m>[31m
+        [36m<h2>[31m
+          [0mMinhas [0m
+          [36m<span>[31m
+            [0mPartidas[0m
+          [36m</span>[31m
+        [36m</h2>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-actions"[31m
+          [33mstyle[31m=[32m"position: relative;"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-expanded[31m=[32m"false"[31m
+            [33maria-haspopup[31m=[32m"true"[31m
+            [33mclass[31m=[32m"new-match-button"[31m
+          [36m>[31m
+            [0m+ Nova Partida[0m
+          [36m</button>[31m
+        [36m</div>[31m
+      [36m</header>[31m
+      [36m<div[31m
+        [33mdata-testid[31m=[32m"athlete-header"[31m
+      [36m>[31m
+        [0mTest User[0m
+        [0m V:[0m
+        [0m0[0m
+        [0m D:[0m
+        [0m0[0m
+        [36m<button[31m
+          [33maria-expanded[31m=[32m"false"[31m
+          [33maria-haspopup[31m=[32m"true"[31m
+          [33mdata-testid[31m=[32m"hamburger-btn"[31m
+        [36m>[31m
+          [0mMenu[0m
+        [36m</button>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard-hero"[31m
+        [33mdata-testid[31m=[32m"dashboard-hero"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero__icon"[31m
+        [36m>[31m
+          [36m<svg[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mfill[31m=[32m"none"[31m
+            [33mheight[31m=[32m"48"[31m
+            [33mstroke[31m=[32m"currentColor"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+            [33mstroke-width[31m=[32m"1.5"[31m
+            [33mviewBox[31m=[32m"0 0 24 24"[31m
+            [33mwidth[31m=[32m"48"[31m
+          [36m>[31m
+            [36m<circle[31m
+              [33mcx[31m=[32m"12"[31m
+              [33mcy[31m=[32m"12"[31m
+              [33mr[31m=[32m"10"[31m
+            [36m/>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"9"[31m
+              [33mx2[31m=[32m"9.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"15"[31m
+              [33mx2[31m=[32m"15.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+          [36m</svg>[31m
+        [36m</div>[31m
+        [36m<h3[31m
+          [33mclass[31m=[32m"dashboard-hero__title"[31m
+        [36m>[31m
+          [0mBem-vindo ao RacketApp[0m
+        [36m</h3>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"dashboard-hero__text"[31m
+        [36m>[31m
+          [0mUse o menu[0m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Abrir menu"[31m
+            [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+            [36m>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"6"[31m
+                [33my2[31m=[32m"6"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"12"[31m
+                [33my2[31m=[32m"12"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"18"[31m
+                [33my2[31m=[32m"18"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+        [36m</p>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mContexto de Erro (context='error')[2m > [22mmostra tipo de erro Out quando errorType='out'[32m 22[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mContexto de Erro (context='error')[2m > [22mmostra tipo de erro Net quando errorType='net'[32m 25[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mContexto de Erro (context='error')[2m > [22mmostra 'Registrar e Continuar' para 1┬║ saque[32m 15[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mContexto de Erro (context='error')[2m > [22mmostra 'Registrar Dupla Falta' para 2┬║ saque[32m 22[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mContexto de Erro (context='error')[2m > [22mpermite sele├º├úo de efeito e dire├º├úo em contexto de erro[33m 465[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mContexto de Erro (context='error')[2m > [22mregistra dupla falta sem sele├º├úo em 2┬║ saque[32m 36[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mBot├Áes informativos de saque[2m > [22mexibe "1┬║ Saque" e, ap├│s falta, "2┬║ Saque" como bot├Áes informativos sem funcionalidade[33m 4212[2mms[22m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould call httpClient.delete with correct match ID when confirmed[33m 1958[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard"[31m
+        [33mdata-testid[31m=[32m"dashboard"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"dashboard-header"[31m
+        [36m>[31m
+          [36m<h2>[31m
+            [0mMinhas [0m
+            [36m<span>[31m
+              [0mPartidas[0m
+            [36m</span>[31m
+          [36m</h2>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-actions"[31m
+            [33mstyle[31m=[32m"position: relative;"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-expanded[31m=[32m"false"[31m
+              [33maria-haspopup[31m=[32m"true"[31m
+              [33mclass[31m=[32m"new-match-button"[31m
+            [36m>[31m
+              [0m+ Nova Partida[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mdata-testid[31m=[32m"athlete-header"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33mdata-testid[31m=[32m"hamburger-btn"[31m
+          [36m>[31m
+            [0mMenu[0m
+          [36m</button>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero"[31m
+          [33mdata-testid[31m=[32m"dashboard-hero"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-hero__icon"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"48"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"1.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"48"[31m
+            [36m>[31m
+              [36m<circle[31m
+                [33mcx[31m=[32m"12"[31m
+                [33mcy[31m=[32m"12"[31m
+                [33mr[31m=[32m"10"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"9"[31m
+                [33mx2[31m=[32m"9.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"15"[31m
+                [33mx2[31m=[32m"15.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</div>[31m
+          [36m<h3[31m
+            [33mclass[31m=[32m"dashboard-hero__title"[31m
+          [36m>[31m
+            [0mBem-vindo ao RacketApp[0m
+          [36m</h3>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"dashboard-hero__text"[31m
+          [36m>[31m
+            [0mUse o menu[0m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Abrir menu"[31m
+              [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"16"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"16"[31m
+              [36m>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"6"[31m
+                  [33my2[31m=[32m"6"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"12"[31m
+                  [33my2[31m=[32m"12"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"18"[31m
+                  [33my2[31m=[32m"18"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+          [36m</p>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mRedesign ÔÇö estrutura dark theme[2m > [22mbot├úo Confirmar aparece antes do bot├úo Cancelar no DOM[32m 62[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mRedesign ÔÇö estrutura dark theme[2m > [22musa classe confirm-btn no bot├úo de confirma├º├úo[32m 17[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mRedesign ÔÇö estrutura dark theme[2m > [22musa classe cancel-btn no bot├úo de cancelamento[32m 11[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mRedesign ÔÇö estrutura dark theme[2m > [22mbot├Áes de op├º├úo usam classe button-group button[32m 10[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mRedesign ÔÇö estrutura dark theme[2m > [22mbot├úo selecionado recebe classe active[32m 178[2mms[22m[39m
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx[2m > [22mServerEffectModal[2m > [22mRedesign ÔÇö estrutura dark theme[2m > [22musa data-testid=server-effect-modal no container[32m 37[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve expandir novamente ao clicar duas vezes
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve expandir novamente ao clicar duas vezes
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve expandir novamente ao clicar duas vezes
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve expandir novamente ao clicar duas vezes
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve colapsar ao clicar no cabe├ºalho[33m 1123[2mms[22m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mshows loading state on stats button when fetching[33m 1827[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Relat├│rio/`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"dashboard"[31m
+      [33mdata-testid[31m=[32m"dashboard"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"dashboard-header"[31m
+      [36m>[31m
+        [36m<h2>[31m
+          [0mMinhas [0m
+          [36m<span>[31m
+            [0mPartidas[0m
+          [36m</span>[31m
+        [36m</h2>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-actions"[31m
+          [33mstyle[31m=[32m"position: relative;"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-expanded[31m=[32m"false"[31m
+            [33maria-haspopup[31m=[32m"true"[31m
+            [33mclass[31m=[32m"new-match-button"[31m
+          [36m>[31m
+            [0m+ Nova Partida[0m
+          [36m</button>[31m
+        [36m</div>[31m
+      [36m</header>[31m
+      [36m<div[31m
+        [33mdata-testid[31m=[32m"athlete-header"[31m
+      [36m>[31m
+        [0mTest User[0m
+        [0m V:[0m
+        [0m0[0m
+        [0m D:[0m
+        [0m0[0m
+        [36m<button[31m
+          [33maria-expanded[31m=[32m"false"[31m
+          [33maria-haspopup[31m=[32m"true"[31m
+          [33mdata-testid[31m=[32m"hamburger-btn"[31m
+        [36m>[31m
+          [0mMenu[0m
+        [36m</button>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard-hero"[31m
+        [33mdata-testid[31m=[32m"dashboard-hero"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero__icon"[31m
+        [36m>[31m
+          [36m<svg[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mfill[31m=[32m"none"[31m
+            [33mheight[31m=[32m"48"[31m
+            [33mstroke[31m=[32m"currentColor"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+            [33mstroke-width[31m=[32m"1.5"[31m
+            [33mviewBox[31m=[32m"0 0 24 24"[31m
+            [33mwidth[31m=[32m"48"[31m
+          [36m>[31m
+            [36m<circle[31m
+              [33mcx[31m=[32m"12"[31m
+              [33mcy[31m=[32m"12"[31m
+              [33mr[31m=[32m"10"[31m
+            [36m/>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"9"[31m
+              [33mx2[31m=[32m"9.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"15"[31m
+              [33mx2[31m=[32m"15.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+          [36m</svg>[31m
+        [36m</div>[31m
+        [36m<h3[31m
+          [33mclass[31m=[32m"dashboard-hero__title"[31m
+        [36m>[31m
+          [0mBem-vindo ao RacketApp[0m
+        [36m</h3>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"dashboard-hero__text"[31m
+        [36m>[31m
+          [0mUse o menu[0m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Abrir menu"[31m
+            [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+            [36m>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"6"[31m
+                [33my2[31m=[32m"6"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"12"[31m
+                [33my2[31m=[32m"12"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"18"[31m
+                [33my2[31m=[32m"18"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+        [36m</p>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo Ace ÔåÆ ServerEffect[2m > [22mabre ServerEffectModal ao clicar em Ace no 1┬║ saque[33m 514[2mms[22m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mhandles fetch errors gracefully[33m 937[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Relat├│rio/`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"dashboard"[31m
+      [33mdata-testid[31m=[32m"dashboard"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"dashboard-header"[31m
+      [36m>[31m
+        [36m<h2>[31m
+          [0mMinhas [0m
+          [36m<span>[31m
+            [0mPartidas[0m
+          [36m</span>[31m
+        [36m</h2>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-actions"[31m
+          [33mstyle[31m=[32m"position: relative;"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-expanded[31m=[32m"false"[31m
+            [33maria-haspopup[31m=[32m"true"[31m
+            [33mclass[31m=[32m"new-match-button"[31m
+          [36m>[31m
+            [0m+ Nova Partida[0m
+          [36m</button>[31m
+        [36m</div>[31m
+      [36m</header>[31m
+      [36m<div[31m
+        [33mdata-testid[31m=[32m"athlete-header"[31m
+      [36m>[31m
+        [0mTest User[0m
+        [0m V:[0m
+        [0m0[0m
+        [0m D:[0m
+        [0m0[0m
+        [36m<button[31m
+          [33maria-expanded[31m=[32m"false"[31m
+          [33maria-haspopup[31m=[32m"true"[31m
+          [33mdata-testid[31m=[32m"hamburger-btn"[31m
+        [36m>[31m
+          [0mMenu[0m
+        [36m</button>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard-hero"[31m
+        [33mdata-testid[31m=[32m"dashboard-hero"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero__icon"[31m
+        [36m>[31m
+          [36m<svg[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mfill[31m=[32m"none"[31m
+            [33mheight[31m=[32m"48"[31m
+            [33mstroke[31m=[32m"currentColor"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+            [33mstroke-width[31m=[32m"1.5"[31m
+            [33mviewBox[31m=[32m"0 0 24 24"[31m
+            [33mwidth[31m=[32m"48"[31m
+          [36m>[31m
+            [36m<circle[31m
+              [33mcx[31m=[32m"12"[31m
+              [33mcy[31m=[32m"12"[31m
+              [33mr[31m=[32m"10"[31m
+            [36m/>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"9"[31m
+              [33mx2[31m=[32m"9.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"15"[31m
+              [33mx2[31m=[32m"15.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+          [36m</svg>[31m
+        [36m</div>[31m
+        [36m<h3[31m
+          [33mclass[31m=[32m"dashboard-hero__title"[31m
+        [36m>[31m
+          [0mBem-vindo ao RacketApp[0m
+        [36m</h3>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"dashboard-hero__text"[31m
+        [36m>[31m
+          [0mUse o menu[0m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Abrir menu"[31m
+            [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+            [36m>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"6"[31m
+                [33my2[31m=[32m"6"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"12"[31m
+                [33my2[31m=[32m"12"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"18"[31m
+                [33my2[31m=[32m"18"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+        [36m</p>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Ace Button Behavior[2m > [22mAce button functionality[2m > [22mopens ServerEffectModal when Ace button is clicked on first serve[33m 3822[2mms[22m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould remove deleted match from UI after successful deletion[33m 940[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard"[31m
+        [33mdata-testid[31m=[32m"dashboard"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"dashboard-header"[31m
+        [36m>[31m
+          [36m<h2>[31m
+            [0mMinhas [0m
+            [36m<span>[31m
+              [0mPartidas[0m
+            [36m</span>[31m
+          [36m</h2>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-actions"[31m
+            [33mstyle[31m=[32m"position: relative;"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-expanded[31m=[32m"false"[31m
+              [33maria-haspopup[31m=[32m"true"[31m
+              [33mclass[31m=[32m"new-match-button"[31m
+            [36m>[31m
+              [0m+ Nova Partida[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mdata-testid[31m=[32m"athlete-header"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33mdata-testid[31m=[32m"hamburger-btn"[31m
+          [36m>[31m
+            [0mMenu[0m
+          [36m</button>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero"[31m
+          [33mdata-testid[31m=[32m"dashboard-hero"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-hero__icon"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"48"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"1.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"48"[31m
+            [36m>[31m
+              [36m<circle[31m
+                [33mcx[31m=[32m"12"[31m
+                [33mcy[31m=[32m"12"[31m
+                [33mr[31m=[32m"10"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"9"[31m
+                [33mx2[31m=[32m"9.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"15"[31m
+                [33mx2[31m=[32m"15.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</div>[31m
+          [36m<h3[31m
+            [33mclass[31m=[32m"dashboard-hero__title"[31m
+          [36m>[31m
+            [0mBem-vindo ao RacketApp[0m
+          [36m</h3>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"dashboard-hero__text"[31m
+          [36m>[31m
+            [0mUse o menu[0m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Abrir menu"[31m
+              [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"16"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"16"[31m
+              [36m>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"6"[31m
+                  [33my2[31m=[32m"6"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"12"[31m
+                  [33my2[31m=[32m"12"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"18"[31m
+                  [33my2[31m=[32m"18"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+          [36m</p>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould update deletedMatchIds state after successful deletion[32m 88[2mms[22m[39m
+[31m   ÔåÆ Unable to find an element with the text: /Test Match/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard"[31m
+        [33mdata-testid[31m=[32m"dashboard"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"dashboard-header"[31m
+        [36m>[31m
+          [36m<h2>[31m
+            [0mMinhas [0m
+            [36m<span>[31m
+              [0mPartidas[0m
+            [36m</span>[31m
+          [36m</h2>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-actions"[31m
+            [33mstyle[31m=[32m"position: relative;"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-expanded[31m=[32m"false"[31m
+              [33maria-haspopup[31m=[32m"true"[31m
+              [33mclass[31m=[32m"new-match-button"[31m
+            [36m>[31m
+              [0m+ Nova Partida[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mdata-testid[31m=[32m"athlete-header"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33mdata-testid[31m=[32m"hamburger-btn"[31m
+          [36m>[31m
+            [0mMenu[0m
+          [36m</button>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero"[31m
+          [33mdata-testid[31m=[32m"dashboard-hero"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-hero__icon"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"48"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"1.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"48"[31m
+            [36m>[31m
+              [36m<circle[31m
+                [33mcx[31m=[32m"12"[31m
+                [33mcy[31m=[32m"12"[31m
+                [33mr[31m=[32m"10"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"9"[31m
+                [33mx2[31m=[32m"9.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"15"[31m
+                [33mx2[31m=[32m"15.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</div>[31m
+          [36m<h3[31m
+            [33mclass[31m=[32m"dashboard-hero__title"[31m
+          [36m>[31m
+            [0mBem-vindo ao RacketApp[0m
+          [36m</h3>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"dashboard-hero__text"[31m
+          [36m>[31m
+            [0mUse o menu[0m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Abrir menu"[31m
+              [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"16"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"16"[31m
+              [36m>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"6"[31m
+                  [33my2[31m=[32m"6"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"12"[31m
+                  [33my2[31m=[32m"12"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"18"[31m
+                  [33my2[31m=[32m"18"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+          [36m</p>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Ace Button Behavior[2m > [22mAce button functionality[2m > [22mopens ServerEffectModal when Ace button is clicked on second serve[33m 1893[2mms[22m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mexibe toast de erro quando stats retorna HTTP 401[33m 872[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Relat├│rio/`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"dashboard"[31m
+      [33mdata-testid[31m=[32m"dashboard"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"dashboard-header"[31m
+      [36m>[31m
+        [36m<h2>[31m
+          [0mMinhas [0m
+          [36m<span>[31m
+            [0mPartidas[0m
+          [36m</span>[31m
+        [36m</h2>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-actions"[31m
+          [33mstyle[31m=[32m"position: relative;"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-expanded[31m=[32m"false"[31m
+            [33maria-haspopup[31m=[32m"true"[31m
+            [33mclass[31m=[32m"new-match-button"[31m
+          [36m>[31m
+            [0m+ Nova Partida[0m
+          [36m</button>[31m
+        [36m</div>[31m
+      [36m</header>[31m
+      [36m<div[31m
+        [33mdata-testid[31m=[32m"athlete-header"[31m
+      [36m>[31m
+        [0mTest User[0m
+        [0m V:[0m
+        [0m0[0m
+        [0m D:[0m
+        [0m0[0m
+        [36m<button[31m
+          [33maria-expanded[31m=[32m"false"[31m
+          [33maria-haspopup[31m=[32m"true"[31m
+          [33mdata-testid[31m=[32m"hamburger-btn"[31m
+        [36m>[31m
+          [0mMenu[0m
+        [36m</button>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard-hero"[31m
+        [33mdata-testid[31m=[32m"dashboard-hero"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero__icon"[31m
+        [36m>[31m
+          [36m<svg[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mfill[31m=[32m"none"[31m
+            [33mheight[31m=[32m"48"[31m
+            [33mstroke[31m=[32m"currentColor"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+            [33mstroke-width[31m=[32m"1.5"[31m
+            [33mviewBox[31m=[32m"0 0 24 24"[31m
+            [33mwidth[31m=[32m"48"[31m
+          [36m>[31m
+            [36m<circle[31m
+              [33mcx[31m=[32m"12"[31m
+              [33mcy[31m=[32m"12"[31m
+              [33mr[31m=[32m"10"[31m
+            [36m/>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"9"[31m
+              [33mx2[31m=[32m"9.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"15"[31m
+              [33mx2[31m=[32m"15.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+          [36m</svg>[31m
+        [36m</div>[31m
+        [36m<h3[31m
+          [33mclass[31m=[32m"dashboard-hero__title"[31m
+        [36m>[31m
+          [0mBem-vindo ao RacketApp[0m
+        [36m</h3>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"dashboard-hero__text"[31m
+        [36m>[31m
+          [0mUse o menu[0m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Abrir menu"[31m
+            [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+            [36m>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"6"[31m
+                [33my2[31m=[32m"6"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"12"[31m
+                [33my2[31m=[32m"12"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"18"[31m
+                [33my2[31m=[32m"18"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+        [36m</p>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould show error message on delete failure[33m 1399[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard"[31m
+        [33mdata-testid[31m=[32m"dashboard"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"dashboard-header"[31m
+        [36m>[31m
+          [36m<h2>[31m
+            [0mMinhas [0m
+            [36m<span>[31m
+              [0mPartidas[0m
+            [36m</span>[31m
+          [36m</h2>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-actions"[31m
+            [33mstyle[31m=[32m"position: relative;"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-expanded[31m=[32m"false"[31m
+              [33maria-haspopup[31m=[32m"true"[31m
+              [33mclass[31m=[32m"new-match-button"[31m
+            [36m>[31m
+              [0m+ Nova Partida[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mdata-testid[31m=[32m"athlete-header"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33mdata-testid[31m=[32m"hamburger-btn"[31m
+          [36m>[31m
+            [0mMenu[0m
+          [36m</button>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero"[31m
+          [33mdata-testid[31m=[32m"dashboard-hero"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-hero__icon"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"48"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"1.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"48"[31m
+            [36m>[31m
+              [36m<circle[31m
+                [33mcx[31m=[32m"12"[31m
+                [33mcy[31m=[32m"12"[31m
+                [33mr[31m=[32m"10"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"9"[31m
+                [33mx2[31m=[32m"9.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"15"[31m
+                [33mx2[31m=[32m"15.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</div>[31m
+          [36m<h3[31m
+            [33mclass[31m=[32m"dashboard-hero__title"[31m
+          [36m>[31m
+            [0mBem-vindo ao RacketApp[0m
+          [36m</h3>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"dashboard-hero__text"[31m
+          [36m>[31m
+            [0mUse o menu[0m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Abrir menu"[31m
+              [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"16"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"16"[31m
+              [36m>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"6"[31m
+                  [33my2[31m=[32m"6"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"12"[31m
+                  [33my2[31m=[32m"12"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"18"[31m
+                  [33my2[31m=[32m"18"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+          [36m</p>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve ter aria-controls apontando para o id da lista
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve ter aria-controls apontando para o id da lista
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve ter aria-controls apontando para o id da lista
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve ter aria-controls apontando para o id da lista
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve expandir novamente ao clicar duas vezes[33m 2118[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Ace Button Behavior[2m > [22mAce button functionality[2m > [22mallows user to confirm point through ServerEffectModal[33m 1030[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo Ace ÔåÆ ServerEffect[2m > [22mabre ServerEffectModal ao clicar em Ace no 2┬║ saque[33m 2089[2mms[22m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mexibe toast de erro quando stats retorna HTTP 403[33m 1017[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Relat├│rio/`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"dashboard"[31m
+      [33mdata-testid[31m=[32m"dashboard"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"dashboard-header"[31m
+      [36m>[31m
+        [36m<h2>[31m
+          [0mMinhas [0m
+          [36m<span>[31m
+            [0mPartidas[0m
+          [36m</span>[31m
+        [36m</h2>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-actions"[31m
+          [33mstyle[31m=[32m"position: relative;"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-expanded[31m=[32m"false"[31m
+            [33maria-haspopup[31m=[32m"true"[31m
+            [33mclass[31m=[32m"new-match-button"[31m
+          [36m>[31m
+            [0m+ Nova Partida[0m
+          [36m</button>[31m
+        [36m</div>[31m
+      [36m</header>[31m
+      [36m<div[31m
+        [33mdata-testid[31m=[32m"athlete-header"[31m
+      [36m>[31m
+        [0mTest User[0m
+        [0m V:[0m
+        [0m0[0m
+        [0m D:[0m
+        [0m0[0m
+        [36m<button[31m
+          [33maria-expanded[31m=[32m"false"[31m
+          [33maria-haspopup[31m=[32m"true"[31m
+          [33mdata-testid[31m=[32m"hamburger-btn"[31m
+        [36m>[31m
+          [0mMenu[0m
+        [36m</button>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard-hero"[31m
+        [33mdata-testid[31m=[32m"dashboard-hero"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero__icon"[31m
+        [36m>[31m
+          [36m<svg[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mfill[31m=[32m"none"[31m
+            [33mheight[31m=[32m"48"[31m
+            [33mstroke[31m=[32m"currentColor"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+            [33mstroke-width[31m=[32m"1.5"[31m
+            [33mviewBox[31m=[32m"0 0 24 24"[31m
+            [33mwidth[31m=[32m"48"[31m
+          [36m>[31m
+            [36m<circle[31m
+              [33mcx[31m=[32m"12"[31m
+              [33mcy[31m=[32m"12"[31m
+              [33mr[31m=[32m"10"[31m
+            [36m/>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"9"[31m
+              [33mx2[31m=[32m"9.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"15"[31m
+              [33mx2[31m=[32m"15.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+          [36m</svg>[31m
+        [36m</div>[31m
+        [36m<h3[31m
+          [33mclass[31m=[32m"dashboard-hero__title"[31m
+        [36m>[31m
+          [0mBem-vindo ao RacketApp[0m
+        [36m</h3>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"dashboard-hero__text"[31m
+        [36m>[31m
+          [0mUse o menu[0m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Abrir menu"[31m
+            [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+            [36m>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"6"[31m
+                [33my2[31m=[32m"6"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"12"[31m
+                [33my2[31m=[32m"12"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"18"[31m
+                [33my2[31m=[32m"18"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+        [36m</p>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould close modal when cancel is clicked[33m 889[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard"[31m
+        [33mdata-testid[31m=[32m"dashboard"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"dashboard-header"[31m
+        [36m>[31m
+          [36m<h2>[31m
+            [0mMinhas [0m
+            [36m<span>[31m
+              [0mPartidas[0m
+            [36m</span>[31m
+          [36m</h2>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-actions"[31m
+            [33mstyle[31m=[32m"position: relative;"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-expanded[31m=[32m"false"[31m
+              [33maria-haspopup[31m=[32m"true"[31m
+              [33mclass[31m=[32m"new-match-button"[31m
+            [36m>[31m
+              [0m+ Nova Partida[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mdata-testid[31m=[32m"athlete-header"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33mdata-testid[31m=[32m"hamburger-btn"[31m
+          [36m>[31m
+            [0mMenu[0m
+          [36m</button>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero"[31m
+          [33mdata-testid[31m=[32m"dashboard-hero"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-hero__icon"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"48"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"1.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"48"[31m
+            [36m>[31m
+              [36m<circle[31m
+                [33mcx[31m=[32m"12"[31m
+                [33mcy[31m=[32m"12"[31m
+                [33mr[31m=[32m"10"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"9"[31m
+                [33mx2[31m=[32m"9.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"15"[31m
+                [33mx2[31m=[32m"15.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</div>[31m
+          [36m<h3[31m
+            [33mclass[31m=[32m"dashboard-hero__title"[31m
+          [36m>[31m
+            [0mBem-vindo ao RacketApp[0m
+          [36m</h3>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"dashboard-hero__text"[31m
+          [36m>[31m
+            [0mUse o menu[0m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Abrir menu"[31m
+              [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"16"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"16"[31m
+              [36m>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"6"[31m
+                  [33my2[31m=[32m"6"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"12"[31m
+                  [33my2[31m=[32m"12"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"18"[31m
+                  [33my2[31m=[32m"18"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+          [36m</p>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mexibe toast de erro quando stats retorna HTTP 500[33m 781[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Relat├│rio/`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"dashboard"[31m
+      [33mdata-testid[31m=[32m"dashboard"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"dashboard-header"[31m
+      [36m>[31m
+        [36m<h2>[31m
+          [0mMinhas [0m
+          [36m<span>[31m
+            [0mPartidas[0m
+          [36m</span>[31m
+        [36m</h2>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-actions"[31m
+          [33mstyle[31m=[32m"position: relative;"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-expanded[31m=[32m"false"[31m
+            [33maria-haspopup[31m=[32m"true"[31m
+            [33mclass[31m=[32m"new-match-button"[31m
+          [36m>[31m
+            [0m+ Nova Partida[0m
+          [36m</button>[31m
+        [36m</div>[31m
+      [36m</header>[31m
+      [36m<div[31m
+        [33mdata-testid[31m=[32m"athlete-header"[31m
+      [36m>[31m
+        [0mTest User[0m
+        [0m V:[0m
+        [0m0[0m
+        [0m D:[0m
+        [0m0[0m
+        [36m<button[31m
+          [33maria-expanded[31m=[32m"false"[31m
+          [33maria-haspopup[31m=[32m"true"[31m
+          [33mdata-testid[31m=[32m"hamburger-btn"[31m
+        [36m>[31m
+          [0mMenu[0m
+        [36m</button>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard-hero"[31m
+        [33mdata-testid[31m=[32m"dashboard-hero"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero__icon"[31m
+        [36m>[31m
+          [36m<svg[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mfill[31m=[32m"none"[31m
+            [33mheight[31m=[32m"48"[31m
+            [33mstroke[31m=[32m"currentColor"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+            [33mstroke-width[31m=[32m"1.5"[31m
+            [33mviewBox[31m=[32m"0 0 24 24"[31m
+            [33mwidth[31m=[32m"48"[31m
+          [36m>[31m
+            [36m<circle[31m
+              [33mcx[31m=[32m"12"[31m
+              [33mcy[31m=[32m"12"[31m
+              [33mr[31m=[32m"10"[31m
+            [36m/>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"9"[31m
+              [33mx2[31m=[32m"9.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"15"[31m
+              [33mx2[31m=[32m"15.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+          [36m</svg>[31m
+        [36m</div>[31m
+        [36m<h3[31m
+          [33mclass[31m=[32m"dashboard-hero__title"[31m
+        [36m>[31m
+          [0mBem-vindo ao RacketApp[0m
+        [36m</h3>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"dashboard-hero__text"[31m
+        [36m>[31m
+          [0mUse o menu[0m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Abrir menu"[31m
+            [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+            [36m>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"6"[31m
+                [33my2[31m=[32m"6"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"12"[31m
+                [33my2[31m=[32m"12"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"18"[31m
+                [33my2[31m=[32m"18"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+        [36m</p>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mrenders live matches in the carousel for IN_PROGRESS matches[32m 33[2mms[22m[39m
+[31m   ÔåÆ Unable to find an element by: [data-testid="live-carousel"]
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"dashboard"[31m
+      [33mdata-testid[31m=[32m"dashboard"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"dashboard-header"[31m
+      [36m>[31m
+        [36m<h2>[31m
+          [0mMinhas [0m
+          [36m<span>[31m
+            [0mPartidas[0m
+          [36m</span>[31m
+        [36m</h2>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-actions"[31m
+          [33mstyle[31m=[32m"position: relative;"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-expanded[31m=[32m"false"[31m
+            [33maria-haspopup[31m=[32m"true"[31m
+            [33mclass[31m=[32m"new-match-button"[31m
+          [36m>[31m
+            [0m+ Nova Partida[0m
+          [36m</button>[31m
+        [36m</div>[31m
+      [36m</header>[31m
+      [36m<div[31m
+        [33mdata-testid[31m=[32m"athlete-header"[31m
+      [36m>[31m
+        [0mTest User[0m
+        [0m V:[0m
+        [0m0[0m
+        [0m D:[0m
+        [0m0[0m
+        [36m<button[31m
+          [33maria-expanded[31m=[32m"false"[31m
+          [33maria-haspopup[31m=[32m"true"[31m
+          [33mdata-testid[31m=[32m"hamburger-btn"[31m
+        [36m>[31m
+          [0mMenu[0m
+        [36m</button>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard-hero"[31m
+        [33mdata-testid[31m=[32m"dashboard-hero"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero__icon"[31m
+        [36m>[31m
+          [36m<svg[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mfill[31m=[32m"none"[31m
+            [33mheight[31m=[32m"48"[31m
+            [33mstroke[31m=[32m"currentColor"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+            [33mstroke-width[31m=[32m"1.5"[31m
+            [33mviewBox[31m=[32m"0 0 24 24"[31m
+            [33mwidth[31m=[32m"48"[31m
+          [36m>[31m
+            [36m<circle[31m
+              [33mcx[31m=[32m"12"[31m
+              [33mcy[31m=[32m"12"[31m
+              [33mr[31m=[32m"10"[31m
+            [36m/>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"9"[31m
+              [33mx2[31m=[32m"9.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"15"[31m
+              [33mx2[31m=[32m"15.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+          [36m</svg>[31m
+        [36m</div>[31m
+        [36m<h3[31m
+          [33mclass[31m=[32m"dashboard-hero__title"[31m
+        [36m>[31m
+          [0mBem-vindo ao RacketApp[0m
+        [36m</h3>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"dashboard-hero__text"[31m
+        [36m>[31m
+          [0mUse o menu[0m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Abrir menu"[31m
+            [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+            [36m>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"6"[31m
+                [33my2[31m=[32m"6"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"12"[31m
+                [33my2[31m=[32m"12"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"18"[31m
+                [33my2[31m=[32m"18"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+        [36m</p>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mrenders match partials in the carousel for live matches[32m 38[2mms[22m[39m
+[31m   ÔåÆ Unable to find an element by: [data-testid="live-card-2"]
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"dashboard"[31m
+      [33mdata-testid[31m=[32m"dashboard"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"dashboard-header"[31m
+      [36m>[31m
+        [36m<h2>[31m
+          [0mMinhas [0m
+          [36m<span>[31m
+            [0mPartidas[0m
+          [36m</span>[31m
+        [36m</h2>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-actions"[31m
+          [33mstyle[31m=[32m"position: relative;"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-expanded[31m=[32m"false"[31m
+            [33maria-haspopup[31m=[32m"true"[31m
+            [33mclass[31m=[32m"new-match-button"[31m
+          [36m>[31m
+            [0m+ Nova Partida[0m
+          [36m</button>[31m
+        [36m</div>[31m
+      [36m</header>[31m
+      [36m<div[31m
+        [33mdata-testid[31m=[32m"athlete-header"[31m
+      [36m>[31m
+        [0mTest User[0m
+        [0m V:[0m
+        [0m0[0m
+        [0m D:[0m
+        [0m0[0m
+        [36m<button[31m
+          [33maria-expanded[31m=[32m"false"[31m
+          [33maria-haspopup[31m=[32m"true"[31m
+          [33mdata-testid[31m=[32m"hamburger-btn"[31m
+        [36m>[31m
+          [0mMenu[0m
+        [36m</button>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard-hero"[31m
+        [33mdata-testid[31m=[32m"dashboard-hero"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero__icon"[31m
+        [36m>[31m
+          [36m<svg[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mfill[31m=[32m"none"[31m
+            [33mheight[31m=[32m"48"[31m
+            [33mstroke[31m=[32m"currentColor"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+            [33mstroke-width[31m=[32m"1.5"[31m
+            [33mviewBox[31m=[32m"0 0 24 24"[31m
+            [33mwidth[31m=[32m"48"[31m
+          [36m>[31m
+            [36m<circle[31m
+              [33mcx[31m=[32m"12"[31m
+              [33mcy[31m=[32m"12"[31m
+              [33mr[31m=[32m"10"[31m
+            [36m/>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"9"[31m
+              [33mx2[31m=[32m"9.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"15"[31m
+              [33mx2[31m=[32m"15.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+          [36m</svg>[31m
+        [36m</div>[31m
+        [36m<h3[31m
+          [33mclass[31m=[32m"dashboard-hero__title"[31m
+        [36m>[31m
+          [0mBem-vindo ao RacketApp[0m
+        [36m</h3>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"dashboard-hero__text"[31m
+        [36m>[31m
+          [0mUse o menu[0m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Abrir menu"[31m
+            [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+            [36m>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"6"[31m
+                [33my2[31m=[32m"6"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"12"[31m
+                [33my2[31m=[32m"12"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"18"[31m
+                [33my2[31m=[32m"18"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+        [36m</p>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mrenders match format labels correctly[32m 42[2mms[22m[39m
+[31m   ÔåÆ Unable to find an element with the text: Melhor de 3 ┬À Tie-break todos os sets. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"dashboard"[31m
+      [33mdata-testid[31m=[32m"dashboard"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"dashboard-header"[31m
+      [36m>[31m
+        [36m<h2>[31m
+          [0mMinhas [0m
+          [36m<span>[31m
+            [0mPartidas[0m
+          [36m</span>[31m
+        [36m</h2>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-actions"[31m
+          [33mstyle[31m=[32m"position: relative;"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-expanded[31m=[32m"false"[31m
+            [33maria-haspopup[31m=[32m"true"[31m
+            [33mclass[31m=[32m"new-match-button"[31m
+          [36m>[31m
+            [0m+ Nova Partida[0m
+          [36m</button>[31m
+        [36m</div>[31m
+      [36m</header>[31m
+      [36m<div[31m
+        [33mdata-testid[31m=[32m"athlete-header"[31m
+      [36m>[31m
+        [0mTest User[0m
+        [0m V:[0m
+        [0m0[0m
+        [0m D:[0m
+        [0m0[0m
+        [36m<button[31m
+          [33maria-expanded[31m=[32m"false"[31m
+          [33maria-haspopup[31m=[32m"true"[31m
+          [33mdata-testid[31m=[32m"hamburger-btn"[31m
+        [36m>[31m
+          [0mMenu[0m
+        [36m</button>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard-hero"[31m
+        [33mdata-testid[31m=[32m"dashboard-hero"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero__icon"[31m
+        [36m>[31m
+          [36m<svg[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mfill[31m=[32m"none"[31m
+            [33mheight[31m=[32m"48"[31m
+            [33mstroke[31m=[32m"currentColor"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+            [33mstroke-width[31m=[32m"1.5"[31m
+            [33mviewBox[31m=[32m"0 0 24 24"[31m
+            [33mwidth[31m=[32m"48"[31m
+          [36m>[31m
+            [36m<circle[31m
+              [33mcx[31m=[32m"12"[31m
+              [33mcy[31m=[32m"12"[31m
+              [33mr[31m=[32m"10"[31m
+            [36m/>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"9"[31m
+              [33mx2[31m=[32m"9.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"15"[31m
+              [33mx2[31m=[32m"15.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+          [36m</svg>[31m
+        [36m</div>[31m
+        [36m<h3[31m
+          [33mclass[31m=[32m"dashboard-hero__title"[31m
+        [36m>[31m
+          [0mBem-vindo ao RacketApp[0m
+        [36m</h3>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"dashboard-hero__text"[31m
+        [36m>[31m
+          [0mUse o menu[0m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Abrir menu"[31m
+            [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+            [36m>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"6"[31m
+                [33my2[31m=[32m"6"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"12"[31m
+                [33my2[31m=[32m"12"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"18"[31m
+                [33my2[31m=[32m"18"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+        [36m</p>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mhandles matches without players object[32m 28[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mhandles empty matches array[32m 64[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir cards de partida dentro do body quando expandido
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir cards de partida dentro do body quando expandido
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir cards de partida dentro do body quando expandido
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir cards de partida dentro do body quando expandido
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve ter aria-controls apontando para o id da lista[33m 1169[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Ace Button Behavior[2m > [22mAce button functionality[2m > [22mcloses ServerEffectModal after confirming point[33m 846[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo Dupla Falta ÔåÆ Ponto Autom├ítico[2m > [22mmarca ponto automaticamente ao clicar em Out no 2┬║ saque (dupla falta)[33m 1000[2mms[22m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould handle deletion of multiple matches in succession[33m 769[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard"[31m
+        [33mdata-testid[31m=[32m"dashboard"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"dashboard-header"[31m
+        [36m>[31m
+          [36m<h2>[31m
+            [0mMinhas [0m
+            [36m<span>[31m
+              [0mPartidas[0m
+            [36m</span>[31m
+          [36m</h2>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-actions"[31m
+            [33mstyle[31m=[32m"position: relative;"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-expanded[31m=[32m"false"[31m
+              [33maria-haspopup[31m=[32m"true"[31m
+              [33mclass[31m=[32m"new-match-button"[31m
+            [36m>[31m
+              [0m+ Nova Partida[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mdata-testid[31m=[32m"athlete-header"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33mdata-testid[31m=[32m"hamburger-btn"[31m
+          [36m>[31m
+            [0mMenu[0m
+          [36m</button>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero"[31m
+          [33mdata-testid[31m=[32m"dashboard-hero"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-hero__icon"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"48"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"1.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"48"[31m
+            [36m>[31m
+              [36m<circle[31m
+                [33mcx[31m=[32m"12"[31m
+                [33mcy[31m=[32m"12"[31m
+                [33mr[31m=[32m"10"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"9"[31m
+                [33mx2[31m=[32m"9.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"15"[31m
+                [33mx2[31m=[32m"15.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</div>[31m
+          [36m<h3[31m
+            [33mclass[31m=[32m"dashboard-hero__title"[31m
+          [36m>[31m
+            [0mBem-vindo ao RacketApp[0m
+          [36m</h3>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"dashboard-hero__text"[31m
+          [36m>[31m
+            [0mUse o menu[0m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Abrir menu"[31m
+              [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"16"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"16"[31m
+              [36m>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"6"[31m
+                  [33my2[31m=[32m"6"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"12"[31m
+                  [33my2[31m=[32m"12"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"18"[31m
+                  [33my2[31m=[32m"18"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+          [36m</p>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.delete-flow.test.tsx[2m > [22mDashboard - Delete Match Flow[2m > [22mshould preserve history view state after deletion[33m 526[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Excluir/i`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard"[31m
+        [33mdata-testid[31m=[32m"dashboard"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"dashboard-header"[31m
+        [36m>[31m
+          [36m<h2>[31m
+            [0mMinhas [0m
+            [36m<span>[31m
+              [0mPartidas[0m
+            [36m</span>[31m
+          [36m</h2>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-actions"[31m
+            [33mstyle[31m=[32m"position: relative;"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-expanded[31m=[32m"false"[31m
+              [33maria-haspopup[31m=[32m"true"[31m
+              [33mclass[31m=[32m"new-match-button"[31m
+            [36m>[31m
+              [0m+ Nova Partida[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mdata-testid[31m=[32m"athlete-header"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33mdata-testid[31m=[32m"hamburger-btn"[31m
+          [36m>[31m
+            [0mMenu[0m
+          [36m</button>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero"[31m
+          [33mdata-testid[31m=[32m"dashboard-hero"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dashboard-hero__icon"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"48"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"1.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"48"[31m
+            [36m>[31m
+              [36m<circle[31m
+                [33mcx[31m=[32m"12"[31m
+                [33mcy[31m=[32m"12"[31m
+                [33mr[31m=[32m"10"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"9"[31m
+                [33mx2[31m=[32m"9.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"15"[31m
+                [33mx2[31m=[32m"15.01"[31m
+                [33my1[31m=[32m"9"[31m
+                [33my2[31m=[32m"9"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</div>[31m
+          [36m<h3[31m
+            [33mclass[31m=[32m"dashboard-hero__title"[31m
+          [36m>[31m
+            [0mBem-vindo ao RacketApp[0m
+          [36m</h3>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"dashboard-hero__text"[31m
+          [36m>[31m
+            [0mUse o menu[0m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Abrir menu"[31m
+              [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"16"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"16"[31m
+              [36m>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"6"[31m
+                  [33my2[31m=[32m"6"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"12"[31m
+                  [33my2[31m=[32m"12"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"3"[31m
+                  [33mx2[31m=[32m"21"[31m
+                  [33my1[31m=[32m"18"[31m
+                  [33my2[31m=[32m"18"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+          [36m</p>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mn├úo deve renderizar se├º├úo quando n├úo h├í partidas abertas
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mn├úo deve renderizar se├º├úo quando n├úo h├í partidas abertas
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mn├úo deve renderizar se├º├úo quando n├úo h├í partidas abertas
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mn├úo deve renderizar se├º├úo quando n├úo h├í partidas abertas
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve exibir cards de partida dentro do body quando expandido[32m 266[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mhandles null currentUser[32m 8[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Ace Button Behavior[2m > [22mAce button functionality[2m > [22mallows canceling the ServerEffectModal without adding point[33m 402[2mms[22m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mcloses stats modal when close button is clicked[33m 481[2mms[22m[39m
+[31m   ÔåÆ Unable to find an accessible element with the role "button" and name `/Relat├│rio/`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"dashboard-header"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Minhas Partidas":
+  [36m<h2 />[31m
+
+  Name "Bem-vindo ao RacketApp":
+  [36m<h3[31m
+    [33mclass[31m=[32m"dashboard-hero__title"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "+ Nova Partida":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mclass[31m=[32m"new-match-button"[31m
+  [36m/>[31m
+
+  Name "Menu":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"true"[31m
+    [33mdata-testid[31m=[32m"hamburger-btn"[31m
+  [36m/>[31m
+
+  Name "Abrir menu":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Abrir menu"[31m
+    [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"dashboard-hero__text"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"dashboard"[31m
+      [33mdata-testid[31m=[32m"dashboard"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"dashboard-header"[31m
+      [36m>[31m
+        [36m<h2>[31m
+          [0mMinhas [0m
+          [36m<span>[31m
+            [0mPartidas[0m
+          [36m</span>[31m
+        [36m</h2>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-actions"[31m
+          [33mstyle[31m=[32m"position: relative;"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-expanded[31m=[32m"false"[31m
+            [33maria-haspopup[31m=[32m"true"[31m
+            [33mclass[31m=[32m"new-match-button"[31m
+          [36m>[31m
+            [0m+ Nova Partida[0m
+          [36m</button>[31m
+        [36m</div>[31m
+      [36m</header>[31m
+      [36m<div[31m
+        [33mdata-testid[31m=[32m"athlete-header"[31m
+      [36m>[31m
+        [0mTest User[0m
+        [0m V:[0m
+        [0m0[0m
+        [0m D:[0m
+        [0m0[0m
+        [36m<button[31m
+          [33maria-expanded[31m=[32m"false"[31m
+          [33maria-haspopup[31m=[32m"true"[31m
+          [33mdata-testid[31m=[32m"hamburger-btn"[31m
+        [36m>[31m
+          [0mMenu[0m
+        [36m</button>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard-hero"[31m
+        [33mdata-testid[31m=[32m"dashboard-hero"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero__icon"[31m
+        [36m>[31m
+          [36m<svg[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mfill[31m=[32m"none"[31m
+            [33mheight[31m=[32m"48"[31m
+            [33mstroke[31m=[32m"currentColor"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+            [33mstroke-width[31m=[32m"1.5"[31m
+            [33mviewBox[31m=[32m"0 0 24 24"[31m
+            [33mwidth[31m=[32m"48"[31m
+          [36m>[31m
+            [36m<circle[31m
+              [33mcx[31m=[32m"12"[31m
+              [33mcy[31m=[32m"12"[31m
+              [33mr[31m=[32m"10"[31m
+            [36m/>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"9"[31m
+              [33mx2[31m=[32m"9.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"15"[31m
+              [33mx2[31m=[32m"15.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+          [36m</svg>[31m
+        [36m</div>[31m
+        [36m<h3[31m
+          [33mclass[31m=[32m"dashboard-hero__title"[31m
+        [36m>[31m
+          [0mBem-vindo ao RacketApp[0m
+        [36m</h3>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"dashboard-hero__text"[31m
+        [36m>[31m
+          [0mUse o menu[0m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Abrir menu"[31m
+            [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+            [36m>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"6"[31m
+                [33my2[31m=[32m"6"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"12"[31m
+                [33my2[31m=[32m"12"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"18"[31m
+                [33my2[31m=[32m"18"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+        [36m</p>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mexibe hero CTA quando view ├® none (padr├úo) e n├úo h├í partidas[32m 9[2mms[22m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22maplica classe card--live no carousel para partidas IN_PROGRESS[32m 23[2mms[22m[39m
+[31m   ÔåÆ Unable to find an element by: [data-testid="live-carousel"]
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"dashboard"[31m
+      [33mdata-testid[31m=[32m"dashboard"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"dashboard-header"[31m
+      [36m>[31m
+        [36m<h2>[31m
+          [0mMinhas [0m
+          [36m<span>[31m
+            [0mPartidas[0m
+          [36m</span>[31m
+        [36m</h2>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-actions"[31m
+          [33mstyle[31m=[32m"position: relative;"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-expanded[31m=[32m"false"[31m
+            [33maria-haspopup[31m=[32m"true"[31m
+            [33mclass[31m=[32m"new-match-button"[31m
+          [36m>[31m
+            [0m+ Nova Partida[0m
+          [36m</button>[31m
+        [36m</div>[31m
+      [36m</header>[31m
+      [36m<div[31m
+        [33mdata-testid[31m=[32m"athlete-header"[31m
+      [36m>[31m
+        [0mTest User[0m
+        [0m V:[0m
+        [0m0[0m
+        [0m D:[0m
+        [0m0[0m
+        [36m<button[31m
+          [33maria-expanded[31m=[32m"false"[31m
+          [33maria-haspopup[31m=[32m"true"[31m
+          [33mdata-testid[31m=[32m"hamburger-btn"[31m
+        [36m>[31m
+          [0mMenu[0m
+        [36m</button>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard-hero"[31m
+        [33mdata-testid[31m=[32m"dashboard-hero"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero__icon"[31m
+        [36m>[31m
+          [36m<svg[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mfill[31m=[32m"none"[31m
+            [33mheight[31m=[32m"48"[31m
+            [33mstroke[31m=[32m"currentColor"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+            [33mstroke-width[31m=[32m"1.5"[31m
+            [33mviewBox[31m=[32m"0 0 24 24"[31m
+            [33mwidth[31m=[32m"48"[31m
+          [36m>[31m
+            [36m<circle[31m
+              [33mcx[31m=[32m"12"[31m
+              [33mcy[31m=[32m"12"[31m
+              [33mr[31m=[32m"10"[31m
+            [36m/>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"9"[31m
+              [33mx2[31m=[32m"9.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"15"[31m
+              [33mx2[31m=[32m"15.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+          [36m</svg>[31m
+        [36m</div>[31m
+        [36m<h3[31m
+          [33mclass[31m=[32m"dashboard-hero__title"[31m
+        [36m>[31m
+          [0mBem-vindo ao RacketApp[0m
+        [36m</h3>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"dashboard-hero__text"[31m
+        [36m>[31m
+          [0mUse o menu[0m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Abrir menu"[31m
+            [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+            [36m>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"6"[31m
+                [33my2[31m=[32m"6"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"12"[31m
+                [33my2[31m=[32m"12"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"18"[31m
+                [33my2[31m=[32m"18"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+        [36m</p>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22maplica classe card--pending em partidas NOT_STARTED[32m 30[2mms[22m[39m
+[31m   ÔåÆ [2mexpect([22m[31mreceived[31m[2m).toBeInTheDocument()[22m
+
+[31mreceived[31m value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: [31mnull[31m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22maplica classe card--finished em partidas FINISHED[32m 19[2mms[22m[39m
+[31m   ÔåÆ [2mexpect([22m[31mreceived[31m[2m).toBeInTheDocument()[22m
+
+[31mreceived[31m value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: [31mnull[31m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mexibe parciais na card-finished-score para partidas FINISHED[32m 17[2mms[22m[39m
+[31m   ÔåÆ Unable to find an element by: [data-testid="match-card-partials-5"]
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"dashboard"[31m
+      [33mdata-testid[31m=[32m"dashboard"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"dashboard-header"[31m
+      [36m>[31m
+        [36m<h2>[31m
+          [0mMinhas [0m
+          [36m<span>[31m
+            [0mPartidas[0m
+          [36m</span>[31m
+        [36m</h2>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-actions"[31m
+          [33mstyle[31m=[32m"position: relative;"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-expanded[31m=[32m"false"[31m
+            [33maria-haspopup[31m=[32m"true"[31m
+            [33mclass[31m=[32m"new-match-button"[31m
+          [36m>[31m
+            [0m+ Nova Partida[0m
+          [36m</button>[31m
+        [36m</div>[31m
+      [36m</header>[31m
+      [36m<div[31m
+        [33mdata-testid[31m=[32m"athlete-header"[31m
+      [36m>[31m
+        [0mTest User[0m
+        [0m V:[0m
+        [0m0[0m
+        [0m D:[0m
+        [0m0[0m
+        [36m<button[31m
+          [33maria-expanded[31m=[32m"false"[31m
+          [33maria-haspopup[31m=[32m"true"[31m
+          [33mdata-testid[31m=[32m"hamburger-btn"[31m
+        [36m>[31m
+          [0mMenu[0m
+        [36m</button>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard-hero"[31m
+        [33mdata-testid[31m=[32m"dashboard-hero"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero__icon"[31m
+        [36m>[31m
+          [36m<svg[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mfill[31m=[32m"none"[31m
+            [33mheight[31m=[32m"48"[31m
+            [33mstroke[31m=[32m"currentColor"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+            [33mstroke-width[31m=[32m"1.5"[31m
+            [33mviewBox[31m=[32m"0 0 24 24"[31m
+            [33mwidth[31m=[32m"48"[31m
+          [36m>[31m
+            [36m<circle[31m
+              [33mcx[31m=[32m"12"[31m
+              [33mcy[31m=[32m"12"[31m
+              [33mr[31m=[32m"10"[31m
+            [36m/>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"9"[31m
+              [33mx2[31m=[32m"9.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"15"[31m
+              [33mx2[31m=[32m"15.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+          [36m</svg>[31m
+        [36m</div>[31m
+        [36m<h3[31m
+          [33mclass[31m=[32m"dashboard-hero__title"[31m
+        [36m>[31m
+          [0mBem-vindo ao RacketApp[0m
+        [36m</h3>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"dashboard-hero__text"[31m
+        [36m>[31m
+          [0mUse o menu[0m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Abrir menu"[31m
+            [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+            [36m>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"6"[31m
+                [33my2[31m=[32m"6"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"12"[31m
+                [33my2[31m=[32m"12"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"18"[31m
+                [33my2[31m=[32m"18"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+        [36m</p>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [31m├ù[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mexibe badge de quadra quando courtType ├® definido[32m 19[2mms[22m[39m
+[31m   ÔåÆ Unable to find an element with the text: /Saibro/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"dashboard"[31m
+      [33mdata-testid[31m=[32m"dashboard"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"dashboard-header"[31m
+      [36m>[31m
+        [36m<h2>[31m
+          [0mMinhas [0m
+          [36m<span>[31m
+            [0mPartidas[0m
+          [36m</span>[31m
+        [36m</h2>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-actions"[31m
+          [33mstyle[31m=[32m"position: relative;"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-expanded[31m=[32m"false"[31m
+            [33maria-haspopup[31m=[32m"true"[31m
+            [33mclass[31m=[32m"new-match-button"[31m
+          [36m>[31m
+            [0m+ Nova Partida[0m
+          [36m</button>[31m
+        [36m</div>[31m
+      [36m</header>[31m
+      [36m<div[31m
+        [33mdata-testid[31m=[32m"athlete-header"[31m
+      [36m>[31m
+        [0mTest User[0m
+        [0m V:[0m
+        [0m0[0m
+        [0m D:[0m
+        [0m0[0m
+        [36m<button[31m
+          [33maria-expanded[31m=[32m"false"[31m
+          [33maria-haspopup[31m=[32m"true"[31m
+          [33mdata-testid[31m=[32m"hamburger-btn"[31m
+        [36m>[31m
+          [0mMenu[0m
+        [36m</button>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"dashboard-hero"[31m
+        [33mdata-testid[31m=[32m"dashboard-hero"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dashboard-hero__icon"[31m
+        [36m>[31m
+          [36m<svg[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mfill[31m=[32m"none"[31m
+            [33mheight[31m=[32m"48"[31m
+            [33mstroke[31m=[32m"currentColor"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+            [33mstroke-width[31m=[32m"1.5"[31m
+            [33mviewBox[31m=[32m"0 0 24 24"[31m
+            [33mwidth[31m=[32m"48"[31m
+          [36m>[31m
+            [36m<circle[31m
+              [33mcx[31m=[32m"12"[31m
+              [33mcy[31m=[32m"12"[31m
+              [33mr[31m=[32m"10"[31m
+            [36m/>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M8 14s1.5 2 4 2 4-2 4-2"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"9"[31m
+              [33mx2[31m=[32m"9.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+            [36m<line[31m
+              [33mx1[31m=[32m"15"[31m
+              [33mx2[31m=[32m"15.01"[31m
+              [33my1[31m=[32m"9"[31m
+              [33my2[31m=[32m"9"[31m
+            [36m/>[31m
+          [36m</svg>[31m
+        [36m</div>[31m
+        [36m<h3[31m
+          [33mclass[31m=[32m"dashboard-hero__title"[31m
+        [36m>[31m
+          [0mBem-vindo ao RacketApp[0m
+        [36m</h3>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"dashboard-hero__text"[31m
+        [36m>[31m
+          [0mUse o menu[0m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Abrir menu"[31m
+            [33mclass[31m=[32m"dashboard-hero__menu-link"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+            [36m>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"6"[31m
+                [33my2[31m=[32m"6"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"12"[31m
+                [33my2[31m=[32m"12"[31m
+              [36m/>[31m
+              [36m<line[31m
+                [33mx1[31m=[32m"3"[31m
+                [33mx2[31m=[32m"21"[31m
+                [33my1[31m=[32m"18"[31m
+                [33my2[31m=[32m"18"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [0mpara criar uma partida, ver o hist├│rico ou acompanhar partidas ao vivo.[0m
+        [36m</p>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [32mÔ£ô[39m src/pages/__tests__/Dashboard.test.tsx[2m > [22mDashboard[2m > [22mn├úo exibe hero CTA quando h├í loading[32m 4[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Ace Button Behavior[2m > [22mAce button availability[2m > [22mshows Ace button when serveStep is none and server exists[32m 232[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve esconder os cards quando colapsado (display:none via classe)
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve esconder os cards quando colapsado (display:none via classe)
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve esconder os cards quando colapsado (display:none via classe)
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve esconder os cards quando colapsado (display:none via classe)
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mn├úo deve renderizar se├º├úo quando n├úo h├í partidas abertas[33m 344[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Ace Button Behavior[2m > [22mAce button availability[2m > [22mhides Ace button when match is finished[32m 118[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo Dupla Falta ÔåÆ Ponto Autom├ítico[2m > [22mmarca ponto automaticamente ao clicar em Net no 2┬║ saque (dupla falta)[33m 593[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mConfirma├º├úo de pontos[2m > [22mmarca ponto de Ace com detalhes do ServerEffect[32m 299[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mo chevron deve ter classe --collapsed quando recolhido
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mo chevron deve ter classe --collapsed quando recolhido
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mo chevron deve ter classe --collapsed quando recolhido
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mo chevron deve ter classe --collapsed quando recolhido
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Ace Button Behavior[2m > [22mAce button availability[2m > [22mshows Ace button when serveStep is second[33m 347[2mms[22m[39m
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mdeve esconder os cards quando colapsado (display:none via classe)[33m 502[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Ace Button Behavior[2m > [22mIntegration with existing tests[2m > [22mdisplays serve info buttons without click handlers[32m 288[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Ace Button Behavior[2m > [22mIntegration with existing tests[2m > [22mmaintains existing point buttons functionality[33m 328[2mms[22m[39m
+ [32mÔ£ô[39m tests/OpenMatchesCollapsible.test.tsx[2m > [22mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22mo chevron deve ter classe --collapsed quando recolhido[33m 566[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Button Alignment Based on Server[2m > [22maligns quick action buttons to the left when PLAYER_1 is serving[32m 155[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mConfirma├º├úo de pontos[2m > [22mmarca ponto de Ace no 2┬║ saque corretamente para o sacador[33m 734[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mConfirma├º├úo de pontos[2m > [22mmarca ponto de dupla falta automaticamente sem modal[33m 549[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo de Erro de Saque (Out/Net)[2m > [22mabre modal de erro ao clicar em Out no 1┬║ saque[32m 116[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Button Alignment Based on Server[2m > [22maligns quick action buttons to the right when PLAYER_2 is serving[32m 167[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo de Erro de Saque (Out/Net)[2m > [22mabre modal de erro ao clicar em Net no 1┬║ saque[32m 108[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo de Erro de Saque (Out/Net)[2m > [22msalva erro do 1┬║ saque e permite continuar para 2┬║ saque[32m 180[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo de Erro de Saque (Out/Net)[2m > [22mabre modal de erro ao clicar em Out no 2┬║ saque[33m 332[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo de Erro de Saque (Out/Net)[2m > [22mregistra dupla falta ao confirmar erro no 2┬║ saque[33m 429[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo de Erro de Saque (Out/Net)[2m > [22mpermite cancelamento do modal de erro volta para mesmo saque[32m 199[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx[2m > [22mScoreboardV2 - ServerEffect Integration[2m > [22mFluxo de Erro de Saque (Out/Net)[2m > [22mpermite cancelamento do modal de erro no 2┬║ saque[33m 388[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Button Alignment Based on Server[2m > [22mupdates button alignment when server changes after point[33m 2681[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Button Alignment Based on Server[2m > [22mScoreboardV2 - Server Alternation and isFirstServe Registration[2m > [22mregisters isFirstServe correctly for points on first serve[32m 208[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Button Alignment Based on Server[2m > [22mScoreboardV2 - Server Alternation and isFirstServe Registration[2m > [22mregisters isFirstServe correctly for points on second serve[33m 387[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Button Alignment Based on Server[2m > [22mScoreboardV2 - Server Alternation and isFirstServe Registration[2m > [22malternates server correctly when returner wins point on first serve[32m 232[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Button Alignment Based on Server[2m > [22mScoreboardV2 - Server Alternation and isFirstServe Registration[2m > [22mmaintains isFirstServe consistency in point button clicks[32m 189[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Button Alignment Based on Server[2m > [22mScoreboardV2 - Server Alternation and isFirstServe Registration[2m > [22mmaintains isFirstServe consistency for second serve point buttons[33m 410[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22mprioriza estado passado via navigation state[32m 22[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22mrestaura estado profundo do backend quando n├úo h├í navigation state[32m 18[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22mredireciona para dashboard se partida finalizada[32m 6[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22mabre setup se partida n├úo iniciada[32m 16[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22mFinaliza├º├úo Autom├ítica de Partida[2m > [22mexibe banner de vit├│ria quando partida ├® finalizada por regras do jogo[32m 112[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22mFinaliza├º├úo Autom├ítica de Partida[2m > [22mexibe bot├Áes de a├º├úo ap├│s finaliza├º├úo[33m 457[2mms[22m[39m
+[90mstdout[2m | src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22m[2mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22m[2mFinaliza├º├úo Autom├ítica de Partida[2m > [22m[2mfinaliza partida automaticamente quando regras determinam vencedor
+[22m[39m[ScoreboardV2] Partida finalizada! Vencedor: PLAYER_1 | session:sess_1
+
+[90mstdout[2m | src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22m[2mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22m[2mFinaliza├º├úo Autom├ítica de Partida[2m > [22m[2mfinaliza partida automaticamente quando regras determinam vencedor
+[22m[39m[ScoreboardV2] Partida auto-finalizada no DB com sucesso | session:sess_1 { matchId: [32m'test-match-id'[39m }
+
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22mFinaliza├º├úo Autom├ítica de Partida[2m > [22mdesabilita bot├Áes de pontua├º├úo ap├│s finaliza├º├úo[33m 1740[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22mFinaliza├º├úo Autom├ítica de Partida[2m > [22mfinaliza partida automaticamente quando regras determinam vencedor[33m 587[2mms[22m[39m
+[90mstdout[2m | AppLogger._log (C:\apps\Racket\Racket\frontend\src\services\logger.ts:219:17)
+[22m[39m[ScoreboardV2] Estado final capturado com sucesso | session:sess_1 { matchId: [32m'test-match-id'[39m, hasPointsHistory: [33mfalse[39m, pointsCount: [33m0[39m }
+

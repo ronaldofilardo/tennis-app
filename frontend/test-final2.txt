@@ -1,0 +1,312 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/apps/Racket/Racket/frontend[39m
+
+[90mstdout[2m | tests/ResumeScoreModal.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | tests/MatchTimelineView.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | src/pages/__tests__/ScoreboardV2.server-effect.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | src/components/__tests__/ServerEffectModal.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | src/components/__tests__/LiveMatchesCarousel.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+[90mstdout[2m | src/pages/__tests__/ScoreboardV2.test.tsx
+[22m[39mresetGlobalMocks registrada no global/globalThis.
+
+ [32mÔ£ô[39m src/components/__tests__/LiveMatchesCarousel.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 1700[2mms[22m[39m
+     [33m[2mÔ£ô[22m[39m chama onMatchClick ao clicar em uma partida [33m 1445[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve renderizar a se├º├úo quando h├í partidas abertas
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve renderizar a se├º├úo quando h├í partidas abertas
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve renderizar a se├º├úo quando h├í partidas abertas
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve renderizar a se├º├úo quando h├í partidas abertas
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+stderr | src/pages/__tests__/ScoreboardV2.server-effect.test.tsx > ScoreboardV2 - ServerEffect Integration > Bot├Áes informativos de saque > exibe "1┬║ Saque" e, ap├│s falta, "2┬║ Saque" como bot├Áes informativos sem funcionalidade
+ÔÜá´©Å React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+ÔÜá´©Å React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+stderr | src/pages/__tests__/ScoreboardV2.test.tsx > ScoreboardV2 - Ace Button Behavior > Ace button functionality > opens ServerEffectModal when Ace button is clicked on first serve
+ÔÜá´©Å React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+ÔÜá´©Å React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ [32mÔ£ô[39m tests/MatchTimelineView.test.tsx [2m([22m[2m27 tests[22m[2m)[22m[33m 10993[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m deve renderizar um item por ponto [33m 1329[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m deve exibir nomes dos jogadores nos filtros [33m 369[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m deve expandir o card ao clicar no header [33m 575[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m deve colapsar o card ao clicar novamente [33m 437[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m deve mostrar detalhes do saque ao expandir ponto com serve [33m 635[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m deve mostrar detalhes do rally ao expandir ponto com rallyDetails [33m 448[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m deve mostrar contexto do placar ao expandir ponto com context [33m 598[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m deve filtrar por jogador ao clicar no filter chip [33m 802[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m deve atualizar contagem ao filtrar [33m 358[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m deve limpar filtros ao clicar em "Limpar" [33m 692[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m deve mostrar mensagem quando filtro n├úo retorna resultados [33m 1001[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m deve desativar filtro de jogador ao clicar novamente (toggle) [33m 1174[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m deve ter aria-expanded nos cards [33m 443[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m deve ter aria-label na lista de pontos [33m 485[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir badge com contagem de partidas
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir badge com contagem de partidas
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir badge com contagem de partidas
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir badge com contagem de partidas
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m src/components/__tests__/ServerEffectModal.test.tsx [2m([22m[2m33 tests[22m[2m)[22m[33m 11014[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m exibe todas as op├º├Áes de efeito [33m 2127[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m permite sele├º├úo de efeito [33m 306[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m permite mudan├ºa de efeito [33m 344[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m exibe todas as op├º├Áes de dire├º├úo [33m 418[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m permite mudan├ºa de dire├º├úo [33m 375[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m est├í sempre habilitado [33m 455[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m permite confirma├º├úo com apenas efeito selecionado [33m 814[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m permite confirma├º├úo com apenas dire├º├úo selecionada [33m 309[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m permite confirma├º├úo com efeito e dire├º├úo selecionados [33m 852[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m reseta sele├º├Áes quando modal ├® reaberto [33m 2277[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m permite sele├º├úo de efeito e dire├º├úo em contexto de erro [33m 871[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve iniciar expandido (aria-expanded=true)
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve iniciar expandido (aria-expanded=true)
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve iniciar expandido (aria-expanded=true)
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve iniciar expandido (aria-expanded=true)
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve colapsar ao clicar no cabe├ºalho
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve colapsar ao clicar no cabe├ºalho
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve colapsar ao clicar no cabe├ºalho
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve colapsar ao clicar no cabe├ºalho
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve expandir novamente ao clicar duas vezes
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve expandir novamente ao clicar duas vezes
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve expandir novamente ao clicar duas vezes
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve expandir novamente ao clicar duas vezes
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve ter aria-controls apontando para o id da lista
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve ter aria-controls apontando para o id da lista
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve ter aria-controls apontando para o id da lista
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve ter aria-controls apontando para o id da lista
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir cards de partida dentro do body quando expandido
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir cards de partida dentro do body quando expandido
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir cards de partida dentro do body quando expandido
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve exibir cards de partida dentro do body quando expandido
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mn├úo deve renderizar se├º├úo quando n├úo h├í partidas abertas
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mn├úo deve renderizar se├º├úo quando n├úo h├í partidas abertas
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mn├úo deve renderizar se├º├úo quando n├úo h├í partidas abertas
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mn├úo deve renderizar se├º├úo quando n├úo h├í partidas abertas
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve esconder os cards quando colapsado (display:none via classe)
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve esconder os cards quando colapsado (display:none via classe)
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve esconder os cards quando colapsado (display:none via classe)
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mdeve esconder os cards quando colapsado (display:none via classe)
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [32mÔ£ô[39m tests/ResumeScoreModal.test.tsx [2m([22m[2m39 tests[22m[2m)[22m[33m 17201[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m renderiza o dialog quando isOpen ├® true [33m 1196[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m o bot├úo PLAYER_1 tem aria-pressed=true por padr├úo [33m 504[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m ao clicar em PLAYER_2, o bot├úo correspondente fica active [33m 354[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m n├úo mostra "Set completo" com placar incompleto (3-2) [33m 419[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m mostra "Set completo" com placar 6-3 [33m 347[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m mostra nome do vencedor correto para 6-2 (p1) [33m 821[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m mostra nome do vencedor correto para 3-6 (p2) [33m 736[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m mostra campo de placar do tie-break quando set foi ganho no tie-break (7-6) [33m 483[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m mostra se├º├úo de tie-break em andamento quando placar ├® 6-6 [33m 366[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m n├úo mostra bot├úo "Confirmar Set" com placar incompleto [33m 713[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m mostra bot├úo "Confirmar Set 1" com placar 6-1 [33m 771[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m ao confirmar set 6-3, exibe na lista de sets conclu├¡dos [33m 1172[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m ap├│s confirmar set, inputs s├úo limpos e pr├│ximo set aparece (Set 2) [33m 346[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m exibe erro quando placar n├úo representa set completo [33m 355[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m exibe erro quando placar finalizaria a partida (vencer setsToWin=2 sets com BO3) [33m 990[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m ao confirmar um set e remover, lista de sets fica vazia [33m 1094[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m exibe erro ao tentar confirmar set que finalizaria a partida (SINGLE_SET 6-2) [33m 423[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m n├úo adiciona o set ├á lista quando ele finalizaria a partida [33m 501[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m chama onConfirm com currentGameIsMatchTiebreak=true ao clicar Iniciar Partida [33m 325[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m mostra Set completo com tie-break 4-3 [33m 432[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m chama onConfirm com os dados corretos para set em andamento (3-2) [33m 442[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m chama onConfirm com sets conclu├¡dos ap├│s confirmar um set (6-3) [33m 500[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m inclui pontos do tie-break em andamento no currentGamePoints [33m 582[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m inclui pontua├º├úo do game atual via selects quando set est├í em andamento [33m 451[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m ap├│s 1 set cada, 3┬║ set mostra "Match Tie-break" [33m 631[2mms[22m[39m
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mo chevron deve ter classe --collapsed quando recolhido
+[22m[39m[useDashboardData] Iniciando fetch de anota├º├Áes para: athlete@test.com
+[useDashboardData] Fetching suspended sessions for: athlete@test.com
+[useDashboardData] annotated-for-me status: [90mundefined[39m
+[useDashboardData] annotated-by-me status: [90mundefined[39m
+[useDashboardData] Suspended sessions response status: [90mundefined[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mo chevron deve ter classe --collapsed quando recolhido
+[22m[39m[useDashboardData] Suspended sessions data: [] Count: [33m0[39m
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mo chevron deve ter classe --collapsed quando recolhido
+[22m[39m[useDashboardData] annotated-for-me: [33m0[39m itens
+[useDashboardData] annotated-by-me: [33m0[39m itens
+
+[90mstdout[2m | tests/OpenMatchesCollapsible.test.tsx[2m > [22m[2mDashboard ÔÇö Se├º├úo colaps├ível: Partidas aguardando anotador[2m > [22m[2mo chevron deve ter classe --collapsed quando recolhido
+[22m[39m[useDashboardData] fetch de anota├º├Áes conclu├¡do
+
+ [31mÔØ»[39m tests/OpenMatchesCollapsible.test.tsx [2m([22m[2m10 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 14865[2mms[22m[39m
+[31m     [31m├ù[31m deve renderizar a se├º├úo quando h├í partidas abertas[39m[33m 6708[2mms[22m[39m
+     [33m[2mÔ£ô[22m[39m deve exibir badge com contagem de partidas [33m 1072[2mms[22m[39m
+     [33m[2mÔ£ô[22m[39m deve iniciar expandido (aria-expanded=true) [33m 1433[2mms[22m[39m
+     [33m[2mÔ£ô[22m[39m deve colapsar ao clicar no cabe├ºalho [33m 1186[2mms[22m[39m
+     [33m[2mÔ£ô[22m[39m deve expandir novamente ao clicar duas vezes [33m 1281[2mms[22m[39m
+     [33m[2mÔ£ô[22m[39m deve ter aria-controls apontando para o id da lista [33m 787[2mms[22m[39m
+     [33m[2mÔ£ô[22m[39m deve exibir cards de partida dentro do body quando expandido [33m 346[2mms[22m[39m
+     [33m[2mÔ£ô[22m[39m n├úo deve renderizar se├º├úo quando n├úo h├í partidas abertas [33m 520[2mms[22m[39m
+     [33m[2mÔ£ô[22m[39m deve esconder os cards quando colapsado (display:none via classe) [33m 712[2mms[22m[39m
+     [33m[2mÔ£ô[22m[39m o chevron deve ter classe --collapsed quando recolhido [33m 805[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.server-effect.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 16416[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m exibe "1┬║ Saque" e, ap├│s falta, "2┬║ Saque" como bot├Áes informativos sem funcionalidade [33m 4436[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m abre ServerEffectModal ao clicar em Ace no 1┬║ saque [33m 998[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m abre ServerEffectModal ao clicar em Ace no 2┬║ saque [33m 754[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m marca ponto automaticamente ao clicar em Out no 2┬║ saque (dupla falta) [33m 1159[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m marca ponto automaticamente ao clicar em Net no 2┬║ saque (dupla falta) [33m 938[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m marca ponto de Ace com detalhes do ServerEffect [33m 613[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m marca ponto de Ace no 2┬║ saque corretamente para o sacador [33m 1463[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m marca ponto de dupla falta automaticamente sem modal [33m 1370[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m abre modal de erro ao clicar em Out no 1┬║ saque [33m 406[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m salva erro do 1┬║ saque e permite continuar para 2┬║ saque [33m 418[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m abre modal de erro ao clicar em Out no 2┬║ saque [33m 745[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m registra dupla falta ao confirmar erro no 2┬║ saque [33m 1102[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m permite cancelamento do modal de erro volta para mesmo saque [33m 578[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m permite cancelamento do modal de erro no 2┬║ saque [33m 1124[2mms[22m[39m
+[90mstdout[2m | src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22m[2mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22m[2mFinaliza├º├úo Autom├ítica de Partida[2m > [22m[2mfinaliza partida automaticamente quando regras determinam vencedor
+[22m[39m[ScoreboardV2] Partida finalizada! Vencedor: PLAYER_1 | session:sess_1
+
+[90mstdout[2m | src/pages/__tests__/ScoreboardV2.test.tsx[2m > [22m[2mScoreboardV2 - Restaura├º├úo de Estado e Fluxos[2m > [22m[2mFinaliza├º├úo Autom├ítica de Partida[2m > [22m[2mfinaliza partida automaticamente quando regras determinam vencedor
+[22m[39m[ScoreboardV2] Partida auto-finalizada no DB com sucesso | session:sess_1 { matchId: [32m'test-match-id'[39m }
+
+ [32mÔ£ô[39m src/pages/__tests__/ScoreboardV2.test.tsx [2m([22m[2m26 tests[22m[2m)[22m[33m 22547[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m opens ServerEffectModal when Ace button is clicked on first serve [33m 3322[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m opens ServerEffectModal when Ace button is clicked on second serve [33m 1897[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m allows user to confirm point through ServerEffectModal [33m 649[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m closes ServerEffectModal after confirming point [33m 585[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m allows canceling the ServerEffectModal without adding point [33m 662[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m shows Ace button when serveStep is none and server exists [33m 323[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m shows Ace button when serveStep is second [33m 598[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m maintains existing point buttons functionality [33m 517[2mms[22m[39m
+     [33m[2mÔ£ô[22m[39m aligns quick action buttons to the left when PLAYER_1 is serving [33m 386[2mms[22m[39m
+     [33m[2mÔ£ô[22m[39m aligns quick action buttons to the right when PLAYER_2 is serving [33m 498[2mms[22m[39m
+     [33m[2mÔ£ô[22m[39m updates button alignment when server changes after point [33m 5073[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m registers isFirstServe correctly for points on first serve [33m 589[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m registers isFirstServe correctly for points on second serve [33m 934[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m alternates server correctly when returner wins point on first serve [33m 572[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m maintains isFirstServe consistency in point button clicks [33m 422[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m maintains isFirstServe consistency for second serve point buttons [33m 827[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m exibe bot├Áes de a├º├úo ap├│s finaliza├º├úo [33m 959[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m desabilita bot├Áes de pontua├º├úo ap├│s finaliza├º├úo [33m 1921[2mms[22m[39m
+       [33m[2mÔ£ô[22m[39m finaliza partida automaticamente quando regras determinam vencedor [33m 1032[2mms[22m[39m
+[90mstdout[2m | AppLogger._log (C:\apps\Racket\Racket\frontend\src\services\logger.ts:219:17)
+[22m[39m[ScoreboardV2] Estado final capturado com sucesso | session:sess_1 { matchId: [32m'test-match-id'[39m, hasPointsHistory: [33mfalse[39m, pointsCount: [33m0[39m }
+
