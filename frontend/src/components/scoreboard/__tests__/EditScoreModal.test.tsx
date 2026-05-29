@@ -166,4 +166,62 @@ describe('EditScoreModal - Dois Inputs Separados', () => {
     );
     expect(container).toBeInTheDocument();
   });
+
+  // Test para validar novo comportamento: campo de pontos do game desaparece quando set é completo
+  it('should hide game points section when set is complete (6x3)', async () => {
+    const user = userEvent.setup();
+    render(<EditScoreModal {...defaultProps} onConfirm={mockOnConfirm} onCancel={mockOnCancel} />);
+
+    const inputs = screen.getAllByRole('spinbutton');
+    // Digitar placar completo: 6×3
+    await user.type(inputs[0], '6');
+    await user.type(inputs[1], '3');
+
+    // Verificar que seção de pontos NÃO está visível
+    const pointsLabel = screen.queryByText(/Pontos do Game em Andamento/i);
+    expect(pointsLabel).not.toBeInTheDocument();
+  });
+
+  it('should show game points section when set is partial (3x2)', async () => {
+    const user = userEvent.setup();
+    render(<EditScoreModal {...defaultProps} onConfirm={mockOnConfirm} onCancel={mockOnCancel} />);
+
+    const inputs = screen.getAllByRole('spinbutton');
+    // Digitar placar parcial: 3×2
+    await user.type(inputs[0], '3');
+    await user.type(inputs[1], '2');
+
+    // Verificar que seção de pontos está visível
+    const pointsLabel = screen.getByText(/Pontos do Game em Andamento/i);
+    expect(pointsLabel).toBeInTheDocument();
+  });
+
+  it('should show points section for tiebreak (6x6)', async () => {
+    const user = userEvent.setup();
+    render(<EditScoreModal {...defaultProps} onConfirm={mockOnConfirm} onCancel={mockOnCancel} />);
+
+    const inputs = screen.getAllByRole('spinbutton');
+    // Digitar tiebreak: 6×6
+    await user.type(inputs[0], '6');
+    await user.type(inputs[1], '6');
+
+    // Verificar que seção de pontos está visível (para tiebreak)
+    const pointsLabel = screen.getByText(/Pontos do Game em Andamento/i);
+    expect(pointsLabel).toBeInTheDocument();
+  });
+
+  it('should show numeric inputs for tiebreak points (6x6)', async () => {
+    const user = userEvent.setup();
+    render(<EditScoreModal {...defaultProps} onConfirm={mockOnConfirm} onCancel={mockOnCancel} />);
+
+    const inputs = screen.getAllByRole('spinbutton');
+    // Digitar tiebreak: 6×6
+    await user.type(inputs[0], '6');
+    await user.type(inputs[1], '6');
+
+    // Aguardar que os inputs numéricos de tiebreak apareçam
+    const tiebreakInputs = screen.getAllByRole('spinbutton');
+    // Deve haver 4 spinbuttons agora: 2 para games + 2 para pontos do tiebreak
+    expect(tiebreakInputs.length).toBeGreaterThanOrEqual(4);
+  });
 });

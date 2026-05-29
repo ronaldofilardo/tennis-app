@@ -355,83 +355,85 @@ export function EditScoreModal(props: EditScoreModalProps): ReactElement | null 
               )}
 
               {/* Pontos do game em andamento — visível apenas quando set é parcial */}
-              <div className="edit-score-points-section">
-                <p className="edit-score-points-label">🎾 Pontos do Game em Andamento</p>
-                {/* Bug 7: Quando tiebreak (6×6), usar inputs numéricos 0-99 */}
-                {bothFilled && p1Val === 6 && p2Val === 6 ? (
-                  <div className="edit-score-dual-input-row">
-                    <span className="edit-score-player-label">{playerNames.p1}</span>
-                    <input
-                      type="number"
-                      className="edit-score-games-input edit-score-tiebreak-input"
-                      value={p1Points}
-                      onChange={(e) => {
-                        const v = parseInt(e.target.value, 10);
-                        if (!isNaN(v) && v >= 0) setP1Points(String(v));
-                        else if (e.target.value === '') setP1Points('0');
-                      }}
-                      min="0"
-                      max="99"
-                      placeholder="0"
-                    />
-                    <span className="edit-score-vs">×</span>
-                    <input
-                      type="number"
-                      className="edit-score-games-input edit-score-tiebreak-input"
-                      value={p2Points}
-                      onChange={(e) => {
-                        const v = parseInt(e.target.value, 10);
-                        if (!isNaN(v) && v >= 0) setP2Points(String(v));
-                        else if (e.target.value === '') setP2Points('0');
-                      }}
-                      min="0"
-                      max="99"
-                      placeholder="0"
-                    />
-                    <span className="edit-score-player-label">{playerNames.p2}</span>
-                  </div>
-                ) : (
-                  <div className="edit-score-dual-input-row">
-                    <span className="edit-score-player-label">{playerNames.p1}</span>
-                    <select
-                      className="edit-score-games-input edit-score-points-select"
-                      value={p1Points}
-                      onChange={(e) => handlePointsSelectChange(e.target.value, setP1Points)}
-                    >
-                      <option value="0">0</option>
-                      <option value="15">15</option>
-                      <option value="30">30</option>
-                      <option value="40">40</option>
-                      {/* Bug 8: Deuce e AD quando ambos estão em 40 */}
-                      {p2Points === '40' && (
-                        <>
-                          <option value="DEUCE">Deuce</option>
-                          <option value="AD">Adv.</option>
-                        </>
-                      )}
-                    </select>
-                    <span className="edit-score-vs">×</span>
-                    <select
-                      className="edit-score-games-input edit-score-points-select"
-                      value={p2Points}
-                      onChange={(e) => handlePointsSelectChange(e.target.value, setP2Points)}
-                    >
-                      <option value="0">0</option>
-                      <option value="15">15</option>
-                      <option value="30">30</option>
-                      <option value="40">40</option>
-                      {/* Bug 8: Deuce e AD quando ambos estão em 40 */}
-                      {p1Points === '40' && (
-                        <>
-                          <option value="DEUCE">Deuce</option>
-                          <option value="AD">Adv.</option>
-                        </>
-                      )}
-                    </select>
-                    <span className="edit-score-player-label">{playerNames.p2}</span>
-                  </div>
-                )}
-              </div>
+              {partial && (
+                <div className="edit-score-points-section">
+                  <p className="edit-score-points-label">🎾 Pontos do Game em Andamento</p>
+                  {/* Bug 7: Quando tiebreak (6×6), usar inputs numéricos 0-99 */}
+                  {bothFilled && p1Val === 6 && p2Val === 6 ? (
+                    <div className="edit-score-dual-input-row">
+                      <span className="edit-score-player-label">{playerNames.p1}</span>
+                      <input
+                        type="number"
+                        className="edit-score-games-input edit-score-tiebreak-input"
+                        value={p1Points}
+                        onChange={(e) => {
+                          const v = parseInt(e.target.value, 10);
+                          if (!isNaN(v) && v >= 0) setP1Points(String(v));
+                          else if (e.target.value === '') setP1Points('0');
+                        }}
+                        min="0"
+                        max="99"
+                        placeholder="0"
+                      />
+                      <span className="edit-score-vs">×</span>
+                      <input
+                        type="number"
+                        className="edit-score-games-input edit-score-tiebreak-input"
+                        value={p2Points}
+                        onChange={(e) => {
+                          const v = parseInt(e.target.value, 10);
+                          if (!isNaN(v) && v >= 0) setP2Points(String(v));
+                          else if (e.target.value === '') setP2Points('0');
+                        }}
+                        min="0"
+                        max="99"
+                        placeholder="0"
+                      />
+                      <span className="edit-score-player-label">{playerNames.p2}</span>
+                    </div>
+                  ) : (
+                    <div className="edit-score-dual-input-row">
+                      <span className="edit-score-player-label">{playerNames.p1}</span>
+                      <select
+                        className="edit-score-games-input edit-score-points-select"
+                        value={p1Points}
+                        onChange={(e) => handlePointsSelectChange(e.target.value, setP1Points)}
+                      >
+                        <option value="0">0</option>
+                        <option value="15">15</option>
+                        <option value="30">30</option>
+                        <option value="40">40</option>
+                        {/* Bug 8: Deuce e AD quando ambos estão em 40 */}
+                        {p2Points === '40' && (
+                          <>
+                            <option value="DEUCE">Deuce</option>
+                            <option value="AD">Adv.</option>
+                          </>
+                        )}
+                      </select>
+                      <span className="edit-score-vs">×</span>
+                      <select
+                        className="edit-score-games-input edit-score-points-select"
+                        value={p2Points}
+                        onChange={(e) => handlePointsSelectChange(e.target.value, setP2Points)}
+                      >
+                        <option value="0">0</option>
+                        <option value="15">15</option>
+                        <option value="30">30</option>
+                        <option value="40">40</option>
+                        {/* Bug 8: Deuce e AD quando ambos estão em 40 */}
+                        {p1Points === '40' && (
+                          <>
+                            <option value="DEUCE">Deuce</option>
+                            <option value="AD">Adv.</option>
+                          </>
+                        )}
+                      </select>
+                      <span className="edit-score-player-label">{playerNames.p2}</span>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {canAddNextSet && (
                 <button className="edit-score-btn-next-set active" onClick={handleAddSet}>
