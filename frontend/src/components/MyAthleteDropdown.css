@@ -27,7 +27,7 @@
   height: 2.5rem;
   padding: 0.5rem 1rem;
   box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--clr-white-soft);
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 0.5rem;
   cursor: pointer;
@@ -40,20 +40,20 @@
 }
 
 .my-athlete-dropdown-trigger:hover:not(.disabled) {
-  border-color: rgba(255, 255, 255, 0.38);
-  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--clr-white-bold);
+  background: var(--clr-white-faint);
 }
 
 .my-athlete-dropdown-trigger:focus-within {
-  outline: 2px solid var(--clr-accent, #22c55e);
+  outline: 2px solid var(--clr-accent, var(--clr-accent));
   outline-offset: 2px;
-  border-color: var(--clr-accent, #22c55e);
-  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+  border-color: var(--clr-accent, var(--clr-accent));
+  box-shadow: 0 0 0 4px var(--clr-accent-micro);
 }
 
 .my-athlete-dropdown.has-value .my-athlete-dropdown-trigger {
-  border-color: var(--clr-accent, #22c55e);
-  background: rgba(34, 197, 94, 0.08);
+  border-color: var(--clr-accent, var(--clr-accent));
+  background: var(--clr-accent-faintest);
 }
 
 .my-athlete-dropdown-value {
@@ -102,10 +102,10 @@
 
 .my-athlete-dropdown-menu {
   position: absolute;
-  background: var(--clr-surface, #181d27);
-  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  background: var(--clr-surface, var(--clr-surface));
+  border: 1px solid var(--clr-border, var(--clr-border));
   border-radius: 0.5rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 24px var(--clr-overlay-50);
   z-index: 9999;
   max-height: 300px;
   overflow-y: auto;
@@ -140,20 +140,20 @@
   border: none;
   cursor: pointer;
   text-align: left;
-  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  color: rgba(232, 234, 240, 0.7);
+  transition: color 150ms var(--ease-in-out), background-color 150ms var(--ease-in-out), transform 150ms var(--ease-in-out), opacity 150ms var(--ease-in-out), border-color 150ms var(--ease-in-out), box-shadow 150ms var(--ease-in-out);
+  color: var(--clr-text-dim);
   font-size: 1rem;
   user-select: none;
   -webkit-user-select: none;
 }
 
 .my-athlete-dropdown-item:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--clr-white-strong);
   color: var(--clr-text);
 }
 
 .my-athlete-dropdown-item.selected {
-  background: rgba(34, 197, 94, 0.1);
+  background: var(--clr-accent-micro);
   border-left: 3px solid var(--clr-accent);
   padding-left: calc(1rem - 3px);
 }
@@ -163,13 +163,13 @@
   flex-direction: row;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(34, 197, 94, 0.05);
+  background: var(--clr-accent-faintest);
   font-weight: 500;
   color: var(--clr-accent);
 }
 
 .my-athlete-dropdown-item.new-athlete:hover {
-  background: rgba(34, 197, 94, 0.1);
+  background: var(--clr-accent-micro);
 }
 
 .new-athlete-icon {
@@ -193,7 +193,7 @@
 
 .my-athlete-dropdown-item-name {
   font-weight: 500;
-  color: rgba(232, 234, 240, 0.85);
+  color: var(--clr-text);
   transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -207,7 +207,7 @@
   gap: 0.5rem;
   align-items: center;
   font-size: 0.75rem;
-  color: rgba(107, 114, 128, 0.8);
+  color: var(--clr-text-muted);
   transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 

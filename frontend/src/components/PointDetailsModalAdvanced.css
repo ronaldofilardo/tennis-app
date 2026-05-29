@@ -3,7 +3,7 @@
 
 .pd-advanced-section {
   margin-top: 16px;
-  border-top: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  border-top: 1px solid var(--clr-border, var(--clr-border));
   padding-top: 12px;
 }
 
@@ -16,7 +16,7 @@
 .pd-advanced-label {
   font-size: 12px;
   font-weight: 600;
-  color: var(--clr-text-dim, #9ca3af);
+  color: var(--clr-text-dim, var(--clr-text-dim));
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -29,20 +29,20 @@
 
 .pd-advanced-input {
   padding: 10px 12px;
-  background: var(--clr-surface, #181d27);
-  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  background: var(--clr-surface, var(--clr-surface));
+  border: 1px solid var(--clr-border, var(--clr-border));
   border-radius: 6px;
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
   font-size: 16px;
   font-family: 'Inter', system-ui, monospace;
-  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color 150ms var(--ease-in-out), background-color 150ms var(--ease-in-out), transform 150ms var(--ease-in-out), opacity 150ms var(--ease-in-out), border-color 150ms var(--ease-in-out), box-shadow 150ms var(--ease-in-out);
 }
 
 .pd-advanced-input:focus {
   outline: none;
-  border-color: var(--clr-accent, #22c55e);
-  background: var(--clr-surface-2, #1e2535);
-  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.1);
+  border-color: var(--clr-accent, var(--clr-accent));
+  background: var(--clr-surface-2, var(--clr-surface-2));
+  box-shadow: 0 0 0 2px var(--clr-accent-micro);
 }
 
 .pd-advanced-input::-webkit-outer-spin-button,
@@ -66,23 +66,23 @@
 
 .pd-ball-preview-clicks {
   font-weight: 700;
-  color: var(--clr-text-dim, #9ca3af);
+  color: var(--clr-text-dim, var(--clr-text-dim));
   min-width: 24px;
 }
 
 .pd-ball-preview-sep {
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
 }
 
 .pd-ball-preview-total {
   font-weight: 700;
-  color: var(--clr-accent, #22c55e);
+  color: var(--clr-accent, var(--clr-accent));
   font-size: 15px;
 }
 
 .pd-ball-preview-hint {
   font-size: 11px;
-  color: var(--clr-yellow, #eab308);
+  color: var(--clr-yellow, var(--clr-yellow));
   opacity: 0.85;
 }
 

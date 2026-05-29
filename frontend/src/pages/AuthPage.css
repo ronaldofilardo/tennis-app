@@ -33,7 +33,7 @@
 .auth-logo h1 {
   margin: 0;
   font-size: 1.8rem;
-  color: var(--text-primary, #f8fafc);
+  color: var(--text-primary, var(--clr-text));
 }
 
 .auth-subtitle {
@@ -68,7 +68,7 @@
   background: var(--court-bg, #071912);
   border: 1px solid var(--border-subtle, #1a482880);
   border-radius: 6px;
-  color: var(--text-primary, #f8fafc);
+  color: var(--text-primary, var(--clr-text));
   font-size: 0.95rem;
   transition: border-color 0.2s;
   box-sizing: border-box;
@@ -91,8 +91,8 @@
 
 .auth-error {
   padding: 10px 12px;
-  background: rgba(239, 68, 68, 0.12);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: var(--clr-live-faint);
+  border: 1px solid var(--clr-live-mid);
   border-radius: 6px;
   color: var(--alert-red, var(--clr-error));
   font-size: var(--font-scale-body);
@@ -105,7 +105,7 @@
   width: 100%;
   padding: 12px;
   background: var(--clr-yellow);
-  color: #000;
+  color: var(--clr-bg);
   border: none;
   border-radius: 6px;
   font-size: var(--font-scale-body);
@@ -118,7 +118,7 @@
 }
 
 .auth-submit:hover:not(:disabled) {
-  background: #fbbf24;
+  background: var(--clr-yellow);
   transform: translateY(-1px);
 }
 
@@ -157,7 +157,7 @@
 }
 
 .auth-link:hover {
-  color: #fbbf24;
+  color: var(--clr-yellow);
 }
 
 /* Opções de cadastro rápido (apenas no modo login) */
@@ -184,7 +184,7 @@
   width: 100%;
   padding: 10px 16px;
   background: transparent;
-  border: 1px solid var(--border-muted, rgba(255, 255, 255, 0.15));
+  border: 1px solid var(--border-muted, var(--clr-white-mid));
   border-radius: 8px;
   color: var(--text-secondary, #bbd5c5);
   font-size: var(--font-scale-body);

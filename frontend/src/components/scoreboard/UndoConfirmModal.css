@@ -1,7 +1,7 @@
 .undo-confirm-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--clr-overlay-70);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -10,12 +10,12 @@
 }
 
 .undo-confirm-modal {
-  background: var(--clr-surface, #1a1a2e);
+  background: var(--clr-surface, var(--clr-surface));
   border: 1px solid var(--clr-border, var(--clr-border-light));
   border-radius: 16px;
   width: 100%;
   max-width: 360px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 60px var(--clr-overlay-50);
   overflow: hidden;
 }
 
@@ -35,7 +35,7 @@
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--clr-text, #f0f0f0);
+  color: var(--clr-text, var(--clr-light-bg));
 }
 
 .undo-confirm-body {
@@ -54,7 +54,7 @@
   margin: 0 0 6px;
   font-size: var(--font-scale-body);
   font-weight: 600;
-  color: var(--clr-text, #f0f0f0);
+  color: var(--clr-text, var(--clr-light-bg));
 }
 
 .undo-confirm-context {
@@ -83,12 +83,12 @@
 
 .undo-confirm-btn-cancel {
   background: var(--clr-surface-raised, var(--clr-border-light));
-  color: var(--clr-text, #f0f0f0);
+  color: var(--clr-text, var(--clr-light-bg));
 }
 
 .undo-confirm-btn-confirm {
-  background: var(--clr-warning, #f59e0b);
-  color: #000;
+  background: var(--clr-warning, var(--clr-yellow));
+  color: var(--clr-bg);
 }
 
 .undo-confirm-btn-cancel:hover {

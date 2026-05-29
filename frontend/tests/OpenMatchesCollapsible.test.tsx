@@ -12,7 +12,7 @@ import userEvent from '@testing-library/user-event';
 vi.mock('react-router-dom', () => ({
   useNavigate: () => vi.fn(),
   useParams: () => ({}),
-  useLocation: () => ({ pathname: '/' }),
+  useLocation: () => ({ pathname: '/aguardandoanotador' }),
   Link: ({ children, to }: any) => <a href={to}>{children}</a>,
   MemoryRouter: ({ children }: any) => children,
 }));

@@ -18,7 +18,7 @@
   flex: 1;
   min-height: 2.5rem;
   padding: 0.5rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid var(--clr-white-mid);
   border-radius: var(--radius-md, 6px);
   font-family: var(--font-main, 'Inter', sans-serif);
   font-size: var(--font-scale-body, clamp(0.875rem, 2vw, 1rem));
@@ -40,13 +40,13 @@
 
 .match-setup-button--primary {
   flex: 1.4;
-  background: var(--clr-accent, #22c55e);
-  color: #0f1117;
-  border-color: var(--clr-accent, #22c55e);
+  background: var(--clr-accent, var(--clr-accent));
+  color: var(--clr-bg);
+  border-color: var(--clr-accent, var(--clr-accent));
 }
 
 .match-setup-button--primary:hover:not(:disabled) {
-  background: rgba(34, 197, 94, 0.88);
+  background: var(--clr-accent);
   box-shadow: 0 6px 16px rgba(34, 197, 94, 0.28);
   transform: translateY(-1px);
 }
@@ -57,35 +57,35 @@
 }
 
 .match-setup-button--primary:disabled {
-  background: rgba(34, 197, 94, 0.3);
-  border-color: rgba(34, 197, 94, 0.3);
-  color: rgba(15, 17, 23, 0.6);
+  background: var(--clr-accent-medium);
+  border-color: var(--clr-accent-medium);
+  color: var(--clr-overlay-60);
 }
 
 /* ── Secondary Button (Localizar) ────────────────────── */
 
 .match-setup-button--secondary {
   background: transparent;
-  color: var(--clr-text, #e8eaf0);
-  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--clr-text, var(--clr-text));
+  border-color: var(--clr-white-hover);
 }
 
 .match-setup-button--secondary:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: var(--clr-text, #e8eaf0);
+  background: var(--clr-white-strong);
+  border-color: var(--clr-text, var(--clr-text));
   transform: translateY(-1px);
 }
 
 .match-setup-button--secondary:active:not(:disabled) {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--clr-white-strong);
 }
 
 .match-setup-button--secondary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.07);
-  color: var(--clr-text-dim, #9ca3af);
+  background: var(--clr-white-thin);
+  border-color: var(--clr-border);
+  color: var(--clr-text-dim, var(--clr-text-dim));
 }
 
 /* ── Disabled State (General) ────────────────────────── */
@@ -99,7 +99,7 @@
 /* ── Focus State ────────────────────────────────────── */
 
 .match-setup-button:focus-visible {
-  outline: 2px solid var(--clr-accent, #22c55e);
+  outline: 2px solid var(--clr-accent, var(--clr-accent));
   outline-offset: 2px;
 }
 

@@ -1,7 +1,7 @@
 .edit-score-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: var(--clr-overlay-75);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -10,14 +10,14 @@
 }
 
 .edit-score-modal {
-  background: var(--clr-surface, #1a1a2e);
+  background: var(--clr-surface, var(--clr-surface));
   border: 1px solid var(--clr-border, var(--clr-border-light));
   border-radius: 16px;
   width: 100%;
   max-width: 420px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 60px var(--clr-overlay-50);
 }
 
 .edit-score-header {
@@ -37,7 +37,7 @@
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--clr-text, #f0f0f0);
+  color: var(--clr-text, var(--clr-light-bg));
 }
 
 .edit-score-close {
@@ -65,21 +65,21 @@
 .edit-score-warning {
   margin: 0;
   padding: 10px 14px;
-  background: rgba(245, 158, 11, 0.12);
+  background: var(--clr-yellow-light);
   border: 1px solid rgba(245, 158, 11, 0.3);
   border-radius: 8px;
   font-size: 0.83rem;
-  color: var(--clr-warning, #f59e0b);
+  color: var(--clr-warning, var(--clr-yellow));
 }
 
 .edit-score-info {
   margin: 0;
   padding: 10px 14px;
-  background: rgba(34, 197, 94, 0.12);
-  border: 1px solid rgba(34, 197, 94, 0.3);
+  background: var(--clr-accent-light);
+  border: 1px solid var(--clr-accent-medium);
   border-radius: 8px;
   font-size: 0.83rem;
-  color: var(--clr-accent, #22c55e);
+  color: var(--clr-accent, var(--clr-accent));
 }
 
 .edit-score-section {
@@ -131,23 +131,23 @@
   cursor: pointer;
   border: 1.5px solid var(--clr-border, var(--clr-border-light));
   background: transparent;
-  color: var(--clr-text-muted, rgba(255, 255, 255, 0.6));
-  transition: all var(--transition-fast);
+  color: var(--clr-text-muted, var(--clr-text-dim));
+  transition: color var(--transition-fast) var(--ease-out), background-color var(--transition-fast) var(--ease-out), transform var(--transition-fast) var(--ease-out), opacity var(--transition-fast) var(--ease-out), border-color var(--transition-fast) var(--ease-out), box-shadow var(--transition-fast) var(--ease-out);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .edit-score-set-btn.active {
-  background: var(--clr-accent, #3b82f6);
-  border-color: var(--clr-accent, #3b82f6);
-  color: #fff;
+  background: var(--clr-accent, var(--clr-blue));
+  border-color: var(--clr-accent, var(--clr-blue));
+  color: var(--clr-text);
   font-weight: 600;
 }
 
 .edit-score-set-btn:hover:not(.active) {
-  border-color: var(--clr-accent, #3b82f6);
-  color: var(--clr-text, #f0f0f0);
+  border-color: var(--clr-accent, var(--clr-blue));
+  color: var(--clr-text, var(--clr-light-bg));
 }
 
 .edit-score-summary {
@@ -158,13 +158,13 @@
   background: var(--clr-surface-lighter);
   border-radius: 8px;
   font-size: 0.83rem;
-  color: var(--clr-text-muted, rgba(255, 255, 255, 0.6));
+  color: var(--clr-text-muted, var(--clr-text-dim));
 }
 
 .edit-score-summary-score {
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--clr-text, #f0f0f0);
+  color: var(--clr-text, var(--clr-light-bg));
 }
 
 .edit-score-server-btns {
@@ -181,20 +181,20 @@
   cursor: pointer;
   border: 1.5px solid var(--clr-border, var(--clr-border-light));
   background: transparent;
-  color: var(--clr-text-muted, rgba(255, 255, 255, 0.6));
-  transition: all var(--transition-fast);
+  color: var(--clr-text-muted, var(--clr-text-dim));
+  transition: color var(--transition-fast) var(--ease-out), background-color var(--transition-fast) var(--ease-out), transform var(--transition-fast) var(--ease-out), opacity var(--transition-fast) var(--ease-out), border-color var(--transition-fast) var(--ease-out), box-shadow var(--transition-fast) var(--ease-out);
 }
 
 .edit-score-server-btn.active {
-  background: var(--clr-accent, #3b82f6);
-  border-color: var(--clr-accent, #3b82f6);
-  color: #fff;
+  background: var(--clr-accent, var(--clr-blue));
+  border-color: var(--clr-accent, var(--clr-blue));
+  color: var(--clr-text);
   font-weight: 600;
 }
 
 .edit-score-server-btn:hover:not(.active) {
-  border-color: var(--clr-accent, #3b82f6);
-  color: var(--clr-text, #f0f0f0);
+  border-color: var(--clr-accent, var(--clr-blue));
+  color: var(--clr-text, var(--clr-light-bg));
 }
 
 .edit-score-footer {
@@ -217,12 +217,12 @@
 
 .edit-score-btn-cancel {
   background: var(--clr-surface-raised, var(--clr-border-light));
-  color: var(--clr-text, #f0f0f0);
+  color: var(--clr-text, var(--clr-light-bg));
 }
 
 .edit-score-btn-confirm {
-  background: var(--clr-accent, #3b82f6);
-  color: #fff;
+  background: var(--clr-accent, var(--clr-blue));
+  color: var(--clr-text);
 }
 
 .edit-score-btn-cancel:hover {
@@ -255,7 +255,7 @@
 .edit-score-input-label {
   margin: 0;
   font-size: 0.82rem;
-  color: var(--clr-text-muted, rgba(255, 255, 255, 0.6));
+  color: var(--clr-text-muted, var(--clr-text-dim));
   font-weight: 500;
 }
 
@@ -264,9 +264,9 @@
   border-radius: 10px;
   font-size: 1rem;
   font-weight: 500;
-  border: 1.5px solid var(--clr-border, rgba(255, 255, 255, 0.07));
-  background: var(--clr-surface, #1a1a2e);
-  color: var(--clr-text, #f0f0f0);
+  border: 1.5px solid var(--clr-border, var(--clr-border));
+  background: var(--clr-surface, var(--clr-surface));
+  color: var(--clr-text, var(--clr-light-bg));
   transition:
     border-color 0.15s,
     background-color 0.15s;
@@ -274,25 +274,25 @@
 }
 
 .edit-score-input:focus {
-  border-color: var(--clr-accent, #3b82f6);
-  background: var(--clr-surface-raised, rgba(255, 255, 255, 0.02));
+  border-color: var(--clr-accent, var(--clr-blue));
+  background: var(--clr-surface-raised, var(--clr-white-micro));
 }
 
 .edit-score-input.valid {
-  border-color: var(--clr-accent, #22c55e);
+  border-color: var(--clr-accent, var(--clr-accent));
 }
 
 .edit-score-input.invalid {
-  border-color: var(--clr-live, #f43f5e);
-  background: rgba(244, 63, 94, 0.05);
+  border-color: var(--clr-live, var(--clr-live));
+  background: var(--clr-live-faintest);
 }
 
 .edit-score-error {
   margin: 0;
   padding: 6px 10px;
   font-size: 0.78rem;
-  color: var(--clr-live, #f43f5e);
-  background: rgba(244, 63, 94, 0.12);
+  color: var(--clr-live, var(--clr-live));
+  background: var(--clr-live-faint);
   border-radius: 6px;
 }
 
@@ -303,8 +303,8 @@
   margin: 0;
   padding: 8px 10px;
   font-size: 0.78rem;
-  color: var(--clr-accent, #22c55e);
-  background: rgba(34, 197, 94, 0.12);
+  color: var(--clr-accent, var(--clr-accent));
+  background: var(--clr-accent-light);
   border-radius: 6px;
 }
 
@@ -321,7 +321,7 @@
 .edit-score-success-partial {
   margin: 0;
   font-weight: 600;
-  color: var(--clr-accent, #22c55e);
+  color: var(--clr-accent, var(--clr-accent));
 }
 
 .edit-score-success-info {
@@ -339,13 +339,13 @@
   border: none;
   background: var(--clr-surface-raised, var(--clr-border-light));
   color: var(--clr-text-muted, rgba(255, 255, 255, 0.5));
-  transition: all var(--transition-fast);
+  transition: color var(--transition-fast) var(--ease-out), background-color var(--transition-fast) var(--ease-out), transform var(--transition-fast) var(--ease-out), opacity var(--transition-fast) var(--ease-out), border-color var(--transition-fast) var(--ease-out), box-shadow var(--transition-fast) var(--ease-out);
   margin-top: 6px;
 }
 
 .edit-score-btn-next-set.active {
-  background: var(--clr-accent, #3b82f6);
-  color: #fff;
+  background: var(--clr-accent, var(--clr-blue));
+  color: var(--clr-text);
   cursor: pointer;
 }
 
@@ -369,7 +369,7 @@
   align-items: center;
   gap: 12px;
   padding: 8px 12px;
-  background: var(--clr-surface-lighter, rgba(255, 255, 255, 0.05));
+  background: var(--clr-surface-lighter, var(--clr-white-soft));
   border-radius: 8px;
 }
 
@@ -381,7 +381,7 @@
 .edit-score-set-result {
   font-weight: 600;
   font-size: 1.05rem;
-  color: var(--clr-text, #f0f0f0);
+  color: var(--clr-text, var(--clr-light-bg));
   flex: 1;
   text-align: center;
 }
@@ -392,20 +392,20 @@
   padding: 4px 10px;
   border-radius: 6px;
   background: var(--clr-border, rgba(255, 255, 255, 0.1));
-  color: var(--clr-text, #f0f0f0);
+  color: var(--clr-text, var(--clr-light-bg));
   min-width: 100px;
   text-align: center;
 }
 
 .edit-score-set-winner.p1,
 .edit-score-set-winner.p2 {
-  background: rgba(34, 197, 94, 0.2);
-  color: var(--clr-accent, #22c55e);
+  background: var(--clr-accent-low);
+  color: var(--clr-accent, var(--clr-accent));
 }
 
 .edit-score-section-active {
   padding: 12px;
-  background: var(--clr-surface-raised, rgba(255, 255, 255, 0.08));
+  background: var(--clr-surface-raised, var(--clr-white-strong));
   border: 1.5px solid var(--clr-border, rgba(255, 255, 255, 0.1));
   border-radius: 10px;
 }
@@ -420,7 +420,7 @@
 .edit-score-player-label {
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--clr-text-muted, rgba(255, 255, 255, 0.6));
+  color: var(--clr-text-muted, var(--clr-text-dim));
   width: auto;
   min-width: 60px;
   text-align: right;
@@ -440,8 +440,8 @@
   font-size: 1.1rem;
   font-weight: 600;
   border: 1.5px solid var(--clr-border, rgba(255, 255, 255, 0.1));
-  background: var(--clr-surface, #1a1a2e);
-  color: var(--clr-text, #f0f0f0);
+  background: var(--clr-surface, var(--clr-surface));
+  color: var(--clr-text, var(--clr-light-bg));
   text-align: center;
   width: 60px;
   transition:
@@ -453,22 +453,22 @@
 }
 
 .edit-score-games-input:focus {
-  border-color: var(--clr-accent, #3b82f6);
-  background: var(--clr-surface-raised, rgba(255, 255, 255, 0.05));
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--clr-accent, var(--clr-blue));
+  background: var(--clr-surface-raised, var(--clr-white-soft));
+  box-shadow: 0 0 0 3px var(--clr-blue-micro);
 }
 
 .edit-score-games-input.winner {
-  border-color: var(--clr-accent, #22c55e);
-  background: rgba(34, 197, 94, 0.1);
-  color: var(--clr-accent, #22c55e);
+  border-color: var(--clr-accent, var(--clr-accent));
+  background: var(--clr-accent-micro);
+  color: var(--clr-accent, var(--clr-accent));
   font-weight: 700;
 }
 
 .edit-score-games-input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  background: var(--clr-surface-lighter, rgba(255, 255, 255, 0.03));
+  background: var(--clr-surface-lighter, var(--clr-white-thin));
 }
 
 .edit-score-vs {
@@ -490,29 +490,29 @@
 }
 
 .edit-score-set-feedback.complete {
-  background: rgba(34, 197, 94, 0.12);
-  color: var(--clr-accent, #22c55e);
-  border: 1px solid rgba(34, 197, 94, 0.3);
+  background: var(--clr-accent-light);
+  color: var(--clr-accent, var(--clr-accent));
+  border: 1px solid var(--clr-accent-medium);
 }
 
 .edit-score-set-feedback.partial {
-  background: rgba(59, 130, 246, 0.12);
-  color: var(--clr-blue, #3b82f6);
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: var(--clr-blue-light);
+  color: var(--clr-blue, var(--clr-blue));
+  border: 1px solid var(--clr-blue-micro);
 }
 
 .edit-score-points-section {
   margin-top: 12px;
   padding: 12px;
-  background: rgba(59, 130, 246, 0.08);
-  border: 1px solid rgba(59, 130, 246, 0.25);
+  background: var(--clr-blue-micro);
+  border: 1px solid var(--clr-blue-faint);
   border-radius: 10px;
 }
 
 .edit-score-points-label {
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--clr-blue, #3b82f6);
+  color: var(--clr-blue, var(--clr-blue));
   margin: 0 0 4px 0;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -532,7 +532,7 @@
   text-align: center;
   font-size: 0.88rem;
   font-weight: 600;
-  color: var(--clr-text, #f0f0f0);
+  color: var(--clr-text, var(--clr-light-bg));
 }
 
 .edit-score-set-winner {
@@ -541,24 +541,24 @@
   font-size: 0.75rem;
   font-weight: 600;
   white-space: nowrap;
-  background: var(--clr-accent, #3b82f6);
-  color: #fff;
+  background: var(--clr-accent, var(--clr-blue));
+  color: var(--clr-text);
 }
 
 .edit-score-set-winner.p2 {
-  background: var(--clr-yellow, #eab308);
+  background: var(--clr-yellow, var(--clr-yellow));
 }
 
 .edit-score-section-active {
   padding: 12px 14px;
-  background: var(--clr-surface-lighter, rgba(255, 255, 255, 0.03));
-  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  background: var(--clr-surface-lighter, var(--clr-white-thin));
+  border: 1px solid var(--clr-border, var(--clr-border));
   border-radius: 10px;
 }
 
 .edit-score-section-complete {
   padding: 12px 14px;
-  background: rgba(34, 197, 94, 0.08);
-  border: 1px solid rgba(34, 197, 94, 0.2);
+  background: var(--clr-accent-faintest);
+  border: 1px solid var(--clr-accent-low);
   border-radius: 10px;
 }

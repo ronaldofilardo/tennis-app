@@ -38,39 +38,39 @@
 /* ── Button Element ────────────────────────────────────────── */
 
 .button-group__btn {
-  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  border: 1px solid var(--clr-border, var(--clr-border));
   background: transparent;
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
   border-radius: var(--radius-md, 6px);
   font-family: var(--font-main, 'Inter', sans-serif);
   font-weight: var(--font-weight-medium, 500);
   cursor: pointer;
-  transition: all 150ms var(--ease-in-out, cubic-bezier(0.4, 0, 0.2, 1));
+  transition: color 150ms var(--ease-in-out), background-color 150ms var(--ease-in-out), transform 150ms var(--ease-in-out), opacity 150ms var(--ease-in-out), border-color 150ms var(--ease-in-out), box-shadow 150ms var(--ease-in-out);
   white-space: nowrap;
 }
 
 .button-group__btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: var(--clr-white-strong);
+  border-color: var(--clr-white-mid);
 }
 
 .button-group__btn:focus-visible {
-  outline: 2px solid var(--clr-accent, #22c55e);
+  outline: 2px solid var(--clr-accent, var(--clr-accent));
   outline-offset: 2px;
 }
 
 /* ── Active State ──────────────────────────────────────────── */
 
 .button-group__btn--active {
-  background: var(--clr-accent, #22c55e);
-  color: var(--clr-bg, #0f1117);
-  border-color: var(--clr-accent, #22c55e);
+  background: var(--clr-accent, var(--clr-accent));
+  color: var(--clr-bg, var(--clr-bg));
+  border-color: var(--clr-accent, var(--clr-accent));
   font-weight: var(--font-weight-semibold, 600);
 }
 
 .button-group__btn--active:hover:not(:disabled) {
-  background: #1aa84a;
-  border-color: #1aa84a;
+  background: var(--clr-accent);
+  border-color: var(--clr-accent);
 }
 
 /* ── Disabled State ────────────────────────────────────────── */

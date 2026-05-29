@@ -53,23 +53,23 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.09em;
-  color: #374151;
+  color: var(--clr-text-muted);
   min-width: 54px;
   flex-shrink: 0;
 }
 
 .match-timeline__detail-val {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--clr-text-dim);
   line-height: 1.4;
 }
 
 .match-timeline__detail-dim {
-  color: #475569;
+  color: var(--clr-text-muted);
 }
 
 .match-timeline__detail-error {
-  color: #f87171;
+  color: var(--clr-live);
 }
 
 .match-timeline__detail-badge {
@@ -78,8 +78,8 @@
   border-radius: 2px;
   font-size: 8px;
   font-weight: 800;
-  background: rgba(109, 40, 217, 0.2);
-  color: #a78bfa;
+  background: var(--clr-purple-faint);
+  color: var(--clr-blue);
   border: 1px solid rgba(109, 40, 217, 0.35);
   margin-left: 5px;
   vertical-align: middle;
@@ -90,12 +90,12 @@
 }
 
 .match-timeline__detail-winner--p1 {
-  color: #93c5fd;
+  color: var(--clr-blue);
   font-weight: 600;
 }
 
 .match-timeline__detail-winner--p2 {
-  color: #f9a8d4;
+  color: var(--clr-live);
   font-weight: 600;
 }
 
@@ -124,20 +124,20 @@
 }
 
 .match-timeline__hero-badge--ace {
-  background: rgba(34, 197, 94, 0.15);
-  color: var(--clr-accent, #22c55e);
+  background: var(--clr-accent-faint);
+  color: var(--clr-accent, var(--clr-accent));
   border: 1px solid rgba(34, 197, 94, 0.35);
 }
 
 .match-timeline__hero-badge--df {
-  background: rgba(244, 63, 94, 0.15);
-  color: var(--clr-live, #f43f5e);
+  background: var(--clr-live-faint);
+  color: var(--clr-live, var(--clr-live));
   border: 1px solid rgba(244, 63, 94, 0.35);
 }
 
 .match-timeline__hero-badge--sw {
-  background: rgba(59, 130, 246, 0.15);
-  color: var(--clr-blue, #3b82f6);
+  background: var(--clr-blue-faint);
+  color: var(--clr-blue, var(--clr-blue));
   border: 1px solid rgba(59, 130, 246, 0.35);
 }
 
@@ -148,9 +148,9 @@
   align-items: center;
   padding: 2px 7px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #64748b;
+  background: var(--clr-white-soft);
+  border: 1px solid var(--clr-white-strong);
+  color: var(--clr-text-muted);
   font-size: 10px;
   font-weight: 600;
   white-space: nowrap;
@@ -163,9 +163,9 @@
   align-items: center;
   padding: 2px 8px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #64748b;
+  background: var(--clr-white-faint);
+  border: 1px solid var(--clr-white-strong);
+  color: var(--clr-text-muted);
   font-size: 10px;
   font-weight: 700;
   white-space: nowrap;
@@ -173,9 +173,9 @@
 }
 
 .match-timeline__rally-pill--long {
-  background: rgba(234, 179, 8, 0.12);
-  border-color: rgba(234, 179, 8, 0.3);
-  color: var(--clr-yellow, #eab308);
+  background: var(--clr-yellow-light);
+  border-color: var(--clr-yellow-strong);
+  color: var(--clr-yellow, var(--clr-yellow));
 }
 
 /* Chips do golpe de fechamento */
@@ -191,21 +191,21 @@
 }
 
 .match-timeline__closing-chip--winner {
-  background: rgba(34, 197, 94, 0.12);
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  color: var(--clr-accent, #22c55e);
+  background: var(--clr-accent-light);
+  border: 1px solid var(--clr-accent-medium);
+  color: var(--clr-accent, var(--clr-accent));
 }
 
 .match-timeline__closing-chip--error-unforced {
-  background: rgba(244, 63, 94, 0.12);
-  border: 1px solid rgba(244, 63, 94, 0.3);
-  color: var(--clr-live, #f43f5e);
+  background: var(--clr-live-faint);
+  border: 1px solid var(--clr-live-mid);
+  color: var(--clr-live, var(--clr-live));
 }
 
 .match-timeline__closing-chip--error-forced {
-  background: rgba(124, 58, 237, 0.12);
+  background: var(--clr-purple-faint);
   border: 1px solid rgba(124, 58, 237, 0.3);
-  color: #c4b5fd;
+  color: var(--clr-blue);
 }
 
 /* ─── Separador de Marcação Interrompida ──────────────────────────────────── */
@@ -227,9 +227,9 @@
   justify-content: center;
   gap: 12px;
   padding: 14px 20px;
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.22) 0%, rgba(220, 38, 38, 0.18) 100%);
-  border-top: 2px solid rgba(239, 68, 68, 0.5);
-  border-bottom: 2px solid rgba(239, 68, 68, 0.5);
+  background: linear-gradient(135deg, var(--clr-live-faint) 0%, var(--clr-live-faint) 100%);
+  border-top: 2px solid var(--clr-live-mid);
+  border-bottom: 2px solid var(--clr-live-mid);
   width: 100%;
   position: relative;
 }
@@ -252,7 +252,7 @@
 .match-timeline__interrupted-text {
   font-size: 13px;
   font-weight: 900;
-  color: #fca5a5;
+  color: var(--clr-live);
   text-transform: uppercase;
   letter-spacing: 0.12em;
   text-align: center;

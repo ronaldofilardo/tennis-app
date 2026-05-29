@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: 0.6rem;
   padding: 0.75rem 1rem;
-  background: rgba(15, 23, 42, 0.95);
+  background: var(--clr-overlay-dark);
   border-top: 1px solid var(--court-lines);
   position: relative;
   z-index: 10;
@@ -35,14 +35,14 @@
 }
 
 .serve-step-first {
-  background: rgba(59, 130, 246, 0.15);
+  background: var(--clr-blue-faint);
   color: var(--player1-color);
   border: 1px solid rgba(59, 130, 246, 0.35);
 }
 
 .serve-step-second {
   background: var(--player2-color);
-  color: #fff;
+  color: var(--clr-text);
 }
 
 .action-quick-btn {
@@ -60,42 +60,42 @@
 }
 
 .action-quick-btn:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--clr-white-strong);
   color: var(--text-primary);
 }
 
 .action-quick-fault {
-  border-color: rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
+  border-color: var(--clr-live-mid);
+  color: var(--clr-live);
 }
 
 .action-quick-fault:hover {
-  background: rgba(239, 68, 68, 0.15);
-  color: #fca5a5;
+  background: var(--clr-live-faint);
+  color: var(--clr-live);
 }
 
 .action-ace {
-  background: rgba(34, 197, 94, 0.15);
-  border-color: rgba(34, 197, 94, 0.3);
-  color: #86efac;
+  background: var(--clr-accent-faint);
+  border-color: var(--clr-accent-medium);
+  color: var(--clr-accent);
 }
 
 .action-ace:hover {
-  background: rgba(34, 197, 94, 0.25);
-  color: #86efac;
+  background: var(--clr-accent-low);
+  color: var(--clr-accent);
 }
 
 .action-out,
 .action-net {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
+  background: var(--clr-live-faint);
+  border-color: var(--clr-live-mid);
+  color: var(--clr-live);
 }
 
 .action-out:hover,
 .action-net:hover {
-  background: rgba(239, 68, 68, 0.25);
-  color: #fca5a5;
+  background: var(--clr-live-subtle);
+  color: var(--clr-live);
 }
 
 /* ── Quem venceu o ponto ──────────────── */
@@ -112,34 +112,34 @@
   border-radius: var(--radius-btn);
   cursor: pointer;
   border: 2px solid transparent;
-  transition: all var(--transition-fast);
+  transition: color var(--transition-fast) var(--ease-out), background-color var(--transition-fast) var(--ease-out), transform var(--transition-fast) var(--ease-out), opacity var(--transition-fast) var(--ease-out), border-color var(--transition-fast) var(--ease-out), box-shadow var(--transition-fast) var(--ease-out);
   text-align: center;
   letter-spacing: 0.2px;
 }
 
 .point-winner-server {
-  background: rgba(59, 130, 246, 0.18);
-  color: var(--player1-color, #60a5fa);
-  border-color: rgba(59, 130, 246, 0.45);
+  background: var(--clr-blue-mid);
+  color: var(--player1-color, var(--clr-blue));
+  border-color: var(--clr-blue-strong);
 }
 
 .point-winner-server:hover,
 .point-winner-server:active {
-  background: rgba(59, 130, 246, 0.32);
-  border-color: var(--player1-color, #60a5fa);
+  background: var(--clr-blue-mid);
+  border-color: var(--player1-color, var(--clr-blue));
   transform: scale(1.02);
 }
 
 .point-winner-returner {
-  background: rgba(249, 115, 22, 0.18);
-  color: var(--player2-color, #fb923c);
-  border-color: rgba(249, 115, 22, 0.45);
+  background: var(--clr-orange-light);
+  color: var(--player2-color, var(--clr-orange));
+  border-color: var(--clr-orange-light);
 }
 
 .point-winner-returner:hover,
 .point-winner-returner:active {
-  background: rgba(249, 115, 22, 0.32);
-  border-color: var(--player2-color, #fb923c);
+  background: var(--clr-orange-light);
+  border-color: var(--player2-color, var(--clr-orange));
   transform: scale(1.02);
 }
 
@@ -157,28 +157,28 @@
   border-radius: var(--radius-btn);
   cursor: pointer;
   border: 1px solid var(--border-default);
-  transition: all var(--transition-fast);
+  transition: color var(--transition-fast) var(--ease-out), background-color var(--transition-fast) var(--ease-out), transform var(--transition-fast) var(--ease-out), opacity var(--transition-fast) var(--ease-out), border-color var(--transition-fast) var(--ease-out), box-shadow var(--transition-fast) var(--ease-out);
   text-align: center;
 }
 
 .undo-btn {
-  background: rgba(249, 115, 22, 0.12);
+  background: var(--clr-orange-faint);
   color: var(--player2-color);
-  border-color: rgba(249, 115, 22, 0.3);
+  border-color: var(--clr-orange-light);
 }
 
 .undo-btn:hover:not(:disabled) {
-  background: rgba(249, 115, 22, 0.22);
+  background: var(--clr-orange-faint);
 }
 
 .stats-btn {
-  background: rgba(59, 130, 246, 0.12);
+  background: var(--clr-blue-light);
   color: var(--player1-color);
-  border-color: rgba(59, 130, 246, 0.3);
+  border-color: var(--clr-blue-micro);
 }
 
 .stats-btn:hover {
-  background: rgba(59, 130, 246, 0.22);
+  background: var(--clr-blue-faint);
 }
 
 .config-btn {
@@ -224,7 +224,7 @@
 }
 
 .font-scale-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--clr-white-strong);
   color: var(--text-secondary);
 }
 
@@ -267,20 +267,20 @@
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background: var(--clr-surface-2, #1e2535);
+  background: var(--clr-surface-2, var(--clr-surface-2));
   border: 2px solid transparent;
   border-radius: 8px;
   transition: border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .ball-exchange-inline.active {
-  border-color: var(--clr-accent, #22c55e);
+  border-color: var(--clr-accent, var(--clr-accent));
 }
 
 .ball-exchange-label {
   font-size: 12px;
   font-weight: 600;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -288,7 +288,7 @@
 .ball-exchange-value {
   font-size: 18px;
   font-weight: 700;
-  color: var(--clr-accent, #22c55e);
+  color: var(--clr-accent, var(--clr-accent));
   min-width: 30px;
   text-align: center;
 }
@@ -296,14 +296,14 @@
 .ball-exchange-btn {
   min-width: 50px;
   padding: 6px 12px;
-  background: linear-gradient(135deg, var(--clr-accent, #22c55e), #16a34a);
-  color: #000;
+  background: linear-gradient(135deg, var(--clr-accent, var(--clr-accent)), var(--clr-grass));
+  color: var(--clr-bg);
   border: none;
   border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color 150ms var(--ease-in-out), background-color 150ms var(--ease-in-out), transform 150ms var(--ease-in-out), opacity 150ms var(--ease-in-out), border-color 150ms var(--ease-in-out), box-shadow 150ms var(--ease-in-out);
 }
 
 .ball-exchange-btn:active {
@@ -311,5 +311,5 @@
 }
 
 .ball-exchange-btn:hover:not(:active) {
-  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 2px 8px var(--clr-accent-medium);
 }

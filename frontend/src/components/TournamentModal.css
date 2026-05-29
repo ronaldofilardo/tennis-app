@@ -4,7 +4,7 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--clr-overlay-60);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -37,7 +37,7 @@
 .modal-header h2 {
   margin: 0;
   font-size: 1.2rem;
-  color: var(--text-primary, #f8fafc);
+  color: var(--text-primary, var(--clr-text));
 }
 
 .modal-close {
@@ -70,11 +70,11 @@
   color: var(--text-secondary, #8fb8a4);
   font-size: var(--font-scale-body);
   cursor: pointer;
-  transition: all var(--transition-normal);
+  transition: color var(--transition-normal) var(--ease-in-out), background-color var(--transition-normal) var(--ease-in-out), transform var(--transition-normal) var(--ease-in-out), opacity var(--transition-normal) var(--ease-in-out), border-color var(--transition-normal) var(--ease-in-out), box-shadow var(--transition-normal) var(--ease-in-out);
 }
 
 .modal-tab:hover {
-  color: var(--text-primary, #f8fafc);
+  color: var(--text-primary, var(--clr-text));
 }
 
 .modal-tab.active {
@@ -118,7 +118,7 @@
   background: var(--court-surface, #0d2b1a);
   border: 1px solid var(--border-subtle, #1a482880);
   border-radius: 6px;
-  color: var(--text-primary, #f8fafc);
+  color: var(--text-primary, var(--clr-text));
   font-size: 0.9rem;
   transition: border-color 0.2s;
   box-sizing: border-box;
@@ -201,8 +201,8 @@
 /* Error */
 .modal-error {
   padding: 10px 20px;
-  background: rgba(239, 68, 68, 0.1);
-  border-top: 1px solid rgba(239, 68, 68, 0.2);
+  background: var(--clr-live-micro);
+  border-top: 1px solid var(--clr-live-faint);
   color: var(--alert-red, var(--clr-error));
   font-size: var(--font-scale-body);
   text-align: center;
@@ -229,14 +229,14 @@
 }
 
 .btn-cancel:hover {
-  border-color: var(--text-primary, #f8fafc);
-  color: var(--text-primary, #f8fafc);
+  border-color: var(--text-primary, var(--clr-text));
+  color: var(--text-primary, var(--clr-text));
 }
 
 .btn-save {
   padding: 10px 24px;
   background: var(--clr-yellow);
-  color: #000;
+  color: var(--clr-bg);
   border: none;
   border-radius: 6px;
   font-size: 0.9rem;
@@ -246,7 +246,7 @@
 }
 
 .btn-save:hover:not(:disabled) {
-  background: #fbbf24;
+  background: var(--clr-yellow);
 }
 
 .btn-save:disabled {

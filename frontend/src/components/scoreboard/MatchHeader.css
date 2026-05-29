@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  background: rgba(15, 23, 42, 0.9);
+  background: var(--clr-overlay-dark);
   border-bottom: 1px solid var(--court-lines);
   position: relative;
   z-index: 10;
@@ -33,7 +33,7 @@
 }
 
 .header-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--clr-white-mid);
   color: var(--text-primary);
 }
 
@@ -48,9 +48,9 @@
 }
 
 .header-btn-edit:hover {
-  color: #a78bfa;
-  background: rgba(167, 139, 250, 0.15);
-  border-color: rgba(167, 139, 250, 0.4);
+  color: var(--clr-blue);
+  background: var(--clr-purple-subtle);
+  border-color: var(--clr-purple-mid);
 }
 
 .header-center {
@@ -93,13 +93,13 @@
 }
 
 .set-badge-p1 {
-  background: rgba(59, 130, 246, 0.2);
+  background: var(--clr-blue-faint);
   color: var(--player1-color);
   border: 1px solid rgba(59, 130, 246, 0.35);
 }
 
 .set-badge-p2 {
-  background: rgba(249, 115, 22, 0.2);
+  background: var(--clr-orange-faint);
   color: var(--player2-color);
   border: 1px solid rgba(249, 115, 22, 0.35);
 }
@@ -128,7 +128,7 @@
   font-weight: 600;
   padding: 0.4rem 0.5rem;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: color var(--transition-fast) var(--ease-out), background-color var(--transition-fast) var(--ease-out), transform var(--transition-fast) var(--ease-out), opacity var(--transition-fast) var(--ease-out), border-color var(--transition-fast) var(--ease-out), box-shadow var(--transition-fast) var(--ease-out);
   white-space: nowrap;
 }
 
@@ -138,7 +138,7 @@
 }
 
 .view-mode-btn-active {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--clr-white-mid);
   color: var(--text-primary);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }

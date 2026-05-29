@@ -33,7 +33,7 @@
   margin: 0;
   font-size: var(--font-scale-h2);
   font-weight: 800;
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
   letter-spacing: -0.02em;
 }
 
@@ -44,10 +44,10 @@
 .admin-role-tag {
   font-size: 0.8rem;
   color: var(--alert-red, var(--clr-error));
-  background: rgba(239, 68, 68, 0.1);
+  background: var(--clr-live-micro);
   padding: 2px 10px;
   border-radius: 12px;
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  border: 1px solid var(--clr-live-faint);
 }
 
 .admin-header-actions {
@@ -62,7 +62,7 @@
   display: flex;
   gap: 4px;
   margin-bottom: 1.5rem;
-  background: var(--clr-surface, #181d27);
+  background: var(--clr-surface, var(--clr-surface));
   border-radius: 12px;
   padding: 4px;
   border: 1px solid var(--clr-border, var(--clr-border));
@@ -77,21 +77,21 @@
   padding: 10px 12px;
   border: none;
   background: transparent;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   font-size: var(--font-scale-body);
   font-weight: 500;
   cursor: pointer;
   border-radius: 8px;
-  transition: all var(--transition-normal);
+  transition: color var(--transition-normal) var(--ease-in-out), background-color var(--transition-normal) var(--ease-in-out), transform var(--transition-normal) var(--ease-in-out), opacity var(--transition-normal) var(--ease-in-out), border-color var(--transition-normal) var(--ease-in-out), box-shadow var(--transition-normal) var(--ease-in-out);
 }
 
 .admin-tab:hover {
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
   background: var(--clr-surface-lighter);
 }
 
 .admin-tab.active {
-  background: rgba(239, 68, 68, 0.12);
+  background: var(--clr-live-faint);
   color: var(--alert-red, var(--clr-error));
   font-weight: 700;
 }
@@ -109,7 +109,7 @@
 .admin-btn-primary {
   padding: 8px 18px;
   background: var(--alert-red, var(--clr-error));
-  color: #fff;
+  color: var(--clr-text);
   border: none;
   border-radius: 8px;
   font-weight: 600;
@@ -121,32 +121,32 @@
 }
 
 .admin-btn-primary:hover {
-  background: #f87171;
+  background: var(--clr-live);
   transform: translateY(-1px);
 }
 
 .admin-btn-primary:disabled {
-  background: #6b7280;
-  color: #9ca3af;
+  background: var(--clr-text-muted);
+  color: var(--clr-text-dim);
   cursor: not-allowed;
   transform: none;
 }
 
 .admin-btn-secondary {
   padding: 8px 16px;
-  background: var(--clr-surface-2, #1e2535);
-  color: var(--clr-text, #e8eaf0);
+  background: var(--clr-surface-2, var(--clr-surface-2));
+  color: var(--clr-text, var(--clr-text));
   border: 1px solid var(--clr-border, var(--clr-border));
   border-radius: 8px;
   font-weight: 500;
   font-size: var(--font-scale-body);
   cursor: pointer;
-  transition: all var(--transition-normal);
+  transition: color var(--transition-normal) var(--ease-in-out), background-color var(--transition-normal) var(--ease-in-out), transform var(--transition-normal) var(--ease-in-out), opacity var(--transition-normal) var(--ease-in-out), border-color var(--transition-normal) var(--ease-in-out), box-shadow var(--transition-normal) var(--ease-in-out);
 }
 
 .admin-btn-secondary:hover {
-  background: var(--clr-surface, #181d27);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: var(--clr-surface, var(--clr-surface));
+  border-color: var(--clr-white-mid);
 }
 
 .admin-btn-secondary:disabled {
@@ -166,7 +166,7 @@
 }
 
 .admin-link-btn:hover {
-  background: rgba(239, 68, 68, 0.1);
+  background: var(--clr-live-micro);
 }
 
 /* ── States ───────────────────────────────────────────────── */
@@ -177,14 +177,14 @@
   align-items: center;
   gap: 12px;
   padding: 3rem 0;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   font-size: 0.95rem;
 }
 
 .admin-loading-spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid var(--clr-surface-2, #1e2535);
+  border: 3px solid var(--clr-surface-2, var(--clr-surface-2));
   border-top-color: var(--alert-red, var(--clr-error));
   border-radius: 50%;
   animation: admin-spin 0.8s linear infinite;
@@ -209,7 +209,7 @@
 .admin-empty {
   text-align: center;
   padding: 3rem 1rem;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
 }
 
 .admin-empty p {
@@ -218,7 +218,7 @@
 }
 
 .admin-muted {
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   text-align: center;
   padding: 2rem;
   font-size: 0.9rem;
@@ -242,7 +242,7 @@
   margin: 0 0 12px 0;
   font-size: var(--font-scale-body);
   font-weight: 700;
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
 }
 
 .admin-content .section-header h3 {
@@ -251,7 +251,7 @@
 
 .count-badge {
   font-size: var(--font-scale-sm);
-  background: rgba(239, 68, 68, 0.15);
+  background: var(--clr-live-faint);
   color: var(--alert-red, var(--clr-error));
   padding: 2px 8px;
   border-radius: 10px;
@@ -270,8 +270,8 @@
 .admin-search-input {
   flex: 1;
   padding: 10px 14px;
-  background: var(--clr-surface, #181d27);
-  color: var(--clr-text, #e8eaf0);
+  background: var(--clr-surface, var(--clr-surface));
+  color: var(--clr-text, var(--clr-text));
   border: 1px solid var(--clr-border, var(--clr-border));
   border-radius: 8px;
   font-size: var(--font-scale-body);
@@ -280,7 +280,7 @@
 }
 
 .admin-search-input::placeholder {
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
 }
 
 .admin-search-input:focus {
@@ -290,7 +290,7 @@
 /* ── Tables ───────────────────────────────────────────────── */
 
 .admin-table {
-  background: var(--clr-surface, #181d27);
+  background: var(--clr-surface, var(--clr-surface));
   border: 1px solid var(--clr-border, var(--clr-border));
   border-radius: 12px;
   overflow: hidden;
@@ -299,10 +299,10 @@
 .admin-table-header {
   display: grid;
   padding: 10px 16px;
-  background: var(--clr-surface-2, #1e2535);
+  background: var(--clr-surface-2, var(--clr-surface-2));
   font-size: var(--font-scale-sm);
   font-weight: 700;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border-bottom: 1px solid var(--clr-border, var(--clr-border));
@@ -321,7 +321,7 @@
 }
 
 .admin-table-row:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--clr-white-micro);
 }
 
 .admin-table-row--clickable {
@@ -329,8 +329,8 @@
 }
 
 .admin-table-row--clickable:hover {
-  background: rgba(239, 68, 68, 0.05);
-  border-bottom-color: rgba(239, 68, 68, 0.15);
+  background: var(--clr-live-faintest);
+  border-bottom-color: var(--clr-live-faint);
 }
 
 .admin-table-row--clickable:focus-visible {
@@ -366,7 +366,7 @@
 
 .pagination-info {
   font-size: 0.8rem;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   font-weight: 500;
 }
 

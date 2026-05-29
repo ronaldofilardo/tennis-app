@@ -1,5 +1,5 @@
 .completed-match-card {
-  background: rgba(15, 23, 42, 0.8);
+  background: var(--clr-overlay-70);
   border: 1px solid rgba(99, 102, 241, 0.2);
   border-radius: 12px;
   padding: 1rem;
@@ -10,7 +10,7 @@
 }
 
 .completed-match-card:hover {
-  border-color: rgba(99, 102, 241, 0.4);
+  border-color: var(--clr-purple-mid);
 }
 
 .completed-match-card__meta {
@@ -25,23 +25,23 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #a78bfa;
-  background: rgba(167, 139, 250, 0.12);
+  color: var(--clr-blue);
+  background: var(--clr-purple-subtle);
   padding: 0.15rem 0.5rem;
   border-radius: 6px;
 }
 
 .completed-match-card__format {
   font-size: var(--font-scale-sm);
-  color: #6b7280;
-  background: rgba(107, 114, 128, 0.1);
+  color: var(--clr-text-muted);
+  background: var(--clr-surface-lighter);
   padding: 0.15rem 0.5rem;
   border-radius: 6px;
 }
 
 .completed-match-card__date {
   font-size: var(--font-scale-sm);
-  color: #6b7280;
+  color: var(--clr-text-muted);
   margin-left: auto;
 }
 
@@ -51,8 +51,8 @@
   gap: 0.25rem;
   font-size: 0.68rem;
   font-weight: 600;
-  color: #34d399;
-  background: rgba(52, 211, 153, 0.1);
+  color: var(--clr-accent);
+  background: var(--clr-accent-micro);
   border: 1px solid rgba(52, 211, 153, 0.3);
   padding: 0.15rem 0.5rem;
   border-radius: 6px;
@@ -64,7 +64,7 @@
   gap: 0.5rem;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #e2e8f0;
+  color: var(--clr-text);
 }
 
 .completed-match-card__player {
@@ -77,7 +77,7 @@
 .completed-match-card__vs {
   font-size: var(--font-scale-sm);
   font-weight: 700;
-  color: #4b5563;
+  color: var(--clr-text-muted);
   text-transform: uppercase;
   flex-shrink: 0;
 }
@@ -106,25 +106,25 @@
 }
 
 .completed-match-card__btn--stats {
-  background: rgba(99, 102, 241, 0.15);
-  color: #a5b4fc;
+  background: var(--clr-blue-faint);
+  color: var(--clr-blue);
   border: 1px solid rgba(99, 102, 241, 0.3);
 }
 
 .completed-match-card__btn--stats:hover {
-  background: rgba(99, 102, 241, 0.25);
-  color: #c7d2fe;
+  background: var(--clr-purple-light);
+  color: var(--clr-blue);
 }
 
 .completed-match-card__btn--delete {
-  background: rgba(244, 63, 94, 0.15);
-  color: #fca5ac;
-  border: 1px solid rgba(244, 63, 94, 0.3);
+  background: var(--clr-live-faint);
+  color: var(--clr-live);
+  border: 1px solid var(--clr-live-mid);
 }
 
 .completed-match-card__btn--delete:hover {
-  background: rgba(244, 63, 94, 0.25);
-  color: #fecdd3;
+  background: var(--clr-live-subtle);
+  color: var(--clr-light-surface);
 }
 
 @media (prefers-reduced-motion: reduce) {

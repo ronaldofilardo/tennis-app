@@ -50,7 +50,7 @@
 
 .new-match-button {
   background: var(--clr-accent);
-  color: #fff;
+  color: var(--clr-text);
   border: none;
   padding: 0.6rem 1.25rem;
   font-size: 0.9rem;
@@ -61,10 +61,10 @@
   transition:
     background 0.2s,
     transform 0.15s;
-  box-shadow: 0 0 18px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 0 18px var(--clr-accent-medium);
 }
 .new-match-button:hover {
-  background: #16a34a;
+  background: var(--clr-grass);
   transform: translateY(-1px);
 }
 
@@ -107,9 +107,9 @@
 }
 
 .dashboard-error {
-  background: rgba(244, 63, 94, 0.1);
-  border: 1px solid rgba(244, 63, 94, 0.3);
-  color: #fda4af;
+  background: var(--clr-live-micro);
+  border: 1px solid var(--clr-live-mid);
+  color: var(--clr-live);
   padding: 0.75rem 1rem;
   border-radius: 10px;
   font-size: 0.9rem;
@@ -158,9 +158,9 @@
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: var(--clr-surface-2, #1e2535);
+  background: var(--clr-surface-2, var(--clr-surface-2));
   border: 1px solid var(--clr-border, var(--clr-border));
-  color: var(--clr-accent, #22c55e);
+  color: var(--clr-accent, var(--clr-accent));
   margin-bottom: 1.25rem;
   opacity: 0.8;
 }
@@ -168,7 +168,7 @@
 .dashboard-hero__title {
   font-size: var(--font-scale-h3);
   font-weight: 800;
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
   margin: 0 0 0.5rem;
 }
 
@@ -188,10 +188,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--clr-surface-2, #1e2535);
+  background: var(--clr-surface-2, var(--clr-surface-2));
   border: 1px solid var(--clr-border, var(--clr-border));
   border-radius: 6px;
-  color: var(--clr-accent, #22c55e);
+  color: var(--clr-accent, var(--clr-accent));
   padding: 4px;
   cursor: pointer;
   transition: background 0.15s;
@@ -199,12 +199,12 @@
 }
 
 .dashboard-hero__menu-link:hover {
-  background: var(--clr-surface, #181d27);
-  border-color: var(--clr-accent, #22c55e);
+  background: var(--clr-surface, var(--clr-surface));
+  border-color: var(--clr-accent, var(--clr-accent));
 }
 
 .dashboard-hero__menu-link:focus-visible {
-  outline: 2px solid var(--clr-accent, #22c55e);
+  outline: 2px solid var(--clr-accent, var(--clr-accent));
   outline-offset: 2px;
 }
 
@@ -464,7 +464,7 @@
 
   .match-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
+    box-shadow: 0 8px 32px var(--clr-overlay-55);
   }
 
   .match-card:active {

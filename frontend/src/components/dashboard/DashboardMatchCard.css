@@ -23,7 +23,7 @@
 
 .match-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 8px 32px var(--clr-overlay-55);
 }
 
 /* Status accent strip (top) */
@@ -85,18 +85,18 @@
 }
 
 .court-type-badge--clay {
-  background: rgba(196, 98, 58, 0.18);
-  color: #fb923c;
+  background: var(--clr-orange-faint);
+  color: var(--clr-orange);
   border: 1px solid rgba(196, 98, 58, 0.4);
 }
 .court-type-badge--hard {
-  background: rgba(59, 130, 246, 0.15);
-  color: #93c5fd;
+  background: var(--clr-blue-faint);
+  color: var(--clr-blue);
   border: 1px solid rgba(59, 130, 246, 0.35);
 }
 .court-type-badge--grass {
-  background: rgba(22, 163, 74, 0.15);
-  color: #86efac;
+  background: var(--clr-accent-faint);
+  color: var(--clr-accent);
   border: 1px solid rgba(22, 163, 74, 0.35);
 }
 
@@ -120,15 +120,15 @@
 }
 
 .status-badge.badge--live {
-  background: rgba(244, 63, 94, 0.15);
-  color: #fb7185;
+  background: var(--clr-live-faint);
+  color: var(--clr-live);
   border: 1px solid rgba(244, 63, 94, 0.35);
 }
 .status-badge.badge--live .live-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #f43f5e;
+  background: var(--clr-live);
   animation: pulse 1.4s var(--ease-in-out) infinite;
 }
 @keyframes pulse {
@@ -144,13 +144,13 @@
 }
 
 .status-badge.badge--pending {
-  background: rgba(59, 130, 246, 0.12);
-  color: #93c5fd;
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: var(--clr-blue-light);
+  color: var(--clr-blue);
+  border: 1px solid var(--clr-blue-micro);
 }
 .status-badge.badge--finished {
-  background: rgba(107, 114, 128, 0.12);
-  color: #9ca3af;
+  background: var(--clr-surface-lighter);
+  color: var(--clr-text-dim);
   border: 1px solid rgba(107, 114, 128, 0.28);
 }
 
@@ -199,7 +199,7 @@
   margin: 0 1rem 0.75rem;
   background: var(--clr-surface-2);
   border-radius: 10px;
-  border: 1px solid rgba(244, 63, 94, 0.2);
+  border: 1px solid var(--clr-live-faint);
   padding: 0.6rem 0.9rem;
 }
 
@@ -222,14 +222,14 @@
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #f43f5e;
+  color: var(--clr-live);
 }
 
 .live-score-tiebreak {
   font-size: 0.6rem;
   font-weight: 700;
-  background: rgba(234, 179, 8, 0.2);
-  color: #fde047;
+  background: var(--clr-yellow-low);
+  color: var(--clr-yellow);
   border: 1px solid rgba(234, 179, 8, 0.35);
   padding: 1px 6px;
   border-radius: 10px;
@@ -296,9 +296,9 @@
 
 .card-suspended-score {
   margin: 0 1rem 0.75rem;
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+  background: linear-gradient(135deg, var(--clr-accent-micro), var(--clr-accent-faintest));
   border-radius: 10px;
-  border: 1px solid rgba(34, 197, 94, 0.3);
+  border: 1px solid var(--clr-accent-medium);
   padding: 0.6rem 0.9rem;
   display: flex;
   flex-direction: column;
@@ -310,7 +310,7 @@
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #22c55e;
+  color: var(--clr-accent);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -344,7 +344,7 @@
 .card-nickname {
   font-size: 0.78rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--clr-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -367,8 +367,8 @@
 
 /* Stats button — mobile touch target 44px */
 .stats-button {
-  background: rgba(102, 126, 234, 0.15);
-  color: #a5b4fc;
+  background: var(--clr-blue-faint);
+  color: var(--clr-blue);
   border: 1px solid rgba(102, 126, 234, 0.3);
   padding: 0.55rem 1rem;
   border-radius: 8px;
@@ -388,7 +388,7 @@
 }
 
 .stats-button:hover:not(:disabled) {
-  background: rgba(102, 126, 234, 0.28);
+  background: var(--clr-blue-mid);
   transform: translateY(-1px);
 }
 
@@ -410,8 +410,8 @@
 }
 
 .edit-match-btn {
-  background: rgba(124, 58, 237, 0.12);
-  color: #a78bfa;
+  background: var(--clr-purple-faint);
+  color: var(--clr-blue);
   border: 1px solid rgba(124, 58, 237, 0.3);
   padding: 0.45rem 0.75rem;
   border-radius: 8px;
@@ -430,14 +430,14 @@
 }
 
 .edit-match-btn:hover {
-  background: rgba(124, 58, 237, 0.24);
+  background: var(--clr-purple-light);
   transform: translateY(-1px);
 }
 
 .delete-match-btn {
-  background: rgba(239, 68, 68, 0.1);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: var(--clr-live-micro);
+  color: var(--clr-live);
+  border: 1px solid var(--clr-live-mid);
   padding: 0.45rem 0.75rem;
   border-radius: 8px;
   cursor: pointer;
@@ -455,6 +455,6 @@
 }
 
 .delete-match-btn:hover {
-  background: rgba(239, 68, 68, 0.22);
+  background: var(--clr-live-faint);
   transform: translateY(-1px);
 }

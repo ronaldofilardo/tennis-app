@@ -15,7 +15,7 @@
   html,
   body {
     background: white !important;
-    color: #222 !important;
+    color: var(--clr-bg) !important;
     margin: 0 !important;
     padding: 0 !important;
     width: 100vw !important;
@@ -64,7 +64,7 @@
     height: auto !important;
     max-height: none !important;
     background: white !important;
-    color: #222 !important;
+    color: var(--clr-bg) !important;
     overflow: visible !important;
     box-sizing: border-box !important;
     transform: scale(1) !important;

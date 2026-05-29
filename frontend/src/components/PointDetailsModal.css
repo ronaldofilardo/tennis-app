@@ -31,19 +31,19 @@
 
 .point-details-modal {
   background: var(--court-surface, #1e293b);
-  border: 1px solid var(--border-default, rgba(255, 255, 255, 0.15));
-  border-top: 3px solid var(--surface-accent, #22c55e);
+  border: 1px solid var(--border-default, var(--clr-white-mid));
+  border-top: 3px solid var(--surface-accent, var(--clr-accent));
   border-radius: var(--radius-card, 20px);
   width: 100%;
   max-width: clamp(260px, 80vw, 480px);
   box-shadow:
-    var(--shadow-card, 0 8px 32px rgba(0, 0, 0, 0.4)),
-    0 0 32px var(--surface-accent-dim, rgba(34, 197, 94, 0.12));
+    var(--shadow-card, 0 8px 32px var(--clr-surface-dark)),
+    0 0 32px var(--surface-accent-dim, var(--clr-accent-light));
   display: flex;
   flex-direction: column;
   margin: auto;
   font-family: var(--font-main, 'Inter', sans-serif);
-  color: var(--text-primary, #f8fafc);
+  color: var(--text-primary, var(--clr-text));
   overflow: hidden;
 }
 
@@ -53,12 +53,12 @@
   padding: 20px 24px 14px;
   border-bottom: 1px solid var(--border-subtle, var(--clr-border-light));
   text-align: center;
-  background: var(--surface-accent-dim, rgba(34, 197, 94, 0.06));
+  background: var(--surface-accent-dim, var(--clr-accent-faintest));
 }
 
 .pd-header h3 {
   margin: 0 0 8px 0;
-  color: var(--text-primary, #f8fafc);
+  color: var(--text-primary, var(--clr-text));
   font-size: calc(1.15rem * var(--sb-scale, 1));
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -79,14 +79,14 @@
 }
 
 .pd-winner-badge.sacador {
-  background: rgba(59, 130, 246, 0.18);
-  color: #93c5fd;
+  background: var(--clr-blue-mid);
+  color: var(--clr-blue);
   border: 1px solid rgba(59, 130, 246, 0.4);
 }
 
 .pd-winner-badge.devolvedor {
-  background: rgba(249, 115, 22, 0.18);
-  color: #fdba74;
+  background: var(--clr-orange-light);
+  color: var(--clr-orange);
   border: 1px solid rgba(249, 115, 22, 0.4);
 }
 
@@ -112,11 +112,11 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text-muted, #64748b);
+  color: var(--text-muted, var(--clr-text-muted));
 }
 
 .pd-section.disabled .pd-section-label {
-  color: rgba(100, 116, 139, 0.45);
+  color: var(--clr-text-muted);
 }
 
 /* ── Button group ────────────────────────────────────────────── */
@@ -129,7 +129,7 @@
 
 .pd-btn {
   padding: 8px 14px;
-  border: 1.5px solid var(--border-default, rgba(255, 255, 255, 0.15));
+  border: 1.5px solid var(--border-default, var(--clr-white-mid));
   background: var(--clr-surface-light);
   border-radius: var(--radius-btn, 12px);
   cursor: pointer;
@@ -139,32 +139,32 @@
     color var(--transition-fast, 150ms ease);
   font-size: calc(0.875rem * var(--sb-scale, 1));
   font-weight: 600;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, var(--clr-text-dim));
   line-height: 1.2;
   user-select: none;
   font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .pd-btn:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.35);
+  border-color: var(--clr-white-hover);
   background: var(--clr-border-light);
-  color: var(--text-primary, #f8fafc);
+  color: var(--text-primary, var(--clr-text));
 }
 
 .pd-btn.active {
-  border-color: var(--surface-accent, #22c55e);
-  background: var(--surface-accent-dim, rgba(34, 197, 94, 0.15));
-  color: var(--surface-accent, #22c55e);
-  box-shadow: 0 0 12px var(--surface-accent-dim, rgba(34, 197, 94, 0.2));
+  border-color: var(--surface-accent, var(--clr-accent));
+  background: var(--surface-accent-dim, var(--clr-accent-faint));
+  color: var(--surface-accent, var(--clr-accent));
+  box-shadow: 0 0 12px var(--surface-accent-dim, var(--clr-accent-low));
 }
 
 .pd-btn:disabled,
 .pd-section.disabled .pd-btn {
   opacity: 0.25;
   cursor: not-allowed;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--clr-white-micro);
   border-color: var(--border-subtle, var(--clr-border-light));
-  color: var(--text-muted, #64748b);
+  color: var(--text-muted, var(--clr-text-muted));
 }
 
 /* ── Divider ─────────────────────────────────────────────────── */
@@ -183,7 +183,7 @@
   gap: 8px;
   flex-direction: column;
   border-top: 1px solid var(--border-subtle, var(--clr-border-light));
-  background: rgba(0, 0, 0, 0.15);
+  background: var(--clr-surface-darker, rgba(0,0,0,0.15));
 }
 
 .pd-footer-row {
@@ -195,8 +195,8 @@
 .pd-btn-confirm {
   flex: 1;
   padding: 13px 16px;
-  background: var(--surface-accent, #22c55e);
-  color: #fff;
+  background: var(--surface-accent, var(--clr-accent));
+  color: var(--clr-text);
   border: none;
   border-radius: var(--radius-btn, 12px);
   font-size: calc(0.95rem * var(--sb-scale, 1));
@@ -210,13 +210,13 @@
 }
 
 .pd-btn-confirm:not(:disabled):hover {
-  background: color-mix(in srgb, var(--surface-accent, #22c55e) 80%, #000);
-  box-shadow: 0 0 16px var(--surface-accent-dim, rgba(34, 197, 94, 0.4));
+  background: color-mix(in srgb, var(--surface-accent, var(--clr-accent)) 80%, var(--clr-bg));
+  box-shadow: 0 0 16px var(--surface-accent-dim, var(--clr-accent-medium));
 }
 
 .pd-btn-confirm:disabled {
-  background: var(--surface-accent-dim, rgba(34, 197, 94, 0.18));
-  color: color-mix(in srgb, var(--surface-accent, #22c55e) 45%, transparent);
+  background: var(--surface-accent-dim, var(--clr-accent-light));
+  color: color-mix(in srgb, var(--surface-accent, var(--clr-accent)) 45%, transparent);
   cursor: not-allowed;
 }
 
@@ -225,8 +225,8 @@
   flex: 1;
   padding: 13px 16px;
   background: var(--clr-surface-light);
-  color: var(--text-secondary, #94a3b8);
-  border: 1.5px solid var(--border-default, rgba(255, 255, 255, 0.15));
+  color: var(--text-secondary, var(--clr-text-dim));
+  border: 1.5px solid var(--border-default, var(--clr-white-mid));
   border-radius: var(--radius-btn, 12px);
   font-size: calc(0.875rem * var(--sb-scale, 1));
   font-weight: 600;
@@ -240,8 +240,8 @@
 
 .pd-btn-skip:hover {
   background: var(--clr-border-light);
-  border-color: rgba(255, 255, 255, 0.3);
-  color: var(--text-primary, #f8fafc);
+  border-color: var(--clr-white-mid);
+  color: var(--text-primary, var(--clr-text));
 }
 
 /* Cancelar */
@@ -262,8 +262,8 @@
 }
 
 .pd-btn-cancel:hover {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.6);
+  background: var(--clr-live-micro);
+  border-color: var(--clr-live);
 }
 
 /* ── Landscape tablet optimization ───────────────────────────── */

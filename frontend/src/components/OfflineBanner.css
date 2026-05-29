@@ -25,15 +25,15 @@
 }
 
 .offline-banner--offline {
-  background: rgba(239, 68, 68, 0.15);
+  background: var(--clr-live-faint);
   border-bottom: 1px solid rgba(239, 68, 68, 0.4);
-  color: #fca5a5;
+  color: var(--clr-live);
 }
 
 .offline-banner--syncing {
-  background: rgba(245, 158, 11, 0.12);
+  background: var(--clr-yellow-light);
   border-bottom: 1px solid rgba(245, 158, 11, 0.35);
-  color: #fcd34d;
+  color: var(--clr-yellow);
 }
 
 .offline-banner-icon {
@@ -48,9 +48,9 @@
 .offline-banner-sync-btn {
   flex-shrink: 0;
   padding: 4px 12px;
-  background: rgba(245, 158, 11, 0.25);
-  color: #fcd34d;
-  border: 1px solid rgba(245, 158, 11, 0.4);
+  background: var(--clr-yellow-low);
+  color: var(--clr-yellow);
+  border: 1px solid var(--clr-yellow-strong);
   border-radius: 6px;
   font-size: 0.78rem;
   font-weight: 600;
@@ -59,7 +59,7 @@
 }
 
 .offline-banner-sync-btn:hover {
-  background: rgba(245, 158, 11, 0.4);
+  background: var(--clr-yellow-strong);
 }
 
 /* ── Accessibility: Respect motion preferences ────────────── */

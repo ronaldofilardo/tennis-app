@@ -17,7 +17,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--clr-live, #f43f5e);
+  background: var(--clr-live, var(--clr-live));
   animation: pulse-live 1.4s var(--ease-in-out) infinite;
 }
 
@@ -36,14 +36,14 @@
 .live-section-title {
   font-size: 0.78rem;
   font-weight: 700;
-  color: var(--clr-live, #f43f5e);
+  color: var(--clr-live, var(--clr-live));
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
 
 .live-section-count {
   font-size: 0.68rem;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   font-weight: 600;
 }
 
@@ -60,8 +60,8 @@
 .live-card {
   width: 100% !important;
   scroll-snap-align: start;
-  background: var(--clr-surface, #181d27);
-  border: 1px solid rgba(244, 63, 94, 0.25);
+  background: var(--clr-surface, var(--clr-surface));
+  border: 1px solid var(--clr-live-subtle);
   border-radius: 12px;
   padding: 12px;
   cursor: pointer;
@@ -107,8 +107,8 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--clr-live, #f43f5e);
-  box-shadow: 0 0 12px var(--clr-live, #f43f5e);
+  background: var(--clr-live, var(--clr-live));
+  box-shadow: 0 0 12px var(--clr-live, var(--clr-live));
 }
 
 .live-card-players {
@@ -121,7 +121,7 @@
 .live-card-player-name {
   font-size: 0.82rem;
   font-weight: 700;
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
   max-width: 100px;
   white-space: nowrap;
   overflow: hidden;
@@ -130,7 +130,7 @@
 
 .live-card-vs {
   font-size: 0.65rem;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   font-weight: 600;
 }
 
@@ -144,24 +144,24 @@
 .live-card-score-set {
   font-size: var(--font-scale-body);
   font-weight: 800;
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
 }
 
 .live-card-score-game {
   font-size: 0.78rem;
   font-weight: 600;
-  color: var(--clr-text-dim, #9ca3af);
+  color: var(--clr-text-dim, var(--clr-text-dim));
 }
 
 .live-card-score-sep {
   font-size: var(--font-scale-sm);
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
 }
 
 .live-card-partials {
   margin-top: 6px;
   font-size: 0.65rem;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   text-align: center;
   letter-spacing: 0.03em;
 }
@@ -171,8 +171,8 @@
   display: inline-block;
   font-size: 0.55rem;
   font-weight: 700;
-  background: rgba(234, 179, 8, 0.2);
-  color: #fde047;
+  background: var(--clr-yellow-low);
+  color: var(--clr-yellow);
   border: 1px solid rgba(234, 179, 8, 0.35);
   padding: 1px 6px;
   border-radius: 10px;

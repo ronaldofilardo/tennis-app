@@ -12,9 +12,9 @@
   display: flex;
   justify-content: space-around;
   align-items: stretch;
-  background: var(--clr-surface, #181d27);
+  background: var(--clr-surface, var(--clr-surface));
   border-top: 1px solid var(--clr-border, var(--clr-border));
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 -4px 20px var(--clr-surface-dark);
   /* iOS safe area */
   padding-bottom: env(safe-area-inset-bottom, 0px);
   height: 56px;
@@ -30,7 +30,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -54,7 +54,7 @@
 }
 
 .bottom-tab-item--active {
-  color: var(--clr-accent, #22c55e);
+  color: var(--clr-accent, var(--clr-accent));
 }
 
 .bottom-tab-icon {
@@ -75,7 +75,7 @@
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--clr-accent, #22c55e);
+  background: var(--clr-accent, var(--clr-accent));
 }
 
 /* Badge de notificação */
@@ -86,8 +86,8 @@
   min-width: 16px;
   height: 16px;
   border-radius: 8px;
-  background: var(--clr-live, #f43f5e);
-  color: #fff;
+  background: var(--clr-live, var(--clr-live));
+  color: var(--clr-text);
   font-size: 0.55rem;
   font-weight: 800;
   display: flex;

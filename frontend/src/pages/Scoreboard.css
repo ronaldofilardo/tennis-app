@@ -3,9 +3,9 @@
   max-width: 700px;
   margin: 0 auto;
   padding: 1.5rem;
-  background-color: #2c2c2c;
+  background-color: var(--clr-bg);
   border-radius: 12px;
-  color: #fff;
+  color: var(--clr-text);
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -21,11 +21,11 @@
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #aaa;
+  color: var(--clr-text-dim);
 }
 
 .end-match-button {
-  background-color: #f44336; /* Vermelho */
+  background-color: var(--clr-live); /* Vermelho */
   color: white;
   border: none;
   padding: 8px 16px;
@@ -47,7 +47,7 @@
 .team-name {
   font-size: 1.2rem;
   margin-bottom: 0.5rem;
-  color: #ddd;
+  color: var(--clr-text);
 }
 
 .sets-score {
@@ -59,14 +59,14 @@
 .game-score {
   font-size: 2.5rem;
   font-weight: bold;
-  color: #4CAF50; /* Verde */
+  color: var(--clr-accent); /* Verde */
   line-height: 1;
   margin-top: 0.5rem;
 }
 
 .score-display .separator {
   font-size: var(--font-scale-h2);
-  color: #777;
+  color: var(--clr-text-dim);
 }
 
 .point-controls {
@@ -82,19 +82,19 @@
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  background-color: #4a4a4a;
-  color: #fff;
+  background-color: var(--clr-surface);
+  color: var(--clr-text);
   transition: background-color 0.2s;
 }
 
 .point-button:hover {
-  background-color: #5a5a5a;
+  background-color: var(--clr-surface);
 }
 
 .server-info {
   text-align: center;
   font-style: italic;
-  color: #aaa;
+  color: var(--clr-text-dim);
 }
 
 .tiebreak-info {
@@ -103,19 +103,19 @@
   font-weight: bold;
   margin-top: 15px;
   padding: 12px;
-  background-color: #fff3cd;
+  background-color: var(--clr-light-surface);
   border: 2px solid #ffeaa7;
   border-radius: 8px;
 }
 
 .tiebreak-info span {
-  color: #856404;
+  color: var(--clr-yellow);
 }
 
 /* Parciais (sets) */
 .partials {
   margin-top: 1rem;
-  background: #1f1f1f;
+  background: var(--clr-bg);
   padding: 1rem;
   border-radius: 8px;
 }
@@ -125,7 +125,7 @@
   font-size: var(--font-scale-body);
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #bbb;
+  color: var(--clr-text-dim);
 }
 
 .partials-table {
@@ -140,23 +140,23 @@
 }
 
 .partials-table thead {
-  background: #333;
+  background: var(--clr-bg);
 }
 
 .partials-table tbody tr:nth-child(even) {
-  background: #2a2a2a;
+  background: var(--clr-bg);
 }
 
 .partials-table tbody tr.row-p1 {
-  border-left: 4px solid #4CAF50;
+  border-left: 4px solid var(--clr-accent);
 }
 
 .partials-table tbody tr.row-p2 {
-  border-left: 4px solid #2196F3;
+  border-left: 4px solid var(--clr-blue);
 }
 
 .partials-table tbody tr:hover {
-  background: #3a3a3a;
+  background: var(--clr-bg);
 }
 
 /* Match Status */
@@ -170,14 +170,14 @@
 }
 
 .match-status.in-progress {
-  background: linear-gradient(135deg, #4CAF50, #45a049);
+  background: linear-gradient(135deg, var(--clr-accent), var(--clr-accent));
   color: white;
   border: 2px solid #388E3C;
   animation: pulse 2s infinite;
 }
 
 .match-status.finished {
-  background: linear-gradient(135deg, #FF9800, #F57C00);
+  background: linear-gradient(135deg, var(--clr-yellow), #F57C00);
   color: white;
   border: 2px solid #E65100;
 }
@@ -194,7 +194,7 @@
 }
 
 .winner-highlight {
-  color: #FFD700;
+  color: var(--clr-yellow);
   text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }
 

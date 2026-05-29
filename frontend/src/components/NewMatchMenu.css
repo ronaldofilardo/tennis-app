@@ -14,7 +14,7 @@
 
 .new-match-menu__panel {
   border: 1px solid var(--clr-border-light);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: 0 8px 32px var(--clr-surface-dark) !important;
 }
 
 /* Mobile: full-width centralizado */
@@ -57,7 +57,7 @@
   padding: 14px 16px;
   background: transparent;
   border: none;
-  color: #e2e8f0;
+  color: var(--clr-text);
   cursor: pointer;
   text-align: left;
   transition: background 0.15s ease;
@@ -81,8 +81,8 @@
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: rgba(99, 179, 237, 0.12);
-  color: #63b3ed;
+  background: var(--clr-blue-light);
+  color: var(--clr-blue);
   flex-shrink: 0;
 }
 
@@ -95,12 +95,12 @@
 .new-match-menu__text strong {
   font-size: 14px;
   font-weight: 600;
-  color: #f8fafc;
+  color: var(--clr-text);
 }
 
 .new-match-menu__text small {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--clr-text-dim);
 }
 
 .new-match-menu__divider {

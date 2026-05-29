@@ -9,14 +9,14 @@
   justify-content: center;
   min-height: 40vh;
   gap: 16px;
-  color: #9ca3af;
+  color: var(--clr-text-dim);
 }
 
 .match-report__spinner {
   width: 36px;
   height: 36px;
   border: 3px solid #2a2a3e;
-  border-top-color: #7c3aed;
+  border-top-color: var(--clr-blue);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -34,7 +34,7 @@
   justify-content: center;
   min-height: 40vh;
   gap: 16px;
-  color: #f87171;
+  color: var(--clr-live);
   text-align: center;
 }
 
@@ -44,8 +44,8 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  background: #0f0f1a;
-  border-bottom: 1px solid #1e1e2e;
+  background: var(--clr-bg);
+  border-bottom: 1px solid var(--clr-surface);
   padding: 12px 24px;
   display: flex;
   align-items: center;
@@ -56,8 +56,8 @@
 
 .match-report {
   min-height: 100vh;
-  background: #0f0f1a;
-  color: #e2e8f0;
+  background: var(--clr-bg);
+  color: var(--clr-text);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -96,13 +96,13 @@
 .match-report__app-name {
   font-size: 20px;
   font-weight: 800;
-  color: #a78bfa;
+  color: var(--clr-blue);
   letter-spacing: -0.02em;
 }
 
 .match-report__tag {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--clr-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -122,23 +122,23 @@
 
 .match-report__sport {
   font-weight: 600;
-  color: #c4b5fd;
+  color: var(--clr-blue);
   font-size: 15px;
 }
 
 .match-report__format,
 .match-report__court {
-  color: #6b7280;
+  color: var(--clr-text-muted);
   font-size: 13px;
 }
 
 .match-report__club {
-  color: #9ca3af;
+  color: var(--clr-text-dim);
   font-size: 13px;
 }
 
 .match-report__match-date {
-  color: #6b7280;
+  color: var(--clr-text-muted);
   font-size: 13px;
 }
 
@@ -166,20 +166,20 @@
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #6b7280;
+  color: var(--clr-text-muted);
 }
 
 .match-report__player-name {
   font-size: 22px;
   font-weight: 700;
-  color: #f1f5f9;
+  color: var(--clr-text);
   line-height: 1.2;
 }
 
 .match-report__vs {
   font-size: 13px;
   font-weight: 700;
-  color: #4b5563;
+  color: var(--clr-text-muted);
   flex-shrink: 0;
 }
 
@@ -196,16 +196,16 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #7c3aed;
+  color: var(--clr-blue);
   margin: 0;
 }
 
 .match-report__no-data {
-  color: #6b7280;
+  color: var(--clr-text-muted);
   font-size: 14px;
   text-align: center;
   padding: 24px;
-  background: #1e1e2e;
+  background: var(--clr-surface);
   border-radius: 8px;
 }
 
@@ -232,10 +232,10 @@
 }
 
 .match-report__sets-row--header {
-  background: #1e1e2e;
+  background: var(--clr-surface);
   font-size: 12px;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--clr-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -252,17 +252,17 @@
 
 .match-report__sets-player {
   font-weight: 600;
-  color: #e2e8f0;
+  color: var(--clr-text);
 }
 
 .match-report__set-winner {
-  color: #4ade80 !important;
+  color: var(--clr-accent) !important;
   font-weight: 700;
 }
 
 .match-report__set-total {
   font-weight: 700;
-  color: #c4b5fd;
+  color: var(--clr-blue);
 }
 
 /* ─── Stats Grid ─── */
@@ -290,7 +290,7 @@
 
 .match-report__stat-label {
   text-align: center;
-  color: #9ca3af;
+  color: var(--clr-text-dim);
   font-size: 12px;
 }
 
@@ -301,12 +301,12 @@
 
 .match-report__stat-value--p1 {
   text-align: left;
-  color: #60a5fa;
+  color: var(--clr-blue);
 }
 
 .match-report__stat-value--p2 {
   text-align: right;
-  color: #f472b6;
+  color: var(--clr-live);
 }
 
 /* ─── Timeline ─── */
@@ -329,19 +329,19 @@
   padding: 6px 12px;
   border-radius: 6px;
   font-size: 13px;
-  background: #1a1a2e;
+  background: var(--clr-surface);
 }
 
 .match-report__timeline-item--p1 {
-  border-left: 3px solid #60a5fa;
+  border-left: 3px solid var(--clr-blue);
 }
 
 .match-report__timeline-item--p2 {
-  border-left: 3px solid #f472b6;
+  border-left: 3px solid var(--clr-live);
 }
 
 .match-report__timeline-num {
-  color: #4b5563;
+  color: var(--clr-text-muted);
   min-width: 28px;
   font-size: 11px;
   font-variant-numeric: tabular-nums;
@@ -349,7 +349,7 @@
 
 .match-report__timeline-winner {
   font-weight: 600;
-  color: #e2e8f0;
+  color: var(--clr-text);
   flex: 1;
 }
 
@@ -363,28 +363,28 @@
 }
 
 .match-report__timeline-tag--ace {
-  background: #14532d;
-  color: #4ade80;
+  background: var(--clr-grass);
+  color: var(--clr-accent);
 }
 .match-report__timeline-tag--fault {
-  background: #450a0a;
-  color: #f87171;
+  background: var(--clr-live);
+  color: var(--clr-live);
 }
 .match-report__timeline-tag--winner {
-  background: #1e3a5f;
-  color: #60a5fa;
+  background: var(--clr-blue);
+  color: var(--clr-blue);
 }
 .match-report__timeline-tag--error {
-  background: #451a03;
-  color: #fb923c;
+  background: var(--clr-clay);
+  color: var(--clr-orange);
 }
 .match-report__timeline-tag--forced {
-  background: #3b1e4e;
-  color: #c4b5fd;
+  background: var(--clr-blue);
+  color: var(--clr-blue);
 }
 
 .match-report__timeline-ts {
-  color: #4b5563;
+  color: var(--clr-text-muted);
   font-size: 11px;
   font-variant-numeric: tabular-nums;
 }
@@ -395,19 +395,19 @@
   padding-top: 24px;
   border-top: 1px solid #2a2a3e;
   font-size: 13px;
-  color: #6b7280;
+  color: var(--clr-text-muted);
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
 .match-report__footer strong {
-  color: #9ca3af;
+  color: var(--clr-text-dim);
 }
 
 .match-report__footer-app {
   font-size: 12px;
-  color: #4b5563;
+  color: var(--clr-text-muted);
 }
 
 /* ─── Buttons ─── */
@@ -422,33 +422,37 @@
   font-weight: 600;
   cursor: pointer;
   border: none;
-  transition: background-color var(--transition-fast) var(--ease-in-out), border-color var(--transition-fast) var(--ease-in-out), color var(--transition-fast) var(--ease-in-out), transform var(--transition-fast) var(--ease-in-out);
+  transition:
+    background-color var(--transition-fast) var(--ease-in-out),
+    border-color var(--transition-fast) var(--ease-in-out),
+    color var(--transition-fast) var(--ease-in-out),
+    transform var(--transition-fast) var(--ease-in-out);
   text-decoration: none;
 }
 
 .match-report__btn:focus-visible {
-  outline: 2px solid #7c3aed;
+  outline: 2px solid var(--clr-blue);
   outline-offset: 2px;
 }
 
 .match-report__btn--primary {
-  background: #7c3aed;
-  color: #fff;
+  background: var(--clr-blue);
+  color: var(--clr-text);
 }
 
 .match-report__btn--primary:hover {
-  background: #6d28d9;
+  background: var(--clr-blue);
 }
 
 .match-report__btn--ghost {
   background: transparent;
-  color: #9ca3af;
-  border: 1px solid #374151;
+  color: var(--clr-text-dim);
+  border: 1px solid var(--clr-text-muted);
 }
 
 .match-report__btn--ghost:hover {
   background: var(--clr-border-lighter);
-  color: #e2e8f0;
+  color: var(--clr-text);
 }
 
 /* ─── Print styles ─── */
@@ -460,8 +464,8 @@
   }
 
   .match-report {
-    background: #fff;
-    color: #000;
+    background: var(--clr-white);
+    color: var(--clr-bg);
   }
 
   .match-report__content {
@@ -470,11 +474,11 @@
   }
 
   .match-report__app-name {
-    color: #6d28d9;
+    color: var(--clr-blue);
   }
 
   .match-report__player-name {
-    color: #111;
+    color: var(--clr-bg);
   }
 
   .match-report__sport,
@@ -482,17 +486,17 @@
   .match-report__court,
   .match-report__club,
   .match-report__match-date {
-    color: #555;
+    color: var(--clr-surface-2);
   }
 
   .match-report__sets-table,
   .match-report__stats-grid {
-    border-color: #ccc;
+    border-color: var(--clr-text-dim);
   }
 
   .match-report__sets-row--header {
-    background: #f5f5f5;
-    color: #444;
+    background: var(--clr-light-bg);
+    color: var(--clr-surface);
   }
 
   .match-report__timeline {
@@ -501,21 +505,21 @@
   }
 
   .match-report__timeline-item {
-    background: #f9f9f9;
+    background: var(--clr-light-bg);
     break-inside: avoid;
   }
 
   .match-report__stat-value--p1 {
-    color: #1d4ed8;
+    color: var(--clr-blue);
   }
   .match-report__stat-value--p2 {
-    color: #be185d;
+    color: var(--clr-live);
   }
   .match-report__set-winner {
-    color: #15803d !important;
+    color: var(--clr-grass) !important;
   }
   .match-report__set-total {
-    color: #6d28d9;
+    color: var(--clr-blue);
   }
 }
 

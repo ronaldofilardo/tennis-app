@@ -1,4 +1,5 @@
 import { useReducer } from 'react';
+import type { Athlete } from '../types/athlete';
 
 export interface MatchSetupFormState {
   sport: string;
@@ -7,8 +8,8 @@ export interface MatchSetupFormState {
   nickname: string;
   player1: string;
   player2: string;
-  selectedAthlete1: any;
-  selectedAthlete2: any;
+  selectedAthlete1: Athlete | null;
+  selectedAthlete2: Athlete | null;
   visibility: 'PUBLIC' | 'CLUB' | 'PLAYERS_ONLY' | null;
   visibleTo: string;
   error: string | null;
@@ -39,9 +40,9 @@ export interface UseMatchSetupFormReturn {
     setNickname: (value: string) => void;
     setPlayer1: (value: string) => void;
     setPlayer2: (value: string) => void;
-    setSelectedAthlete1: (value: any) => void;
-    setSelectedAthlete2: (value: any) => void;
-    setVisibility: (value: any) => void;
+    setSelectedAthlete1: (value: Athlete | null) => void;
+    setSelectedAthlete2: (value: Athlete | null) => void;
+    setVisibility: (value: MatchSetupFormState['visibility']) => void;
     setVisibleTo: (value: string) => void;
     setError: (value: string | null) => void;
     setIsResuming: (value: boolean) => void;
@@ -55,7 +56,7 @@ export interface UseMatchSetupFormReturn {
     setBracketType: (value: string) => void;
     setTournamentSuggestions: (value: string[]) => void;
     setRoundSuggestions: (value: string[]) => void;
-    setDuplicateMatch: (value: any) => void;
+    setDuplicateMatch: (value: MatchSetupFormState['duplicateMatch']) => void;
     setIsDuplicateModalOpen: (value: boolean) => void;
     setPendingDuplicatePayload: (value: Record<string, unknown> | null) => void;
     setTemperature: (value: string) => void;
@@ -74,9 +75,9 @@ export type MatchSetupFormAction =
   | { type: 'setNickname'; payload: string }
   | { type: 'setPlayer1'; payload: string }
   | { type: 'setPlayer2'; payload: string }
-  | { type: 'setSelectedAthlete1'; payload: any }
-  | { type: 'setSelectedAthlete2'; payload: any }
-  | { type: 'setVisibility'; payload: any }
+  | { type: 'setSelectedAthlete1'; payload: Athlete | null }
+  | { type: 'setSelectedAthlete2'; payload: Athlete | null }
+  | { type: 'setVisibility'; payload: MatchSetupFormState['visibility'] }
   | { type: 'setVisibleTo'; payload: string }
   | { type: 'setError'; payload: string | null }
   | { type: 'setIsResuming'; payload: boolean }
@@ -90,7 +91,7 @@ export type MatchSetupFormAction =
   | { type: 'setBracketType'; payload: string }
   | { type: 'setTournamentSuggestions'; payload: string[] }
   | { type: 'setRoundSuggestions'; payload: string[] }
-  | { type: 'setDuplicateMatch'; payload: any }
+  | { type: 'setDuplicateMatch'; payload: MatchSetupFormState['duplicateMatch'] }
   | { type: 'setIsDuplicateModalOpen'; payload: boolean }
   | { type: 'setPendingDuplicatePayload'; payload: Record<string, unknown> | null }
   | { type: 'setTemperature'; payload: string }
@@ -203,9 +204,12 @@ export function useMatchSetupForm(): UseMatchSetupFormReturn {
     setNickname: (value: string) => dispatch({ type: 'setNickname', payload: value }),
     setPlayer1: (value: string) => dispatch({ type: 'setPlayer1', payload: value }),
     setPlayer2: (value: string) => dispatch({ type: 'setPlayer2', payload: value }),
-    setSelectedAthlete1: (value: any) => dispatch({ type: 'setSelectedAthlete1', payload: value }),
-    setSelectedAthlete2: (value: any) => dispatch({ type: 'setSelectedAthlete2', payload: value }),
-    setVisibility: (value: any) => dispatch({ type: 'setVisibility', payload: value }),
+    setSelectedAthlete1: (value: Athlete | null) =>
+      dispatch({ type: 'setSelectedAthlete1', payload: value }),
+    setSelectedAthlete2: (value: Athlete | null) =>
+      dispatch({ type: 'setSelectedAthlete2', payload: value }),
+    setVisibility: (value: MatchSetupFormState['visibility']) =>
+      dispatch({ type: 'setVisibility', payload: value }),
     setVisibleTo: (value: string) => dispatch({ type: 'setVisibleTo', payload: value }),
     setError: (value: string | null) => dispatch({ type: 'setError', payload: value }),
     setIsResuming: (value: boolean) => dispatch({ type: 'setIsResuming', payload: value }),
@@ -224,7 +228,8 @@ export function useMatchSetupForm(): UseMatchSetupFormReturn {
       dispatch({ type: 'setTournamentSuggestions', payload: value }),
     setRoundSuggestions: (value: string[]) =>
       dispatch({ type: 'setRoundSuggestions', payload: value }),
-    setDuplicateMatch: (value: any) => dispatch({ type: 'setDuplicateMatch', payload: value }),
+    setDuplicateMatch: (value: MatchSetupFormState['duplicateMatch']) =>
+      dispatch({ type: 'setDuplicateMatch', payload: value }),
     setIsDuplicateModalOpen: (value: boolean) =>
       dispatch({ type: 'setIsDuplicateModalOpen', payload: value }),
     setPendingDuplicatePayload: (value: Record<string, unknown> | null) =>

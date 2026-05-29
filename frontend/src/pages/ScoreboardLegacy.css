@@ -7,8 +7,8 @@
   max-width: 500px;
   margin: 0 auto;
   padding: 1rem;
-  background: #ffffff;
-  color: #333;
+  background: var(--clr-white);
+  color: var(--clr-bg);
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -28,13 +28,13 @@
   margin: 0;
   font-size: var(--font-scale-body);
   font-weight: 600;
-  color: #666;
+  color: var(--clr-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .end-match-button {
-  background: #f44336;
+  background: var(--clr-live);
   color: white;
   border: none;
   border-radius: 20px;
@@ -66,7 +66,7 @@
 
 .points-info {
   font-size: var(--font-scale-body);
-  color: #6c757d;
+  color: var(--clr-text-muted);
   font-weight: 500;
 }
 
@@ -119,7 +119,7 @@
 .player-name {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #333;
+  color: var(--clr-bg);
 }
 
 .serve-indicator {
@@ -148,19 +148,19 @@
 .current-score {
   font-size: 3rem;
   font-weight: bold;
-  color: #2196f3;
+  color: var(--clr-blue);
   line-height: 1;
 }
 
 .sets-count {
   font-size: 1.2rem;
   font-weight: 600;
-  color: #333;
+  color: var(--clr-bg);
 }
 
 .games-count {
   font-size: var(--font-scale-body);
-  color: #666;
+  color: var(--clr-text-muted);
 }
 
 /* Histórico de sets */
@@ -173,12 +173,12 @@
 }
 
 .set-score {
-  background: #f5f5f5;
+  background: var(--clr-light-bg);
   padding: 4px 8px;
   border-radius: 6px;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #555;
+  color: var(--clr-surface-2);
   min-width: 20px;
   text-align: center;
 }
@@ -193,7 +193,7 @@
 }
 
 .tiebreak-indicator {
-  background: #ff9800;
+  background: var(--clr-yellow);
   color: white;
   padding: 4px 8px;
   border-radius: 12px;
@@ -217,31 +217,31 @@
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  transition: all var(--transition-normal) ease;
+  transition: color var(--transition-normal) var(--ease-in-out), background-color var(--transition-normal) var(--ease-in-out), transform var(--transition-normal) var(--ease-in-out), opacity var(--transition-normal) var(--ease-in-out), border-color var(--transition-normal) var(--ease-in-out), box-shadow var(--transition-normal) var(--ease-in-out);
   color: white;
   min-height: 60px;
 }
 
 .point-button-p1 {
-  background: #4caf50;
+  background: var(--clr-accent);
 }
 
 .point-button-p1:hover:not(:disabled) {
-  background: #45a049;
+  background: var(--clr-accent);
   transform: translateY(-2px);
 }
 
 .point-button-p2 {
-  background: #2196f3;
+  background: var(--clr-blue);
 }
 
 .point-button-p2:hover:not(:disabled) {
-  background: #1976d2;
+  background: var(--clr-blue);
   transform: translateY(-2px);
 }
 
 .point-button:disabled {
-  background: #ccc;
+  background: var(--clr-text-dim);
   cursor: not-allowed;
   transform: none;
 }
@@ -259,26 +259,26 @@
   padding: 0.8rem 1.5rem;
   font-size: var(--font-scale-body);
   font-weight: 600;
-  border: 2px solid #ff9800;
+  border: 2px solid var(--clr-yellow);
   border-radius: 8px;
   cursor: pointer;
-  transition: all var(--transition-normal) ease;
+  transition: color var(--transition-normal) var(--ease-in-out), background-color var(--transition-normal) var(--ease-in-out), transform var(--transition-normal) var(--ease-in-out), opacity var(--transition-normal) var(--ease-in-out), border-color var(--transition-normal) var(--ease-in-out), box-shadow var(--transition-normal) var(--ease-in-out);
   background: white;
-  color: #ff9800;
+  color: var(--clr-yellow);
   min-width: 180px;
 }
 
 .undo-button:hover:not(:disabled) {
-  background: #ff9800;
+  background: var(--clr-yellow);
   color: white;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
 }
 
 .undo-button:disabled {
-  background: #f5f5f5;
-  color: #ccc;
-  border-color: #ddd;
+  background: var(--clr-light-bg);
+  color: var(--clr-text-dim);
+  border-color: var(--clr-text);
   cursor: not-allowed;
   transform: none;
 }
@@ -288,30 +288,30 @@
   padding: 0.8rem 1.5rem;
   font-size: var(--font-scale-body);
   font-weight: 600;
-  border: 2px solid #4299e1;
+  border: 2px solid var(--clr-blue);
   border-radius: 8px;
   cursor: pointer;
-  transition: all var(--transition-normal) ease;
+  transition: color var(--transition-normal) var(--ease-in-out), background-color var(--transition-normal) var(--ease-in-out), transform var(--transition-normal) var(--ease-in-out), opacity var(--transition-normal) var(--ease-in-out), border-color var(--transition-normal) var(--ease-in-out), box-shadow var(--transition-normal) var(--ease-in-out);
   background: white;
-  color: #4299e1;
+  color: var(--clr-blue);
   min-width: 180px;
 }
 
 .detailed-mode-button:hover {
-  background: #4299e1;
+  background: var(--clr-blue);
   color: white;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
 }
 
 .detailed-mode-button.active {
-  background: #4299e1;
+  background: var(--clr-blue);
   color: white;
 }
 
 .detailed-mode-button.active:hover {
-  background: #3182ce;
-  border-color: #3182ce;
+  background: var(--clr-blue);
+  border-color: var(--clr-blue);
 }
 
 /* Modal de setup */
@@ -321,7 +321,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--clr-overlay-50);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -340,19 +340,19 @@
 .setup-modal h3 {
   margin: 0 0 1rem 0;
   text-align: center;
-  color: #333;
+  color: var(--clr-bg);
 }
 
 .setup-modal p {
   margin: 0 0 1.5rem 0;
   text-align: center;
-  color: #666;
+  color: var(--clr-text-muted);
 }
 
 .server-selection h4 {
   margin: 0 0 1rem 0;
   text-align: center;
-  color: #333;
+  color: var(--clr-bg);
   font-size: 1.1rem;
 }
 
@@ -366,17 +366,17 @@
   padding: 1rem;
   font-size: 1.1rem;
   font-weight: 600;
-  background: #f5f5f5;
+  background: var(--clr-light-bg);
   border: 2px solid #e0e0e0;
   border-radius: 12px;
   cursor: pointer;
-  transition: all var(--transition-normal) ease;
-  color: #333;
+  transition: color var(--transition-normal) var(--ease-in-out), background-color var(--transition-normal) var(--ease-in-out), transform var(--transition-normal) var(--ease-in-out), opacity var(--transition-normal) var(--ease-in-out), border-color var(--transition-normal) var(--ease-in-out), box-shadow var(--transition-normal) var(--ease-in-out);
+  color: var(--clr-bg);
 }
 
 .server-button:hover {
-  background: #2196f3;
-  border-color: #2196f3;
+  background: var(--clr-blue);
+  border-color: var(--clr-blue);
   color: white;
 }
 
@@ -385,8 +385,8 @@
 }
 
 .cancel-button {
-  background: #ccc;
-  color: #333;
+  background: var(--clr-text-dim);
+  color: var(--clr-bg);
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
@@ -395,7 +395,7 @@
 }
 
 .cancel-button:hover {
-  background: #bbb;
+  background: var(--clr-text-dim);
 }
 
 /* Responsivo */
@@ -425,12 +425,12 @@
   flex-direction: column;
   gap: 0.25rem;
   font-size: var(--font-scale-body);
-  color: #666;
+  color: var(--clr-text-muted);
   margin-top: 0.5rem;
 }
 
 .highlight-info {
-  color: #2196f3 !important;
+  color: var(--clr-blue) !important;
   font-weight: 600;
   text-shadow: 0 0 4px rgba(33, 150, 243, 0.3);
 }
@@ -438,12 +438,12 @@
 .last-point-feedback {
   text-align: center;
   font-size: 1.1rem;
-  color: #2196f3;
+  color: var(--clr-blue);
   font-weight: 600;
   margin: 0.75rem 0;
   padding: 0.75rem 1rem;
-  background: #e3f2fd;
-  border: 2px solid #2196f3;
+  background: var(--clr-light-surface);
+  border: 2px solid var(--clr-blue);
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
   animation: fade-in 0.5s ease-in;

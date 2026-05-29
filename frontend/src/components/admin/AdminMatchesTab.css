@@ -14,32 +14,32 @@
 }
 
 .match-status-badge.ms-not-started {
-  background: rgba(107, 114, 128, 0.15);
-  color: #9ca3af;
+  background: var(--clr-surface-lighter);
+  color: var(--clr-text-dim);
 }
 
 .match-status-badge.ms-in-progress {
-  background: rgba(59, 130, 246, 0.15);
-  color: #60a5fa;
+  background: var(--clr-blue-faint);
+  color: var(--clr-blue);
 }
 
 .match-status-badge.ms-finished {
-  background: rgba(34, 197, 94, 0.15);
-  color: #4ade80;
+  background: var(--clr-accent-faint);
+  color: var(--clr-accent);
 }
 
 .match-status-badge.ms-scored-review {
-  background: rgba(234, 179, 8, 0.15);
+  background: var(--clr-yellow-mid);
   color: var(--clr-yellow);
 }
 
 .match-status-badge.ms-approved {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
+  background: var(--clr-accent-faint);
+  color: var(--clr-accent);
 }
 
 .match-status-badge.ms-rejected {
-  background: rgba(239, 68, 68, 0.15);
+  background: var(--clr-live-faint);
   color: var(--alert-red, var(--clr-error));
 }
 
@@ -51,13 +51,13 @@
   gap: 2px;
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
 }
 
 .match-vs {
   font-size: 0.65rem;
   font-weight: 400;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -67,13 +67,13 @@
 .cell-score {
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
   font-variant-numeric: tabular-nums;
 }
 
 .cell-muted {
   font-size: 0.8rem;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -82,7 +82,7 @@
 .cell-name {
   font-size: var(--font-scale-body);
   font-weight: 600;
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
   display: flex;
   align-items: center;
   gap: 8px;
@@ -90,7 +90,7 @@
 
 .cell-slug {
   font-size: 0.8rem;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -98,7 +98,7 @@
 
 .cell-email {
   font-size: 0.8rem;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -107,13 +107,13 @@
 .cell-number {
   font-size: var(--font-scale-body);
   font-weight: 700;
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
   text-align: center;
 }
 
 .cell-date {
   font-size: var(--font-scale-sm);
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
 }
 
 .cell-status {
@@ -121,7 +121,7 @@
   align-items: center;
   gap: 6px;
   font-size: 0.8rem;
-  color: var(--clr-text-dim, #9ca3af);
+  color: var(--clr-text-dim, var(--clr-text-dim));
 }
 
 .admin-dashboard .status-dot {
@@ -132,19 +132,19 @@
 }
 
 .admin-dashboard .status-dot.active {
-  background: #22c55e;
-  box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
+  background: var(--clr-accent);
+  box-shadow: 0 0 6px var(--clr-accent-medium);
 }
 
 .admin-dashboard .status-dot.inactive {
-  background: #6b7280;
+  background: var(--clr-text-muted);
 }
 
 .user-avatar {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: rgba(239, 68, 68, 0.15);
+  background: var(--clr-live-faint);
   color: var(--alert-red, var(--clr-error));
   display: flex;
   align-items: center;
@@ -164,7 +164,7 @@
   height: 18px;
   padding: 0 5px;
   background: var(--clr-error);
-  color: #fff;
+  color: var(--clr-text);
   font-size: 10px;
   font-weight: 700;
   border-radius: 999px;
@@ -178,7 +178,7 @@
   min-width: 22px;
   height: 22px;
   padding: 0 6px;
-  background: rgba(239, 68, 68, 0.2);
+  background: var(--clr-live-faint);
   color: var(--clr-error);
   font-size: 12px;
   font-weight: 700;
@@ -207,12 +207,12 @@
   align-items: center;
   gap: 8px;
   padding: 40px 20px;
-  color: var(--color-text-secondary, #a0a0b8);
+  color: var(--color-text-secondary, var(--clr-text-dim));
 }
 
 .admin-empty-icon {
   font-size: 32px;
-  color: #22c55e;
+  color: var(--clr-accent);
 }
 
 .admin-rejections-list {
@@ -222,8 +222,8 @@
 }
 
 .admin-rejection-card {
-  background: rgba(239, 68, 68, 0.05);
-  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: var(--clr-live-faintest);
+  border: 1px solid var(--clr-live-subtle);
   border-radius: 12px;
   padding: 16px;
   display: flex;
@@ -239,18 +239,18 @@
 
 .admin-rejection-card__players {
   font-size: 15px;
-  color: #f0f0f8;
+  color: var(--clr-text);
 }
 
 .admin-rejection-card__score {
   font-size: 13px;
-  color: #a0a0b8;
+  color: var(--clr-text-dim);
   font-variant-numeric: tabular-nums;
 }
 
 .admin-rejection-card__meta {
   font-size: 12px;
-  color: #7070a0;
+  color: var(--clr-text-dim);
 }
 
 .admin-rejection-card__reviews {
@@ -269,7 +269,7 @@
 .admin-rejection-review__type {
   font-size: 12px;
   font-weight: 600;
-  color: #a0a0b8;
+  color: var(--clr-text-dim);
   min-width: 48px;
 }
 
@@ -281,13 +281,13 @@
 }
 
 .admin-rejection-review__status.rejected {
-  background: rgba(239, 68, 68, 0.15);
+  background: var(--clr-live-faint);
   color: var(--clr-error);
 }
 
 .admin-rejection-review__reason {
   font-size: 12px;
-  color: #a0a0b8;
+  color: var(--clr-text-dim);
   font-style: italic;
   flex: 1;
 }
@@ -295,18 +295,18 @@
 .admin-rejection-card__delete-btn {
   align-self: flex-start;
   padding: 8px 14px;
-  background: rgba(239, 68, 68, 0.15);
+  background: var(--clr-live-faint);
   color: var(--clr-error);
   border: 1px solid rgba(239, 68, 68, 0.4);
   border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-fast) ease;
+  transition: color var(--transition-fast) var(--ease-out), background-color var(--transition-fast) var(--ease-out), transform var(--transition-fast) var(--ease-out), opacity var(--transition-fast) var(--ease-out), border-color var(--transition-fast) var(--ease-out), box-shadow var(--transition-fast) var(--ease-out);
 }
 
 .admin-rejection-card__delete-btn:not(:disabled):hover {
-  background: rgba(239, 68, 68, 0.25);
+  background: var(--clr-live-subtle);
 }
 
 .admin-rejection-card__delete-btn:disabled {

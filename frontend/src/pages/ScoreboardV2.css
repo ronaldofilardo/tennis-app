@@ -54,8 +54,8 @@
   font-size: var(--font-scale-body);
   color: var(--text-secondary);
   text-align: center;
-  background: rgba(234, 179, 8, 0.08);
-  border: 1px solid rgba(234, 179, 8, 0.2);
+  background: var(--clr-yellow-faintest);
+  border: 1px solid var(--clr-yellow-low);
   border-radius: var(--radius-badge);
   padding: 0.5rem 1rem;
   max-width: 400px;
@@ -94,7 +94,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(7, 25, 18, 0.93);
+  background: var(--clr-overlay-dark);
   backdrop-filter: blur(8px);
   z-index: 50;
   gap: 0.75rem;
@@ -153,14 +153,14 @@
 }
 
 .finished-action-btn:hover {
-  background: rgba(255, 255, 255, 0.18);
+  background: var(--clr-white-strong);
 }
 
 /* Menu contextual (long-press) */
 .context-menu-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--clr-overlay-55);
   z-index: 200;
   display: flex;
   align-items: flex-end;
@@ -195,10 +195,10 @@
   align-items: center;
   gap: 6px;
   padding: 2px 10px;
-  background: rgba(99, 102, 241, 0.15);
+  background: var(--clr-blue-faint);
   border-bottom: 1px solid rgba(99, 102, 241, 0.2);
   font-size: 12px;
-  color: #a5b4fc;
+  color: var(--clr-blue);
 }
 
 .context-menu-title {
@@ -241,7 +241,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--clr-surface-dark);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -252,8 +252,8 @@
 }
 
 .scoreboard-resume-message {
-  background: rgba(255, 255, 255, 0.95);
-  color: #1a1a1a;
+  background: var(--clr-text);
+  color: var(--clr-bg);
   padding: 1.5rem 2rem;
   border-radius: 12px;
   font-size: 1.1rem;
@@ -309,7 +309,7 @@
 
 .scoreboard-error button {
   background: var(--player1-color);
-  color: #fff;
+  color: var(--clr-text);
   border: none;
   border-radius: var(--radius-btn);
   padding: 0.6rem 1.5rem;
@@ -343,7 +343,7 @@
 .server-button:hover {
   background: var(--player1-color);
   border-color: var(--player1-color);
-  color: #fff;
+  color: var(--clr-text);
 }
 
 .annotator-badge {
@@ -351,10 +351,10 @@
   align-items: center;
   gap: 6px;
   padding: 2px 10px;
-  background: rgba(99, 102, 241, 0.15);
+  background: var(--clr-blue-faint);
   border-bottom: 1px solid rgba(99, 102, 241, 0.2);
   font-size: 12px;
-  color: #a5b4fc;
+  color: var(--clr-blue);
 }
 
 .sb-delete-match-btn {
@@ -362,9 +362,9 @@
   width: max-content;
   margin: 4px auto 0;
   padding: 6px 14px;
-  background: rgba(239, 68, 68, 0.1);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: var(--clr-live-micro);
+  color: var(--clr-live);
+  border: 1px solid var(--clr-live-mid);
   border-radius: 8px;
   font-size: 0.78rem;
   font-weight: 600;
@@ -373,7 +373,7 @@
 }
 
 .sb-delete-match-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
+  background: var(--clr-live-faint);
 }
 
 /* ── Accessibility: Respect motion preferences ────────────── */

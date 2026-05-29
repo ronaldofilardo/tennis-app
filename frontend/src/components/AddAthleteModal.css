@@ -28,18 +28,18 @@
 
 /* ── Modal ────────────────────────────────────────────────────── */
 .add-athlete-modal {
-  background: var(--clr-surface, #181d27);
+  background: var(--clr-surface, var(--clr-surface));
   border: 1px solid var(--clr-border-light);
   border-top: 3px solid var(--clr-yellow);
   border-radius: 20px;
   width: 100%;
   max-width: clamp(320px, 90vw, 560px);
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 12px 48px var(--clr-overlay-50);
   display: flex;
   flex-direction: column;
   margin: auto;
   font-family: var(--font-main, 'Inter', sans-serif);
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
   overflow: hidden;
 }
 
@@ -56,20 +56,20 @@
 .add-athlete-header h2 {
   font-size: var(--font-scale-h3);
   font-weight: 700;
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
   margin: 0 0 4px;
 }
 
 .add-athlete-subtitle {
   font-size: 0.8rem;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   margin: 0;
 }
 
 .add-athlete-close {
   background: none;
   border: none;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   font-size: 1.1rem;
   cursor: pointer;
   padding: 4px 8px;
@@ -81,7 +81,7 @@
 }
 
 .add-athlete-close:hover {
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
   background: var(--clr-surface-light);
 }
 
@@ -118,7 +118,7 @@
 
 .add-athlete-section-hint {
   font-size: var(--font-scale-sm);
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   text-transform: none;
   letter-spacing: 0;
   font-weight: 400;
@@ -136,7 +136,7 @@
   border: 1px solid var(--clr-border-light);
   border-radius: 8px;
   background: var(--clr-surface-lighter);
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   font-size: var(--font-scale-body);
   font-weight: 600;
   cursor: pointer;
@@ -148,7 +148,7 @@
 
 .add-athlete-role-btn:hover {
   border-color: var(--clr-yellow-hover);
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
   background: var(--clr-yellow-faint);
 }
 
@@ -183,7 +183,7 @@
 .add-athlete-field label {
   font-size: var(--font-scale-sm);
   font-weight: 600;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -191,10 +191,10 @@
 .add-athlete-field input,
 .add-athlete-field select {
   padding: 9px 12px;
-  background: var(--clr-surface-2, #1e2535);
+  background: var(--clr-surface-2, var(--clr-surface-2));
   border: 1px solid var(--clr-border-light);
   border-radius: 8px;
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
   font-size: var(--font-scale-body);
   font-family: inherit;
   transition: border-color 0.15s;
@@ -204,15 +204,15 @@
 .add-athlete-field input:focus,
 .add-athlete-field select:focus {
   border-color: var(--clr-yellow);
-  box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.1);
+  box-shadow: 0 0 0 2px var(--clr-yellow-faintest);
 }
 
 .add-athlete-field input::placeholder {
-  color: var(--clr-text-muted, #4b5563);
+  color: var(--clr-text-muted, var(--clr-text-muted));
 }
 
 .add-athlete-field select option {
-  background: var(--clr-surface-2, #1e2535);
+  background: var(--clr-surface-2, var(--clr-surface-2));
 }
 
 .add-athlete-error {
@@ -222,7 +222,7 @@
 
 .add-athlete-hint {
   font-size: var(--font-scale-sm);
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   font-style: italic;
 }
 
@@ -233,7 +233,7 @@
   gap: 10px;
   padding: 16px 24px;
   border-top: 1px solid var(--clr-border);
-  background: var(--clr-surface-2, #1e2535);
+  background: var(--clr-surface-2, var(--clr-surface-2));
 }
 
 .add-athlete-btn-cancel {
@@ -241,7 +241,7 @@
   background: none;
   border: 1px solid var(--clr-border-light);
   border-radius: 8px;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   font-size: var(--font-scale-body);
   font-weight: 600;
   cursor: pointer;
@@ -252,13 +252,13 @@
 
 .add-athlete-btn-cancel:hover:not(:disabled) {
   border-color: var(--clr-border);
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
 }
 
 .add-athlete-btn-save {
   padding: 9px 22px;
   background: var(--clr-yellow);
-  color: #0f172a;
+  color: var(--clr-bg);
   border: none;
   border-radius: 8px;
   font-size: var(--font-scale-body);
@@ -291,7 +291,7 @@
   width: 14px;
   height: 14px;
   border: 2px solid rgba(15, 23, 42, 0.3);
-  border-top-color: #0f172a;
+  border-top-color: var(--clr-bg);
   border-radius: 50%;
   animation: aaSpin 0.7s linear infinite;
   flex-shrink: 0;

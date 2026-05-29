@@ -16,13 +16,13 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, var(--clr-blue), #8b5cf6);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 22px;
   font-weight: 700;
-  color: #fff;
+  color: var(--clr-text);
   flex-shrink: 0;
 }
 
@@ -36,7 +36,7 @@
 .profile-panel__name {
   font-size: 16px;
   font-weight: 700;
-  color: #e2e8f0;
+  color: var(--clr-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -44,7 +44,7 @@
 
 .profile-panel__email {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--clr-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -55,8 +55,8 @@
   margin-top: 4px;
   padding: 2px 8px;
   border-radius: 20px;
-  background: rgba(99, 102, 241, 0.18);
-  color: #a5b4fc;
+  background: var(--clr-purple-faint);
+  color: var(--clr-blue);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -66,10 +66,10 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
-  background: #0f0f1a;
+  background: var(--clr-bg);
   border-radius: 12px;
   padding: 16px 12px;
-  border: 1px solid rgba(99, 102, 241, 0.15);
+  border: 1px solid var(--clr-blue-faint);
 }
 
 .profile-panel__stat {
@@ -82,13 +82,13 @@
 .profile-panel__stat-value {
   font-size: 22px;
   font-weight: 800;
-  color: #e2e8f0;
+  color: var(--clr-text);
   line-height: 1;
 }
 
 .profile-panel__stat-label {
   font-size: 10px;
-  color: #6b7280;
+  color: var(--clr-text-muted);
   text-align: center;
   font-weight: 500;
   letter-spacing: 0.03em;
@@ -97,7 +97,7 @@
 .profile-panel__clubs-title {
   font-size: 12px;
   font-weight: 700;
-  color: #9ca3af;
+  color: var(--clr-text-dim);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin: 0 0 10px;
@@ -109,12 +109,12 @@
   align-items: center;
   gap: 8px;
   padding: 12px 14px;
-  background: #0f0f1a;
+  background: var(--clr-bg);
   border: 1px solid var(--clr-border-light);
   border-radius: 10px;
   margin-bottom: 8px;
   cursor: pointer;
-  color: #e2e8f0;
+  color: var(--clr-text);
   transition:
     border-color 0.15s,
     background 0.15s;
@@ -122,13 +122,13 @@
 }
 
 .profile-panel__club:not(:disabled):hover {
-  border-color: rgba(99, 102, 241, 0.4);
-  background: rgba(99, 102, 241, 0.07);
+  border-color: var(--clr-purple-mid);
+  background: var(--clr-purple-faint);
 }
 
 .profile-panel__club--active {
-  border-color: rgba(99, 102, 241, 0.45);
-  background: rgba(99, 102, 241, 0.1);
+  border-color: var(--clr-purple-mid);
+  background: var(--clr-purple-faint);
   cursor: default;
 }
 
@@ -140,14 +140,14 @@
 
 .profile-panel__club-role {
   font-size: 11px;
-  color: #6b7280;
+  color: var(--clr-text-muted);
 }
 
 .profile-panel__club-active-badge {
   font-size: 10px;
   font-weight: 700;
-  color: #6366f1;
-  background: rgba(99, 102, 241, 0.15);
+  color: var(--clr-blue);
+  background: var(--clr-blue-faint);
   border-radius: 20px;
   padding: 2px 8px;
   letter-spacing: 0.04em;
@@ -157,9 +157,9 @@
   width: 100%;
   padding: 12px;
   border-radius: 10px;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  border: 1px solid var(--clr-live-mid);
   background: transparent;
-  color: #f87171;
+  color: var(--clr-live);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -169,6 +169,6 @@
 }
 
 .profile-panel__logout:hover {
-  background: rgba(239, 68, 68, 0.08);
-  border-color: rgba(239, 68, 68, 0.5);
+  background: var(--clr-live-faintest2);
+  border-color: var(--clr-live-mid);
 }

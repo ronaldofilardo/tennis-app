@@ -5,7 +5,7 @@
   padding: 14px 16px;
   background: linear-gradient(
     135deg,
-    rgba(245, 158, 11, 0.12),
+    var(--clr-yellow-light),
     rgba(245, 158, 11, 0.06)
   );
   border: 1px solid rgba(245, 158, 11, 0.35);
@@ -18,7 +18,7 @@
   gap: 8px;
   margin-bottom: 12px;
   font-size: var(--font-scale-body);
-  color: #f59e0b;
+  color: var(--clr-yellow);
 }
 
 .pending-invites-icon {
@@ -74,7 +74,7 @@
 .pending-invite-club-name {
   font-size: 0.88rem;
   font-weight: 600;
-  color: #e2e8f0;
+  color: var(--clr-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -82,14 +82,14 @@
 
 .pending-invite-date {
   font-size: var(--font-scale-sm);
-  color: #64748b;
+  color: var(--clr-text-muted);
 }
 
 .pending-invite-confirm-btn {
   flex-shrink: 0;
   padding: 6px 14px;
-  background: #f59e0b;
-  color: #0f172a;
+  background: var(--clr-yellow);
+  color: var(--clr-bg);
   border: none;
   border-radius: 8px;
   font-size: 0.8rem;
@@ -101,7 +101,7 @@
 }
 
 .pending-invite-confirm-btn:hover:not(:disabled) {
-  background: #fbbf24;
+  background: var(--clr-yellow);
 }
 
 .pending-invite-confirm-btn:disabled {

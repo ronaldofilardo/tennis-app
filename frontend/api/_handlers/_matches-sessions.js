@@ -80,12 +80,31 @@ export async function handleSessionRoutes(req, res, url, parsedPath) {
       });
       if (!session || session.matchId !== id)
         return sendJson(res, 404, { error: 'Session not found' });
+
+      // Debug logging para diagnóstico de timeline vazia
+      console.log(`[GET /report-data] Session ${subId}:`, {
+        status: session.status,
+        isActive: session.isActive,
+        hasFinalStateSnapshot: !!session.finalStateSnapshot,
+        finalStateSnapshotLength: session.finalStateSnapshot?.length || 0,
+        hasMatchStateSnapshot: !!session.matchStateSnapshot,
+        matchStateSnapshotLength: session.matchStateSnapshot?.length || 0,
+      });
+
+      const reportSnapshot = extractReportSnapshot(session);
+      console.log(`[GET /report-data] Parsed snapshot:`, {
+        sessionId: subId,
+        isNull: reportSnapshot === null,
+        hasData: reportSnapshot && Object.keys(reportSnapshot).length > 0,
+        keys: reportSnapshot ? Object.keys(reportSnapshot) : [],
+      });
+
       return sendJson(res, 200, {
         session: {
           id: session.id,
           annotatorName: session.annotator?.name ?? 'Anotador',
           endedAt: session.endedAt,
-          finalStateSnapshot: extractReportSnapshot(session),
+          finalStateSnapshot: reportSnapshot,
         },
         match: session.match,
       });

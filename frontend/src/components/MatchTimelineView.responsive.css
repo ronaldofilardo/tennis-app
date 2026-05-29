@@ -2,8 +2,8 @@
 
 @media print {
   .match-timeline {
-    background: #fff !important;
-    color: #111 !important;
+    background: var(--clr-white) !important;
+    color: var(--clr-bg) !important;
     padding: 0;
   }
 
@@ -12,11 +12,11 @@
   }
 
   .match-timeline__title {
-    color: #111 !important;
+    color: var(--clr-bg) !important;
   }
 
   .match-timeline__count {
-    color: #555 !important;
+    color: var(--clr-surface-2) !important;
   }
 
   .match-timeline__list {
@@ -25,9 +25,9 @@
 
   .match-timeline__card {
     break-inside: avoid;
-    background: #f9f9f9 !important;
-    border-color: #ddd !important;
-    color: #111 !important;
+    background: var(--clr-light-bg) !important;
+    border-color: var(--clr-text) !important;
+    color: var(--clr-bg) !important;
     transform: none !important;
   }
 
@@ -36,23 +36,23 @@
   }
 
   .match-timeline__card-num {
-    color: #555 !important;
+    color: var(--clr-surface-2) !important;
   }
 
   .match-timeline__card-winner--p1 {
-    color: #1d4ed8 !important;
+    color: var(--clr-blue) !important;
   }
 
   .match-timeline__card-winner--p2 {
-    color: #be185d !important;
+    color: var(--clr-live) !important;
   }
 
   .match-timeline__card-summary {
-    color: #444 !important;
+    color: var(--clr-surface) !important;
   }
 
   .match-timeline__card-score {
-    color: #333 !important;
+    color: var(--clr-bg) !important;
   }
 
   .match-timeline__card-chevron {
@@ -77,27 +77,27 @@
   .match-timeline__tech-chip,
   .match-timeline__rally-pill,
   .match-timeline__closing-chip {
-    background: #f0f0f0 !important;
-    border-color: #ccc !important;
-    color: #333 !important;
+    background: var(--clr-light-bg) !important;
+    border-color: var(--clr-text-dim) !important;
+    color: var(--clr-bg) !important;
   }
 
   .match-timeline__detail-key {
-    color: #555 !important;
+    color: var(--clr-surface-2) !important;
   }
 
   .match-timeline__detail-val {
-    color: #111 !important;
+    color: var(--clr-bg) !important;
   }
 
   .match-timeline__detail-dim {
-    color: #666 !important;
+    color: var(--clr-text-muted) !important;
   }
 
   .match-timeline__tag {
-    border: 1px solid #ccc !important;
-    background: #f0f0f0 !important;
-    color: #333 !important;
+    border: 1px solid var(--clr-text-dim) !important;
+    background: var(--clr-light-bg) !important;
+    color: var(--clr-bg) !important;
   }
 }
 

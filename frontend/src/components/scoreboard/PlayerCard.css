@@ -25,22 +25,22 @@
 .card-p1 {
   background: linear-gradient(
     160deg,
-    rgba(59, 130, 246, 0.18) 0%,
+    var(--clr-blue-mid) 0%,
     rgba(30, 41, 59, 0.95) 100%
   );
-  border-color: rgba(59, 130, 246, 0.3);
+  border-color: var(--clr-blue-micro);
   box-shadow:
-    0 4px 24px rgba(59, 130, 246, 0.15),
+    0 4px 24px var(--clr-blue-faint),
     var(--shadow-card);
 }
 
 .card-p2 {
   background: linear-gradient(
     160deg,
-    rgba(249, 115, 22, 0.18) 0%,
+    var(--clr-orange-light) 0%,
     rgba(30, 41, 59, 0.95) 100%
   );
-  border-color: rgba(249, 115, 22, 0.3);
+  border-color: var(--clr-orange-light);
   box-shadow:
     0 4px 24px rgba(249, 115, 22, 0.15),
     var(--shadow-card);
@@ -169,7 +169,7 @@
   font-weight: 700;
   color: var(--text-primary);
   background: var(--clr-border-light);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid var(--clr-white-hover);
   flex-shrink: 0;
 }
 
@@ -193,8 +193,8 @@
   font-size: calc(0.62rem * var(--sb-scale, 1));
   font-weight: 700;
   color: var(--clr-yellow);
-  background: rgba(234, 179, 8, 0.1);
-  border: 1px solid rgba(234, 179, 8, 0.2);
+  background: var(--clr-yellow-faintest);
+  border: 1px solid var(--clr-yellow-low);
   border-radius: 4px;
   padding: 1px 6px;
   letter-spacing: 0.08em;
@@ -225,7 +225,7 @@
   font-weight: 700;
   color: var(--accent-gold);
   background: var(--clr-yellow-light);
-  border: 1px solid rgba(234, 179, 8, 0.3);
+  border: 1px solid var(--clr-yellow-strong);
   border-radius: 20px;
   padding: 0.15rem 0.6rem;
   letter-spacing: 0.3px;
@@ -256,7 +256,7 @@
   color: var(--text-primary);
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 2px 8px var(--clr-overlay-50);
   animation: score-pop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 

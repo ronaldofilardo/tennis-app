@@ -10,7 +10,7 @@
 }
 
 .admin-kpi-grid .kpi-card {
-  background: var(--clr-surface, #181d27);
+  background: var(--clr-surface, var(--clr-surface));
   border: 1px solid var(--clr-border, var(--clr-border));
   border-radius: 12px;
   padding: 20px 16px;
@@ -21,7 +21,7 @@
 }
 
 .admin-kpi-grid .kpi-card:hover {
-  border-color: rgba(239, 68, 68, 0.3);
+  border-color: var(--clr-live-mid);
   transform: translateY(-2px);
 }
 
@@ -33,24 +33,24 @@
 .admin-kpi-grid .kpi-value {
   font-size: var(--font-scale-h1);
   font-weight: 800;
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
   line-height: 1;
   margin-bottom: 4px;
 }
 
 .admin-kpi-grid .kpi-label {
   font-size: var(--font-scale-sm);
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 600;
 }
 
 .kpi-highlight {
-  border-color: rgba(239, 68, 68, 0.25) !important;
+  border-color: var(--clr-live-subtle) !important;
   background: linear-gradient(
     135deg,
-    var(--clr-surface, #181d27),
+    var(--clr-surface, var(--clr-surface)),
     rgba(239, 68, 68, 0.06)
   ) !important;
 }
@@ -60,16 +60,16 @@
 }
 
 .kpi-growth {
-  border-color: rgba(34, 197, 94, 0.2) !important;
+  border-color: var(--clr-accent-low) !important;
   background: linear-gradient(
     135deg,
-    var(--clr-surface, #181d27),
-    rgba(34, 197, 94, 0.05)
+    var(--clr-surface, var(--clr-surface)),
+    var(--clr-accent-faintest)
   ) !important;
 }
 
 .kpi-growth .kpi-value {
-  color: #22c55e;
+  color: var(--clr-accent);
 }
 
 .kpi-growth .kpi-icon {
@@ -87,7 +87,7 @@
 .plan-card {
   flex: 1;
   min-width: 120px;
-  background: var(--clr-surface, #181d27);
+  background: var(--clr-surface, var(--clr-surface));
   border: 1px solid var(--clr-border, var(--clr-border));
   border-radius: 12px;
   padding: 20px;
@@ -96,35 +96,35 @@
 }
 
 .plan-card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--clr-white-mid);
 }
 
 .plan-count {
   font-size: var(--font-scale-h1);
   font-weight: 800;
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
   line-height: 1;
   margin-bottom: 4px;
 }
 
 .plan-label {
   font-size: var(--font-scale-sm);
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   text-transform: uppercase;
   letter-spacing: 0.04em;
   font-weight: 600;
 }
 
 .plan-card.plan-free {
-  border-color: rgba(107, 114, 128, 0.3);
+  border-color: var(--clr-text-muted);
 }
 
 .plan-card.plan-free .plan-count {
-  color: #9ca3af;
+  color: var(--clr-text-dim);
 }
 
 .plan-card.plan-premium {
-  border-color: rgba(234, 179, 8, 0.3);
+  border-color: var(--clr-yellow-strong);
 }
 
 .plan-card.plan-premium .plan-count {
@@ -132,11 +132,11 @@
 }
 
 .plan-card.plan-enterprise {
-  border-color: rgba(139, 92, 246, 0.3);
+  border-color: var(--clr-purple-mid);
 }
 
 .plan-card.plan-enterprise .plan-count {
-  color: #a78bfa;
+  color: var(--clr-blue);
 }
 
 /* ── Plan Badge (inline) ──────────────────────────────────── */
@@ -151,18 +151,18 @@
 }
 
 .plan-badge.plan-free {
-  background: rgba(107, 114, 128, 0.2);
-  color: #9ca3af;
+  background: var(--clr-surface-lighter);
+  color: var(--clr-text-dim);
 }
 
 .plan-badge.plan-premium {
-  background: rgba(234, 179, 8, 0.15);
+  background: var(--clr-yellow-mid);
   color: var(--clr-yellow);
 }
 
 .plan-badge.plan-enterprise {
-  background: rgba(139, 92, 246, 0.15);
-  color: #a78bfa;
+  background: var(--clr-purple-light);
+  color: var(--clr-blue);
 }
 
 /* ── Role Breakdown ───────────────────────────────────────── */
@@ -178,7 +178,7 @@
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
-  background: var(--clr-surface, #181d27);
+  background: var(--clr-surface, var(--clr-surface));
   border-radius: 8px;
   border: 1px solid var(--clr-border, var(--clr-border));
 }
@@ -191,7 +191,7 @@
 
 .admin-dashboard .role-name {
   font-size: var(--font-scale-body);
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
   font-weight: 500;
   min-width: 100px;
 }
@@ -207,7 +207,7 @@
 .admin-dashboard .role-bar {
   flex: 1;
   height: 6px;
-  background: var(--clr-surface-2, #1e2535);
+  background: var(--clr-surface-2, var(--clr-surface-2));
   border-radius: 3px;
   overflow: hidden;
 }
@@ -232,14 +232,14 @@
   align-items: center;
   gap: 6px;
   padding: 6px 14px;
-  background: var(--clr-surface, #181d27);
+  background: var(--clr-surface, var(--clr-surface));
   border: 1px solid var(--clr-border, var(--clr-border));
   border-radius: 20px;
 }
 
 .admin-dashboard .status-pill-label {
   font-size: var(--font-scale-sm);
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
 }
 
 .admin-dashboard .status-pill-count {
@@ -261,14 +261,14 @@
   align-items: center;
   gap: 12px;
   padding: 10px 14px;
-  background: var(--clr-surface, #181d27);
+  background: var(--clr-surface, var(--clr-surface));
   border: 1px solid var(--clr-border, var(--clr-border));
   border-radius: 8px;
   transition: border-color 0.2s;
 }
 
 .top-club-row:hover {
-  border-color: rgba(239, 68, 68, 0.3);
+  border-color: var(--clr-live-mid);
 }
 
 .top-club-rank {
@@ -288,19 +288,19 @@
 .top-club-name {
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
 }
 
 .top-club-slug {
   font-size: var(--font-scale-sm);
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
 }
 
 .top-club-stats {
   display: flex;
   gap: 12px;
   font-size: var(--font-scale-sm);
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
 }
 
 .top-club-stats span {
@@ -316,7 +316,7 @@
 }
 
 .recent-club-card {
-  background: var(--clr-surface, #181d27);
+  background: var(--clr-surface, var(--clr-surface));
   border: 1px solid var(--clr-border, var(--clr-border));
   border-radius: 12px;
   padding: 16px;
@@ -326,7 +326,7 @@
 }
 
 .recent-club-card:hover {
-  border-color: rgba(239, 68, 68, 0.3);
+  border-color: var(--clr-live-mid);
   transform: translateY(-2px);
 }
 
@@ -340,12 +340,12 @@
 .recent-club-name {
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
 }
 
 .recent-club-meta {
   display: flex;
   gap: 12px;
   font-size: var(--font-scale-sm);
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
 }

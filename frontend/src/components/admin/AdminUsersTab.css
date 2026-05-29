@@ -14,26 +14,26 @@
 }
 
 .platform-role-badge.pr-admin {
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--clr-light-surface);
+  color: var(--clr-clay);
 }
 
 .platform-role-badge.pr-scorer {
-  background: #dbeafe;
-  color: #1e40af;
+  background: var(--clr-light-surface);
+  color: var(--clr-blue);
 }
 
 .platform-role-badge.pr-independent {
-  background: #dcfce7;
-  color: #166534;
+  background: var(--clr-light-surface);
+  color: var(--clr-grass);
 }
 
 .platform-role-badge.pr-spectator {
-  background: #f3e8ff;
-  color: #6b21a8;
+  background: var(--clr-light-surface);
+  color: var(--clr-blue);
 }
 
 .platform-role-badge.pr-member {
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--clr-light-bg);
+  color: var(--clr-text-muted);
 }

@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--clr-overlay-70);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -59,7 +59,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 4px;
-  transition: all 150ms ease;
+  transition: color 150ms var(--ease-out), background-color 150ms var(--ease-out), transform 150ms var(--ease-out), opacity 150ms var(--ease-out), border-color 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
 }
 
 .close-btn:hover {
@@ -94,14 +94,14 @@
   font-size: 1rem;
   font-family: 'Courier New', monospace;
   letter-spacing: 1px;
-  transition: all 150ms ease;
+  transition: color 150ms var(--ease-out), background-color 150ms var(--ease-out), transform 150ms var(--ease-out), opacity 150ms var(--ease-out), border-color 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
 }
 
 .form-group input:focus {
   outline: none;
   border-color: var(--clr-accent);
   background: var(--clr-surface);
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+  box-shadow: 0 0 0 3px var(--clr-accent-micro);
 }
 
 .form-group input:disabled {
@@ -116,7 +116,7 @@
 }
 
 .error-message {
-  background: rgba(244, 63, 94, 0.1);
+  background: var(--clr-live-micro);
   color: var(--clr-live);
   padding: 10px 12px;
   border-radius: 4px;
@@ -138,7 +138,7 @@
   border-radius: 4px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 150ms ease;
+  transition: color 150ms var(--ease-out), background-color 150ms var(--ease-out), transform 150ms var(--ease-out), opacity 150ms var(--ease-out), border-color 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
   font-size: 0.95rem;
 }
 
@@ -156,12 +156,12 @@
 
 .btn-locate {
   background: var(--clr-accent);
-  color: #000;
+  color: var(--clr-bg);
 }
 
 .btn-locate:hover:not(:disabled) {
-  background: #22dd55;
-  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+  background: var(--clr-accent);
+  box-shadow: 0 2px 8px var(--clr-accent-medium);
 }
 
 .btn-locate:disabled {

@@ -5,7 +5,7 @@
   max-width: 600px;
   margin: 0 auto;
   padding: 1rem;
-  background-color: #3a3a3a;
+  background-color: var(--clr-bg);
   border-radius: 8px;
 }
 
@@ -14,7 +14,7 @@
   align-items: center;
   gap: 1rem;
   margin-bottom: 2rem;
-  border-bottom: 1px solid #555;
+  border-bottom: 1px solid var(--clr-surface-2);
   padding-bottom: 1rem;
 }
 
@@ -26,15 +26,15 @@
 
 .back-button {
   background: none;
-  border: 1px solid #777;
-  color: #eee;
+  border: 1px solid var(--clr-text-dim);
+  color: var(--clr-text-dim);
   padding: 8px 12px;
   border-radius: 6px;
   cursor: pointer;
 }
 
 .back-button:hover {
-  background-color: #4f4f4f;
+  background-color: var(--clr-surface);
 }
 
 .setup-form .form-group {
@@ -45,16 +45,16 @@
   display: block;
   margin-bottom: 0.5rem;
   font-weight: bold;
-  color: #ccc;
+  color: var(--clr-text-dim);
 }
 
 .setup-form input,
 .setup-form select {
   width: 100%;
   padding: 10px;
-  background-color: #2c2c2c;
-  border: 1px solid #555;
-  color: #fff;
+  background-color: var(--clr-bg);
+  border: 1px solid var(--clr-surface-2);
+  color: var(--clr-text);
   border-radius: 4px;
   font-size: var(--font-scale-body);
 }
@@ -82,7 +82,7 @@
 /* ── Checkbox: Retomar jogo em andamento ────────────────────────────────── */
 
 .resume-check-group {
-  background: rgba(76, 175, 80, 0.06);
+  background: var(--clr-accent-faintest);
   border: 1px solid rgba(76, 175, 80, 0.25);
   border-radius: 8px;
   padding: 12px 14px;
@@ -94,14 +94,14 @@
   gap: 10px;
   cursor: pointer;
   font-weight: 600;
-  color: #ccc;
+  color: var(--clr-text-dim);
   user-select: none;
 }
 
 .resume-check-input {
   width: 18px;
   height: 18px;
-  accent-color: #4caf50;
+  accent-color: var(--clr-accent);
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -109,7 +109,7 @@
 .resume-check-hint {
   margin: 8px 0 0;
   font-size: 0.8rem;
-  color: #86efac;
+  color: var(--clr-accent);
   line-height: 1.4;
   padding-left: 28px;
 }
@@ -123,10 +123,10 @@
 
 .match-date-input {
   flex: 1;
-  background: #1a1a2e;
+  background: var(--clr-surface);
   border: 1px solid #2a2a3e;
   border-radius: 8px;
-  color: #e2e8f0;
+  color: var(--clr-text);
   font-size: var(--font-scale-body);
   padding: 0.5rem 0.75rem;
   outline: none;
@@ -137,10 +137,10 @@
   flex: 0 1 auto;
   min-width: 90px;
   max-width: 120px;
-  background: #1a1a2e;
+  background: var(--clr-surface);
   border: 1px solid #2a2a3e;
   border-radius: 8px;
-  color: #e2e8f0;
+  color: var(--clr-text);
   font-size: var(--font-scale-body);
   padding: 0.5rem 0.75rem;
   outline: none;
@@ -149,12 +149,12 @@
 
 .match-date-input:focus,
 .match-time-input:focus {
-  border-color: #7c3aed;
+  border-color: var(--clr-blue);
   box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.25);
 }
 
 .required-mark {
-  color: #f87171;
+  color: var(--clr-live);
   margin-left: 2px;
 }
 
@@ -177,7 +177,7 @@
   cursor: pointer;
   flex: 1;
   min-width: 150px;
-  transition: all 150ms ease;
+  transition: color 150ms var(--ease-out), background-color 150ms var(--ease-out), transform 150ms var(--ease-out), opacity 150ms var(--ease-out), border-color 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
 }
 
 .locate-button {
@@ -192,12 +192,12 @@
 }
 
 .start-match-button {
-  background-color: #4caf50;
+  background-color: var(--clr-accent);
   color: white;
 }
 
 .start-match-button:hover {
-  background-color: #45a049;
+  background-color: var(--clr-accent);
 }
 
 /* ── Seletor de Tipo de Quadra ─────────────────────────────── */
@@ -214,8 +214,8 @@
   align-items: center;
   gap: 4px;
   padding: 12px 8px;
-  background: #1e1e1e;
-  border: 2px solid #444;
+  background: var(--clr-bg);
+  border: 2px solid var(--clr-surface);
   border-radius: 12px;
   cursor: pointer;
   transition:
@@ -223,13 +223,13 @@
     background 0.15s,
     box-shadow 0.15s,
     transform 0.1s;
-  color: #aaa;
+  color: var(--clr-text-dim);
   font-family: inherit;
   position: relative;
 }
 
 .court-type-btn:hover {
-  background: #2a2a2a;
+  background: var(--clr-bg);
   transform: translateY(-2px);
 }
 
@@ -241,21 +241,21 @@
 .court-type-name {
   font-size: 0.9rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--clr-text);
 }
 
 .court-type-note {
   font-size: var(--font-scale-sm);
-  color: #888;
+  color: var(--clr-text-dim);
   letter-spacing: 0.03em;
 }
 
 /* Ativo — Saibro */
 .court-type-btn.clay.active {
-  border-color: #c2622a;
+  border-color: var(--clr-clay);
   border-width: 3px;
-  background: rgba(194, 98, 42, 0.25);
-  color: #e8936a;
+  background: var(--clr-orange-light);
+  color: var(--clr-clay);
   box-shadow: 0 0 12px rgba(194, 98, 42, 0.4);
 }
 .court-type-btn.clay.active::after {
@@ -264,21 +264,21 @@
   top: 4px;
   right: 6px;
   font-size: 1.2rem;
-  color: #c2622a;
+  color: var(--clr-clay);
   font-weight: bold;
 }
 .court-type-btn.clay.active .court-type-name {
-  color: #e8936a;
+  color: var(--clr-clay);
 }
 .court-type-btn.clay.active .court-type-note {
-  color: #c2622a;
+  color: var(--clr-clay);
 }
 
 /* Ativo — Dura */
 .court-type-btn.hard.active {
-  border-color: #3b82f6;
+  border-color: var(--clr-blue);
   border-width: 3px;
-  background: rgba(59, 130, 246, 0.25);
+  background: var(--clr-blue-faint);
   box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
 }
 .court-type-btn.hard.active::after {
@@ -287,22 +287,22 @@
   top: 4px;
   right: 6px;
   font-size: 1.2rem;
-  color: #3b82f6;
+  color: var(--clr-blue);
   font-weight: bold;
 }
 .court-type-btn.hard.active .court-type-name {
-  color: #93c5fd;
+  color: var(--clr-blue);
 }
 .court-type-btn.hard.active .court-type-note {
-  color: #3b82f6;
+  color: var(--clr-blue);
 }
 
 /* Ativo — Grama */
 .court-type-btn.grass.active {
-  border-color: #22c55e;
+  border-color: var(--clr-accent);
   border-width: 3px;
-  background: rgba(34, 197, 94, 0.25);
-  box-shadow: 0 0 12px rgba(34, 197, 94, 0.4);
+  background: var(--clr-accent-low);
+  box-shadow: 0 0 12px var(--clr-accent-medium);
 }
 .court-type-btn.grass.active::after {
   content: '✓';
@@ -310,14 +310,14 @@
   top: 4px;
   right: 6px;
   font-size: 1.2rem;
-  color: #22c55e;
+  color: var(--clr-accent);
   font-weight: bold;
 }
 .court-type-btn.grass.active .court-type-name {
-  color: #86efac;
+  color: var(--clr-accent);
 }
 .court-type-btn.grass.active .court-type-note {
-  color: #22c55e;
+  color: var(--clr-accent);
 }
 
 /* ── Base mobile: player-inputs empilhados verticalmente ── */
@@ -331,7 +331,7 @@
   text-align: center;
   font-size: 0.8rem;
   font-weight: 700;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 0;

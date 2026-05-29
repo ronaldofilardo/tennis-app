@@ -3,7 +3,7 @@
 .app-container {
   width: 100%;
   min-height: 100vh;
-  background: var(--clr-bg, #0f1117);
+  background: var(--clr-bg, var(--clr-bg));
 }
 
 .app-header {
@@ -17,7 +17,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0 1rem;
-  background: var(--clr-surface, #181d27);
+  background: var(--clr-surface, var(--clr-surface));
   border-bottom: 1px solid var(--clr-border);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
   box-sizing: border-box;
@@ -28,7 +28,7 @@
   margin: 0;
   font-size: clamp(0.85rem, 3.5vw, 1rem);
   font-weight: 800;
-  color: var(--clr-accent, #22c55e);
+  color: var(--clr-accent, var(--clr-accent));
   white-space: nowrap;
   flex-shrink: 0;
   letter-spacing: -0.02em;
@@ -50,12 +50,12 @@
   text-overflow: ellipsis;
   max-width: 120px;
   font-size: var(--font-scale-sm);
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
 }
 
 .app-header button {
   background: var(--clr-surface-light);
-  color: var(--clr-text-dim, #9ca3af);
+  color: var(--clr-text-dim, var(--clr-text-dim));
   border: 1px solid var(--clr-border-light);
   padding: 0.3rem 0.75rem;
   border-radius: 8px;

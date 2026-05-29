@@ -3,7 +3,7 @@
 .edit-match-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: var(--clr-overlay-dark);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12,12 +12,12 @@
 }
 
 .edit-match-modal {
-  background: var(--clr-surface, #181d27);
+  background: var(--clr-surface, var(--clr-surface));
   border-radius: 12px;
-  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  border: 1px solid var(--clr-border, var(--clr-border));
   width: 100%;
   max-width: clamp(260px, 80vw, 480px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 60px var(--clr-overlay-50);
   overflow: hidden;
 }
 
@@ -27,13 +27,13 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem 1.5rem 1rem;
-  border-bottom: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  border-bottom: 1px solid var(--clr-border, var(--clr-border));
 }
 
 .edit-match-header h2 {
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
   margin: 0;
 }
 
@@ -41,7 +41,7 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   padding: 4px;
   border-radius: 6px;
   transition:
@@ -53,7 +53,7 @@
 }
 
 .edit-match-close:hover {
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
   background: var(--clr-surface-light);
 }
 
@@ -74,21 +74,21 @@
 .edit-match-field label {
   font-size: var(--font-scale-body);
   font-weight: 500;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
 }
 
 .required-mark {
-  color: var(--clr-error, #ef4444);
+  color: var(--clr-error, var(--clr-live));
 }
 
 .edit-match-field input[type='text'],
 .edit-match-field input[type='date'],
 .edit-match-field input[type='time'],
 .edit-match-field select {
-  background: var(--clr-bg, #0f1117);
-  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  background: var(--clr-bg, var(--clr-bg));
+  border: 1px solid var(--clr-border, var(--clr-border));
   border-radius: 8px;
-  color: var(--clr-text, #e8eaf0);
+  color: var(--clr-text, var(--clr-text));
   padding: 0.55rem 0.75rem;
   font-size: 0.925rem;
   width: 100%;
@@ -101,11 +101,11 @@
 .edit-match-field input[type='time']:focus,
 .edit-match-field select:focus {
   outline: none;
-  border-color: #7c3aed;
+  border-color: var(--clr-blue);
 }
 
 .edit-match-field input::placeholder {
-  color: var(--clr-text-dim, #9ca3af);
+  color: var(--clr-text-dim, var(--clr-text-dim));
 }
 
 /* Date + Time row */
@@ -134,14 +134,14 @@
   gap: 0.6rem;
   cursor: pointer;
   font-size: 0.9rem !important;
-  color: var(--clr-text, #e8eaf0) !important;
+  color: var(--clr-text, var(--clr-text)) !important;
   font-weight: 400 !important;
 }
 
 .edit-match-check-label input[type='checkbox'] {
   width: 16px;
   height: 16px;
-  accent-color: #7c3aed;
+  accent-color: var(--clr-blue);
   cursor: pointer;
 }
 
@@ -155,9 +155,9 @@
 
 .edit-match-cancel {
   background: transparent;
-  border: 1px solid var(--clr-border, rgba(255, 255, 255, 0.07));
+  border: 1px solid var(--clr-border, var(--clr-border));
   border-radius: 8px;
-  color: var(--clr-text-muted, #6b7280);
+  color: var(--clr-text-muted, var(--clr-text-muted));
   padding: 0.55rem 1.25rem;
   font-size: 0.9rem;
   cursor: pointer;
@@ -167,15 +167,15 @@
 }
 
 .edit-match-cancel:hover:not(:disabled) {
-  border-color: var(--clr-text-dim, #9ca3af);
-  color: var(--clr-text, #e8eaf0);
+  border-color: var(--clr-text-dim, var(--clr-text-dim));
+  color: var(--clr-text, var(--clr-text));
 }
 
 .edit-match-save {
-  background: #7c3aed;
+  background: var(--clr-blue);
   border: none;
   border-radius: 8px;
-  color: #fff;
+  color: var(--clr-text);
   padding: 0.55rem 1.5rem;
   font-size: 0.9rem;
   font-weight: 600;
@@ -184,7 +184,7 @@
 }
 
 .edit-match-save:hover:not(:disabled) {
-  background: #6d28d9;
+  background: var(--clr-blue);
 }
 
 .edit-match-cancel:disabled,
