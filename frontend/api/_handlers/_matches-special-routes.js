@@ -5,6 +5,10 @@ import { requireAuth, sendJson, methodNotAllowed } from '../_lib/authMiddleware.
 import { getVisibleMatches, getMatchesOpenForAnnotation } from '../../src/services/matchService.js';
 import prisma from '../_lib/prisma.js';
 
+export const endedSessionsFilter = {
+  OR: [{ status: 'COMPLETED' }, { isActive: false, endedAt: { not: null } }],
+};
+
 /**
  * Lida com rotas GET especiais de /api/matches.
  * Retorna true se a rota foi tratada, false caso contrário.
@@ -223,7 +227,7 @@ export async function handleSpecialRoutes(req, res, url, parsedPath) {
 
     const matches = await prisma.match.findMany({
       where: {
-        annotationSessions: { some: { status: 'COMPLETED' } },
+        annotationSessions: { some: endedSessionsFilter },
         OR: [
           ...(profile ? [{ player1Id: profile.id }, { player2Id: profile.id }] : []),
           { playersEmails: { has: ctx.email } },
@@ -246,7 +250,7 @@ export async function handleSpecialRoutes(req, res, url, parsedPath) {
         player2: { select: { id: true, name: true } },
         clubId: true,
         annotationSessions: {
-          where: { status: 'COMPLETED' },
+          where: endedSessionsFilter,
           select: {
             id: true,
             annotatorUserId: true,
@@ -301,7 +305,7 @@ export async function handleSpecialRoutes(req, res, url, parsedPath) {
     if (!ctx) return;
 
     const sessions = await prisma.matchAnnotationSession.findMany({
-      where: { annotatorUserId: ctx.userId, status: 'COMPLETED' },
+      where: { annotatorUserId: ctx.userId, ...endedSessionsFilter },
       include: {
         match: {
           select: {
@@ -319,7 +323,7 @@ export async function handleSpecialRoutes(req, res, url, parsedPath) {
             player2: { select: { id: true, name: true } },
             clubId: true,
             annotationSessions: {
-              where: { status: 'COMPLETED' },
+              where: endedSessionsFilter,
               select: {
                 id: true,
                 annotatorUserId: true,

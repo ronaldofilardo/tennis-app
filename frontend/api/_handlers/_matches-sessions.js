@@ -5,6 +5,18 @@ import { requireAuth, sendJson, methodNotAllowed } from '../_lib/authMiddleware.
 import prisma from '../_lib/prisma.js';
 import { generateComparison } from './_matches-helpers.js';
 
+export function extractReportSnapshot(session) {
+  const rawSnapshot = session.finalStateSnapshot ?? session.matchStateSnapshot;
+
+  if (!rawSnapshot) return null;
+
+  try {
+    return JSON.parse(rawSnapshot);
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Lida com rotas /api/matches/:id/sessions.
  * Retorna true se a rota foi tratada, false caso contrário.
@@ -49,9 +61,7 @@ export async function handleSessionRoutes(req, res, url, parsedPath) {
             id: session.id,
             annotatorName: session.annotator?.name ?? 'Anotador',
             endedAt: session.endedAt,
-            finalStateSnapshot: session.finalStateSnapshot
-              ? JSON.parse(session.finalStateSnapshot)
-              : null,
+            finalStateSnapshot: extractReportSnapshot(session),
           },
           match: session.match,
         });
