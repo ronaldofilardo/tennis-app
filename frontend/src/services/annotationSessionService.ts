@@ -41,7 +41,10 @@ export async function listSessions(matchId: string): Promise<AnnotationSession[]
  *   a partida visível em "anotações suspensas" no dashboard.
  *   Passe false (ou omita) para retomar explicitamente uma sessão suspensa.
  */
-export async function startSession(matchId: string, autoStarted = false): Promise<AnnotationSession> {
+export async function startSession(
+  matchId: string,
+  autoStarted = false,
+): Promise<AnnotationSession> {
   const response = await httpClient.post(`/matches/${matchId}/sessions`, { autoStarted });
   if (!response.ok) throw new Error('Failed to start session');
   return response.data as AnnotationSession;
@@ -76,7 +79,7 @@ export async function endorseSession(matchId: string, sessionId: string): Promis
  * Suporta dois transportes:
  * - 'keepalive': usa fetch com keepalive=true (confiável em unload/navegação SPA)
  * - 'patch': usa httpClient.patch (para fluxos síncronos)
- * 
+ *
  * Fire-and-forget: chamadas não aguardam resposta por design.
  */
 export interface MarkSessionAbandonedInput {

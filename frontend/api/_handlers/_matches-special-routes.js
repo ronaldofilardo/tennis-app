@@ -245,6 +245,7 @@ export async function handleSpecialRoutes(req, res, url, parsedPath) {
         player1: { select: { id: true, name: true } },
         player2: { select: { id: true, name: true } },
         clubId: true,
+        club: { select: { id: true, name: true } },
         annotationSessions: {
           where: { status: 'COMPLETED' },
           select: {
@@ -314,15 +315,18 @@ export async function handleSpecialRoutes(req, res, url, parsedPath) {
             scheduledAt: true,
             status: true,
             createdAt: true,
+            updatedAt: true,
             player1: { select: { id: true, name: true } },
             player2: { select: { id: true, name: true } },
             clubId: true,
+            club: { select: { id: true, name: true } },
             annotationSessions: {
               where: { status: 'COMPLETED' },
               select: {
                 id: true,
                 annotatorUserId: true,
                 endedAt: true,
+                finalStateSnapshot: true,
                 annotator: { select: { id: true, name: true } },
               },
             },
@@ -355,6 +359,7 @@ export async function handleSpecialRoutes(req, res, url, parsedPath) {
         annotatorId: sa.annotatorUserId,
         annotatorName: sa.annotator?.name ?? 'Anotador',
         endedAt: sa.endedAt,
+        hasFinalState: !!sa.finalStateSnapshot,
       })),
       comparisonAvailable: s.match.annotationSessions.length >= 2,
     }));
