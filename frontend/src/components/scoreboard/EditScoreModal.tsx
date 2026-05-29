@@ -22,6 +22,21 @@ interface EditScoreModalProps {
   onCancel: () => void;
 }
 
+/** Número de sets necessários para vencer no formato */
+function setsToWinForFormat(format: TennisFormat): number {
+  switch (format) {
+    case 'BEST_OF_5':
+      return 3;
+    case 'BEST_OF_3':
+    case 'BEST_OF_3_MATCH_TB':
+    case 'NO_AD':
+    case 'NO_LET_TENNIS':
+      return 2;
+    default:
+      return 1;
+  }
+}
+
 /** Total de sets possíveis no formato */
 function totalSetsForFormat(format: TennisFormat): number {
   switch (format) {
@@ -73,12 +88,17 @@ export function EditScoreModal(props: EditScoreModalProps): ReactElement | null 
   const initializedRef = useRef(false);
 
   const maxSets = totalSetsForFormat(matchFormat);
+  const setsToWin = setsToWinForFormat(matchFormat);
   const p1Val = p1Input === '' ? NaN : parseInt(p1Input, 10);
   const p2Val = p2Input === '' ? NaN : parseInt(p2Input, 10);
   const bothFilled = !isNaN(p1Val) && !isNaN(p2Val) && p1Val >= 0 && p2Val >= 0;
   const completed = bothFilled && isSetComplete(p1Val, p2Val);
   const totalEditedSets = completedSets.length + newSets.length;
-  const canAddNextSet = completed && totalEditedSets < maxSets - 1;
+  // Detectar se a partida já está encerrada pelos sets existentes (imutáveis do engine)
+  const p1SetsWonFromProp = completedSets.filter((s) => s.winner === 'PLAYER_1').length;
+  const p2SetsWonFromProp = completedSets.filter((s) => s.winner === 'PLAYER_2').length;
+  const matchAlreadyOver = p1SetsWonFromProp >= setsToWin || p2SetsWonFromProp >= setsToWin;
+  const canAddNextSet = completed && totalEditedSets < maxSets - 1 && !matchAlreadyOver;
 
   useEffect(() => {
     if (isOpen) {
@@ -291,8 +311,20 @@ export function EditScoreModal(props: EditScoreModalProps): ReactElement | null 
             </div>
           )}
 
+          {/* Aviso quando partida já está encerrada pelos sets existentes */}
+          {matchAlreadyOver && (
+            <div
+              className="edit-score-section"
+              style={{ backgroundColor: 'rgba(234, 179, 8, 0.08)', borderColor: '#eab308' }}
+            >
+              <p style={{ margin: 0, fontSize: '13px', color: '#eab308' }}>
+                ⚠️ O placar atual já encerra a partida — não é possível adicionar mais sets.
+              </p>
+            </div>
+          )}
+
           {/* Input do set atual */}
-          {totalEditedSets < maxSets && (
+          {totalEditedSets < maxSets && !matchAlreadyOver && (
             <div className="edit-score-section edit-score-section-active">
               <p className="edit-score-section-label">✏️ Set {totalEditedSets + 1}</p>
               <div className="edit-score-dual-input-row">

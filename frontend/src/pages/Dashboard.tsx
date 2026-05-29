@@ -59,12 +59,18 @@ const Dashboard: React.FC<DashboardProps> = ({
   // Deriva activeDashboardView a partir da URL
   const activeDashboardViewFromURL: DashboardView = useMemo(() => {
     switch (location.pathname) {
-      case '/historico': return 'history';
-      case '/partidasanotadas': return 'annotated';
-      case '/partidasaovivo': return 'live';
-      case '/aguardandoanotador': return 'pending';
-      case '/dados-pessoais': return 'profile';
-      default: return 'none';
+      case '/historico':
+        return 'history';
+      case '/partidasanotadas':
+        return 'annotated';
+      case '/partidasaovivo':
+        return 'live';
+      case '/aguardandoanotador':
+        return 'pending';
+      case '/dados-pessoais':
+        return 'profile';
+      default:
+        return 'none';
     }
   }, [location.pathname]);
 
@@ -111,7 +117,9 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   // URL tem prioridade sobre o estado interno
   const activeDashboardView: DashboardView =
-    activeDashboardViewFromURL !== 'none' ? activeDashboardViewFromURL : activeDashboardViewFromState;
+    activeDashboardViewFromURL !== 'none'
+      ? activeDashboardViewFromURL
+      : activeDashboardViewFromState;
   const newMatchBtnRef = useRef<HTMLButtonElement>(null);
 
   // ── Delete match state ────────────────────────────────
@@ -250,17 +258,32 @@ const Dashboard: React.FC<DashboardProps> = ({
     dispatchUI({ type: 'CLOSE_HAMBURGER' });
   }, []);
 
-  const handleSelectView = useCallback((view: DashboardView) => {
-    dispatchUI({ type: 'SELECT_VIEW', view });
-    switch (view) {
-      case 'history':   navigate('/historico'); break;
-      case 'annotated': navigate('/partidasanotadas'); break;
-      case 'live':      navigate('/partidasaovivo'); break;
-      case 'pending':   navigate('/aguardandoanotador'); break;
-      case 'profile':   navigate('/dados-pessoais'); break;
-      default:          navigate('/dashboard'); break;
-    }
-  }, [navigate]);
+  const handleSelectView = useCallback(
+    (view: DashboardView) => {
+      dispatchUI({ type: 'SELECT_VIEW', view });
+      switch (view) {
+        case 'history':
+          navigate('/historico');
+          break;
+        case 'annotated':
+          navigate('/partidasanotadas');
+          break;
+        case 'live':
+          navigate('/partidasaovivo');
+          break;
+        case 'pending':
+          navigate('/aguardandoanotador');
+          break;
+        case 'profile':
+          navigate('/dados-pessoais');
+          break;
+        default:
+          navigate('/dashboard');
+          break;
+      }
+    },
+    [navigate],
+  );
 
   return (
     <div className="dashboard" data-testid="dashboard">

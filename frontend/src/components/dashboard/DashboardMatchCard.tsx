@@ -166,14 +166,16 @@ const DashboardMatchCard: React.FC<DashboardMatchCardProps> = ({
           : [];
         suspendedAnnotationSets = buildPartials(completedSetsFromSnapshot);
 
-        // Add current set if exists
+        // Add current set if exists and has actual progress (avoid showing 0/0)
         if (snapshot.currentSetState && typeof snapshot.currentSetState === 'object') {
           const css = snapshot.currentSetState as Record<string, unknown>;
           const games = css['games'] as Record<string, number> | undefined;
           if (games) {
             const g1 = games.PLAYER_1 ?? 0;
             const g2 = games.PLAYER_2 ?? 0;
-            suspendedAnnotationSets.push(`${g1}/${g2}`);
+            if (g1 > 0 || g2 > 0) {
+              suspendedAnnotationSets.push(`${g1}/${g2}`);
+            }
           }
         }
       }

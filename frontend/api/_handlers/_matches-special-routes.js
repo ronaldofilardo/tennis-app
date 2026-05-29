@@ -115,7 +115,7 @@ export async function handleSpecialRoutes(req, res, url, parsedPath) {
     if (!ctx) return;
 
     // Encontra todas as sessões suspensas do usuário (ABANDONED ou IN_PROGRESS com isActive=false)
-    // Inclui partidas FINISHED: anotador pode ter sessão suspensa em partida encerrada por terceiro
+    // Exclui partidas FINISHED: não há o que retomar em partidas já encerradas
     const suspendedSessions = await prisma.matchAnnotationSession.findMany({
       where: {
         annotator: {
@@ -123,6 +123,9 @@ export async function handleSpecialRoutes(req, res, url, parsedPath) {
         },
         isActive: false,
         status: { in: ['IN_PROGRESS', 'ABANDONED'] },
+        match: {
+          status: { not: 'FINISHED' },
+        },
       },
       select: {
         id: true,
@@ -156,9 +159,38 @@ export async function handleSpecialRoutes(req, res, url, parsedPath) {
       orderBy: { createdAt: 'desc' },
     });
 
+    // ─── Helper: detect match-over from snapshot even when isFinished was not persisted correctly ───
+    const isSnapshotMatchOver = (rawSnap) => {
+      if (!rawSnap) return false;
+      try {
+        const snap = typeof rawSnap === 'string' ? JSON.parse(rawSnap) : rawSnap;
+        if (!snap) return false;
+        // Explicit flag
+        if (snap.isFinished === true) return true;
+        // Derive from sets count + config (handles legacy data where isFinished was not set)
+        const setsToWin = snap.config?.setsToWin;
+        if (setsToWin && snap.sets) {
+          const p1 = snap.sets.PLAYER_1 ?? 0;
+          const p2 = snap.sets.PLAYER_2 ?? 0;
+          if (p1 >= setsToWin || p2 >= setsToWin) return true;
+        }
+        // Fallback: check completedSets array if sets object is absent
+        if (setsToWin && Array.isArray(snap.completedSets)) {
+          const p1Won = snap.completedSets.filter((s) => s.winner === 'PLAYER_1').length;
+          const p2Won = snap.completedSets.filter((s) => s.winner === 'PLAYER_2').length;
+          if (p1Won >= setsToWin || p2Won >= setsToWin) return true;
+        }
+        return false;
+      } catch {
+        return false;
+      }
+    };
+
     // ─── Deduplication: Keep only the most recent session per matchId ───
+    // Also exclude sessions where the snapshot indicates the match is already over
     const deduplicatedByMatch = new Map();
     for (const session of suspendedSessions) {
+      if (isSnapshotMatchOver(session.matchStateSnapshot)) continue;
       if (!deduplicatedByMatch.has(session.matchId)) {
         deduplicatedByMatch.set(session.matchId, session);
       }

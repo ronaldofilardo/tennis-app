@@ -257,6 +257,15 @@ export function usePointHandlers(deps: PointHandlerDeps) {
         const p1Sets = completedSets.filter((set) => set.p1Games > set.p2Games).length;
         const p2Sets = completedSets.filter((set) => set.p2Games > set.p1Games).length;
 
+        // Detectar encerramento de partida baseado nos sets inseridos
+        const setsToWin = currentState.config?.setsToWin ?? 2;
+        const matchIsOver = p1Sets >= setsToWin || p2Sets >= setsToWin;
+        const matchWinner: Player | undefined = matchIsOver
+          ? p1Sets >= setsToWin
+            ? 'PLAYER_1'
+            : 'PLAYER_2'
+          : undefined;
+
         // Construir array de sets finalizados com scores reais
         const completedSetsState = completedSets.map((set, idx) => ({
           setNumber: idx + 1,
@@ -296,8 +305,8 @@ export function usePointHandlers(deps: PointHandlerDeps) {
             pointsHistory: currentPointsHistory,
           },
           server: newServer,
-          isFinished: false,
-          winner: undefined,
+          isFinished: matchIsOver,
+          winner: matchWinner,
           completedSets: completedSetsState,
           config: currentState.config,
         };
@@ -306,27 +315,39 @@ export function usePointHandlers(deps: PointHandlerDeps) {
         setServeStepSafe('none');
         forceRerender();
 
-        // Reativar sessão ao editar placar: remove partida de "anotações suspensas" (isActive=false → true)
-        const sessionId = annotationSessionIdRef.current;
-        if (matchId && sessionId) {
-          httpClient
-            .patch(`/matches/${matchId}/sessions/${sessionId}`, { status: 'IN_PROGRESS' })
-            .catch(() => {
-              // Non-critical: sessão pode já estar ativa ou ter sido encerrada
-            });
-        }
-
-        if (syncTimeoutRef.current) window.clearTimeout(syncTimeoutRef.current);
-        syncTimeoutRef.current = window.setTimeout(() => {
+        if (matchIsOver) {
+          // Partida encerrada: sincronizar estado final e acionar encerramento.
+          // Não reativar a sessão — ela será encerrada por handleEndMatch.
+          if (syncTimeoutRef.current) window.clearTimeout(syncTimeoutRef.current);
           const sys = getSystem();
-          sys?.syncState()?.catch((err) => {
-            scoreLog.warn('Falha no syncState após edição de placar', { matchId });
-            // Marcar pontos como interrompidos se falhar ao sincronizar
-            const histLen = sys?.getPointsHistory?.()?.length ?? 0;
-            markPointsAsInterrupted(Math.min(5, histLen));
-            forceRerender();
-          });
-        }, 250);
+          try {
+            await sys?.syncState?.();
+          } catch {
+            // syncState pode falhar com 409 se o match já estava FINISHED — ignorar
+          }
+          await handleEndMatch();
+        } else {
+          // Partida em andamento: reativar sessão suspensa e agendar sync normal
+          const sessionId = annotationSessionIdRef.current;
+          if (matchId && sessionId) {
+            httpClient
+              .patch(`/matches/${matchId}/sessions/${sessionId}`, { status: 'IN_PROGRESS' })
+              .catch(() => {
+                // Non-critical: sessão pode já estar ativa ou ter sido encerrada
+              });
+          }
+
+          if (syncTimeoutRef.current) window.clearTimeout(syncTimeoutRef.current);
+          syncTimeoutRef.current = window.setTimeout(() => {
+            const sys = getSystem();
+            sys?.syncState?.()?.catch(() => {
+              scoreLog.warn('Falha no syncState após edição de placar', { matchId });
+              const histLen = sys?.getPointsHistory?.()?.length ?? 0;
+              markPointsAsInterrupted(Math.min(5, histLen));
+              forceRerender();
+            });
+          }, 250);
+        }
       } catch (err) {
         scoreLog.warn('Erro ao editar placar', { matchId, error: err });
         // Marcar últimos 5 pontos como interrompidos se falhar
@@ -335,7 +356,16 @@ export function usePointHandlers(deps: PointHandlerDeps) {
         forceRerender();
       }
     },
-    [setServeStepSafe, forceRerender, syncTimeoutRef, scoreLog, matchId, markPointsAsInterrupted, annotationSessionIdRef],
+    [
+      setServeStepSafe,
+      forceRerender,
+      syncTimeoutRef,
+      scoreLog,
+      matchId,
+      markPointsAsInterrupted,
+      annotationSessionIdRef,
+      handleEndMatch,
+    ],
   );
 
   return {

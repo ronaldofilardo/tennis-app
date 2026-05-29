@@ -70,7 +70,7 @@ const ServerEffectModal: React.FC<ServerEffectModalProps> = ({
     <div className="server-effect-modal-overlay" onClick={handleOverlayClick}>
       <ConfirmCloseDialog isOpen={isConfirmOpen} onConfirm={confirmClose} onCancel={cancelClose} />
       <div
-        className={`server-effect-modal${isError ? ' server-effect-modal--error' : ''}`}
+        className={`server-effect-modal${isError ? 'server-effect-modal--error' : ''}`}
         data-testid="server-effect-modal"
         onClick={(e) => e.stopPropagation()}
         style={{ '--sb-scale': String(fontScale) } as React.CSSProperties}
