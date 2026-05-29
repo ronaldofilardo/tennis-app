@@ -245,7 +245,6 @@ export async function handleSpecialRoutes(req, res, url, parsedPath) {
         player1: { select: { id: true, name: true } },
         player2: { select: { id: true, name: true } },
         clubId: true,
-        club: { select: { id: true, name: true } },
         annotationSessions: {
           where: { status: 'COMPLETED' },
           select: {
@@ -319,7 +318,6 @@ export async function handleSpecialRoutes(req, res, url, parsedPath) {
             player1: { select: { id: true, name: true } },
             player2: { select: { id: true, name: true } },
             clubId: true,
-            club: { select: { id: true, name: true } },
             annotationSessions: {
               where: { status: 'COMPLETED' },
               select: {
