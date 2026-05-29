@@ -1,5 +1,5 @@
 import React, { useReducer, useMemo, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import MatchStatsModal from '../components/MatchStatsModal';
 import AthleteHeader from '../components/AthleteHeader';
 
@@ -52,8 +52,21 @@ const Dashboard: React.FC<DashboardProps> = ({
   // AREA 4 & 7: Toast e Logger
   const toast = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
   const { currentUser: authUser, logout, switchClub } = useAuth();
   const activeClubId = authUser?.activeClubId ?? null;
+
+  // Deriva activeDashboardView a partir da URL
+  const activeDashboardViewFromURL: DashboardView = useMemo(() => {
+    switch (location.pathname) {
+      case '/historico': return 'history';
+      case '/partidasanotadas': return 'annotated';
+      case '/partidasaovivo': return 'live';
+      case '/aguardandoanotador': return 'pending';
+      case '/dados-pessoais': return 'profile';
+      default: return 'none';
+    }
+  }, [location.pathname]);
 
   // ── Match stats/actions via custom hook ─────────────────
   const {
@@ -90,11 +103,15 @@ const Dashboard: React.FC<DashboardProps> = ({
   const {
     isNewMatchMenuOpen,
     isHamburgerOpen,
-    activeDashboardView,
+    activeDashboardView: activeDashboardViewFromState,
     activeFilter,
     editingMatch,
     localMatchOverrides,
   } = uiState;
+
+  // URL tem prioridade sobre o estado interno
+  const activeDashboardView: DashboardView =
+    activeDashboardViewFromURL !== 'none' ? activeDashboardViewFromURL : activeDashboardViewFromState;
   const newMatchBtnRef = useRef<HTMLButtonElement>(null);
 
   // ── Delete match state ────────────────────────────────
@@ -234,8 +251,15 @@ const Dashboard: React.FC<DashboardProps> = ({
   }, []);
 
   const handleSelectView = useCallback((view: DashboardView) => {
-    dispatchUI({ type: 'SELECT_VIEW', view });
-  }, []);
+    switch (view) {
+      case 'history':   navigate('/historico'); break;
+      case 'annotated': navigate('/partidasanotadas'); break;
+      case 'live':      navigate('/partidasaovivo'); break;
+      case 'pending':   navigate('/aguardandoanotador'); break;
+      case 'profile':   navigate('/dados-pessoais'); break;
+      default:          navigate('/dashboard'); break;
+    }
+  }, [navigate]);
 
   return (
     <div className="dashboard" data-testid="dashboard">

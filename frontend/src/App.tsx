@@ -55,7 +55,8 @@ const AppContent: React.FC = () => {
 
   // Derive active tab from current route
   const activeTab: TabId = (() => {
-    if (location.pathname === '/dashboard') return 'home';
+    const dashboardPaths = ['/dashboard', '/historico', '/partidasanotadas', '/partidasaovivo', '/aguardandoanotador', '/dados-pessoais'];
+    if (dashboardPaths.includes(location.pathname)) return 'home';
     return 'home';
   })();
 
@@ -138,6 +139,42 @@ const AppContent: React.FC = () => {
                 )
               }
             />
+
+            {/* Rotas de seções do Dashboard do atleta */}
+            {[
+              '/historico',
+              '/partidasanotadas',
+              '/partidasaovivo',
+              '/aguardandoanotador',
+              '/dados-pessoais',
+            ].map((path) => (
+              <Route
+                key={path}
+                path={path}
+                element={
+                  isAuthenticated ? (
+                    isAdmin ? (
+                      <Navigate to="/admin" replace />
+                    ) : (
+                      <Dashboard
+                        onNewMatchClick={navigateToNewMatch}
+                        onDiscoverMatches={() => navigate('/partidas')}
+                        onContinueMatch={(match, initialState) =>
+                          navigateToMatch(match.id.toString(), initialState)
+                        }
+                        onStartMatch={(match) => navigateToMatch(match.id.toString())}
+                        matches={matches}
+                        loading={loading}
+                        error={error}
+                        currentUser={currentUser}
+                      />
+                    )
+                  ) : (
+                    <Navigate to="/login" />
+                  )
+                }
+              />
+            ))}
 
             {/* Criar Partida */}
             <Route
