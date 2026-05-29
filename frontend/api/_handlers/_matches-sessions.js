@@ -18,6 +18,30 @@ export function extractReportSnapshot(session) {
 }
 
 /**
+ * Fallback para sessões ABANDONED sem snapshot.
+ * Procura em sessões COMPLETED da mesma partida para recuperar o estado final.
+ */
+export async function getFallbackSnapshotForAbandonedSession(matchId) {
+  const completedSession = await prisma.matchAnnotationSession.findFirst({
+    where: {
+      matchId,
+      status: 'COMPLETED',
+      finalStateSnapshot: { not: null },
+    },
+    select: { finalStateSnapshot: true, matchStateSnapshot: true },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  if (completedSession?.finalStateSnapshot) {
+    return completedSession.finalStateSnapshot;
+  }
+  if (completedSession?.matchStateSnapshot) {
+    return completedSession.matchStateSnapshot;
+  }
+  return null;
+}
+
+/**
  * Lida com rotas /api/matches/:id/sessions.
  * Retorna true se a rota foi tratada, false caso contrário.
  */
@@ -121,11 +145,16 @@ export async function handleSessionRoutes(req, res, url, parsedPath) {
           });
         }
 
-        const matchStateSnapshot = req.body?.matchStateSnapshot
+        let matchStateSnapshot = req.body?.matchStateSnapshot
           ? typeof req.body.matchStateSnapshot === 'string'
             ? req.body.matchStateSnapshot
             : JSON.stringify(req.body.matchStateSnapshot)
           : null;
+
+        // Fallback: procurar em sessão COMPLETED anterior se snapshot vazio
+        if (!matchStateSnapshot) {
+          matchStateSnapshot = await getFallbackSnapshotForAbandonedSession(session.matchId);
+        }
 
         const updated = await prisma.matchAnnotationSession.update({
           where: { id: subId },
@@ -192,7 +221,7 @@ export async function handleSessionRoutes(req, res, url, parsedPath) {
           isActive: false,
           endedAt: new Date(),
           // Garantir que matchStateSnapshot é sempre uma STRING (JSON)
-          matchStateSnapshot: (() => {
+          matchStateSnapshot: await (async () => {
             const snapshot = req.body?.matchStateSnapshot;
             if (snapshot) {
               // Se é string, usa direto; se é object, stringify
@@ -204,7 +233,8 @@ export async function handleSessionRoutes(req, res, url, parsedPath) {
                 ? match.matchState
                 : JSON.stringify(match.matchState);
             }
-            return null;
+            // Fallback final: procurar em sessão COMPLETED anterior
+            return await getFallbackSnapshotForAbandonedSession(id);
           })(),
         }),
         ...(newStatus === 'COMPLETED' && {

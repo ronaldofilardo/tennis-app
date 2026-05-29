@@ -60,4 +60,30 @@ describe('matches route helpers', () => {
     const result = extractReportSnapshot(session);
     expect(result.winner).toBe('p1');
   });
+
+  it('returns null when both snapshots are missing', () => {
+    const session = {
+      finalStateSnapshot: null,
+      matchStateSnapshot: null,
+    };
+
+    expect(extractReportSnapshot(session)).toBeNull();
+  });
+
+  it('handles string vs object snapshot consistently', () => {
+    // Test with string snapshot
+    const stringSession = {
+      matchStateSnapshot: JSON.stringify({ rally: 0, sets: [1, 1] }),
+    };
+    expect(extractReportSnapshot(stringSession)).toEqual({
+      rally: 0,
+      sets: [1, 1],
+    });
+
+    // Test with pre-parsed session (in DB, snapshots are always strings)
+    const parsedSession = {
+      matchStateSnapshot: JSON.stringify({ score: [0, 0] }),
+    };
+    expect(extractReportSnapshot(parsedSession)).toEqual({ score: [0, 0] });
+  });
 });
