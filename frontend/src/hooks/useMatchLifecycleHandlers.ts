@@ -6,7 +6,7 @@ import { TennisScoring } from '../core/scoring/TennisScoring';
 import type { Player, TennisFormat } from '../core/scoring/types';
 import { getErrorMessage } from '../types/errors';
 import { httpClient } from '../config/httpClient';
-import { endSession } from '../services/annotationSessionService';
+import { endSession, markSessionAbandoned } from '../services/annotationSessionService';
 import type { ScoreboardHandlerDeps } from './ScoreboardHandlerDeps';
 
 export function useMatchLifecycleHandlers(deps: ScoreboardHandlerDeps) {
@@ -140,75 +140,70 @@ export function useMatchLifecycleHandlers(deps: ScoreboardHandlerDeps) {
     });
   }, [dispatch]);
 
+  // ── Shared: marks session as ABANDONED via keepalive or PATCH ─────────────────
+  const doMarkSessionAbandoned = useCallback(
+    async (transport: 'keepalive' | 'patch' = 'patch'): Promise<void> => {
+      const sessionId = annotationSessionIdRef.current;
+      const currentMatchId = matchIdRef.current;
+
+      if (!sessionId || !currentMatchId) {
+        return;
+      }
+
+      try {
+        const currentState = scoringSystemRef.current?.getState();
+
+        if (!currentState || currentState.isFinished) {
+          return;
+        }
+
+        await markSessionAbandoned({
+          matchId: currentMatchId,
+          sessionId,
+          matchStateSnapshot: JSON.stringify(currentState),
+          transport,
+        });
+
+        scoreLog.info('Sessão marcada como ABANDONED', {
+          matchId: currentMatchId,
+          sessionId,
+          transport,
+        });
+      } catch (err: unknown) {
+        scoreLog.warn('Falha ao marcar sessão como ABANDONED', {
+          matchId: currentMatchId,
+          sessionId,
+          transport,
+          error: getErrorMessage(err),
+        });
+      }
+    },
+    [annotationSessionIdRef, matchIdRef, scoringSystemRef, scoreLog],
+  );
+
   // ── Cleanup: marks session as ABANDONED on unmount ───────────────────────────
   useEffect(() => {
     return () => {
-      const markSessionAbandoned = async () => {
-        const sessionId = annotationSessionIdRef.current;
-        const matchIdValue = matchIdRef.current;
-        const sys = scoringSystemRef.current;
-        const currentState = sys?.getState();
-
-        if (sessionId && matchIdValue && currentState && !currentState.isFinished) {
-          try {
-            const stateSnapshot = JSON.stringify(currentState);
-            await httpClient.patch(`/matches/${matchIdValue}/sessions/${sessionId}`, {
-              status: 'ABANDONED',
-              isActive: false,
-              matchStateSnapshot: stateSnapshot,
-            });
-            scoreLog.info('Sessão marcada como ABANDONED ao sair', {
-              matchId: matchIdValue,
-              sessionId,
-              hasState: !!currentState,
-            });
-          } catch (err: unknown) {
-            scoreLog.warn('Falha ao marcar sessão como ABANDONED', {
-              matchId: matchIdValue,
-              sessionId,
-              error: getErrorMessage(err),
-            });
-          }
-        }
-      };
-      markSessionAbandoned();
+      // Fire-and-forget: não aguarda resposta
+      void doMarkSessionAbandoned('patch');
     };
-  }, []);
+  }, [doMarkSessionAbandoned]);
 
-  // ── beforeunload listener: marks session as ABANDONED if tab/window closed ───
+  // ── beforeunload + pagehide listeners: marks session as ABANDONED if tab closed ─
   useEffect(() => {
-    const handleBeforeUnload = () => {
-      const sessionId = annotationSessionIdRef.current;
-      const matchIdValue = matchIdRef.current;
-      const sys = scoringSystemRef.current;
-      const currentState = sys?.getState();
-
-      if (sessionId && matchIdValue && currentState && !currentState.isFinished) {
-        try {
-          const stateSnapshot = JSON.stringify(currentState);
-          // fetch com keepalive=true garante entrega mesmo durante unload.
-          // navigator.sendBeacon NÃO suporta headers customizados (Authorization),
-          // causando 401 no endpoint /abandon e sessão nunca marcada como ABANDONED.
-          const token = httpClient.getAuthConfig().token;
-          fetch(`/api/matches/${matchIdValue}/sessions/${sessionId}/abandon`, {
-            method: 'POST',
-            keepalive: true,
-            headers: {
-              'Content-Type': 'application/json',
-              ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-            body: JSON.stringify({ matchStateSnapshot: stateSnapshot }),
-          });
-        } catch (err: unknown) {
-          // Silent fail — não pode fazer muito em beforeunload
-          console.warn('[beforeunload] Falha ao enviar requisição de abandono:', err);
-        }
-      }
+    const handleUnload = () => {
+      // Fire-and-forget com keepalive para sobreviver a unload
+      void doMarkSessionAbandoned('keepalive');
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [annotationSessionIdRef, matchIdRef, scoringSystemRef, scoreLog]);
+    window.addEventListener('beforeunload', handleUnload);
+    window.addEventListener('pagehide', handleUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleUnload);
+      window.removeEventListener('pagehide', handleUnload);
+    };
+  }, [doMarkSessionAbandoned]);
 
   return { handleEndMatch, handleSetupConfirm, fetchStats };
 }

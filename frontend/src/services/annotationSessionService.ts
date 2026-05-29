@@ -3,6 +3,7 @@
 // Multi-anotador: cada usuário tem sua própria sessão independente por partida.
 // O "lock" exclusivo foi removido — múltiplos anotadores podem anotar simultaneamente.
 
+import { API_URL } from '../config/api';
 import { httpClient } from '../config/httpClient';
 
 export interface AnnotationSession {
@@ -68,4 +69,61 @@ export async function endorseSession(matchId: string, sessionId: string): Promis
   const response = await httpClient.post(`/matches/${matchId}/sessions/${sessionId}/endorse`, {});
   if (!response.ok) throw new Error('Failed to endorse session');
   return response.data;
+}
+
+/**
+ * Marca uma sessão como ABANDONED de forma confiável em produção.
+ * Suporta dois transportes:
+ * - 'keepalive': usa fetch com keepalive=true (confiável em unload/navegação SPA)
+ * - 'patch': usa httpClient.patch (para fluxos síncronos)
+ * 
+ * Fire-and-forget: chamadas não aguardam resposta por design.
+ */
+export interface MarkSessionAbandonedInput {
+  matchId: string;
+  sessionId: string;
+  matchStateSnapshot: string;
+  transport?: 'keepalive' | 'patch';
+}
+
+export async function markSessionAbandoned({
+  matchId,
+  sessionId,
+  matchStateSnapshot,
+  transport = 'patch',
+}: MarkSessionAbandonedInput): Promise<void> {
+  if (transport === 'keepalive') {
+    // Use fetch com keepalive para sobreviver a unload/navegação
+    const token = httpClient.getAuthConfig().token;
+    const url = `${API_URL}/matches/${matchId}/sessions/${sessionId}/abandon`;
+
+    try {
+      fetch(url, {
+        method: 'POST',
+        keepalive: true,
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ matchStateSnapshot }),
+      }).catch(() => {
+        // Silent fail em keepalive — não se pode fazer muito
+      });
+    } catch {
+      // Silent fail em fetch
+    }
+    return;
+  }
+
+  // Fallback para PATCH via httpClient (síncrono, para lógica crítica)
+  const response = await httpClient.patch(`/matches/${matchId}/sessions/${sessionId}`, {
+    status: 'ABANDONED',
+    isActive: false,
+    matchStateSnapshot,
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to mark session as abandoned');
+  }
 }
