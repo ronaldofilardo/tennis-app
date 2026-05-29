@@ -111,7 +111,7 @@ export async function handleSpecialRoutes(req, res, url, parsedPath) {
     if (!ctx) return;
 
     // Encontra todas as sessões suspensas do usuário (ABANDONED ou IN_PROGRESS com isActive=false)
-    // Exclui partidas em status FINISHED (elas devem ir para histórico, não para suspensas)
+    // Inclui partidas FINISHED: anotador pode ter sessão suspensa em partida encerrada por terceiro
     const suspendedSessions = await prisma.matchAnnotationSession.findMany({
       where: {
         annotator: {
@@ -119,9 +119,6 @@ export async function handleSpecialRoutes(req, res, url, parsedPath) {
         },
         isActive: false,
         status: { in: ['IN_PROGRESS', 'ABANDONED'] },
-        match: {
-          status: { not: 'FINISHED' },
-        },
       },
       select: {
         id: true,

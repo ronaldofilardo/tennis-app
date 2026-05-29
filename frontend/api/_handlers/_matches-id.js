@@ -336,14 +336,15 @@ export async function handleIdRoutes(req, res, url, parsedPath) {
             },
           });
 
-          // [BUG 3 FIX] Encerrar todas as sessões de anotação IN_PROGRESS ou ABANDONED
+          // Encerrar apenas sessões ATIVAS (IN_PROGRESS + isActive=true)
+          // Sessões ABANDONED já foram encerradas pelo anotador — não sobrescrever
           const inProgressSessions = await prisma.matchAnnotationSession.findMany({
-            where: { matchId: id, status: { in: ['IN_PROGRESS', 'ABANDONED'] } },
+            where: { matchId: id, status: 'IN_PROGRESS', isActive: true },
           });
 
           if (inProgressSessions.length > 0) {
             await prisma.matchAnnotationSession.updateMany({
-              where: { matchId: id, status: { in: ['IN_PROGRESS', 'ABANDONED'] } },
+              where: { matchId: id, status: 'IN_PROGRESS', isActive: true },
               data: {
                 status: 'COMPLETED',
                 isActive: false,
