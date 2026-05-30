@@ -115,6 +115,9 @@ export function useMatchLifecycleHandlers(deps: ScoreboardHandlerDeps) {
         }
 
         console.log(`[handleSetupConfirm] ✅ Sucesso!`);
+        // Limpar sessão suspensa quando configuração é confirmada
+        // Isso evita que o ResumeAnnotationModal apareça para partidas NOT_STARTED
+        dispatch({ type: 'SUSPENDED_SESSION_CLEAR' });
       } catch (err) {
         console.error(
           `[handleSetupConfirm] ❌ Erro geral:`,
