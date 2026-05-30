@@ -16,7 +16,8 @@ export type TennisFormat =
   | 'FAST4' // Fast4 Tennis (4 games, sem deuce, tiebreak em 3-3)
   | 'BEST_OF_3_MATCH_TB' // Melhor de 3 com match tiebreak no 3º set
   | 'SHORT_SET_NO_AD' // Set curto com método No-Ad (Anexo V)
-  | 'NO_LET_TENNIS'; // Tênis com regra No-Let (Anexo V)
+  | 'NO_LET_TENNIS' // Tênis com regra No-Let (Anexo V)
+  | 'KIDS_2V2'; // Tennis Kids — duplas 2 vs 2 (Play and Stay)
 
 export interface TennisConfig {
   format: TennisFormat;
@@ -31,6 +32,9 @@ export interface TennisConfig {
   useNoAd?: boolean; // Método No-Ad (ponto decisivo em 40-40)
   useAlternateTiebreakSides?: boolean; // Troca lados: após 1º ponto, depois a cada 4
   useNoLet?: boolean; // Regra No-Let (saque na rede está em jogo)
+
+  // Formatos pedagógicos
+  isKidsFormat?: boolean; // Formato Tennis Kids (Play and Stay)
 }
 
 export interface GameState {

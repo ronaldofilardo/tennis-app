@@ -117,6 +117,18 @@ const formatDefinitions: Record<TennisFormat, FormatDefinition> = {
     displayName: 'Tênis No-Let',
     detailedName: 'Melhor de 3 sets método No-Let (saque na rede está em jogo)',
   },
+  KIDS_2V2: {
+    config: {
+      setsToWin: 1,
+      gamesPerSet: 4,
+      useAdvantage: false,
+      tiebreakAt: 4,
+      useNoAd: true,
+      isKidsFormat: true,
+    },
+    displayName: 'Kids 2 vs 2',
+    detailedName: 'Duplas 2 vs 2 · Set curto (4 games) No-Ad · bola laranja/vermelha · Play and Stay',
+  },
 };
 
 export class TennisConfigFactory {
