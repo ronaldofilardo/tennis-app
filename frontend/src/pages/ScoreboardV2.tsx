@@ -86,6 +86,7 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
   const [openEditScoreAfterResume, setOpenEditScoreAfterResume] = useState(false);
   const [isResumingMatch, setIsResumingMatch] = useState(false);
   const [resumeError, setResumeError] = useState<string | null>(null);
+  const [lastSnapshotKey, setLastSnapshotKey] = useState(0); // Força re-sincronização após snapshot
 
   // Detectar sessão suspensa e abrir modal
   // IMPORTANTE: NÃO mostrar para partidas recém-criadas (NOT_STARTED) — elas devem configurar quem começa sacando primeiro
@@ -124,6 +125,8 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
         // Match.matchState reflete o placar do criador/live, não o snapshot desta sessão de anotação.
         if (suspendedSession?.matchStateSnapshot) {
           loadAnnotationSnapshot(suspendedSession.matchStateSnapshot);
+          // Incrementar key para sincronizar que snapshot foi carregado
+          setLastSnapshotKey((prev) => prev + 1);
         }
         console.log(
           '[ScoreboardV2] ✅ Sessão reativada. Estado restaurado do matchStateSnapshot.',
@@ -165,12 +168,15 @@ const ScoreboardV2: React.FC<{ onEndMatch: () => void }> = ({ onEndMatch }) => {
   }, [clearSuspendedSession, navigate]);
 
   // Abrir EditScoreModal quando retomar anotação
+  // IMPORTANTE: incluir `renderKey` e `lastSnapshotKey` para garantir sincronização
+  // renderKey: garante que o componente re-renderizou com novo estado
+  // lastSnapshotKey: garante que o snapshot foi carregado na engine
   useEffect(() => {
     if (openEditScoreAfterResume) {
       setEditScoreModalOpen(true);
       setOpenEditScoreAfterResume(false);
     }
-  }, [openEditScoreAfterResume]);
+  }, [openEditScoreAfterResume, renderKey, lastSnapshotKey]);
 
   useShakeDetection({
     onShake: useCallback(() => {
