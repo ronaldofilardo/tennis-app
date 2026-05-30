@@ -364,3 +364,174 @@
   transform: rotate(180deg);
   color: var(--clr-text-muted);
 }
+
+/* ─── Tabela de pontos ──────────────────────────────────────────────────────── */
+
+.match-timeline__table-wrap {
+  overflow: hidden;
+  border-radius: 6px;
+  border: 1px solid var(--clr-border);
+  background: var(--clr-bg);
+}
+
+.match-timeline__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  table-layout: fixed;
+}
+
+/* Cabeçalho de colunas */
+
+.match-timeline__col-header th {
+  padding: 7px 8px;
+  text-align: left;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--clr-text-muted);
+  background: var(--clr-surface-2);
+  border-bottom: 1px solid var(--clr-border);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Separador de Set */
+
+.match-timeline__set-row {
+  background: var(--clr-surface);
+}
+
+.match-timeline__set-label {
+  padding: 5px 8px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--clr-blue);
+}
+
+.match-timeline__set-players {
+  padding: 5px 8px;
+  font-size: 10px;
+  color: var(--clr-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Linha de interrupção de marcação */
+
+.match-timeline__interrupted-row {
+  background: transparent;
+}
+
+.match-timeline__interrupted-cell {
+  padding: 3px 12px;
+  font-size: 9px;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  color: var(--clr-text-muted);
+  border-top: 1px dashed var(--clr-border);
+  border-bottom: 1px dashed var(--clr-border);
+}
+
+/* Linhas de ponto */
+
+.match-timeline__row {
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid var(--clr-border);
+  transition: background 100ms ease;
+}
+
+.match-timeline__row:hover {
+  background: var(--clr-surface);
+}
+
+.match-timeline__row--p1 {
+  border-left-color: var(--clr-blue);
+}
+
+.match-timeline__row--p2 {
+  border-left-color: var(--clr-live);
+}
+
+.match-timeline__row--bp {
+  background: rgba(234, 179, 8, 0.04);
+}
+
+/* Células */
+
+.match-timeline__cell {
+  padding: 5px 8px;
+  color: var(--clr-text-dim);
+  font-variant-numeric: tabular-nums;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.match-timeline__cell--game {
+  min-width: 36px;
+  color: var(--clr-text-muted);
+  font-size: 10px;
+}
+
+.match-timeline__cell--ponto {
+  font-weight: 700;
+  color: var(--clr-text);
+  min-width: 44px;
+}
+
+.match-timeline__cell--trocas {
+  text-align: center;
+  min-width: 32px;
+}
+
+.match-timeline__cell--ace-df {
+  color: var(--clr-text-muted);
+  font-size: 10px;
+}
+
+.match-timeline__cell--ace {
+  color: var(--clr-accent);
+  font-weight: 700;
+}
+
+.match-timeline__cell--df {
+  color: var(--clr-live);
+  font-weight: 700;
+}
+
+/* Resultado */
+
+.match-timeline__cell--res-WINNER {
+  color: var(--clr-accent);
+  font-weight: 700;
+}
+
+.match-timeline__cell--res-UNFORCED_ERROR {
+  color: var(--clr-live);
+  font-weight: 700;
+}
+
+.match-timeline__cell--res-FORCED_ERROR {
+  color: var(--clr-yellow);
+  font-weight: 700;
+}
+
+/* Errou */
+
+.match-timeline__cell--out {
+  color: var(--clr-live);
+}
+
+.match-timeline__cell--net {
+  color: var(--clr-yellow);
+}

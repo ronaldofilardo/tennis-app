@@ -1,10 +1,9 @@
 // frontend/src/components/__tests__/MatchTimelineView.test.tsx
-// Testes unitários do MatchTimelineView — renderização, expansão de cards,
-// prop forceExpand e integração com eventos beforeprint/afterprint.
+// Testes unitários do MatchTimelineView — tabela de pontos, filtros, agrupamento por set.
 
 import React from 'react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, act, within } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import MatchTimelineView from '../MatchTimelineView';
 import type { PointDetails } from '../../core/scoring/types';
@@ -22,7 +21,7 @@ function makePoint(overrides: Partial<PointDetails> = {}): PointDetails {
     rally: { ballExchanges: 3 },
     timestamp: 0,
     serve: {
-      type: 'NORMAL',
+      type: 'FAULT_FIRST',
       isFirstServe: true,
     },
     context: {
@@ -48,261 +47,52 @@ describe('MatchTimelineView', () => {
 
   // --- Estado vazio ---
 
-  it('deve exibir mensagem de estado vazio quando pointsHistory está vazio', () => {
-    // Arrange & Act
+  it('exibe mensagem quando não há pontos', () => {
     render(<MatchTimelineView pointsHistory={[]} playerNames={PLAYER_NAMES} />);
-
-    // Assert
     expect(
       screen.getByText(/esta sessão não possui pontos detalhados registrados/i),
     ).toBeInTheDocument();
   });
 
-  it('não deve exibir a lista de pontos quando pointsHistory está vazio', () => {
-    // Arrange & Act
-    render(<MatchTimelineView pointsHistory={[]} playerNames={PLAYER_NAMES} />);
+  // --- Tabela ---
 
-    // Assert
-    expect(screen.queryByRole('list', { name: /pontos da partida/i })).not.toBeInTheDocument();
-  });
-
-  // --- Renderização de pontos ---
-
-  it('deve renderizar o número de pontos correto no cabeçalho', () => {
-    // Arrange
+  it('renderiza uma <table> com aria-label', () => {
     const points = [
       makePoint(),
-      makePoint({ result: { winner: 'PLAYER_2', type: 'UNFORCED_ERROR' } }),
+      makePoint({ result: { winner: 'PLAYER_2', type: 'UNFORCED_ERROR', finalShot: 'Backhand' } }),
     ];
-
-    // Act
     render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
-
-    // Assert
-    expect(screen.getByText('2 pontos')).toBeInTheDocument();
+    expect(screen.getByRole('table', { name: /timeline de pontos/i })).toBeInTheDocument();
   });
 
-  it('deve renderizar um card para cada ponto', () => {
-    // Arrange
-    const points = [makePoint(), makePoint(), makePoint()];
-
-    // Act
-    render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
-
-    // Assert — três botões de header (um por card)
-    const headers = screen.getAllByRole('button', { name: /ponto \d+:/i });
-    expect(headers).toHaveLength(3);
+  it('exibe cabeçalhos das colunas esperados', () => {
+    render(<MatchTimelineView pointsHistory={[makePoint()]} playerNames={PLAYER_NAMES} />);
+    const table = screen.getByRole('table', { name: /timeline de pontos/i });
+    expect(within(table).getByText('ACE ou DF')).toBeInTheDocument();
+    expect(within(table).getByText('TROCAS')).toBeInTheDocument();
+    expect(within(table).getByText('SITUAÇÃO')).toBeInTheDocument();
+    expect(within(table).getByText('RESULTADO')).toBeInTheDocument();
+    expect(within(table).getByText('GOLPE')).toBeInTheDocument();
+    expect(within(table).getByText(/ERROU/i)).toBeInTheDocument();
+    expect(within(table).getByText('DIREÇÃO')).toBeInTheDocument();
+    expect(within(table).getByText('EFEITO')).toBeInTheDocument();
+    expect(within(table).getByText('ESPECIAIS')).toBeInTheDocument();
   });
 
-  it('deve exibir o número do ponto no cabeçalho do card', () => {
-    // Arrange
-    const points = [makePoint()];
-
-    // Act
-    render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
-
-    // Assert
-    expect(screen.getByText('#1')).toBeInTheDocument();
-  });
-
-  it('deve exibir o nome do vencedor do ponto (PLAYER_1)', () => {
-    // Arrange
-    const points = [makePoint({ result: { winner: 'PLAYER_1', type: 'WINNER' } })];
-
-    // Act
-    render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
-
-    // Assert
-    expect(screen.getAllByText('Jogador A').length).toBeGreaterThan(0);
-  });
-
-  it('deve exibir o nome do vencedor do ponto (PLAYER_2)', () => {
-    // Arrange
-    const points = [makePoint({ result: { winner: 'PLAYER_2', type: 'WINNER' } })];
-
-    // Act
-    render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
-
-    // Assert
-    expect(screen.getAllByText('Jogador B').length).toBeGreaterThan(0);
-  });
-
-  // --- Expansão de cards ---
-
-  it('deve estar recolhido por padrão (sem região de detalhe visível)', () => {
-    // Arrange
-    const points = [makePoint()];
-
-    // Act
-    render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
-
-    // Assert — header com aria-expanded=false (detalhe presente no DOM mas recolhido via CSS)
-    expect(screen.getByRole('button', { name: /ponto 1:/i })).toHaveAttribute(
-      'aria-expanded',
-      'false',
-    );
-  });
-
-  it('deve expandir o card ao clicar no header', () => {
-    // Arrange
-    const points = [makePoint()];
-    render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
-
-    // Act
-    const header = screen.getByRole('button', { name: /ponto 1:/i });
-    fireEvent.click(header);
-
-    // Assert
-    expect(screen.getByRole('region', { name: /detalhes do ponto 1/i })).toBeInTheDocument();
-  });
-
-  it('deve recolher o card ao clicar novamente no header', () => {
-    // Arrange
-    const points = [makePoint()];
-    render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
-    const header = screen.getByRole('button', { name: /ponto 1:/i });
-
-    // Act — expandir e recolher
-    fireEvent.click(header);
-    fireEvent.click(header);
-
-    // Assert — card recolhido: aria-expanded=false
-    expect(header).toHaveAttribute('aria-expanded', 'false');
-  });
-
-  it('deve definir aria-expanded=true no header quando expandido', () => {
-    // Arrange
-    const points = [makePoint()];
-    render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
-    const header = screen.getByRole('button', { name: /ponto 1:/i });
-
-    // Act
-    fireEvent.click(header);
-
-    // Assert
-    expect(header).toHaveAttribute('aria-expanded', 'true');
-  });
-
-  it('deve suportar expansão via teclado (Enter)', () => {
-    // Arrange
-    const points = [makePoint()];
-    render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
-    const header = screen.getByRole('button', { name: /ponto 1:/i });
-
-    // Act
-    fireEvent.keyDown(header, { key: 'Enter' });
-
-    // Assert
-    expect(screen.getByRole('region', { name: /detalhes do ponto 1/i })).toBeInTheDocument();
-  });
-
-  it('deve suportar expansão via teclado (Space)', () => {
-    // Arrange
-    const points = [makePoint()];
-    render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
-    const header = screen.getByRole('button', { name: /ponto 1:/i });
-
-    // Act
-    fireEvent.keyDown(header, { key: ' ' });
-
-    // Assert
-    expect(screen.getByRole('region', { name: /detalhes do ponto 1/i })).toBeInTheDocument();
-  });
-
-  // --- prop forceExpand (print mode) ---
-
-  it('deve mostrar detalhe de todos os cards quando forceExpand via beforeprint', async () => {
-    // Arrange
+  it('exibe contagem de pontos no cabeçalho', () => {
     const points = [makePoint(), makePoint()];
     render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
-
-    // Assert — sem detalhe expandido inicialmente (aria-expanded=false)
-    const [header1, header2] = screen.getAllByRole('button', { name: /ponto \d+:/i });
-    expect(header1).toHaveAttribute('aria-expanded', 'false');
-    expect(header2).toHaveAttribute('aria-expanded', 'false');
-
-    // Act — disparar beforeprint
-    await act(async () => {
-      window.dispatchEvent(new Event('beforeprint'));
-    });
-
-    // Assert — todos os cards expandidos após beforeprint
-    expect(header1).toHaveAttribute('aria-expanded', 'true');
-    expect(header2).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByText(/2 pontos/i)).toBeInTheDocument();
   });
 
-  it('deve recolher todos os cards após evento afterprint', async () => {
-    // Arrange
-    const points = [makePoint()];
-    render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
+  // --- Separadores de Set ---
 
-    // Expandir via beforeprint
-    await act(async () => {
-      window.dispatchEvent(new Event('beforeprint'));
-    });
-    expect(screen.getByRole('region', { name: /detalhes do ponto 1/i })).toBeInTheDocument();
-
-    // Act — disparar afterprint
-    await act(async () => {
-      window.dispatchEvent(new Event('afterprint'));
-    });
-
-    // Assert — card recolhido após afterprint (aria-expanded=false)
-    expect(screen.getByRole('button', { name: /ponto 1:/i })).toHaveAttribute(
-      'aria-expanded',
-      'false',
-    );
+  it('exibe separador SET 1', () => {
+    render(<MatchTimelineView pointsHistory={[makePoint()]} playerNames={PLAYER_NAMES} />);
+    expect(screen.getByText(/SET 1/i)).toBeInTheDocument();
   });
 
-  it('deve remover os event listeners ao desmontar o componente', () => {
-    // Arrange
-    const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
-    const points = [makePoint()];
-    const { unmount } = render(
-      <MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />,
-    );
-
-    // Act
-    unmount();
-
-    // Assert
-    expect(removeEventListenerSpy.mock.calls.some(([event]) => event === 'beforeprint')).toBe(true);
-    expect(removeEventListenerSpy.mock.calls.some(([event]) => event === 'afterprint')).toBe(true);
-  });
-
-  // --- Tags especiais ---
-
-  it('deve exibir tag "Ace" quando o tipo de saque é ACE', () => {
-    // Arrange
-    const points = [makePoint({ serve: { type: 'ACE', isFirstServe: true } })];
-
-    // Act
-    render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
-
-    // Assert — tag renderiza 'ACE' (uppercase); summary usa 'Ace'
-    const tags = screen.getAllByText('ACE');
-    expect(tags.some((el) => el.classList.contains('match-timeline__tag--ace'))).toBe(true);
-  });
-
-  it('deve exibir tag "DF" quando o tipo de saque é DOUBLE_FAULT', () => {
-    // Arrange
-    const points = [
-      makePoint({
-        serve: { type: 'DOUBLE_FAULT', isFirstServe: false },
-        result: { winner: 'PLAYER_2', type: 'DOUBLE_FAULT' },
-      }),
-    ];
-
-    // Act
-    render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
-
-    // Assert — busca pelo container de tags para evitar matches duplicados
-    const tags = screen.getAllByText('DF');
-    expect(tags.some((el) => el.classList.contains('match-timeline__tag--fault'))).toBe(true);
-  });
-
-  it('deve exibir tag "BP" para breakpoints', () => {
-    // Arrange
+  it('exibe dois separadores SET quando há pontos de dois sets', () => {
     const points = [
       makePoint({
         context: {
@@ -311,62 +101,123 @@ describe('MatchTimelineView', () => {
           gamesP2: 0,
           gameScoreP1: '0',
           gameScoreP2: '0',
-          isBreakPoint: true,
+          isBreakPoint: false,
+        },
+      }),
+      makePoint({
+        context: {
+          setNumber: 2,
+          gamesP1: 6,
+          gamesP2: 0,
+          gameScoreP1: '0',
+          gameScoreP2: '0',
+          isBreakPoint: false,
         },
       }),
     ];
-
-    // Act
     render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
+    expect(screen.getByText(/SET 1/i)).toBeInTheDocument();
+    expect(screen.getByText(/SET 2/i)).toBeInTheDocument();
+  });
 
-    // Assert
-    expect(screen.getByText('BP')).toBeInTheDocument();
+  // --- Conteúdo das células ---
+
+  it('exibe ACE na coluna ACE ou DF para pontos de ACE', () => {
+    const pt = makePoint({
+      serve: { type: 'ACE', isFirstServe: true, serveEffect: 'Flat', direction: 'Centro' },
+      result: { winner: 'PLAYER_1', type: 'WINNER', finalShot: 'Serve' },
+    });
+    render(<MatchTimelineView pointsHistory={[pt]} playerNames={PLAYER_NAMES} />);
+    const table = screen.getByRole('table', { name: /timeline de pontos/i });
+    const aceMatches = within(table).getAllByText(/ACE/);
+    // Deve haver pelo menos uma célula de dado com ACE (além do header "ACE ou DF")
+    expect(aceMatches.length).toBeGreaterThanOrEqual(1);
+    const dataCell = aceMatches.find((el) => el.tagName === 'TD');
+    expect(dataCell).toBeDefined();
+  });
+
+  it('exibe DF na coluna ACE ou DF para dupla falta', () => {
+    const pt = makePoint({
+      serve: { type: 'DOUBLE_FAULT', isFirstServe: false },
+      result: { winner: 'PLAYER_2', type: 'WINNER', finalShot: 'Serve' },
+    });
+    render(<MatchTimelineView pointsHistory={[pt]} playerNames={PLAYER_NAMES} />);
+    const table = screen.getByRole('table', { name: /timeline de pontos/i });
+    expect(within(table).getByText(/DF:/)).toBeInTheDocument();
+  });
+
+  it('exibe Winner na coluna RESULTADO para winner de rally', () => {
+    const pt = makePoint({ result: { winner: 'PLAYER_1', type: 'WINNER', finalShot: 'Forehand' } });
+    render(<MatchTimelineView pointsHistory={[pt]} playerNames={PLAYER_NAMES} />);
+    const table = screen.getByRole('table', { name: /timeline de pontos/i });
+    expect(within(table).getByText('Winner')).toBeInTheDocument();
+  });
+
+  it('exibe ENF na coluna RESULTADO para erro não forçado', () => {
+    const pt = makePoint({
+      result: { winner: 'PLAYER_2', type: 'UNFORCED_ERROR', finalShot: 'Backhand' },
+    });
+    render(<MatchTimelineView pointsHistory={[pt]} playerNames={PLAYER_NAMES} />);
+    const table = screen.getByRole('table', { name: /timeline de pontos/i });
+    expect(within(table).getByText('ENF')).toBeInTheDocument();
+  });
+
+  it('exibe EF na coluna RESULTADO para erro forçado', () => {
+    const pt = makePoint({
+      result: { winner: 'PLAYER_2', type: 'FORCED_ERROR', finalShot: 'Backhand' },
+    });
+    render(<MatchTimelineView pointsHistory={[pt]} playerNames={PLAYER_NAMES} />);
+    const table = screen.getByRole('table', { name: /timeline de pontos/i });
+    expect(within(table).getByText('EF')).toBeInTheDocument();
+  });
+
+  // --- Aria labels das linhas ---
+
+  it('exibe aria-label indicando o vencedor do ponto', () => {
+    render(<MatchTimelineView pointsHistory={[makePoint()]} playerNames={PLAYER_NAMES} />);
+    expect(screen.getByRole('row', { name: /ponto: jogador a venceu/i })).toBeInTheDocument();
   });
 
   // --- Filtros ---
 
-  it('deve renderizar chips de filtros', () => {
-    // Arrange
-    const points = [makePoint()];
-
-    // Act
-    render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
-
-    // Assert
+  it('exibe o grupo de filtros', () => {
+    render(<MatchTimelineView pointsHistory={[makePoint()]} playerNames={PLAYER_NAMES} />);
     expect(screen.getByRole('group', { name: /filtros da timeline/i })).toBeInTheDocument();
   });
 
-  it('deve filtrar por PLAYER_1 ao clicar no chip do jogador', () => {
-    // Arrange
+  it('filtrar por PLAYER_1 reduz a contagem mostrada', () => {
     const points = [
-      makePoint({ result: { winner: 'PLAYER_1', type: 'WINNER' } }),
-      makePoint({ result: { winner: 'PLAYER_2', type: 'WINNER' } }),
+      makePoint({ result: { winner: 'PLAYER_1', type: 'WINNER', finalShot: 'FH' } }),
+      makePoint({ result: { winner: 'PLAYER_2', type: 'UNFORCED_ERROR', finalShot: 'BH' } }),
     ];
     render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
 
-    // Act — clicar no chip de Jogador A dentro do grupo de filtros
-    const filtersGroup = screen.getByRole('group', { name: /filtros da timeline/i });
-    const chip = within(filtersGroup).getByRole('button', { name: /jogador a/i });
-    fireEvent.click(chip);
+    // Antes do filtro: "2 pontos"
+    expect(screen.getByText(/2 pontos/i)).toBeInTheDocument();
 
-    // Assert — apenas 1 ponto visível; header mostra "1 de 2 pontos"
+    // Ativa filtro P1
+    const filterBtn = screen.getByRole('button', { name: /jogador a/i });
+    fireEvent.click(filterBtn);
+
+    // Depois do filtro: "1 de 2 pontos"
     expect(screen.getByText(/1 de 2 pontos/i)).toBeInTheDocument();
   });
 
-  it('deve exibir "Limpar" quando filtro está ativo e ao clicar deve remover filtros', () => {
-    // Arrange
-    const points = [makePoint()];
-    render(<MatchTimelineView pointsHistory={points} playerNames={PLAYER_NAMES} />);
-    const filtersGroup = screen.getByRole('group', { name: /filtros da timeline/i });
-    fireEvent.click(within(filtersGroup).getByRole('button', { name: /jogador a/i }));
+  it('botão Limpar aparece com filtro ativo e some ao clicar', () => {
+    render(<MatchTimelineView pointsHistory={[makePoint()]} playerNames={PLAYER_NAMES} />);
 
-    // Assert — chip Limpar aparece
-    expect(screen.getByRole('button', { name: /limpar todos os filtros/i })).toBeInTheDocument();
+    // Limpar não aparece inicialmente
+    expect(
+      screen.queryByRole('button', { name: /limpar todos os filtros/i }),
+    ).not.toBeInTheDocument();
 
-    // Act — limpar filtros
-    fireEvent.click(screen.getByRole('button', { name: /limpar todos os filtros/i }));
+    // Ativa filtro
+    fireEvent.click(screen.getByRole('button', { name: /jogador a/i }));
+    const limparBtn = screen.getByRole('button', { name: /limpar todos os filtros/i });
+    expect(limparBtn).toBeInTheDocument();
 
-    // Assert — chip Limpar some
+    // Clica em Limpar
+    fireEvent.click(limparBtn);
     expect(
       screen.queryByRole('button', { name: /limpar todos os filtros/i }),
     ).not.toBeInTheDocument();

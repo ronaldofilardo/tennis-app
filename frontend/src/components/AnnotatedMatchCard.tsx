@@ -171,7 +171,9 @@ const AnnotatedMatchCard: React.FC<AnnotatedMatchCardProps> = ({
 
   const formatPt = FORMAT_LABELS[match.format] ?? match.format;
   const courtPt = match.courtType ? (COURT_LABELS[match.courtType] ?? match.courtType) : null;
-  const bracketPt = match.bracketType ? (BRACKET_LABELS[match.bracketType] ?? match.bracketType) : null;
+  const bracketPt = match.bracketType
+    ? (BRACKET_LABELS[match.bracketType] ?? match.bracketType)
+    : null;
   const matchResult = formatMatchResult(match.winner, p1Name, p2Name, match.completedSets);
 
   return (
@@ -280,9 +282,7 @@ const AnnotatedMatchCard: React.FC<AnnotatedMatchCardProps> = ({
               {match.tournamentName && (
                 <div className="annotated-match-card__box-cell">
                   <span className="annotated-match-card__detail-label">Torneio</span>
-                  <div className="annotated-match-card__detail-box">
-                    {match.tournamentName}
-                  </div>
+                  <div className="annotated-match-card__detail-box">{match.tournamentName}</div>
                 </div>
               )}
               {match.roundName && (
