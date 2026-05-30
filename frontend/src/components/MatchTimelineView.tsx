@@ -84,6 +84,11 @@ const DIRECAO_PT: Record<string, string> = {
   'inside-out': 'Inside-Out',
 };
 
+const SUBTIPO1_PT: Record<string, string> = {
+  PassingShot: 'Passing Shot',
+  ServeReturn: 'Devolução',
+};
+
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 export interface MatchTimelineViewProps {
@@ -290,7 +295,8 @@ const MatchTimelineView: React.FC<MatchTimelineViewProps> = ({ pointsHistory, pl
               <col style={{ width: '9%' }} /> {/* SITUAÇÃO */}
               <col style={{ width: '9%' }} /> {/* RESULTADO */}
               <col style={{ width: '6%' }} /> {/* GOLPE */}
-              <col style={{ width: '6%' }} /> {/* ERROU */}
+              <col style={{ width: '8%' }} /> {/* TIPO DE ERRO */}
+              <col style={{ width: '6%' }} /> {/* ONDE ERROU */}
               <col style={{ width: '9%' }} /> {/* DIREÇÃO */}
               <col style={{ width: '9%' }} /> {/* EFEITO */}
               <col style={{ width: '10%' }} /> {/* ESPECIAIS */}
@@ -304,7 +310,8 @@ const MatchTimelineView: React.FC<MatchTimelineViewProps> = ({ pointsHistory, pl
                 <th scope="col">SITUAÇÃO</th>
                 <th scope="col">RESULTADO</th>
                 <th scope="col">GOLPE</th>
-                <th scope="col">ERROU:</th>
+                <th scope="col">TIPO DE ERRO</th>
+                <th scope="col">ONDE ERROU:</th>
                 <th scope="col">DIREÇÃO</th>
                 <th scope="col">EFEITO</th>
                 <th scope="col">ESPECIAIS</th>
@@ -324,7 +331,7 @@ const MatchTimelineView: React.FC<MatchTimelineViewProps> = ({ pointsHistory, pl
                       <td colSpan={2} className="match-timeline__set-label">
                         SET {group.setNumber}
                       </td>
-                      <td colSpan={9} className="match-timeline__set-players">
+                      <td colSpan={10} className="match-timeline__set-players">
                         {serverName} – {receiverName}
                       </td>
                     </tr>
@@ -351,7 +358,7 @@ const MatchTimelineView: React.FC<MatchTimelineViewProps> = ({ pointsHistory, pl
                         <React.Fragment key={i}>
                           {hasGap && (
                             <tr className="match-timeline__interrupted-row">
-                              <td colSpan={11} className="match-timeline__interrupted-cell">
+                              <td colSpan={12} className="match-timeline__interrupted-cell">
                                 marcação interrompida
                               </td>
                             </tr>
@@ -431,7 +438,16 @@ const MatchTimelineView: React.FC<MatchTimelineViewProps> = ({ pointsHistory, pl
                               {serveEnding ? '' : (rd?.golpe ?? '–')}
                             </td>
 
-                            {/* ERROU: */}
+                            {/* TIPO DE ERRO */}
+                            <td className="match-timeline__cell">
+                              {serveEnding
+                                ? ''
+                                : rd?.subtipo1
+                                  ? (SUBTIPO1_PT[rd.subtipo1] ?? rd.subtipo1)
+                                  : '–'}
+                            </td>
+
+                            {/* ONDE ERROU: */}
                             <td
                               className={[
                                 'match-timeline__cell',

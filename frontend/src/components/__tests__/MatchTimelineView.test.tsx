@@ -73,6 +73,7 @@ describe('MatchTimelineView', () => {
     expect(within(table).getByText('SITUAÇÃO')).toBeInTheDocument();
     expect(within(table).getByText('RESULTADO')).toBeInTheDocument();
     expect(within(table).getByText('GOLPE')).toBeInTheDocument();
+    expect(within(table).getByText('TIPO DE ERRO')).toBeInTheDocument();
     expect(within(table).getByText(/ERROU/i)).toBeInTheDocument();
     expect(within(table).getByText('DIREÇÃO')).toBeInTheDocument();
     expect(within(table).getByText('EFEITO')).toBeInTheDocument();
